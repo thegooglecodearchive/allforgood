@@ -1,0 +1,122 @@
+{% if not no_login %}
+<script type="text/javascript">
+  document.userId = "{{user.user_id|escape }}";
+  document.userType = "{{user.account_type|escape }}";
+  document.userDisplayName = "{{user.display_name|escape }}";
+  var FC_SITE_ID = '02962301966004179520';
+  var FB_SITE_ID = '{{ facebook_key }}';
+  FB.init(FB_SITE_ID, 'xd_receiver.htm');
+
+  function requestFacebookSignIn() {
+    FB.Connect.requireSession(null, true);
+    FB.Facebook.get_sessionState().waitUntilReady(function() {
+      window.location.reload();
+    });
+  }
+  google.load('friendconnect', '0.8');
+  google.setOnLoadCallback(function() {
+    google.friendconnect.container.loadOpenSocialApi({site: FC_SITE_ID, onload: function() {
+      {% if not user %} checkForViewer(); {% endif %}
+    }});
+  });
+</script>
+{% endif %}{# no_login #}
+
+<nobr>
+{% if user %}
+  <div id='sign_in'>
+  Hello,
+  {##### username (linked on "my events" page #####}
+  {% ifequal current_page "MY_EVENTS" %}
+    {{ user.display_name|escape }}
+  {% else %}
+    <a href='/myevents'>{{ user.display_name|escape }}</a>
+  {% endifequal %}
+  
+  {##### Login link for Facebook Connect and/or Friend Connect) #####}
+  | {% ifequal user.account_type "friendconnect"%}
+    <a href="javascript:;" onclick="google.friendconnect.requestSettings()">Settings</a> |
+    <a href="javascript:;" onclick="google.friendconnect.requestInvite()">Invite Friends</a>
+  {% else %} {% ifequal user.account_type "facebook" %}
+    <a href="javascript:;" onclick="inviteFacebookFriends();">Invite Friends</a>
+  {% endifequal %}{% endifequal %}
+  
+  {##### Activity Page link #####}
+  | {% ifequal current_page "MY_EVENTS" %}
+  Activity Page <img class='valign' border=0 src='/zx{{version}}/images/like_default.png'/>
+  {% else %}
+  <a href='/myevents'>Activity Page</a> <a href='/myevents'><img class='valign' border=0 src='/zx{{version}}/images/like_default.png'/></a>
+  {% endifequal %}
+  
+  {##### Help link #####}
+  | <a href='/help'><b>Help</b></a>
+
+  {##### Logout link #####}
+  | {% ifequal user.account_type "friendconnect"%}
+    <a href="javascript:;" onclick="google.friendconnect.requestSignOut(); clearExternalCookies(); window.location.reload();">Sign Out</a>
+  {% else %} {% ifequal user.account_type "facebook" %}
+    <a href="javascript:;" onclick="FB.Connect.logout(function() {clearExternalCookies(); window.location.reload();});">Sign Out</a>
+  {% endifequal %}{% endifequal %}
+  </div>
+
+  <script type='text/javascript'>
+    function inviteFacebookFriends() {
+      var url = location.protocol + "//" + location.host;
+
+      var dialog = new FB.UI.FBMLPopupDialog('Invite your friends to join All for Good', '');
+      var fbml = '<fb:fbml><fb:request-form style="width:750px; height:400px;" action="' + location.href
+          + '" method="GET" invite="true" type="All For Good" content="Visit ' + url
+          + ' to find volunteer opportunities near you! '
+          + '<fb:req-choice url=\'' + url  + '\' label=\'Yes, I want to get involved\' />">'
+          + '<fb:multi-friend-selector rows="2" showborder="false" actiontext="Invite your friends" bypass="cancel"/>'
+          + '</fb:request-form></fb:fbml>';
+      dialog.setFBMLContent(fbml);
+      dialog.setContentWidth(750);
+      dialog.setContentHeight(400);
+      dialog.show();
+    }
+
+    function createLikesActivity(eventName, eventWebsite, eventUrl, sig) {
+      var eventRedirectUrl = 'http://www.AllForGood.org/url?q=' + encodeURIComponent(eventUrl) + '&sig=' + sig;
+      var fcString = 'liked <a href="' + eventRedirectUrl + '">' + eventName + ' on ' + eventWebsite + '</a>';
+      var fbString = fcString + ' via <a href="http://www.AllForGood.org">AllForGood.org</a>';
+
+      createActivity(fbString, fcString);
+    }
+
+    function createActivity(fbString, fcString) {
+      {% ifequal user.account_type "friendconnect"%}
+        var activity = opensocial.newActivity(
+            {title: '{{user.display_name|escape }} ' + fcString});
+        opensocial.requestCreateActivity(activity, "HIGH");
+      {% else %} {% ifequal user.account_type "facebook" %}
+        var templateId = 79242242909; // Template of the format "<user> <description>"
+        FB.Connect.showFeedDialog(templateId, {"description" : fbString},
+          [], '', 1, FB.RequireConnect.require, function(){});
+      {% endifequal %}{% endifequal %}
+    }
+  </script>
+{% else %}
+  <div id='sign_in'>
+    Sign in with <span id="signInProvider"></span>
+    <a href='javascript:;' onclick="requestFacebookSignIn()">Facebook</a>,
+    <a href='javascript:;' onclick="google.friendconnect.requestSignIn('GOOGLE');return false">Google</a>,
+    <a href='javascript:;' onclick="google.friendconnect.requestSignIn('');return false">More &raquo;</a>
+  
+    <script type='text/javascript'>
+      function checkForViewer() {
+        // If the viewer is != null and the userId == null reload page.
+        // This is a temporary placeholder until FC gives us an onSignIn callback
+        var req = opensocial.newDataRequest();
+        req.add(req.newFetchPersonRequest('VIEWER'), 'viewer');
+        req.send(function(data) {
+          if (data.get('viewer').getData()) { window.location.reload();}
+        });
+      }
+    </script>
+    | <a href='/help'><b>Help</b></a>
+  </div>
+
+{% endif %}
+</nobr>
+

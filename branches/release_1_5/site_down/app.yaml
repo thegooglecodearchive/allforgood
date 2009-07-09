@@ -1,0 +1,25 @@
+application: footprint2009dev
+#application: footprint-loadtest
+#application: servicefootprint
+
+version: sitedown
+runtime: python
+api_version: 1
+
+handlers:
+- url: /css
+  static_dir: css
+
+- url: /images
+  static_dir: images
+
+- url: /site_down.html
+  static_files: html/site_down.html
+  upload: html/site_down.html
+
+- url: /robots.txt
+  static_files: robots.txt
+  upload: robots.txt
+
+- url: /.*
+  script: site_down.py

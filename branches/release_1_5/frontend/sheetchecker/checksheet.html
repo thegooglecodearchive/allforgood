@@ -1,0 +1,23 @@
+<html>
+<body>
+<div style="font-family:courier;font-size:10pt">
+Footprint Spreadsheet data feed checker
+<p/>
+<form>
+spreadsheet URL:<br/>
+<input name='url' size='80' value='{{ sheeturl|escape }}'>
+<input type='submit' value='run checker'>
+</form>
+
+{% ifnotequal sheeturl "" %}
+  <p/>
+  original sheet: <a href='{{ sheeturl|escape }}'>{{ sheeturl|escape }}</a><br/>
+  sheet feed: <a href='{{ sheetfeedurl|escape }}'>{{ sheetfeedurl|escape }}</a><br/>
+  <p/>
+  {% for msg in msgs %}
+  {{ msg }}<p/>
+  {% endfor %}
+{% endifnotequal %}
+</div>
+</body>
+</html>
