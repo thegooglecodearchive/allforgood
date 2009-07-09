@@ -497,9 +497,8 @@ class ui_my_snippets_view(webapp.RequestHandler):
       # Get the list of all events that I like or am doing.
       # This is a dict of event id keys and interest flag values (right now
       # we only support Liked).
-      dict = view_helper.get_user_interests(user_info, True)
-      my_interests = dict['interests']
-      ordered_event_ids = dict['ordered_event_ids']
+      (my_interests, ordered_event_ids) = \
+          view_helper.get_user_interests(user_info, True)
       
       # Fetch the event details for the events I like, so they can be
       # displayed in the snippets template.
