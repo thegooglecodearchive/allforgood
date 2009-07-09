@@ -1,0 +1,58 @@
+# Copyright 2009 Google Inc.  All Rights Reserved.
+#
+# Database classes
+#  - BlockedObject: key=hash(objtype+objname), objtype, objname, comment
+#  - Stats: key=statname, date, time, tries, successes
+#  - Postings: key=assignedId, datafields, status, qualityscore, 
+#    note: if Postings gets overwhelmed, we'll create tables for
+#    Live and/or Rejected postings.
+#  - EmailQueue: key=assignedId, dateAdded
+#
+# User posting flow:
+# 1. new posts are sanity checked on the server side
+#     - update stats in detail-- number of tries, fails for everything
+#     - blocked IP, user (silent failure?  queuing penalty?)
+#     - captcha check
+#     - form validation: missing fields, values in range, etc.
+#     - dup check
+#     - field lookups, e.g. EIN, addr geocode, etc.
+#     - quality score is assigned, verification set to unverified
+# 
+# 2. post is stored in memcache and in DB
+#     - memcache key = assigned ID (not stable ID)
+#     - DB key = assigned ID (not stable ID)
+#     - added to end of approval queue
+#
+# 3. if request, process email verific request
+#     - is email addr blocked?
+#     - is email match blocked-pattern?
+#     - is email content match blocked-pattern?
+#     - if (email throughput above threshold):
+#         queue email
+#       else:
+#         send email-- include link-back to remove/unremove this email addr
+#         dequeue other email & send, until N secs or throughput reached
+#
+# Email Verification Flow:
+# 1. validate this link (per-email-digsig or global-digsig or admin user)
+# 2. display remove or restore option (depending on which applies)
+# 3. process removal/restore request (form submit)
+#
+# Moderator Flow:
+# 1. page showing ordered list of postings for review-- ranking func is crucial
+#    because it creates the "queue" e.g. probably want to prioritize listings
+#    starting in the near future, regardless of submissions date.
+# 2. page shows stats: queue size, decisions/day, approvals/day, rejections/day,
+#    page includes age histogram with avg
+#    (this is a single Stats entry: success=approval, time to the hour)
+# 3. each listing shows id, age, status, user/email, title, orgname
+# 4. keyboard shortcuts to make review faster
+#    http://www.openjs.com/scripts/events/keyboard_shortcuts/
+# 5. search/sort features for scanning in diff order (GQL ORDER BY)
+#    (incl shortcuts)
+# 6. actions = approve, reject (with reason?), bump (to back of queue, with reason?)
+# 
+# Status of Posting:
+# 1. page shows stats from moderator, plus fields from listing
+# 2. can edit listing-- but Save warns you about re-approval
+

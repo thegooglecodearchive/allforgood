@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% comment %}
+  A layout template, overrides the content_layout block of base.html.
+
+  This layout takes over the full area of the <body> element,
+  below the standard header, and divides it into two columns.
+
+  blocks that can be overridden:
+    content_left: HTML for the left column
+    width_left: The width of the left column.  Default: 230px (no quotes)
+    content_right: HTML for the right column
+    width_right: The width of the right column.  Default: none
+{% endcomment %}
+
+{% block content_layout %}
+<div id='content'>
+
+{% block top_content %}
+{% endblock %}
+
+<table cellpadding=0 spacing=0 cellborder=0>
+<tr>
+<td id='content_left' valign=top width='{% block width_left %}242px{% endblock %}'>
+{% block content_left %}{% endblock %}
+</td>
+<td id='content_right' valign=top width='{% block width_right %}{% endblock %}'>
+{% block content_right %}{% endblock %}
+</td>
+</tr>
+</table>
+{% block content %}{% endblock %}
+</div>
+{% endblock %}

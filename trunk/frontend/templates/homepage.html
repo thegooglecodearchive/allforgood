@@ -1,0 +1,82 @@
+{% extends 'layout_full.html' %}
+
+{% block content %}
+<div id='home'>
+  <div id='leadin'>
+    <div id='leadin_header'>
+      All for Good helps you find and share ways to do good.
+    </div>
+    <div id='leadin_subheader'>
+      Each of us has a role to play in improving our communities and our country.
+      Small actions add up to a big difference.
+    </div>
+  </div>
+
+  <div id='home_popular'>
+    <div id='home_popular_title'>Popular&nbsp;searches</div>
+    <div id='popular_list'></div>
+  </div>
+
+  <div id='home_mini'>
+   <div id='mini_without_location' style='display:none;'>
+    Find volunteer activities near you
+   </div>
+
+   <div id='mini_with_location' style='display:none;'>
+    <div id='location_message'>Volunteer activities</div>
+    <div id='location_subheader'><span id='location_text_prefixed'>In <span id='location_text'></span></span> &nbsp;-
+      <a href='javascript:void(0)' onclick='doHomepageChangeLocationClick();return false;'>
+        Change location
+      </a>
+    </div>
+   </div>
+
+   <div id='location_form' style='display:none;'>
+    <form action='/' onsubmit='submitForm("");return false;' class='valign'>
+      <input id='location' name='enter your location' size='40' value=''/>
+      <input type=button onclick='submitForm("");return false;' value="Set location" />
+    </form>
+   </div>
+
+   <div id='snippets'></div>
+   <div id='more' style='display:none;'><a id='more_link'>See more...</a></div>
+   {# defined in homepage.js; requires id=snippets and id=more in the DOM #}
+   <script>runSnippetsQuery();</script>
+  </div>
+
+  <div id='home_left'>
+    <div id='home_video'>
+      <div id='home_video_header'>A special message from the First Lady</div>
+      <div id='home_video_placeholder'></div>
+    </div>
+
+    <div id='home_bullets'>
+      <div id='home_bullets_header'>Help improve your community</div>
+
+      <ul>
+        <li><b>Find</b> volunteer activities near you.</li>
+        <li><b>Share</b> volunteer activities with your friends.</li>
+        <li><b>See</b> what your friends are interested in.</li>
+        <li><b>Track</b> volunteer activities you care about.</li>
+        <li><b>Sign in</b> with
+          <a href='javascript:void(0);' onclick="requestFacebookSignIn();return false">Facebook</a>,
+          <a href='javascript:void(0);' onclick="google.friendconnect.requestSignIn('GOOGLE');return false">Google</a>, or
+          <a href='javascript:void(0);' onclick="google.friendconnect.requestSignIn('');return false">more &raquo;</a>
+        </li>
+      </ul>
+      <div id='home_bullets_header'>How to use All for Good</div>
+
+      <ul>
+        <li><b>Read</b> the <a href="/guide">product guide &raquo</a></li>
+        <li><b>Watch</b> the <a href="http://www.youtube.com/watch?v=8kfEm7K9fdA">product video &raquo;</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script type='text/javascript'>
+renderHomepage();
+createExampleSearchText();
+</script>
+{% endblock content %}
+

@@ -1,0 +1,13 @@
+cron:
+- url: /testapi/run?test_type=num
+  schedule: every 5 minutes
+- url: /testapi/run?test_type=start
+  schedule: every 5 minutes
+- url: /testapi/run?test_type=query
+  schedule: every 5 minutes
+- url: /testapi/run?test_type=provider
+  schedule: every 5 minutes
+- url: /testapi/run?test_type=geo
+  schedule: every 5 minutes
+- url: /testapi/run?test_type=snippets
+  schedule: every 5 minutes

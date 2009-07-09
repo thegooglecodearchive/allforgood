@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{% spaceless %}
+
+<html xmlns='http://www.w3.org/1999/xhtml' xmlns:fb='http://www.facebook.com/2008/fbml'>
+{% comment %}
+   Base template for Django inheritance.
+   All templates should inherit from this.
+
+   blocks that can be overridden:
+     css_files: link tags for css files to include.
+     js_files: script tags for JS files to include.
+     subheader: area below header.
+     content_layout: the main area inside the body, below the header, or
+        below the subheader if defined.  This should only be overridden by
+        layout templates
+     prefooter: area above footer.
+{% endcomment %}
+
+<head>
+  <title>{% block title %}All for Good{% endblock %}</title>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+  {# chartbeat #}
+  <script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
+  {% block head %}{% endblock %}
+</head>
+
+{% block body %}{% endblock %}
+
+</html>
+
+{% comment %}
+chartbeat-- waiting on privacy signoff
+NOTE: don't just enable this-- it needs to run *after* the search results
+come back, which in turn means that we need different logic for homepage/SERP
+than for other pages, which don't have search results...
+<script type="text/javascript">
+var cbjspath = "static.chartbeat.com/js/chartbeat.js?uid=2008&domain=allforgood.org";
+var cbjsprotocol = (("https:" == document.location.protocol) ? "https://s3.amazonaws.com/" : "http://");
+document.write(unescape("%3Cscript src='"+cbjsprotocol+cbjspath+"' type='text/javascript'%3E%3C/script%3E"))
+</script>
+{% endcomment %}
+
+{% endspaceless %}

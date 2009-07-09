@@ -1,0 +1,87 @@
+<?xml version="1.0" ?>
+<FootprintFeed schemaVersion="0.1">
+ <FeedInfo>
+  <providerID>99</providerID>
+  <providerName>Volunteer Opportunity Aggregators</providerName>
+  <createdDateTime>2009-08-02T09:24:34</createdDateTime>
+ </FeedInfo>
+
+ <Organizations>
+  <Organization>
+   <organizationID>1</organizationID>
+   <name>Org Name</name>
+  </Organization>
+ </Organizations>
+
+ <VolunteerOpportunities>
+  <VolunteerOpportunity>
+   <volunteerOpportunityID>1</volunteerOpportunityID>
+   <title>East Time Zone Check</title>
+
+   <dateTimeDurations>
+    <dateTimeDuration>
+     <startDate>2009-04-20</startDate>
+     <endDate>2009-04-20</endDate>
+     <startTime>17:00:00</startTime>
+     <endTime>19:00:00</endTime>
+    </dateTimeDuration>
+   </dateTimeDurations>
+
+   <locations>
+    <location>
+     <postalCode>08540</postalCode>
+    </location>
+   </locations>
+
+   </VolunteerOpportunity>
+
+  <VolunteerOpportunity>
+   <volunteerOpportunityID>3</volunteerOpportunityID>
+   <title>Virtual, Pacific Time Zone Check</title>
+
+   <dateTimeDurations>
+    <dateTimeDuration>
+     
+     <startDate>2009-04-20</startDate>
+     <endDate>2009-04-20</endDate>
+     <startTime>17:00:00</startTime>
+     <endTime>19:00:00</endTime>
+    </dateTimeDuration>
+   </dateTimeDurations>
+
+   <locations>
+    <location>
+     <virtual>Yes</virtual>
+    </location>
+   </locations>
+
+   <lastUpdated>2009-04-15T06:19:00</lastUpdated>
+   <expires>2010-04-15T06:19:00</expires>
+   </VolunteerOpportunity>
+
+
+  <VolunteerOpportunity>
+   <volunteerOpportunityID>3</volunteerOpportunityID>
+   <title>Time Flexible Check</title>
+
+   <dateTimeDurations>
+    <dateTimeDuration>
+     <startDate>2009-04-20</startDate>
+     <endDate>2009-04-20</endDate>
+    </dateTimeDuration>
+   </dateTimeDurations>
+
+   <locations>
+    <location>
+     <virtual>Yes</virtual>
+    </location>
+   </locations>
+
+   <lastUpdated>2009-04-15T06:19:00</lastUpdated>
+   <expires>2010-04-15T06:19:00</expires>
+   </VolunteerOpportunity>
+
+
+  </VolunteerOpportunities>
+
+</FootprintFeed>
