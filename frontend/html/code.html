@@ -4,7 +4,7 @@
 <ol>
 <li>(10mins) install Google App Engine (<a href="http://code.google.com/appengine/docs/python/gettingstarted/devenvironment.html">instructions</a>).<br />requires Python; most operating systems supported.</li>
 
-<li>[if needed] (1 hour) install a Subversion client.  Subversion is pre-installed on most unix/linux systems.</li>
+<li>[if needed] (1 hour) install a Subversion client.  Subversion is pre-installed on most unix/linux systems.  If this proves difficult, or you don't have time, email one of the core team and we'll provide you a zip/tarball.</li>
 
 <li>Check out a copy of the source code (<a href="http://code.google.com/p/footprint2009dev/source/checkout">instructions</a>).  To check out the repository in read-only mode:<br />
 <pre>
@@ -36,6 +36,9 @@ When prompted for password, use the one automatically generated for your Gmail a
 Tip: If this fails, you may need to add "-a &lt;ip address&gt;" to the dev_appserver.py command above.</li>
 </ol>
 
+<h3>Tech support</h3>
+Please join this group to get tech support: <a href="http://groups.google.com/group/footprint-eng">http://groups.google.com/group/footprint-eng</a>
+
 <h3>HTML/CSS/JS and Django Templates</h3>
 
 The site is an 'AJAX' app coded in HTML/CSS/JS.  The directories are frontend/css, frontend/html, frontend/js and frontend/images.  The code is fairly self-explanatory, with these notes:
@@ -66,7 +69,7 @@ The following blocks are exposed by base.html, and can be overridden in any deri
 
 <h3>Coding Style</h3>
 
-We use <a href="http://pypi.python.org/pypi/pylint">pylint</a> (available in Ubuntu and other Linux distributions through apt-get/aptitude) as our standard for automatically checking style adherance, and have a custom <a href="http://code.google.com/p/footprint2009dev/source/browse/trunk/pylintrc">pylintrc</a> for the project checked into the toplevel directory.  To run pylint and automatically pickup our rc file:
+We use pylint as our standard for automatically checking style adherance, and have a custom <a href="http://code.google.com/p/footprint2009dev/source/browse/trunk/pylintrc">pylintrc</a> for the project checked into the toplevel directory.  To run pylint and automatically pickup our rc file:
 <pre>
       cd footprint2009dev; pylint path/to/filename.py
 </pre>
@@ -76,7 +79,7 @@ At this time, we are NOT aiming for 100% compliance-- a score above  &gt;=9.0 pe
 
 <h3>Code Review and Checking in Changes</h3>
 
-core team: daniel.berlin@gmail.com, adam.sah@gmail.com, blocksom@gmail.com
+core team: paul.rademacher@gmail.com, adam.sah@gmail.com, doll.cassie@gmail.com.
 <ol>
 <li>For one-time and occasional developers, email footprint-eng@googlegroups.com with a brief description of the changes and a patch file.</li>
 

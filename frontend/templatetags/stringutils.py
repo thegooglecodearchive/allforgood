@@ -27,64 +27,18 @@ def truncate_chars(value, max_length):
 
 
 def as_letter(value):
-  """ Converts an integer value to a letter (assumption: 0 <= value < 26). """
+  """Converts an integer value to a letter (assumption: 0 <= value < 26)."""
   if 0 <= value < 26:
     return chr(ord('A') + value)
   else:
     return ''
 
 def bold_query(value, query):
-  """ Bolds all instances of query in value """
+  """Bolds all instances of query in value"""
   if query:
-    for term in split_query(query):
-      value = bold_term(value, term)
-  return value
-
-def bold_term(value, term):
-  """ Returns value with all instances of term bolded, case-insensitive """
-  nocase_value = value.lower()
-  nocase_term = term.lower()
-  start_loc = nocase_value.find(nocase_term)
-  if start_loc == -1:
-    return value
+    return value.replace(query, "<strong>%s</strong>" % query)
   else:
-    end_loc = start_loc + len(nocase_term)
-    return '%s<strong>%s</strong>%s' % (value[0:start_loc], 
-            value[start_loc:end_loc], bold_term(value[end_loc:], term))
-
-def split_query(query):
-  """ Split a search query into a list of terms to bold """
-  terms = []
-
-  # Add terms in quotes
-  while query.count('"') >= 2:
-    first = query.find('"')
-    second = query.find('"', first+1)
-    # Check if the term should be excluded
-    start = first-1
-    while query[start].isspace():
-      start -= 1
-    if query[start] != '-':
-      terms.append(query[first+1:second])
-    query = '%s %s' % (query[0:start+1], query[second+1:len(query)])
-
-  # Remove ANDs and ORs - we only want a list of terms to bold,
-  # so ANDs and ORs don't matter
-  query = query.replace(" AND "," ")
-  query = query.replace(" OR "," ")
-
-  # Remove items excluded from the search
-  while query.count('-') >= 1:
-    loc = query.find('-')
-    remainder = query[loc+1:].split(None, 1)    # find the text after the -
-    if len(remainder) > 1:    # remove the excluded term from the query
-      query = '%s %s' % (query[0:loc], remainder[1])
-    else:    # add the - as a term if nothing appears after it
-      terms.append('-')
-      query = query[0:loc]
-
-  terms += query.split()    # Add other terms, separated by spaces
-  return list(set(terms))    # Return only the unique terms
+    return value
 
 # Prevents pylint from triggering on the 'register' name. Django expects this
 # module to have a 'register' variable.

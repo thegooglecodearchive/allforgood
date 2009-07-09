@@ -85,8 +85,6 @@ class RunTests(webapp.RequestHandler):
     outstr += '.success {color: #008800;}'
     outstr += '.amplification {color: gray; margin-left: 16px;}'
     outstr += '</style>'
-    # strip whitespace
-    outstr = re.sub(r' ', '', outstr) + "\n"
     if read_from_cache:
       outstr += '<h1>Reading test: ' + testType + ' from the datastore</h1>'
     else:

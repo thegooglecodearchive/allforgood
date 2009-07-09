@@ -10,8 +10,7 @@
 {% if optimize_page %} 
   {# TODO: custom django template tag: #}
   {# % suprfetch 'script' '/js/third_party/jquery-1.3.2.js', '/js/homepage.js', ... % #}
-  <script type='text/javascript' src='http://www.gmodules.com/ig/proxy?url=http%3A%2F%2Fsuprfetch.appspot.com%2F%3Furl%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery-1.3.2.min.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.json-1.3.min.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Frsh.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.autocomplete.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.simplemodal.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Futils.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fsearch_query.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fhomepage.js%26url%3Dhttp%3A%2F%2Fs7.addthis.com%2Fjs%2F250%2Faddthis_widget.js%26jsmin%3Dtrue'>
-  </script>
+  <script type='text/javascript' src='http://www.gmodules.com/ig/proxy?url=http%3A%2F%2Fsuprfetch.appspot.com%2F%3Furl%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery-1.3.2.min.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.json-1.3.min.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Frsh.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.autocomplete.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.simplemodal.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Futils.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fsearch_query.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fhomepage.js%26url=http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php%26url%3Dhttp%3A%2F%2Fs7.addthis.com%2Fjs%2F250%2Faddthis_widget.js%26jsmin%3Dtrue'></script>
 {% else %}
   <script type='text/javascript' src='/zx{{version}}/js/third_party/jquery-1.3.2.min.js'></script>
   <script type='text/javascript' src='/zx{{version}}/js/third_party/jquery.json-1.3.min.js'></script>
@@ -23,12 +22,14 @@
   <script type='text/javascript' src='/zx{{version}}/js/search_query.js'></script>
   {# not required for all pages, but harmless and simpler (for development only) #}
   <script type='text/javascript' src='/zx{{version}}/js/homepage.js'></script>
+  <script type='text/javascript' src='http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php'></script>
 {% endif %}
+
   <script type='text/javascript'>
     // These components load asynchronously.  We use AsyncLoadManager to
     // queue up function callbacks until each component is loaded.
     var asyncLoadManager = new AsyncLoadManager(
-        [ 'map', 'bodyload', 'friendconnect', 'facebook' ]
+        [ 'map', 'bodyload', 'friendconnect' ]
     );
 
     // ...and one to queue JS callbacks on body unload event.
@@ -38,12 +39,7 @@
 
     var popularSearches = [ 'Education', 'Health', 'Nature', 'Hunger',
       'Website', 'Seniors', 'Animals' ];
-
-    // Load the Facebook script -- must be done after asyncLoadManager created
-    $.getScript("http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php",
-      function() { console.log("getScript CB called"); asyncLoadManager.doneLoading("facebook"); } );
   </script>
-
 {% block js_files %}{% endblock %}
   <link rel='shortcut icon' href='/favicon.ico' />
 {% if optimize_page %} 
@@ -55,7 +51,6 @@
   <link rel='stylesheet' type="text/css" href='/zx{{version}}/css/homepage.css'/>
   {% block css_files %}{% endblock %}
 {% endif %} 
-  <meta name="title" content="All for Good" />
   <meta name="description" content="Each of us has a role to play in improving our communities and our country.  Small actions add up to a big difference.  All for good helps you find and share ways to do good." />
   <link rel="image_src" href="/zx0000/images/afg.gif" />
   
@@ -117,7 +112,7 @@
       <a href='http://blog.allforgood.org/'>Blog</a> -
       <a href='/help'>Help</a> -
       <a href='/apps'>Apps</a> -
-      <a href='http://allforgood.uservoice.com'>Feedback</a> -
+      <a href='http://spreadsheets.google.com/viewform?hl=en&formkey=clZQWHN5Rzg4cTVMTG1jYWxfMTJRRFE6MA'>Feedback</a> -
       <a href='/docs/api.html'>API</a> - 
       <a href='/posting'>Posting Listings</a> - 
       <a href='/privacypolicy'>Privacy Policy</a> -

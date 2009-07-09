@@ -20,7 +20,6 @@ import calendar
 import datetime
 import hashlib
 import logging
-import copy
 
 from google.appengine.api import memcache
 
@@ -98,56 +97,38 @@ def search(args):
     result_set.track_views(num_to_incr=1)
   return result_set
 
-def min_max(val, minval, maxval):
-  return max(min(maxval, val), minval)
 
 def normalize_query_values(args):
   """Pre-processes several values related to the search API that might be
   present in the query string."""
 
-  # api.PARAM_OUTPUT is only used by callers (the view)
-  #   (though I can imagine some output formats dictating which fields are
-  #    retrieved from the backend...)
-  #
-  #if args[api.PARAM_OUTPUT] not in ['html', 'tsv', 'csv', 'json', 'rss', 
-  #  'rssdesc', 'xml', 'snippets_list']
-  #
-  # TODO: csv list of fields
-  #if args[api.PARAM_FIELDS] not in ['all', 'rss']:
+  num = 10
+  if api.PARAM_NUM in args:
+    num = int(args[api.PARAM_NUM])
+    if num < 1:
+      num = 1
+    if num > 999:
+      num = 999
+  args[api.PARAM_NUM] = num
 
-  # TODO: process dbg -- currently, anything goes...
+  start_index = 1
+  if api.PARAM_START in args:
+    start_index = int(args[api.PARAM_START])
+    if start_index < 1:
+      start_index = 1
+    if start_index > 1000-num:
+      start_index = 1000-num
+  args[api.PARAM_START] = start_index
 
-  # RESERVED: v
-  # RESERVED: sort
-  # RESERVED: type
-
-  def dbgargs(arg):
-    logging.debug("args[%s]=%s" % (arg, args[arg]))
-
-  num = int(args.get(api.PARAM_NUM, 10)) 
-  args[api.PARAM_NUM] = min_max(num, api.CONST_MIN_NUM, api.CONST_MAX_NUM)
-  dbgargs(api.PARAM_NUM)
-
-  start_index = int(args.get(api.PARAM_START, 1)) 
-  args[api.PARAM_START] = min_max(
-    start_index, api.CONST_MIN_START, api.CONST_MAX_START-num)
-  dbgargs(api.PARAM_START)
-
+  overfetch_ratio = 2.0
   if api.PARAM_OVERFETCH_RATIO in args:
     overfetch_ratio = float(args[api.PARAM_OVERFETCH_RATIO])
-  elif args[api.PARAM_START] > 1:
-    # increase the overfetch ratio after the first page--
-    # overfetch is expensive and we don't want to do this
-    # on page one, which is very performance sensitive.
-    overfetch_ratio = api.CONST_MAX_OVERFETCH_RATIO
-  else:
-    overfetch_ratio = 2.0
-  args[api.PARAM_OVERFETCH_RATIO] = min_max(
-    overfetch_ratio, api.CONST_MIN_OVERFETCH_RATIO,
-    api.CONST_MAX_OVERFETCH_RATIO)
-  dbgargs(api.PARAM_OVERFETCH_RATIO)
+    if overfetch_ratio < 1.0:
+      overfetch_ratio = 1.0
+    if overfetch_ratio > 10.0:
+      overfetch_ratio = 10.0
+  args[api.PARAM_OVERFETCH_RATIO] = overfetch_ratio
 
-  # PARAM_TIMEPERIOD overrides VOL_STARTDATE/VOL_ENDDATE
   if api.PARAM_TIMEPERIOD in args:
     period = args[api.PARAM_TIMEPERIOD]
     # No need to pass thru, just convert period to discrete date args.
@@ -184,17 +165,27 @@ def normalize_query_values(args):
       args[api.PARAM_VOL_ENDDATE] = end_date
       logging.debug("date range: "+ start_date + '...' + end_date)
 
+
+def fetch_result_set(args):
+  """Validate the search parameters, and perform the search."""
   if api.PARAM_Q not in args:
     args[api.PARAM_Q] = ""
-  dbgargs(api.PARAM_Q)
 
-  if api.PARAM_VOL_LOC not in args:
-    # bugfix for http://code.google.com/p/footprint2009dev/issues/detail?id=461
-    # q=Massachusetts should imply vol_loc=Massachusetts, USA
-    # note that this implementation also makes q=nature match
-    # a town near santa ana, CA
-    # http://www.allforgood.org/search#q=nature&vol_loc=nature%2C%20USA
-    args[api.PARAM_VOL_LOC] = args[api.PARAM_Q] + " USA"
+  # api.PARAM_OUTPUT is only used by callers (the view)
+  #   (though I can imagine some output formats dictating which fields are
+  #    retrieved from the backend...)
+  #
+  #if args[api.PARAM_OUTPUT] not in ['html', 'tsv', 'csv', 'json', 'rss', 
+  #  'rssdesc', 'xml', 'snippets_list']
+  #
+  # TODO: csv list of fields
+  #if args[api.PARAM_FIELDS] not in ['all', 'rss']:
+
+  # TODO: process dbg -- currently, anything goes...
+
+  # RESERVED: v
+  # RESERVED: sort
+  # RESERVED: type
 
   args["lat"] = args["long"] = ""
   if api.PARAM_VOL_LOC in args:
@@ -203,11 +194,6 @@ def normalize_query_values(args):
       args["lat"], args["long"] = args[api.PARAM_VOL_LOC].split(",")
     elif geocode.is_latlongzoom(args[api.PARAM_VOL_LOC]):
       args["lat"], args["long"], zoom = args[api.PARAM_VOL_LOC].split(",")
-    elif args[api.PARAM_VOL_LOC] == "virtual":
-      args["lat"] = args["long"] = "0.0"
-      zoom = 6
-    elif args[api.PARAM_VOL_LOC] == "anywhere":
-      args["lat"] = args["long"] = ""
     else:
       res = geocode.geocode(args[api.PARAM_VOL_LOC])
       if res != "":
@@ -216,76 +202,33 @@ def normalize_query_values(args):
     args["long"] = args["long"].strip()
     if api.PARAM_VOL_DIST not in args:
       zoom = int(zoom)
-      if zoom == 1:
-        # country zoomlevel is kinda bogus--
-        # 500 mile search radius (avoids 0.0,0.0 in the atlantic ocean)
+      if zoom == 1: # country
         args[api.PARAM_VOL_DIST] = 500
       elif zoom == 2: # region
-        # state/region is very wide-- start with 50 mile radius,
-        # and we'll fallback to larger.
-        args[api.PARAM_VOL_DIST] = 50
+        args[api.PARAM_VOL_DIST] = 300
       elif zoom == 3: # county
-        # county radius should be pretty rare-- start with 10 mile radius,
-        # and we'll fallback to larger.
+        args[api.PARAM_VOL_DIST] = 100
+      elif zoom == 4 or zoom == 0: # city/town
+        args[api.PARAM_VOL_DIST] = 50
+      elif zoom == 5: # postal code
+        args[api.PARAM_VOL_DIST] = 25
+      elif zoom > 5: # street or level
         args[api.PARAM_VOL_DIST] = 10
-      elif zoom == 4 or zoom == 0:
-        # city is the common case-- start with 5 mile search radius,
-        # and we'll fallback to larger.  This avoids accidentally
-        # prioritizing listings from neighboring cities.
-        args[api.PARAM_VOL_DIST] = 5
-      elif zoom == 5:
-        # postal codes are also a common case-- start with a narrower
-        # radius than the city, and we'll fallback to larger.
-        args[api.PARAM_VOL_DIST] = 3
-      elif zoom > 5:
-        # street address or GPS coordinates-- start with a very narrow
-        # search suitable for walking.
-        args[api.PARAM_VOL_DIST] = 1
   else:
     args[api.PARAM_VOL_LOC] = args[api.PARAM_VOL_DIST] = ""
-  dbgargs(api.PARAM_VOL_LOC)
 
-def fetch_and_dedup(args):
-  """fetch, score and dedup."""
   result_set = base_search.search(args)
   scoring.score_results_set(result_set, args)
   result_set.dedup()
-  return result_set
 
-def fetch_result_set(args):
-  """Validate the search parameters, and perform the search."""
-  result_set = fetch_and_dedup(args)
-
-  def can_use_backfill(args, result_set):
-    if (not result_set.has_more_results 
-        and result_set.num_merged_results < 
-        int(args[api.PARAM_NUM]) + int(args[api.PARAM_START])):
-      return True
-    return False
-
-  if (can_use_backfill(args, result_set) and
-      (args["lat"] != "0.0" or args["long"] != "0.0")):
-    newargs = copy.copy(args)
-    newargs[api.PARAM_VOL_DIST] = newargs[api.PARAM_VOL_DIST] * 5
-    logging.debug("backfilling with further listings...")
-    locationless_result_set = fetch_and_dedup(newargs)
-    logging.debug("len(result_set.results)=%d" % len(result_set.results))
-    logging.debug("len(locationless)=%d" % len(locationless_result_set.results))
-    result_set.append_results(locationless_result_set)
-    logging.debug("new len=%d" % len(result_set.results))
-
-  # backfill with locationless listings
-  locationless_result_set = []
-  if (can_use_backfill(args, result_set) and
-      (args["lat"] != "0.0" or args["long"] != "0.0")):
-    newargs = copy.copy(args)
-    newargs["lat"] = newargs["long"] = "0.0"
-    newargs[api.PARAM_VOL_DIST] = 50
-    logging.debug("backfilling with locationless listings...")
-    locationless_result_set = fetch_and_dedup(newargs)
-    logging.debug("len(result_set.results)=%d" % len(result_set.results))
-    logging.debug("len(locationless)=%d" % len(locationless_result_set.results))
-    result_set.append_results(locationless_result_set)
-    logging.debug("new len=%d" % len(result_set.results))
+  if (not result_set.has_more_results 
+      and result_set.num_merged_results < int(args[api.PARAM_NUM])
+      and result_set.estimated_merged_results >= int(args[api.PARAM_NUM])
+      and float(args[api.PARAM_OVERFETCH_RATIO]) < api.CONST_MAX_OVERFETCH_RATIO):
+    # Note: recursion terminated by value of overfetch >= api.CONST_MAX_OVERFETCH_RATIO
+    args[api.PARAM_OVERFETCH_RATIO] = api.CONST_MAX_OVERFETCH_RATIO
+    logging.info("requery with overfetch=%d" % args[api.PARAM_OVERFETCH_RATIO]) 
+    # requery now w/ max overfetch_ratio
+    result_set = fetch_result_set(args)
 
   return result_set

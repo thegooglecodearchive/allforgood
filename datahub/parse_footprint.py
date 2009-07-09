@@ -129,18 +129,3 @@ def parse(instr, maxrecs, progress):
     print datetime.now(), "parse_footprint: done parsing."
   return xmldoc
 
-def parser(providerID, providerName, feedID, providerURL, feedDescription):
-  """create an FPXML-compatible parser"""
-  feedinfo = "<FeedInfo>"
-  feedinfo += xmlh.output_val('providerID', providerID)
-  feedinfo += xmlh.output_val('providerName', providerName)
-  feedinfo += xmlh.output_val('feedID', feedID)
-  feedinfo += xmlh.output_val('createdDateTime', xmlh.current_ts())
-  feedinfo += xmlh.output_val('providerURL', providerURL)
-  feedinfo += xmlh.output_val('description', feedDescription)
-  feedinfo += "</FeedInfo>"
-  def parse_func(instr, maxrecs, progress):
-    outstr, numorgs, numopps = parse_fast(instr, maxrecs, progress)
-    return re.sub(re.compile(r'<FeedInfo>.+?</FeedInfo>', re.DOTALL),
-                  feedinfo, outstr), numorgs, numopps
-  return parse_func

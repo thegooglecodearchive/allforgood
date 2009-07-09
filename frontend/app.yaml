@@ -1,9 +1,8 @@
-#application: servicefootprint
-#application: footprint2009dev-ehysen
-application: footprint2009dev
+application: servicefootprint
+#application: footprint2009dev
 #application: footprint-loadtest
 
-version: 1
+version: release-1-5-r923
 runtime: python
 api_version: 1
 
@@ -51,9 +50,9 @@ handlers:
   script: main.py
   login: admin
 
-# For data export
 - url: /export/.*
   script: export/main.py
+  secure: always
 
 # For Gadget
 - url: /gadget

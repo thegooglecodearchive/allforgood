@@ -1,8 +1,4 @@
 <html>
-<style>
-TD {font-size:13px;}
-IFRAME {padding:0;margin:0;width:30px;height:12px;display:inline;border:solid 1px #cccccc;}
-</style>
 <body>
 <div style="font-family:courier;font-size:10pt">
 Footprint Spreadsheet data feed checker
@@ -21,41 +17,6 @@ spreadsheet URL:<br/>
   {% for msg in msgs %}
   {{ msg }}<p/>
   {% endfor %}
-<!-- 
-  the iframes are needed because each check results in a gmaps call, 
-  and we'd hit the appengine 30sec timeout.
--->
-  <p/>
-  Checking locations...
-  <p/>
-  <table><tr><td valign="top">
-  {% for addr in addresses %}
-  <iframe frameborder="no" scrolling="no" align="absmiddle"
-     src="/sheetchecker/validate_address?address={{ addr|urlencode|escape }}"></iframe>
-  <p/>
-  {% endfor %}
-  </td><td valign="top">
-  {% for addr in addresses %}
-     &nbsp;{{ addr|escape }}
-  <p/>
-  {% endfor %}
-  </td></tr></table>
-  <p/>
-  Checking URL's...
-  <p/>
-  <table><tr><td valign="top">
-  {% for url in urls %}
-  <iframe frameborder="no" scrolling="no" align="absmiddle"
-     src="/sheetchecker/validate_url?url={{ url|urlencode|escape }}"></iframe>
-  <p/>
-  {% endfor %}
-  </td><td valign="top">
-  {% for url in urls %}
-     &nbsp;{{ url|escape }}
-  <p/>
-  {% endfor %}
-  </td></tr></table>
-  
 {% endifnotequal %}
 </div>
 </body>

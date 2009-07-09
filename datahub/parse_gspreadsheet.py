@@ -166,21 +166,19 @@ def parse_gspreadsheet(instr, data, updated, progress):
   maxrow = maxcol = 0
   for i, match in enumerate(re.finditer(regexp, instr)):
     if progress and i > 0 and i % 250 == 0:
-      print str(datetime.now())+": ", maxrow, "rows and", i, " cells processed."
+      print str(datetime.now())+": ", i, " cells processed."
     lastupd = re.sub(r'([.][0-9]+)?Z?$', '', match.group(4)).strip()
     #print "lastupd='"+lastupd+"'"
     updated[match.group(1)] = lastupd.strip("\r\n\t ")
     val = match.group(5).strip("\r\n\t ")
     data[match.group(1)] = val
-    row = int(match.group(2))
+    row = match.group(2)
     if row > maxrow:
       maxrow = row
-    col = int(match.group(3))
+    col = match.group(3)
     if col > maxcol:
       maxcol = col
     #print row, col, val
-  if progress:
-    print str(datetime.now())+": found ", maxrow, "rows and", maxcol, "columns."
   return maxrow, maxcol
 
 def read_gspreadsheet(url, data, updated, progress):

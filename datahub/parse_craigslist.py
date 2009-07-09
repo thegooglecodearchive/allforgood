@@ -113,11 +113,11 @@ def parse(instr, maxrecs, progress):
   outstr = '<?xml version="1.0" ?>'
   outstr += '<FootprintFeed schemaVersion="0.1">'
   outstr += '<FeedInfo>'
-  outstr += xmlh.output_val('providerID', "105")
-  outstr += xmlh.output_val('providerName', "craigslist")
-  outstr += xmlh.output_val('feedID', "craigslist")
-  outstr += xmlh.output_val('createdDateTime', xmlh.current_ts())
-  outstr += xmlh.output_val('providerURL', "http://www.craigslist.org/")
+  outstr += '<feedID>1</feedID>'
+  outstr += '<providerID>105</providerID>'
+  outstr += '<providerName>craigslist.org</providerName>'
+  outstr += '<providerURL>http://www.craigslist.org/</providerURL>'
+  outstr += '<createdDateTime>%s</createdDateTime>' % xmlh.current_ts()
   outstr += '</FeedInfo>'
 
   numorgs = numopps = 0

@@ -3,9 +3,9 @@
 
 <pre>
 This is debug output for developers only.  If you are an end user here by accident, please visit:
-<a href="http://www.allforgood.org/help/">http://www.allforgood.org/help/</a>.
+<a href="http://servicefootprint.appspot.com/help/">http://servicefootprint.appspot.com/help/</a>.
 If you are a developer, please use the RSS format to build your applications by appending &amp;output=rss to your queries.
-See the <a href="http://www.allforgood.org/help/reference.html">All for Good API Reference Guide</a> for additional details.
+See the <a href="http://servicefootprint.appspot.com/help/reference.html">All for Good API Reference Guide</a> for additional details.
 
 timings: fetch={{result_set.fetch_time|escape}}   parse={{result_set.parse_time|escape}}
 links: <a href="{{result_set.query_url_encoded}}">Google Base query</a>
@@ -17,9 +17,9 @@ results: backend-estimated={{result_set.estimated_results|escape}}  merged-estim
 
 <hr/>
 {% for result in result_set.clipped_results %}
-<span style='font-size:12px'>{{result.idx|escape}}.   <a href="{{result.url}}">{{result.title|escape}}</a></span>
+<span style='font-size:12px'>{{result.idx|escape}}. {{result.title|escape}}</span>
 loc: {% ifequal result.latlong "0.0,0.0" %}**LOCATIONLESS**{% else %}{{result.location|escape}} ({{result.latlong|escape}}){% endifequal %}
-id: {{result.id|escape}}     provider: {{result.provider|escape}}
+id: {{result.id|escape}}     provider: {{result.provider|escape}}  <a href="{{result.url}}">landing page</a>
 desc: {{result.snippet|escape}}
 score: {{result.score_str|escape}} (orig result #{{result.orig_idx|escape}}){{result.score_notes|escape}}
 stats: {{result.merged_impressions|escape}} views, {{result.merged_clicks|escape}} clicks  ({{result.merged_ctr|escape}}% CTR)

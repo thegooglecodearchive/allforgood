@@ -71,10 +71,9 @@ ADMIN_TEMPLATE = 'admin.html'
 DATAHUB_DASHBOARD_TEMPLATE = 'datahub_dashboard.html'
 MODERATE_TEMPLATE = 'moderate.html'
 STATIC_CONTENT_TEMPLATE = 'static_content.html'
-NOT_FOUND_TEMPLATE = 'not_found.html'
 
 DASHBOARD_BASE_URL = "http://google1.osuosl.org/~footprint/datahub/dashboard/"
-DATAHUB_LOG = DASHBOARD_BASE_URL + "load_gbase.log.bz2"
+DATAHUB_LOG = DASHBOARD_BASE_URL + "load_gbase.log"
 
 DEFAULT_NUM_RESULTS = 10
 
@@ -212,29 +211,12 @@ def require_usig(handler_method):
 def require_admin(handler_method):
   """Decorator ensuring the current App Engine user is an administrator."""
   def decorate(self):
-    """Validate request is from an admin user, send to logon page if not."""
-    user = users.get_current_user()
-
-    if user:
-      if users.is_current_user_admin():
-        # User is an admin, go ahead and run the handler
-        return handler_method(self)
-
-      else:
-        # User is not an admin, return unauthorized
-        self.error(401)
-        html = '<html><body>'
-        html += 'Sorry, you are not an administrator. Please '
-        html += '<a href="%s">' % users.create_logout_url(self.request.url)
-        html += 'log out</a> and sign in as an administrator.'
-        html += '</body></html>'
-        self.response.out.write(html)
-        return
-
-    # No user, redirect to the login page
-    self.redirect(users.create_login_url(self.request.url))
-    return
-
+    if not users.is_current_user_admin():
+      self.error(401)
+      html = '<html><body><a href="%s">Sign in</a></body></html>'
+      self.response.out.write(html % (users.create_login_url(self.request.url)))
+      return
+    return handler_method(self)
   return decorate
 
 
@@ -289,13 +271,6 @@ class home_page_redir_view(webapp.RequestHandler):
     """HTTP get method."""
     self.redirect("/")
 
-class not_found_handler(webapp.RequestHandler):
-  def get(self):
-    self.error(404)
-    template_values = get_default_template_values(self.request, 'STATIC_PAGE')
-    self.response.out.write(render_template(NOT_FOUND_TEMPLATE,
-                                            template_values))
-		
 class consumer_ui_search_redir_view(webapp.RequestHandler):
   """handler for embedded HTML forms, which can't form queries
      with query params to the right of the # (hash)."""
@@ -1089,10 +1064,6 @@ class datahub_dashboard_view(webapp.RequestHandler):
     if fetch_result.status_code != 200:
       template_values['msg'] = \
           "error fetching dashboard data: code %d" % fetch_result.status_code
-
-    if re.search(r'[.]bz2$', url):
-      import bz2
-      fetch_result.content = bz2.decompress(fetch_result.content)
     lines = fetch_result.content.split("\n")
     # typical line
     # 2009-04-26 18:07:16.295996:STATUS:extraordinaries done parsing: output
@@ -1101,13 +1072,12 @@ class datahub_dashboard_view(webapp.RequestHandler):
                           "done parsing: output (\d+) organizations and "+
                           "(\d+) opportunities .(\d+) bytes.: (\d+) minutes")
     def parse_date(datestr, timestr):
-      """uses day granularity now that we have a few weeks of data.
+      """TODO: move to day granularity once we have a few weeks of data.
       At N=10 providers, 5 values, 12 bytes each, 600B per record.
       daily is reasonable for a year, hourly is not."""
-      #match = re.search(r'(\d+):', timestr)
-      #hour = int(match.group(1))
-      #return datestr + str(4*int(hour / 4)) + ":00"
-      return datestr
+      match = re.search(r'(\d+):', timestr)
+      hour = int(match.group(1))
+      return datestr + str(4*int(hour / 4)) + ":00"
 
     js_data = ""
     known_dates = {}
@@ -1135,15 +1105,6 @@ class datahub_dashboard_view(webapp.RequestHandler):
       known_dates[hour] = i
       date_strings.append(hour)
     #js_data += "// date_strings["+str(i)+"]="+date_strings[i]+"\n"
-    def commas(num):
-      num = str(num)
-      while True:
-        newnum, count = re.subn(r'(\d)(\d\d\d)(,|[.]|$)', r'\1,\2', num)
-        if count == 0:
-          break
-        num = newnum
-      return num
-    max_date = {}
     for line in lines:
       match = re.search(statusrx, line)
       if match:
@@ -1151,55 +1112,29 @@ class datahub_dashboard_view(webapp.RequestHandler):
         date_idx = known_dates[hour]
         provider = match.group(3)
         provider_idx = known_providers[provider]
-        max_date[provider_idx] = re.sub(r':\d\d$', '',
-                                        match.group(1) + " " + match.group(2))
+        #js_data += "// date_idx="+str(date_idx)
+        #js_data += " provider_idx="+str(provider_idx)+"\n"
         rec = provider_data[provider_idx][date_idx]
-        rec['organizations'] = int(match.group(4))
-        rec['listings'] = int(match.group(5))
-        rec['kbytes'] = int(float(match.group(6))/1024.0)
-        rec['loadtimes'] = int(match.group(7))
+        rec['organizations'] = match.group(4)
+        rec['listings'] = match.group(5)
+        rec['bytes'] = match.group(6)
+        rec['loadtimes'] = match.group(7)
     js_data += "function sv(row,col,val) {data.setValue(row,col,val);}\n"
     js_data += "function ac(typ,key) {data.addColumn(typ,key);}\n"
     js_data += "function acn(key) {data.addColumn('number',key);}\n"
 
-    # provider names are implemented as chart labels, so they line up
-    # with the charts-- otherwise it just doesn't work right.
     js_data += "data = new google.visualization.DataTable();\n"
     js_data += "data.addRows(1);"
     for provider_idx, provider in enumerate(sorted_providers):
-      js_data += "\nacn('"+provider+"');"
+      js_data += "acn('"+provider+"');"
       js_data += "sv(0,"+str(provider_idx)+",0);"
-    js_data += "data.addRows(1);"
-    js_data += "\nacn('totals');"
-    js_data += "sv(0,"+str(len(sorted_providers))+",0);"
     js_data += "\n"
     js_data += "var chart = new google.visualization.ImageSparkLine("
     js_data += "  document.getElementById('provider_names'));\n"
-    js_data += "chart.draw(data,{width:160,height:50,showAxisLines:false,"
-    js_data += "  showValueLabels:false,labelPosition:'right'});\n"
-
-    # provider last loaded times are implemented as chart labels, so
-    # they line up with the charts-- otherwise it just doesn't work.
-    js_data += "data = new google.visualization.DataTable();\n"
-    js_data += "data.addRows(1);"
-    maxdate = ""
-    for provider_idx, provider in enumerate(sorted_providers):
-      js_data += "\nacn('"+max_date[provider_idx]+"');"
-      js_data += "sv(0,"+str(provider_idx)+",0);"
-      if maxdate < max_date[provider_idx]:
-        maxdate = max_date[provider_idx]
-    js_data += "data.addRows(1);"
-    js_data += "\nacn('"+maxdate+"');"
-    js_data += "sv(0,"+str(len(sorted_providers))+",0);"
-    js_data += "\n"
-    js_data += "var chart = new google.visualization.ImageSparkLine("
-    js_data += "  document.getElementById('lastloaded'));\n"
     js_data += "chart.draw(data,{width:150,height:50,showAxisLines:false,"
     js_data += "  showValueLabels:false,labelPosition:'right'});\n"
 
-    totals = {}
-    for key in ['organizations', 'listings', 'kbytes', 'loadtimes']:
-      totals[key] = 0
+    for key in ['organizations', 'listings', 'bytes', 'loadtimes']:
       js_data += "data = new google.visualization.DataTable();\n"
       js_data += "data.addRows("+str(len(sorted_dates))+");\n"
       colnum = 0
@@ -1207,22 +1142,18 @@ class datahub_dashboard_view(webapp.RequestHandler):
         colstr = ""
         try:
           # print the current number next to the graph
-          colstr = "\nacn('"+commas(str(provider_data[provider_idx][-1][key]))+"');"
-          totals[key] += provider_data[provider_idx][-1][key]
+          colstr = "\nacn('"+str(provider_data[provider_idx][-1][key])+"');"
         except:
           colstr = "\nacn('0');"
         for date_idx, hour in enumerate(sorted_dates):
           try:
             rec = provider_data[provider_idx][date_idx]
-            val = "sv("+str(date_idx)+","+str(colnum)+","+str(rec[key])+");"
+            val = "sv("+str(date_idx)+","+str(colnum)+","+rec[key]+");"
           except:
             val = ""
           colstr += val
         colnum += 1
         js_data += colstr
-      js_data += "data.addRows(1);"
-      js_data += "\nacn('"+commas(str(totals[key]))+"');"
-      js_data += "sv(0,"+str(len(sorted_providers))+",0);"
       js_data += "\n"
       js_data += "var chart = new google.visualization.ImageSparkLine("
       js_data += "  document.getElementById('"+key+"_chart'));\n"

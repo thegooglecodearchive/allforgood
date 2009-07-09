@@ -51,15 +51,6 @@ def js_escape(string):
 class SearchResult(object):
   """class to hold the results of a search to the backend."""
   def __init__(self, url, title, snippet, location, item_id, base_url):
-    # TODO: HACK: workaround for issue 404-- broken servegov links
-    # hack added here so the urlsig's come out correctly and the fix
-    # applies everywhere including xml_url, API calls, etc.
-    url = re.sub(
-      # regexp written to be very specific to myproject.serve.gov
-      # and myproject.nationalservice.gov (aka mlk_day), and not
-      # break once the feed changes
-      r'(myproject[.].+?[.]gov.+?)subProjectId', r'\1&subProjectId', url)
-    
     # TODO: Consider using kwargs or something to make this more generic.
     self.url = url
     self.url_sig = None
@@ -143,14 +134,6 @@ class SearchResultSet(object):
     self.estimated_merged_results = 0
     self.pubdate = get_rfc2822_datetime()
     self.last_build_date = self.pubdate
-
-  def append_results(self, results):
-    """append a results arry to this results set and rerun dedup()"""
-    self.num_results = len(self.results) + len(results.results)
-    self.results.extend(results.results)
-    self.merged_results = []
-    self.clipped_results = []
-    self.dedup()
 
   def clip_set(self, start, num, result_set):
     """Extract just the slice of merged results from start to start+num.

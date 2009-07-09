@@ -24,9 +24,10 @@ import re
 from datetime import datetime
 import geocoder
 import parse_footprint
-import parse_gspreadsheet as pgs
+import parse_gspreadsheet
 import parse_usaservice
-import parse_networkforgood
+import parse_networkforgood as nfg
+import parse_handsonnetwork
 import parse_idealist
 import parse_craigslist
 import parse_volunteermatch
@@ -193,7 +194,6 @@ def convert_dt_to_gbase(datestr, timestr, timezone):
     timestr = dateutil.parser.parse(datestr + " " + timestr)
   except:
     print "error parsing datetime: "+datestr+" "+timestr
-    return ""
   timestr = timestr.replace(tzinfo=tzinfo)
   pst = dateutil.tz.tzstr("PST8PDT")
   timestr = timestr.astimezone(pst)
@@ -371,20 +371,15 @@ def compute_stable_id(opp, org, locstr, openended, duration,
   # TODO: if two providers have same listing, the time info
   # is unlikely to be exactly the same, incl. missing fields
   timestr = openended + duration + hrs_per_week + startend
-  title = get_title(opp)
-  abstract = get_abstract(opp)
-  detailURL = xmlh.get_tag_val(opp, 'detailURL')
-  hashstr = "\t".join([eid, loc, timestr, title, abstract, detailURL])
-  return hashlib.md5(hashstr).hexdigest()
+  return hashlib.md5(eid + loc + timestr).hexdigest()
 
 def get_abstract(opp):
-  """process abstract-- shorten, strip newlines and formatting.
-  TODO: cache/memoize this."""
+  """process abstract-- shorten, strip newlines and formatting."""
   abstract = xmlh.get_tag_val(opp, "abstract")
   if abstract == "":
     abstract = xmlh.get_tag_val(opp, "description")
-  abstract = cleanse_snippet(abstract)
-  return abstract[:MAX_ABSTRACT_LEN]
+  abstract = abstract[:MAX_ABSTRACT_LEN]
+  return cleanse_snippet(abstract)
 
 def get_direct_mapped_fields(opp, org):
   """map a field directly from FPXML to Google Base."""
@@ -439,10 +434,6 @@ def get_base_other_fields(opp, org):
 
 sent_start_rx = re.compile(r'((^\s*|[.]\s+)[A-Z])([A-Z0-9 ,;-]{13,})')
 def cleanse_snippet(instr):
-  # convert known XML/XHTML chars
-  instr = re.sub(r'&nbsp;', ' ', instr)
-  instr = re.sub(r'&quot;', '"', instr)
-  instr = re.sub(r'&(uml|middot|ndash|bull|mdash|hellip);', '-', instr)
   # strip \n and \b
   instr = re.sub(r'(\\[bn])+', ' ', instr)
   # doubly-escaped HTML
@@ -450,14 +441,12 @@ def cleanse_snippet(instr):
   instr = re.sub(r'&(amp;)+([a-z]+);', r'&\2;', instr)
   instr = re.sub(r'&amp;#\d+;', '', instr)
   # singly-escaped HTML
-  # </p>, <br/>
-  instr = re.sub(r'&lt;/?[a-zA-Z]+?/?&gt;', '', instr)
-  # <a href=...>, <font ...>
-  instr = re.sub(r'&lt;?(font|a|p|img)[^&]*/?&gt;', '', instr, re.IGNORECASE)
+  instr = re.sub(r'&lt;/?[a-zA-Z]+?&gt;', '', instr)
+  instr = re.sub(r'&nbsp;', ' ', instr)
+  instr = re.sub(r'&quot;', '"', instr)
+  instr = re.sub(r'&(uml|middot|ndash|bull|mdash|hellip);', '-', instr)
   # strip leftover XML escaped chars
   instr = re.sub(r'&([a-z]+|#[0-9]+);', '', instr)
-  # strip repeated spaces, so maxlen works
-  instr = re.sub(r'\s+', ' ', instr)
 
   # fix obnoxious all caps titles and snippets
   for str in re.finditer(sent_start_rx, instr):
@@ -465,18 +454,14 @@ def cleanse_snippet(instr):
   
   return instr
 
-def get_title(opp):
-  """compute a clean title.  TODO: do this once and cache/memoize it"""
-  title = cleanse_snippet(output_tag_value(opp, "title"))
-  for str in re.finditer(lcword_rx, title):
-    title = re.sub(lcword_rx, str.group(1)+str.group(2).upper(), title, 1)
-  return title
-
 lcword_rx = re.compile(r'(\s)([a-z])')
 def get_event_reqd_fields(opp):
   """Fields required by Google Base, note that they aren't necessarily
   used by the FP app."""
-  outstr = get_title(opp)
+  title = cleanse_snippet(output_tag_value(opp, "title"))
+  for str in re.finditer(lcword_rx, title):
+    title = re.sub(lcword_rx, str.group(1)+str.group(2).upper(), title, 1)
+  outstr = title
   outstr += FIELDSEP + output_tag_value(opp, "description")
   outstr += FIELDSEP + output_field("link", BASE_PUB_URL)
   return outstr
@@ -806,12 +791,6 @@ def guess_shortname(filename):
     return "mybarackobama"
   if re.search(r'united.*way', filename):
     return "unitedway"
-  if re.search(r'americanredcross', filename):
-    return "americanredcross"
-  if re.search(r'citizencorps', filename):
-    return "citizencorps"
-  if re.search(r'ymca', filename):
-    return "ymca"
   if re.search("habitat", filename):
     return "habitat"
   if re.search("americansolutions", filename):
@@ -832,16 +811,11 @@ def guess_shortname(filename):
     return "craigslist"
   if re.search("americorps", filename):
     return "americorps"
-  if re.search("givingdupage", filename):
-    return "givingdupage"
   if re.search("mlk(_|day)", filename):
     return "mlk_day"
   if re.search("servenet", filename):
     return "servenet"
-  if re.search(r'(seniorcorps|985148b9e3c5b9523ed96c33de482e3d)', filename):
-    # note: has to come before volunteermatch
-    return "seniorcorps"
-  if re.search(r'(volunteermatch|cfef12bf527d2ec1acccba6c4c159687)', filename):
+  if re.search("volunteermatch", filename):
     return "volunteermatch"
   if re.search("christianvol", filename):
     return "christianvolunteering"
@@ -849,7 +823,7 @@ def guess_shortname(filename):
     return "volunteertwo"
   if re.search("mentorpro", filename):
     return "mentorpro"
-  if re.search(r'(mpsg_feed|myproj_servegov)', filename):
+  if re.search("(mpsg_feed|myproj_servegov)", filename):
     return "myproj_servegov"
   return ""
 
@@ -902,120 +876,73 @@ def guess_parse_func(inputfmt, filename):
 
   # for development
   if inputfmt == "fpxml":
-    return "fpxml", parse_footprint.parse_fast
+    return "fpxml", parse_footprint.parse
 
   shortname = guess_shortname(filename)
 
   # FPXML providers
-  fp = parse_footprint
-  if shortname == "handsonnetwork":
-    return "fpxml", fp.parser(
-      '102', 'handsonnetwork', 'handsonnetwork', 'http://handsonnetwork.org/',
-      'HandsOn Network')
-  if shortname == "idealist":
-    return "fpxml", fp.parser(
-      '103', 'idealist', 'idealist', 'http://www.idealist.org/',
-      'Idealist')
-  if shortname == "volunteermatch":
-    return "fpxml", fp.parser(
-      '104', 'volunteermatch', 'volunteermatch',
-      'http://www.volunteermatch.org/', 'Volunteer Match')
-  if shortname == "volunteergov":
-    return "fpxml", fp.parser(
-      '107', 'volunteergov', 'volunteergov', 'http://www.volunteer.gov/',
-      'volunteer.gov')
-  if shortname == "extraordinaries":
-    return "fpxml", fp.parser(
-      '110', 'extraordinaries', 'extraordinaries', 'http://www.beextra.org/',
-      'The Extraordinaries')
-  if shortname == "meetup":
-    return "fpxml", fp.parser(
-      '112', 'meetup', 'meetup', 'http://www.meetup.com/',
-      'Meetup')
-  if shortname == "americansolutions":
-    return "fpxml", fp.parser(
-      '115', 'americansolutions', 'americansolutions',
-      'http://www.americansolutions.com/',
-      'American Solutions for Winning the Future')
-  if shortname == "mybarackobama":
-    return "fpxml", fp.parser(
-      '116', 'mybarackobama', 'mybarackobama', 'http://my.barackobama.com/',
-      'Organizing for America / DNC')
-  if shortname == "unitedway":
-    return "fpxml", fp.parser(
-      '122', 'unitedway', 'unitedway', 'http://www.unitedway.org/',
-      'United Way')
-  if shortname == "americanredcross":
-    return "fpxml", fp.parser(
-      '123', 'americanredcross', 'americanredcross', 'http://www.givelife.org/',
-      'American Red Cross')
-  if shortname == "citizencorps":
-    return "fpxml", fp.parser(
-      '124', 'citizencorps', 'citizencorps', 'http://citizencorps.gov/',
-      'Citizen Corps / FEMA')
-  if shortname == "ymca":
-    return "fpxml", fp.parser(
-      '126', 'ymca', 'ymca', 'http://www.ymca.net/',
-      'YMCA')
-
-  if shortname == "habitat":
-    parser = fp.parser(
-      '111', 'habitat', 'habitat',
-      'http://www.habitat.org/', 'Habitat for Humanity')
-    def parse_habitat(instr, maxrecs, progress):
-      # fixup bad escaping
-      newstr = re.sub(r'&code=', '&amp;code=', instr)
-      return parser(newstr, maxrecs, progress)
-    return "habitat", parse_habitat
+  if shortname in ["unitedway", "mybarackobama", "handsonnetwork",
+                   "volunteergov", "americansolutions", "idealist",
+                   "extraordinaries", "meetup", "volunteermatch"]:
+    # TODO: assign IDs using a closure
+    # http://code.google.com/p/footprint2009dev/issues/detail?id=117
+    return "fpxml", parse_footprint.parse
 
   # networkforgood providers
-  nfg = parse_networkforgood
   if shortname == "americorps":
     return "nfg", nfg.parser(
       '106', 'americorps', 'americorps', 'http://www.americorps.gov/',
       'AmeriCorps')
-  if shortname == "servenet":
-    return "nfg", nfg.parser(
-      '114', 'servenet', 'servenet', 'http://www.servenet.org/',
-      'servenet')
+
   if shortname == "mlk_day":
     return "nfg", nfg.parser(
       '115', 'mlk_day', 'mlk_day', 'http://my.mlkday.gov/',
       'Martin Luther King day')
+
   if shortname == "christianvolunteering":
     return "nfg", nfg.parser(
       '117', 'christianvolunteering', 'christianvolunteering',
       'http://www.christianvolunteering.org/', 'Christian Volunteering')
+
   if shortname == "volunteertwo":
     return "nfg", nfg.parser(
       '118', 'volunteer2', 'volunteer2',
       'http://www.volunteer2.com/', 'Volunteer2')
+
   if shortname == "mentorpro":
     return "nfg", nfg.parser(
       '119', 'mentor', 'mentor',
       'http://www.mentorpro.org/', 'MENTOR')
+
+  if shortname == "servenet":
+    return "nfg", nfg.parser(
+      '114', 'servenet', 'servenet', 'http://www.servenet.org/',
+      'servenet')
+
   if shortname == "myproj_servegov":
     return "nfg", nfg.parser(
       '120', 'myproj_servegov', 'myproj_servegov',
       'http://myproject.serve.gov/', 'MyprojectServeGov')
-  if shortname == "seniorcorps":
-    return "nfg", nfg.parser(
-      '121', 'seniorcorps', 'seniorcorps',
-      'http://www.seniorcorps.gov/', 'SeniorCorps')
-  if shortname == "givingdupage":
-    return "nfg", nfg.parser(
-      '125', 'givingdupage', 'givingdupage', 'http://www.dupageco.org/',
-      'Giving Dupage')
 
   # custom formats
   if shortname == "gspreadsheet":
-    return "gspreadsheet", pgs.parse
+    return "gspreadsheet", parse_gspreadsheet.parse
 
   if shortname == "usaservice" or shortname == "usasvc":
     return "usaservice", parse_usaservice.parse
 
   if shortname == "craigslist" or shortname == "cl":
     return "craigslist", parse_craigslist.parse
+
+  if shortname == "handson" or shortname == "handsonnetwork":
+    return "handsonnetwork", parse_handsonnetwork.parse
+
+  if shortname == "habitat":
+    def parse_habitat(instr, maxrecs, progress):
+      # fixup bad escaping
+      newstr = re.sub(r'&code=', '&amp;code=', instr)
+      return parse_footprint.parse_fast(newstr, maxrecs, progress)
+    return "habitat", parse_habitat
 
   # legacy-- to be safe, remove after 9/1/2009
   #if shortname == "volunteermatch" or shortname == "vm":
@@ -1044,6 +971,8 @@ def clean_input_string(instr):
   cleaning_progress("filtered iso8859-1 dashes")
   instr = xmlh.clean_string(instr)
   cleaning_progress("filtered nonprintables")
+  instr = re.sub(r'&[a-z]+;', '', instr)
+  cleaning_progress("filtered weird X/HTML escapes")
   return instr
 
 def parse_options():
@@ -1190,9 +1119,13 @@ def process_file(filename, options, providerName="", providerID="",
   print_progress("outputfmt: "+options.outputfmt)
   print_status("input data: "+str(len(instr))+" bytes", shortname)
 
-  print_progress("parsing...")
-  footprint_xmlstr, numorgs, numopps = \
-      parsefunc(instr, int(options.maxrecs), PROGRESS)
+  if inputfmt == "fpxml":
+    footprint_xmlstr = instr
+  else:
+    print_progress("parsing "+inputfmt+"...")
+    assert parsefunc != parse_footprint.parse
+    footprint_xmlstr, numorgs, numopps = \
+        parsefunc(instr, int(options.maxrecs), PROGRESS)
 
   if (providerID != "" and
       footprint_xmlstr.find('<providerID></providerID>')):
@@ -1248,10 +1181,11 @@ def main():
     url = "http://spreadsheets.google.com/feeds/cells/" + match.group(1)
     url += "/1/public/basic"
     # to avoid hitting 80 columns
+    pgs = parse_gspreadsheet
     data = {}
     updated = {}
     if PROGRESS:
-      print "processing master spreadsheet", url
+      print "processing spreadsheet", url
     maxrow, maxcol = pgs.read_gspreadsheet(url, data, updated, PROGRESS)
     header_row, header_startcol = pgs.find_header_row(data, 'provider name')
 
@@ -1269,20 +1203,10 @@ def main():
     outstr = ""
     for row in range(data_startrow, int(maxrow)+1):
       providerName = pgs.cellval(data, row, header_startcol)
-      if providerName is None or providerName == "":
-        if PROGRESS:
-          print "missing provider name from row "+str(row)
-        break
       providerID = pgs.cellval(data, row, header_startcol+1)
-      if providerID is None or providerID == "":
-        if PROGRESS:
-          print "missing provider ID from row "+str(row)
-        break
       providerURL = pgs.cellval(data, row, header_startcol+2)
-      if providerURL is None or providerURL == "":
-        if PROGRESS:
-          print "missing provider URL from row "+str(row)
-        break
+      if providerName == "" or providerID == "" or providerURL == "":
+        continue
       match = re.search(r'key=([^& ]+)', providerURL)
       providerURL = "http://spreadsheets.google.com/feeds/cells/"
       providerURL += match.group(1)
@@ -1291,10 +1215,6 @@ def main():
         print "processing spreadsheet", providerURL, "name="+providerName
       providerBytes, providerNumorgs, providerNumopps, tmpstr = process_file(
         providerURL, options, providerName, providerID, providerURL)
-      if PROGRESS:
-        print "done processing spreadsheet: name="+providerName, \
-            "records="+str(providerNumopps), \
-            "url="+providerURL
       bytes += providerBytes
       numorgs += providerNumorgs
       numopps += providerNumopps

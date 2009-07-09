@@ -91,7 +91,7 @@ def parser(providerID, providerName, feedID, providerURL, feedDescription):
       volopps += xmlh.output_val('sponsoringOrganizationID', str(orgid))
       volopps += xmlh.output_node('volunteerHubOrganizationID', item, "LocalID")
       volopps += xmlh.output_node('title', item, "Title")
-      volopps += xmlh.output_node('abstract', item, "Description")
+      volopps += xmlh.output_node('abstract', item, "Abstract")
       volopps += xmlh.output_node('description', item, "Description")
       volopps += xmlh.output_node('detailURL', item, "DetailURL")
       volopps += xmlh.output_val('volunteersNeeded', "-8888")

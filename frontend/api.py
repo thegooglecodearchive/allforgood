@@ -17,20 +17,13 @@ API query parameters.  Defined here as symbolic constants to ensure
 typos become compile-time errors.
 """
 
+PARAM_FIELDS = 'fields'
 PARAM_NUM = 'num'
-CONST_MIN_NUM = 1
-CONST_MAX_NUM = 999
-
-PARAM_START = 'start'
-CONST_MIN_START = 1
-CONST_MAX_START = 1000
-
 PARAM_OUTPUT = 'output'
 PARAM_Q = 'q'
 PARAM_SORT = 'sort'
+PARAM_START = 'start'
 PARAM_CACHE = 'cache'
-PARAM_FIELDS = 'fields'
-
 # E.g., 'today'. The presence of this param implies that 'vol_startdate'
 # and 'vol_enddate' will be automatically calculated, overriding
 # the values of those two params if they were passed in also.
@@ -44,7 +37,6 @@ PARAM_TIMEPERIOD = 'timeperiod'
 # this in apps, so we don't change it later.
 PARAM_OVERFETCH_RATIO = 'overfetch'
 # TODO: define other constants in api.py, eg...
-CONST_MIN_OVERFETCH_RATIO = 1.0
 CONST_MAX_OVERFETCH_RATIO = 10.0
 CONST_MAX_FETCH_DEADLINE = 10
 

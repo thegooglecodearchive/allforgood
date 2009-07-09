@@ -46,8 +46,7 @@ APPLICATION = webapp.WSGIApplication(
      (urls.URL_DATAHUB_DASHBOARD, views.datahub_dashboard_view),
     ] +
     [ (url, views.static_content) for url in
-         urls.STATIC_CONTENT_FILES.iterkeys() ] + 
-    [ ('/.*', views.not_found_handler) ],
+         urls.STATIC_CONTENT_FILES.iterkeys() ],
     debug=deploy.is_local_development())
 
 def main():

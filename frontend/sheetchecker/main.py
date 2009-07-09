@@ -25,15 +25,12 @@ main() for sheetchecker
 import logging
 import re
 import os
-from urllib import unquote
-
 from google.appengine.api import urlfetch
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext.webapp import template
 
 import sheetchecker.parse_gspreadsheet as parse_gspreadsheet
-import geocode
 
 CHECK_SHEET_TEMPLATE = "checksheet.html"
 
@@ -66,13 +63,11 @@ class Check(webapp.RequestHandler):
         return
       contents = fetch_result.content
       logging.info("fetched %d bytes: %s..." % (len(contents), contents[:80]))
-      data, msgs, addr_ar, urls_ar = parse_gspreadsheet.parse(contents)
+      data, msgs = parse_gspreadsheet.parse(contents)
       logging.info("%d msgs in %s" % (len(msgs), sheeturl))
       template_values["sheetfeedurl"] = url
       template_values["msgs"] = msgs
       template_values["data"] = data
-      template_values["addresses"] = addr_ar
-      template_values["urls"] = urls_ar
     elif sheeturl != "":
       self.response.out.write("<html><body>malformed sheet URL " +
                               " - missing &key=</body></html>")
@@ -80,59 +75,9 @@ class Check(webapp.RequestHandler):
     self.response.out.write(template.render(CHECK_SHEET_TEMPLATE,
                                             template_values))
     
-class ValidateAddress(webapp.RequestHandler):
-  """validate address"""
-  def get(self):
-    """HTTP get method."""
-    addr = unquote(self.request.get('address'))
-
-    rsp = """
-<html><body style="padding-top:1px;margin:0;font-size:10px;
-font-weight:bold;text-align:center;background-color:%s;">%s
-"""
-    if geocode.geocode(addr) == "":
-      rsp = rsp % ("#ff3333", "BAD")
-    else:
-      rsp = rsp % ("#33ff33", "OK")
-
-    self.response.out.write(rsp);
-
-   
-class ValidateURL(webapp.RequestHandler):
-  """validate address"""
-  def get(self):
-    """HTTP get method."""
-    url = unquote(self.request.get('url'))
-
-    if url == "":
-      success = False
-    else:
-      try:
-        fetch_result = urlfetch.fetch(url)
-        if fetch_result.status_code >= 400:
-          success = False
-        else:
-          success = True
-      except:
-        success = False
-
-    rsp = """
-<html><body style="padding-top:1px;margin:0;font-size:10px;
-font-weight:bold;text-align:center;background-color:%s;">%s
-"""
-    if success:
-      rsp = rsp % ("#33ff33", "OK")
-    else:
-      rsp = rsp % ("#ff3333", "BAD")
-
-    self.response.out.write(rsp);
-
 
 APP = webapp.WSGIApplication(
-  [ ('/sheetchecker/check', Check),
-    ('/sheetchecker/validate_address', ValidateAddress),
-    ('/sheetchecker/validate_url', ValidateURL)
-  ],
+  [('/sheetchecker/check', Check)],
   debug=True)
 
 def main():

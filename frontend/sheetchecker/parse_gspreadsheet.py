@@ -37,6 +37,8 @@ expects the caller to pass in the providerID and providerName)
 
 import re
 import logging
+from google.appengine.api import urlfetch
+import geocode
 
 MAX_BLANKROWS = 2
 
@@ -278,8 +280,6 @@ def parse(instr):
   CURRENT_ROW = data_startrow
   blankrows = 0
   numopps = 0
-  addr_ar = []
-  urls_ar = []
   while True:
     blankrow = True
     #rowstr = "row="+str(row)+"\n"
@@ -328,13 +328,19 @@ def parse(instr):
         get_blank(record, "LocationCountry", reason)
       else:
         # TODO: appengine 30sec timeouts render this ambiguous/confuse for users
-        addr = recordval(record, "LocationStreet")
-        addr += " "+recordval(record, "LocationCity")
-        addr += " "+recordval(record, "LocationProvince")
-        addr += " "+recordval(record, "LocationPostalCode")
-        addr += " "+recordval(record, "LocationCountry")
-        addr_ar.append(addr)
-        
+        check_locations = False
+        if check_locations:
+          addr = recordval(record, "LocationStreet")
+          addr += " "+recordval(record, "LocationCity")
+          addr += " "+recordval(record, "LocationProvince")
+          addr += " "+recordval(record, "LocationPostalCode")
+          addr += " "+recordval(record, "LocationCountry")
+          latlong = geocode.geocode(addr)
+          if latlong == "":
+            parser_error("could not convert '"+addr+"' to a location "+
+                         "on the map: changing the address will help your "+
+                         "listing be found by users.")
+
       start_date = recordval(record, "StartDate")
       if start_date == "ongoing":
         ongoing = True
@@ -366,7 +372,21 @@ def parse(instr):
       if email != "" and email.find("@") == -1:
         parser_error("malformed email address: "+email)
       url = recordval(record, "URL")
-      urls_ar.append(url)
+
+      # TODO: appengine 30sec timeouts render this ambiguous/confuse for users
+      check_urls = False
+      if check_urls:
+        try:
+          fetch_result = urlfetch.fetch(url)
+          if fetch_result.status_code >= 400:
+            parser_error("problem fetching url '"+url+"': HTTP status code "+
+                         fetch_result.status_code)
+        except urlfetch.InvalidURLError:
+          parser_error("invalid url '"+url+"'")
+        except urlfetch.ResponseTooLargeError:
+          parser_error("problem fetching url '"+url+"': response too large")
+        except:
+          parser_error("problem fetching url '"+url+"'")
         
       daysofweek = recordval(record, "DaysOfWeek").split(",")
       for dow in daysofweek:
@@ -402,7 +422,6 @@ def parse(instr):
                      recordval(record, 'Frequency')+"'")
     CURRENT_ROW += 1
   if len(MESSAGES) == 0:
-    MESSAGES.append("spreadsheet parsed correctly!" + 
-      " Feel free to submit if the locations and URL's check out.")
-  return DATA, MESSAGES, addr_ar, urls_ar
+    MESSAGES.append("spreadsheet parsed correctly!  Feel free to submit.")
+  return DATA, MESSAGES
 
