@@ -6,15 +6,15 @@
 
 <li>[if needed] (1 hour) install a Subversion client.  Subversion is pre-installed on most unix/linux systems.</li>
 
-<li>Check out a copy of the source code (<a href="http://code.google.com/p/footprint2009dev/source/checkout">instructions</a>).  To check out the repository in read-only mode:<br />
+<li>Check out a copy of the source code (<a href="http://code.google.com/p/allforgood/source/checkout">instructions</a>).  To check out the repository in read-only mode:<br />
 <pre>
-   svn checkout http://footprint2009dev.googlecode.com/svn/trunk/
-   footprint2009dev-read-only
+   svn checkout http://allforgood.googlecode.com/svn/trunk/
+   allforgood-read-only
 </pre>
 To check out the repository with write permissions (you will need to be a member of the project for code hosting):
 <pre>
-   svn checkout https://footprint2009dev.googlecode.com/svn/trunk/
-   footprint2009dev --username gmail.user</pre>
+   svn checkout https://allforgood.googlecode.com/svn/trunk/
+   allforgood --username gmail.user</pre>
 
 When prompted for password, use the one automatically generated for your Gmail account (to which you'll need to be logged in) <a href="http://code.google.com/hosting/settings">here</a>.</li>
 
@@ -66,9 +66,9 @@ The following blocks are exposed by base.html, and can be overridden in any deri
 
 <h3>Coding Style</h3>
 
-We use <a href="http://pypi.python.org/pypi/pylint">pylint</a> (available in Ubuntu and other Linux distributions through apt-get/aptitude) as our standard for automatically checking style adherance, and have a custom <a href="http://code.google.com/p/footprint2009dev/source/browse/trunk/pylintrc">pylintrc</a> for the project checked into the toplevel directory.  To run pylint and automatically pickup our rc file:
+We use <a href="http://pypi.python.org/pypi/pylint">pylint</a> (available in Ubuntu and other Linux distributions through apt-get/aptitude) as our standard for automatically checking style adherance, and have a custom <a href="http://code.google.com/p/allforgood/source/browse/trunk/pylintrc">pylintrc</a> for the project checked into the toplevel directory.  To run pylint and automatically pickup our rc file:
 <pre>
-      cd footprint2009dev; pylint path/to/filename.py
+      cd allforgood; pylint path/to/filename.py
 </pre>
 The output is parseable e.g. for use in emacs compile-mode.<br /><br />
 
@@ -80,7 +80,7 @@ core team: daniel.berlin@gmail.com, adam.sah@gmail.com, blocksom@gmail.com
 <ol>
 <li>For one-time and occasional developers, email footprint-eng@googlegroups.com with a brief description of the changes and a patch file.</li>
 
-<li>for ongoing contributors, first get write access to the repository from one of the core members, then get a code review: /path/to/footprint2009dev/codereview_upload.py %lt;email of primary reviewer%gt;</li>
+<li>for ongoing contributors, first get write access to the repository from one of the core members, then get a code review: /path/to/allforgood/codereview_upload.py %lt;email of primary reviewer%gt;</li>
 </ol>
 
 <h3>Deployment to an AppEngine server</h3>
