@@ -37,19 +37,18 @@ def get_user_interests(user, remove_no_interest):
     # Note: If we want a limit, tack "fetch(nnn)" on the end of the query.
     # Also note the descending order, most-recent-first.
 
-    # TODO: Make liked_last_modified work (complains about missing index)
-    #interests = models.UserInterest.all().filter('user = ', user_info)\
-    #            .order('-liked_last_modified')
-    interests = models.UserInterest.all().filter('user = ', user_info)
+    interests = models.UserInterest.all().filter('user = ', user_info)\
+                .order('-liked_last_modified')
+    #interests = models.UserInterest.all().filter('user = ', user_info)
 
     ordered_event_ids = []
     for interest in interests:
-      ordered_event_ids.append(interest.opp_id)
       interest_value = getattr(interest, models.USER_INTEREST_LIKED)
       if not remove_no_interest or interest_value != 0:
         user_interests[interest.opp_id] = interest_value
+        ordered_event_ids.append(interest.opp_id)
 
-  return {'interests': user_interests, 'ordered_event_ids': ordered_event_ids}
+  return (user_interests, ordered_event_ids)
 
 
 def get_interest_for_opportunities(opp_ids):
@@ -84,7 +83,7 @@ def get_annotated_results(user, result_set):
   opp_ids = [result.item_id for result in result_set.results]
 
   # mark the items the user is interested in
-  user_interests = get_user_interests(user, True)
+  (user_interests, ordered_event_ids) = get_user_interests(user, True)
 
   # note the interest of others
   others_interests = get_interest_for_opportunities(opp_ids)
@@ -136,8 +135,8 @@ def get_friends_data_for_snippets(user_info):
   friend_opp_count = {}
   friends_by_event_id = {}
   for friend in friends:
-    dict = get_user_interests(friend, True)
-    for event_id in dict['interests']:
+    (user_interests, ordered_event_ids) = get_user_interests(friend, True)
+    for event_id in user_interests:
       count = friend_opp_count.get(event_id, 0)
       friend_opp_count[event_id] = count + 1
       uids = friends_by_event_id.get(event_id, [])
