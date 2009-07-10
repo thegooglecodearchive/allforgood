@@ -14,11 +14,7 @@ limitations under the License.
 */
 
 var map;
-if (currentPageName == 'HOMEPAGE') {
-  var NUM_PER_PAGE = 6;
-} else {
-  var NUM_PER_PAGE = 10;
-}
+var NUM_PER_PAGE = 10;
 var searchResults = [];
 
 /** Query params for backend search, based on frontend parameters.
@@ -289,9 +285,6 @@ function onLoadSearch() {
   dhtmlHistory.addListener(executeSearchFromHashParams);
 
   createQueryFromUrlParams().execute();
-  if (currentPageName == 'HOMEPAGE') {
-    el('more').style.display = '';
-  }
 }
 
 /** Asynchronously execute a search based on the current parameters.
@@ -368,8 +361,6 @@ executeSearchFromHashParams = function(currentLocation) {
       url = '/ui_snippets?';
     } else if (currentPageName == 'MY_EVENTS') {
       url = '/ui_my_snippets?';
-    } else if (currentPageName == 'HOMEPAGE') {
-      url = '/ui_snippets?minimal_snippets_list=1&';
     }
 
     url += query.getUrlQuery();
@@ -582,6 +573,5 @@ function SearchResult(url, url_sig, title, location, snippet, startdate, enddate
 
 var lastSearchQuery = new Query('', '', 0, {}, 1);
 var whenFilterWidget;
-if (currentPageName != 'HOMEPAGE') {
-  asyncLoadManager.addCallback('bodyload', onLoadSearch);
-}
+
+asyncLoadManager.addCallback('bodyload', onLoadSearch);

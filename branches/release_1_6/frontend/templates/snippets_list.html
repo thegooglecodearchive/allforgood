@@ -35,28 +35,20 @@
 <h1 class='snippets_list_header'>Your Activities</h1>
 {% endifequal %}
 {% ifequal current_page "SEARCH" %}
-{% if full_list %}
 <h1 class='snippets_list_header'>Volunteering activities
   {% if query_param_q %}
     matching '{{query_param_q|escape}}'  {# use escapejs (django 1.0) #}
   {% endif %}
 </h1>
-{% endif %}
 {% endifequal %}
 
 {% for result in result_set.clipped_results %}
   <div class='snippet'>
-    {% if full_list %}
     <table class='snippet_table'>
-    {% else %}
-    <table class='snippet_table' cellpadding=0 cellspacing=0>
-    {% endif %}
     <tr>
-    {% if full_list %}
     <td valign='top' class='snippet_number'>
       {{ forloop.counter0|as_letter }}
     </td>
-    {% endif %}
 
     <td valign='top'>
     <div>
@@ -147,8 +139,6 @@ addthis.button('#share_{{forloop.counter0}}', { username: "footprint2009dev", se
     </table>
   </div>
 {% endfor %}
-
-{% if full_list %}
 <span id='loading-bottom' style='display:none;float:right;'><span id='loading'>Loading...</span></span>
 <div id='paginator'>
 </div>
@@ -156,7 +146,6 @@ addthis.button('#share_{{forloop.counter0}}', { username: "footprint2009dev", se
   renderPaginator(el('paginator'), {{last_result_index|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
   initMap();
 </script>
-{% endif %}
 
 <script>
 if (false) {
