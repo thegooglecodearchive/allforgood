@@ -59,7 +59,7 @@ function renderHomepage() {
     el('location_form').style.display = '';
   }
 
-  el('more_link').href = 'javascript:submitForm("keywords");void(0);';
+  el('more_link').href = 'javascript:submitForm("");void(0);';
 
   if (el('popular_list')) {
     // Populate the popular searches list.
@@ -72,16 +72,10 @@ function renderHomepage() {
   }
   setTextContent(el('location_text'), defaultLocation);
 
-  el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/8kfEm7K9fdA&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/8kfEm7K9fdA&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
+  el('home_video_placeholder').innerHTML = '<object width="560" height="340"><param name="movie" value="http://www.youtube.com/v/7ZaBHgj6jYE&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/7ZaBHgj6jYE&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="560" height="340"></embed></object>';
 }
 
 function doHomepageChangeLocationClick() {
   el("location_subheader").style.display="none"
   el("location_form").style.display="";
-}
-
-function submitChangeLocation() {
-	setSessionCookie('user_vol_loc', getInputFieldValue(el('location')));
-  window.location = '/search#q=' + getInputFieldValue(el('keywords')) + '&vol_loc=' + getInputFieldValue(el('location'));
-  return;
 }
