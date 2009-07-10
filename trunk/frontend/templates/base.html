@@ -41,7 +41,7 @@
 
     // Load the Facebook script -- must be done after asyncLoadManager created
     $.getScript("http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php",
-      function() { console.log("getScript CB called"); asyncLoadManager.doneLoading("facebook"); } );
+      function() { asyncLoadManager.doneLoading("facebook"); } );
   </script>
 
 {% block js_files %}{% endblock %}

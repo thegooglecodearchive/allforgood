@@ -9,7 +9,6 @@
 
   function requestFacebookSignIn() {
     asyncLoadManager.addCallback('facebook', function() {
-      console.log("async callback");
       FB.Connect.requireSession(null, true);
       FB.Facebook.get_sessionState().waitUntilReady(function() {
         window.location.reload();
