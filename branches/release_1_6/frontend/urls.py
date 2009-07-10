@@ -34,7 +34,7 @@ URL_DATAHUB_DASHBOARD = '/dashboard/datahub'
 URL_ACTION = '/action'  # User actions like starring
 URL_PSA = '/psa' # Redirect to home page for tracking adsense psas
 
-STATIC_CONTENT_LOCATION = 'http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/'
+STATIC_CONTENT_LOCATION = 'http://allforgood.googlecode.com/svn/trunk/frontend/html/'
 
 # Mappings between appliation URLs (key) and static content
 # files to fetch (STATIC_CONTENT_LOCATION + value).
