@@ -289,6 +289,7 @@ function onLoadSearch() {
   dhtmlHistory.addListener(executeSearchFromHashParams);
 
   createQueryFromUrlParams().execute();
+
   if (currentPageName == 'HOMEPAGE') {
     el('more').style.display = '';
   }
@@ -351,8 +352,8 @@ executeSearchFromHashParams = function(currentLocation) {
         el('loading-bottom').style.display = 'none';
       }
       // Load analytics, done here to ensure search is finished first
-      // Only loading for search result pages here - loaded in homepage.js
-      // for the home page and base.html for static pages
+      // Only loading for search result pages and home page here here
+      // loaded in base.html for static pages
       loadGA();
     };
 
@@ -582,6 +583,5 @@ function SearchResult(url, url_sig, title, location, snippet, startdate, enddate
 
 var lastSearchQuery = new Query('', '', 0, {}, 1);
 var whenFilterWidget;
-if (currentPageName != 'HOMEPAGE') {
-  asyncLoadManager.addCallback('bodyload', onLoadSearch);
-}
+
+asyncLoadManager.addCallback('bodyload', onLoadSearch);
