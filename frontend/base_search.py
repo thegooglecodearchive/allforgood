@@ -141,7 +141,7 @@ def form_base_query(args):
       args[api.PARAM_VOL_DIST] = 1
     lat, lng = float(args["lat"]), float(args["long"])
     if (lat < 0.5 and lng < 0.5):
-      base_query += "[latitude%%3C%%3D0.5][longitude%%3C%%3D0.5]"
+      base_query += "[latitude%3C%3D0.5][longitude%3C%3D0.5]"
     else:
       dist = float(args[api.PARAM_VOL_DIST])
       base_query += "[latitude%%3E%%3D%.2f]" % (lat+GBASE_LOC_FIXUP - dist/69.1)
