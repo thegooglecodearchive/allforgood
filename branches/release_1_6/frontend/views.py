@@ -453,15 +453,14 @@ class ui_snippets_view(webapp.RequestHandler):
         'friends' : view_data['friends'],
         'friends_by_event_id_js': view_data['friends_by_event_id_js'],
         'query_param_q' : unique_args.get(api.PARAM_Q, None),
+        'full_list' : self.request.get('minimal_snippets_list') != '1',
       })
 
     if self.request.get('minimal_snippets_list'):
       # Minimal results list for homepage.
       result_set.clipped_results.sort(cmp=searchresult.compare_result_dates)
-      self.response.out.write(render_template(SNIPPETS_LIST_MINI_TEMPLATE,
-                                              template_values))
-    else:
-      self.response.out.write(render_template(SNIPPETS_LIST_TEMPLATE,
+
+    self.response.out.write(render_template(SNIPPETS_LIST_TEMPLATE,
                                               template_values))
 
 
