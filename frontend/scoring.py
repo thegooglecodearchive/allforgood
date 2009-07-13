@@ -47,9 +47,9 @@ def score_results_set(result_set, args):
     # keywordless queries should rank by location and time, not relevance.
     if api.PARAM_Q in args and args[api.PARAM_Q] != "":
       # lower ranking items in the backend = lower ranking here (roughly 1/rank)
-      rank_mult = (total_results - i)/total_results
+      rank_mult = float(total_results - i)/float(total_results)
       score *= rank_mult
-      score_notes += "  backend multiplier=%.3f (rank=%d)\n" % (i, rank_mult)
+      score_notes += "  backend multiplier=%.3f (rank=%d)\n" % (rank_mult, i+1)
 
     # TODO: match on start time, etc.
 

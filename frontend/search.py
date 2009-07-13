@@ -232,11 +232,11 @@ def normalize_query_values(args):
         # city is the common case-- start with 5 mile search radius,
         # and we'll fallback to larger.  This avoids accidentally
         # prioritizing listings from neighboring cities.
-        args[api.PARAM_VOL_DIST] = 5
+        args[api.PARAM_VOL_DIST] = 2
       elif zoom == 5:
         # postal codes are also a common case-- start with a narrower
         # radius than the city, and we'll fallback to larger.
-        args[api.PARAM_VOL_DIST] = 3
+        args[api.PARAM_VOL_DIST] = 1
       elif zoom > 5:
         # street address or GPS coordinates-- start with a very narrow
         # search suitable for walking.
@@ -266,13 +266,22 @@ def fetch_result_set(args):
   if (can_use_backfill(args, result_set) and
       (args["lat"] != "0.0" or args["long"] != "0.0")):
     newargs = copy.copy(args)
-    newargs[api.PARAM_VOL_DIST] = newargs[api.PARAM_VOL_DIST] * 5
-    logging.debug("backfilling with further listings...")
-    locationless_result_set = fetch_and_dedup(newargs)
+    # 4x zoomout is chosen for no particular reason-- seemed to work well
+    newargs[api.PARAM_VOL_DIST] = newargs[api.PARAM_VOL_DIST] * 4
+    logging.debug("backfilling with further listings at dist=%d" %
+                  newargs[api.PARAM_VOL_DIST])
     logging.debug("len(result_set.results)=%d" % len(result_set.results))
-    logging.debug("len(locationless)=%d" % len(locationless_result_set.results))
-    result_set.append_results(locationless_result_set)
-    logging.debug("new len=%d" % len(result_set.results))
+    result_set = fetch_and_dedup(newargs)
+    logging.debug("len(further)=%d" % len(result_set.results))
+
+    if (can_use_backfill(args, result_set)):
+      newargs = copy.copy(args)
+      # 16x zoomout is chosen for no particular reason either
+      newargs[api.PARAM_VOL_DIST] = newargs[api.PARAM_VOL_DIST] * 4 * 4
+      logging.debug("backfilling with even further listings at dist=%d" %
+                    newargs[api.PARAM_VOL_DIST])
+      result_set = fetch_and_dedup(newargs)
+      logging.debug("len(even further)=%d" % len(result_set.results))
 
   # backfill with locationless listings
   locationless_result_set = []
