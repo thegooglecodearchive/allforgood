@@ -10,7 +10,7 @@
 {% if optimize_page %} 
   {# TODO: custom django template tag: #}
   {# % suprfetch 'script' '/js/third_party/jquery-1.3.2.js', '/js/homepage.js', ... % #}
-  <script type='text/javascript' src='http://www.gmodules.com/ig/proxy?url=http%3A%2F%2Fsuprfetch.appspot.com%2F%3Furl%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery-1.3.2.min.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.json-1.3.min.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Frsh.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.autocomplete.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.simplemodal.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Futils.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fsearch_query.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fhomepage.js%26url%3Dhttp%3A%2F%2Fs7.addthis.com%2Fjs%2F250%2Faddthis_widget.js%26jsmin%3Dtrue%26url=http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php'>
+  <script type='text/javascript' src='http://www.gmodules.com/ig/proxy?url=http%3A%2F%2Fsuprfetch.appspot.com%2F%3Furl%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery-1.3.2.min.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.json-1.3.min.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Frsh.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.autocomplete.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fthird_party%2Fjquery.simplemodal.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Futils.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fsearch_query.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fhomepage.js%26url%3Dhttp%3A%2F%2Fs7.addthis.com%2Fjs%2F250%2Faddthis_widget.js%26jsmin%3Dtrue%26url%3Dhttp%3A%2F%2Fstatic.ak.connect.facebook.com%2Fjs%2Fapi_lib%2Fv0.4%2FFeatureLoader.js.php'>
   </script>
 {% else %}
   <script type='text/javascript' src='/zx{{version}}/js/third_party/jquery-1.3.2.min.js'></script>
@@ -26,6 +26,9 @@
   <script type='text/javascript' src='http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php'></script>
 {% endif %}
   <script type='text/javascript'>
+    // Set pubId for AddThis
+    addthis_pub = 'footprint2009dev';
+
     // These components load asynchronously.  We use AsyncLoadManager to
     // queue up function callbacks until each component is loaded.
     var asyncLoadManager = new AsyncLoadManager(
