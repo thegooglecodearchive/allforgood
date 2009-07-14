@@ -14,11 +14,7 @@ limitations under the License.
 */
 
 var map;
-if (currentPageName == 'HOMEPAGE') {
-  var NUM_PER_PAGE = 6;
-} else {
-  var NUM_PER_PAGE = 10;
-}
+var NUM_PER_PAGE = 10;
 var searchResults = [];
 
 /** Query params for backend search, based on frontend parameters.
@@ -290,9 +286,7 @@ function onLoadSearch() {
 
   createQueryFromUrlParams().execute();
 
-  if (currentPageName == 'HOMEPAGE') {
-    el('more').style.display = '';
-  }
+  el('more').style.display = '';
 }
 
 /** Asynchronously execute a search based on the current parameters.
@@ -352,8 +346,8 @@ executeSearchFromHashParams = function(currentLocation) {
         el('loading-bottom').style.display = 'none';
       }
       // Load analytics, done here to ensure search is finished first
-      // Only loading for search result pages and home page here here
-      // loaded in base.html for static pages
+      // Only loading for search result pages here and loaded in
+      // homepage.js for the hp and in base.html for static pages
       loadGA();
     };
 
@@ -369,8 +363,6 @@ executeSearchFromHashParams = function(currentLocation) {
       url = '/ui_snippets?';
     } else if (currentPageName == 'MY_EVENTS') {
       url = '/ui_my_snippets?';
-    } else if (currentPageName == 'HOMEPAGE') {
-      url = '/ui_snippets?minimal_snippets_list=1&';
     }
 
     url += query.getUrlQuery();

@@ -40,6 +40,10 @@ function runSnippetsQuery() {
             el('snippets').innerHTML = data;
             el('more').style.display = '';
           }
+          // Load analytics, done here to ensure search is finished first
+          // Only loading for homepage here - loaded in search_resuls.js
+          // for search pages and base.html for static pages
+          loadGA();
         }
       });
 }
@@ -54,7 +58,7 @@ function renderHomepage() {
     el('location_form').style.display = '';
   }
 
-  el('more_link').href = 'javascript:submitForm("keywords");void(0);';
+  el('more_link').href = 'javascript:submitForm("");void(0);';
 
   if (el('popular_list')) {
     // Populate the popular searches list.
@@ -73,10 +77,4 @@ function renderHomepage() {
 function doHomepageChangeLocationClick() {
   el("location_subheader").style.display="none"
   el("location_form").style.display="";
-}
-
-function submitChangeLocation() {
-  setSessionCookie('user_vol_loc', getInputFieldValue(el('location')));
-  window.location = '/search#q=' + getInputFieldValue(el('keywords')) + '&vol_loc=' + getInputFieldValue(el('location'));
-  return;
 }
