@@ -263,38 +263,39 @@ def fetch_result_set(args):
       return True
     return False
 
-  if (can_use_backfill(args, result_set) and
-      (args["lat"] != "0.0" or args["long"] != "0.0")):
-    newargs = copy.copy(args)
-    # 4x zoomout is chosen for no particular reason-- seemed to work well
-    newargs[api.PARAM_VOL_DIST] = newargs[api.PARAM_VOL_DIST] * 4
-    logging.debug("backfilling with further listings at dist=%d" %
-                  newargs[api.PARAM_VOL_DIST])
-    logging.debug("len(result_set.results)=%d" % len(result_set.results))
-    result_set = fetch_and_dedup(newargs)
-    logging.debug("len(further)=%d" % len(result_set.results))
-
-    if (can_use_backfill(args, result_set)):
+  if (args["lat"] != "0.0" or args["long"] != "0.0"):
+    if can_use_backfill(args, result_set):
       newargs = copy.copy(args)
-      # 16x zoomout is chosen for no particular reason either
-      newargs[api.PARAM_VOL_DIST] = newargs[api.PARAM_VOL_DIST] * 4 * 4
-      logging.debug("backfilling with even further listings at dist=%d" %
+      # 4x zoomout is chosen for no particular reason-- seemed to work well
+      newargs[api.PARAM_VOL_DIST] = newargs[api.PARAM_VOL_DIST] * 4
+      logging.debug("backfilling with further listings at dist=%d" %
                     newargs[api.PARAM_VOL_DIST])
-      result_set = fetch_and_dedup(newargs)
-      logging.debug("len(even further)=%d" % len(result_set.results))
+      logging.debug("len(result_set.results)=%d" % len(result_set.results))
+      new_result_set = fetch_and_dedup(newargs)
+      logging.debug("len(further)=%d" % len(new_result_set.results))
+      result_set.append_results(new_result_set)
+  
+      if (can_use_backfill(args, result_set)):
+        newargs = copy.copy(args)
+        # 16x zoomout is chosen for no particular reason either
+        newargs[api.PARAM_VOL_DIST] = newargs[api.PARAM_VOL_DIST] * 4 * 4
+        logging.debug("backfilling with even further listings at dist=%d" %
+                      newargs[api.PARAM_VOL_DIST])
+        new_result_set = fetch_and_dedup(newargs)
+        logging.debug("len(even further)=%d" % len(new_result_set.results))
+        result_set.append_results(new_result_set)
+        logging.debug("len(combined)=%d" % len(result_set.results))
 
-  # backfill with locationless listings
-  locationless_result_set = []
-  if (can_use_backfill(args, result_set) and
-      (args["lat"] != "0.0" or args["long"] != "0.0")):
-    newargs = copy.copy(args)
-    newargs["lat"] = newargs["long"] = "0.0"
-    newargs[api.PARAM_VOL_DIST] = 50
-    logging.debug("backfilling with locationless listings...")
-    locationless_result_set = fetch_and_dedup(newargs)
-    logging.debug("len(result_set.results)=%d" % len(result_set.results))
-    logging.debug("len(locationless)=%d" % len(locationless_result_set.results))
-    result_set.append_results(locationless_result_set)
-    logging.debug("new len=%d" % len(result_set.results))
+    # backfill with locationless listings
+    if can_use_backfill(args, result_set):
+      newargs = copy.copy(args)
+      newargs["lat"] = newargs["long"] = "0.0"
+      newargs[api.PARAM_VOL_DIST] = 50
+      logging.debug("backfilling with locationless listings...")
+      locationless_result_set = fetch_and_dedup(newargs)
+      logging.debug("len(result_set.results)=%d" % len(result_set.results))
+      logging.debug("len(locationless)=%d" % len(locationless_result_set.results))
+      result_set.append_results(locationless_result_set)
+      logging.debug("new len=%d" % len(result_set.results))
 
   return result_set
