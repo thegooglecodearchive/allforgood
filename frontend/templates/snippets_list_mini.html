@@ -19,6 +19,9 @@
           {% endif %}
 -->
         </div>
+	      <div class='snippet_text'>
+	        {{ result.snippet|truncate_chars:285|escape|bold_query:query_param_q }}
+	      </div>
         <a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
       {% endif %}
 {% endfor %}

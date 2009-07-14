@@ -108,23 +108,6 @@
   height: 188px;
 }
 
-#home_mini .snippet_title {
-  font-size: 16px;
-  padding-top: 5px;
-}
-
-#home_mini .snippet_text, #home_mini .snippet_sub_text, #home_mini .snippet_bottom {
-  font-size: 12px;
-}
-
-#home_mini .snippet_bottom , #home_mini .snippet_interest_info {
-  padding: 0 0 5px 0;
-}
-
-#home_mini .snippet {
-  margin: 4px 0 6px 0;
-}
-
 #home_app_promo img#home_app_screen {
   width: 150px;
   float: left;
