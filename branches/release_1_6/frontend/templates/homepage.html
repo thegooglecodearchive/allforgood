@@ -32,14 +32,16 @@
    </div>
 
    <div id='location_form' style='display:none;'>
-    <form action='/' onsubmit='submitChangeLocation();' class='valign'>
+    <form action='/' onsubmit='submitForm("");return false;' class='valign'>
       <input id='location' name='enter your location' size='40' value=''/>
-      <input type=button onclick='submitChangeLocation();' value="Set location" />
+      <input type=button onclick='submitForm("");return false;' value="Set location" />
     </form>
    </div>
 
-   <div id='snippets_pane'></div>
+   <div id='snippets' class="hp"></div>
    <div id='more' style='display:none;'><a id='more_link'>See more...</a></div>
+   {# defined in homepage.js; requires id=snippets and id=more in the DOM #}
+   <script>runSnippetsQuery();</script>
   </div>
 
   <div id='home_left'>
@@ -95,13 +97,4 @@ renderHomepage();
 createExampleSearchText();
 </script>
 {% endblock content %}
-
-{% block js_files %}
-  {% if optimize_page %}
-  <script type='text/javascript' src='http://www.gmodules.com/ig/proxy?url=http%3A%2F%2Fsuprfetch.appspot.com%2F%3Furl%3D{{host}}%2Fzx{{version}}%2Fjs%2Fsnippets_list.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fsearch_results.js%26jsmin%3Dtrue'></script>
-{% else %}
-  <script type='text/javascript' src='/zx{{version}}/js/snippets_list.js'></script>
-  <script type='text/javascript' src='/zx{{version}}/js/search_results.js'></script>
-  {% endif %}
-{% endblock js_files %}
 

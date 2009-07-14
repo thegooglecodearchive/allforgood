@@ -459,10 +459,11 @@ class ui_snippets_view(webapp.RequestHandler):
     if self.request.get('minimal_snippets_list'):
       # Minimal results list for homepage.
       result_set.clipped_results.sort(cmp=searchresult.compare_result_dates)
-
-    self.response.out.write(render_template(SNIPPETS_LIST_TEMPLATE,
+      self.response.out.write(render_template(SNIPPETS_LIST_MINI_TEMPLATE,
                                               template_values))
-
+    else:
+      self.response.out.write(render_template(SNIPPETS_LIST_TEMPLATE,
+                                              template_values))
 
 class ui_my_snippets_view(webapp.RequestHandler):
   """The current spec for the My Events view (also known as "Profile")
