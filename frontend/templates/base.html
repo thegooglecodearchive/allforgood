@@ -22,6 +22,7 @@
   <script type='text/javascript' src='/zx{{version}}/js/search_query.js'></script>
   {# not required for all pages, but harmless and simpler (for development only) #}
   <script type='text/javascript' src='/zx{{version}}/js/homepage.js'></script>
+  <script type='text/javascript' src='http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php'></script>
 {% endif %}
   <script type='text/javascript'>
     // Set pubId for AddThis
@@ -30,7 +31,7 @@
     // These components load asynchronously.  We use AsyncLoadManager to
     // queue up function callbacks until each component is loaded.
     var asyncLoadManager = new AsyncLoadManager(
-        [ 'map', 'bodyload', 'friendconnect', 'facebook' ]
+        [ 'map', 'bodyload', 'friendconnect' ]
     );
 
     // ...and one to queue JS callbacks on body unload event.
@@ -40,10 +41,6 @@
 
     var popularSearches = [ 'Education', 'Health', 'Nature', 'Hunger',
       'Website', 'Seniors', 'Animals' ];
-
-    // Load the Facebook script -- must be done after asyncLoadManager created
-    $.getScript("http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php",
-      function() { asyncLoadManager.doneLoading("facebook"); } );
   </script>
 
 {% block js_files %}{% endblock %}
