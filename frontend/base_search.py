@@ -152,8 +152,8 @@ def form_base_query(args):
   # Base URL for snippets search on Base.
   #   Docs: http://code.google.com/apis/base/docs/2.0/attrs-queries.html
   # TODO: injection attack on backend
-  if "backend" not in args:
-    args["backend"] = "http://www.google.com/base/feeds/snippets"
+  if api.PARAM_BACKEND_URL not in args:
+    args[api.PARAM_BACKEND_URL] = "http://www.google.com/base/feeds/snippets"
 
   cust_arg = base_argname("customer")
   if cust_arg not in args:
@@ -200,7 +200,7 @@ def search(args):
     return valid_query
 
   base_query = form_base_query(args)
-  query_url = args["backend"]
+  query_url = args[api.PARAM_BACKEND_URL]
   num_to_fetch = int(args[api.PARAM_START])
   num_to_fetch += int(args[api.PARAM_NUM] * args[api.PARAM_OVERFETCH_RATIO])
   if num_to_fetch > BASE_MAX_RESULTS:
