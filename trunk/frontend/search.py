@@ -27,8 +27,9 @@ from google.appengine.api import memcache
 import api
 import base_search
 import geocode
-import scoring
 from fastpageviews import pagecount
+import scoring
+import solr_search
 
 CACHE_TIME = 24*60*60  # seconds
 
@@ -247,7 +248,23 @@ def normalize_query_values(args):
 
 def fetch_and_dedup(args):
   """fetch, score and dedup."""
-  result_set = base_search.search(args)
+  # TODO: Update this when SOLR becomes the new default
+  # Backend defaults to base for now
+  if api.PARAM_BACKEND_TYPE not in args:
+    args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_BASE
+
+  if args[api.PARAM_BACKEND_TYPE] == api.BACKEND_TYPE_BASE:
+    logging.debug("Searching using BASE backend")
+    result_set = base_search.search(args)
+  elif args[api.PARAM_BACKEND_TYPE] == api.BACKEND_TYPE_SOLR:
+    logging.debug("Searching using SOLR backend")
+    result_set = solr_search.search(args)
+  else:
+    logging.error("Unknown backend type: " + args[api.PARAM_BACKEND_TYPE] +
+                  "Defaulting to Base search")
+    args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_BASE
+    result_set = base_search.search(args)
+
   scoring.score_results_set(result_set, args)
   result_set.dedup()
   return result_set

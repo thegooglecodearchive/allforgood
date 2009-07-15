@@ -25,6 +25,11 @@ PARAM_START = 'start'
 CONST_MIN_START = 1
 CONST_MAX_START = 1000
 
+BACKEND_TYPE_BASE = 'backend_type_base'
+BACKEND_TYPE_SOLR = 'backend_type_solr'
+
+PARAM_BACKEND_TYPE = 'backend_type'
+PARAM_BACKEND_URL = 'backend_url'
 PARAM_OUTPUT = 'output'
 PARAM_Q = 'q'
 PARAM_SORT = 'sort'
