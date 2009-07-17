@@ -4,7 +4,7 @@ tagger classes found in taggers.py, and writes them to *2.gz files '''
 import sys
 import gzip
 from csv import reader, writer
-from taggers import EducationTagger, NatureTagger
+from taggers import KeywordTagger
 import time
 
 def tag_listings(fname):
@@ -17,11 +17,26 @@ def tag_listings(fname):
   # open fname2.gz for writing
   outfile = gzip.open(fname+"2.gz", 'wb')
   outwriter = writer(outfile, dialect='excel-tab')
+  
+  # Determine the columns for title, description, and categories
+  fields = inreader.next()
+  title_col = fields.index('title')
+  descr_col = fields.index('description')
+  tag_col = fields.index('c:categories:string')
+    
+  outwriter.writerow(fields) #add the header row unchanged
+  
+  # Create basic keyword taggers
+  nature_tagger = KeywordTagger('Nature', {'nature':1.0, 'wetlands':1.0, \
+                'park':1.0, 'forest':1.0, 'trees':1.0}, \
+                [title_col, descr_col], tag_col)
 
-  outwriter.writerow(inreader.next()) #add the header row unchanged
+  education_tagger = KeywordTagger('Education', {'education':1.0, 'school':1.0, \
+                    'teacher':1.0, 'classroom':1.0, 'leaning':1.0}, \
+                    [title_col, descr_col], tag_col)
   
   # taggers is the list of Tagger subclass instances ot run each row through
-  taggers = [NatureTagger(), EducationTagger()]
+  taggers = [nature_tagger, education_tagger]
   
   # run each row through each tagger using the doTagging() function defined
   # in the Tagger base class
