@@ -115,13 +115,12 @@ def get_tag_attr(entity, tag, attribute):
   outstr = re.sub(r'\n', r'\\n', outstr)
   return outstr
 
-def set_default_value(doc, entity, tagname, default_value):
+def set_default_value(parent, entity, tagname, default_value):
   """add the element if not already present in the DOM tree."""
   nodes = entity.getElementsByTagName(tagname)
   if len(nodes) == 0:
-    newnode = doc.createElement(tagname)
-    newnode.appendChild(doc.createTextNode(str(default_value)))
-    entity.appendChild(newnode)
+    newnode = parent.createElement(tagname)
+    newnode.appendChild(parent.createTextNode(str(default_value)))
     return newnode
   return nodes[0]
 

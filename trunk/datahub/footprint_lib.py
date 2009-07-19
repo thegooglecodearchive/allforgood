@@ -208,7 +208,7 @@ DIRECT_MAP_FIELDS = [
   'opportunityID', 'organizationID', 'volunteersSlots', 'volunteersFilled',
   'volunteersNeeded', 'minimumAge', 'sexRestrictedTo', 'skills', 'contactName',
   'contactPhone', 'contactEmail', 'providerURL', 'language', 'lastUpdated',
-  'expires', 'detailURL']
+  'expires']
 ORGANIZATION_FIELDS = [
   'nationalEIN', 'guidestarID', 'name', 'missionStatement', 'description',
   'phone', 'fax', 'email', 'organizationURL', 'logoURL', 'providerURL']
@@ -241,6 +241,17 @@ def output_field(name, value):
       return "c:"+name+":"+FIELDTYPES[name]
     else:
       return name+":"+FIELDTYPES[name]
+
+  # common fixup for URL fields
+  if re.search(r'url', name, re.IGNORECASE):
+    # common error in datafeeds: http:///
+    value = re.sub(r'http:///', 'http://', value)
+    if value != "" and not re.search(r'^https?://', value):
+      # common error in datafeeds: missing leading http://
+      value = "http://" + value
+    # common error in datafeeds: http://http://
+    value = re.sub(r'http://http://', 'http://', value)
+
   if OUTPUTFMT == "basetsv":
     # grr: Base tries to treat commas in custom fields as being lists ?!
     # http://groups.google.com/group/base-help-basics/browse_thread/thread/
@@ -288,7 +299,7 @@ def get_full_addr_str(node):
 
 def find_geocoded_location(node):
   """Try a multitude of field combinations to get a geocode.  Returns:
-  raw_location, address, latitude, longitude, accuracy (as strings)."""
+  address, latitude, longitude, accuracy (as strings)."""
   
   # Combinations of fields to try geocoding.
   field_combinations = \
@@ -398,6 +409,8 @@ def get_direct_mapped_fields(opp, org):
   else:
     paid = "y"
   outstr += FIELDSEP + output_field("paid", paid)
+  detailURL = xmlh.get_tag_val(opp, "detailURL")
+  outstr += FIELDSEP + output_field("detailURL", detailURL)
   for field in DIRECT_MAP_FIELDS:
     outstr += FIELDSEP + output_tag_value(opp, field)
   for field in ORGANIZATION_FIELDS:
@@ -549,7 +562,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
         print_progress(str(totrecs)+" records generated.")
       if opploc == None:
         locstr, latlng, geocoded_loc = ("", "", "")
-        loc_fields = get_loc_fields("0.0", "0.0", "0.0", "", "")
+        loc_fields = get_loc_fields("", "0.0", "0.0", "", "")
       else:
         locstr = get_full_addr_str(opploc)
         addr, lat, lng, acc = find_geocoded_location(opploc)
@@ -593,6 +606,9 @@ def get_time_fields(openended, duration, hrs_per_week, event_date_range):
 def get_loc_fields(location, latitude, longitude, location_string,
                    venue_name):
   """output location-related fields, e.g. for multiple locations per event."""
+  # note: we don't use Google Base's "location" field because it tries to
+  # geocode it (even if we pre-geocode it) then for bogus reasons, rejects
+  # around 40% of our listings-- again, even if we pre-geocode them.
   loc_fields = FIELDSEP + output_field("location", location)
   loc_fields += FIELDSEP + output_field("latitude", latitude)
   loc_fields += FIELDSEP + output_field("longitude", longitude)
