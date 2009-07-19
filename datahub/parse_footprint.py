@@ -45,10 +45,10 @@ KNOWN_ELNAMES = [
   'volunteersNeeded', 'yesNoEnum'
   ]
 
-def set_default_time_elem(doc, entity, tagname, timest=xmlh.current_ts()):
+def set_default_time_elem(parent, entity, tagname, timest=xmlh.current_ts()):
   """footprint macro."""
-  cdt = xmlh.set_default_value(doc, entity, tagname, timest)
-  xmlh.set_default_attr(doc, cdt, "olsonTZ", "America/Los_Angeles")
+  cdt = xmlh.set_default_value(parent, entity, tagname, timest)
+  xmlh.set_default_attr(parent, cdt, "olsonTZ", "America/Los_Angeles")
 
 def parse_fast(instr, maxrecs, progress):
   """fast parser but doesn't check correctness,
@@ -80,38 +80,36 @@ def parse_fast(instr, maxrecs, progress):
                re.DOTALL), instr)
   outstr += '<VolunteerOpportunities>'
   for oppchunk in oppchunks:
-    node = xmlh.simple_parser(oppchunk, KNOWN_ELNAMES, False)
+    opp = xmlh.simple_parser(oppchunk, KNOWN_ELNAMES, False)
     numopps += 1
     if (maxrecs > 0 and numopps > maxrecs):
       break
     if progress and numopps % 250 == 0:
       print datetime.now(), ": ", numopps, " records generated."
-    for opp in node.firstChild.childNodes:
-      if opp.nodeType == node.ELEMENT_NODE:
-        xmlh.set_default_value(node, opp, "volunteersNeeded", -8888)
-        xmlh.set_default_value(node, opp, "paid", "No")
-        xmlh.set_default_value(node, opp, "sexRestrictedTo", "Neither")
-        xmlh.set_default_value(node, opp, "language", "English")
-        set_default_time_elem(node, opp, "lastUpdated")
-        set_default_time_elem(node, opp, "expires", 
-                              xmlh.current_ts(DEFAULT_EXPIRATION))
-        for loc in opp.getElementsByTagName("location"):
-          xmlh.set_default_value(node, loc, "virtual", "No")
-          xmlh.set_default_value(node, loc, "country", "US")
-        for dttm in opp.getElementsByTagName("dateTimeDurations"):
-          xmlh.set_default_value(node, dttm, "openEnded", "No")
-          xmlh.set_default_value(node, dttm, "iCalRecurrence", "")
-          if (dttm.getElementsByTagName("startTime") == None and
-              dttm.getElementsByTagName("endTime") == None):
-            set_default_time_elem(node, dttm, "timeFlexible", "Yes")
-          else:
-            set_default_time_elem(node, dttm, "timeFlexible", "No")
-          xmlh.set_default_value(node, dttm, "openEnded", "No")
-        time_elems = opp.getElementsByTagName("startTime")
-        time_elems += opp.getElementsByTagName("endTime")
-        for el in time_elems:
-          xmlh.set_default_attr(node, el, "olsonTZ", "America/Los_Angeles")
-    outstr += xmlh.prettyxml(node, True)
+    xmlh.set_default_value(opp, opp, "volunteersNeeded", -8888)
+    xmlh.set_default_value(opp, opp, "paid", "No")
+    xmlh.set_default_value(opp, opp, "sexRestrictedTo", "Neither")
+    xmlh.set_default_value(opp, opp, "language", "English")
+    set_default_time_elem(opp, opp, "lastUpdated")
+    set_default_time_elem(opp, opp, "expires", 
+                          xmlh.current_ts(DEFAULT_EXPIRATION))
+    for loc in opp.getElementsByTagName("location"):
+      xmlh.set_default_value(opp, loc, "virtual", "No")
+      xmlh.set_default_value(opp, loc, "country", "US")
+    for dttm in opp.getElementsByTagName("dateTimeDurations"):
+      xmlh.set_default_value(opp, dttm, "openEnded", "No")
+      xmlh.set_default_value(opp, dttm, "iCalRecurrence", "")
+      if (dttm.getElementsByTagName("startTime") == None and
+          dttm.getElementsByTagName("endTime") == None):
+        set_default_time_elem(opp, dttm, "timeFlexible", "Yes")
+      else:
+        set_default_time_elem(opp, dttm, "timeFlexible", "No")
+      xmlh.set_default_value(opp, dttm, "openEnded", "No")
+    time_elems = opp.getElementsByTagName("startTime")
+    time_elems += opp.getElementsByTagName("endTime")
+    for el in time_elems:
+      xmlh.set_default_attr(opp, el, "olsonTZ", "America/Los_Angeles")
+    outstr += xmlh.prettyxml(opp, True)
   outstr += '</VolunteerOpportunities>'
 
   outstr += '</FootprintFeed>'
