@@ -7,7 +7,7 @@ def main(argv):
   ''' Downloads logs from AppEngine and writes a tsv file of top queries '''
   # read and parse command line options
   try:
-    opts, args = getopt.getopt(sys.argv[1:],'a:rf:ud:n:')
+    opts, args = getopt.getopt(sys.argv[1:],'a:kf:hd:n:y:',["appcfg-path=","keep-logs","log-file=","num-days=","num-records=","help","app-yaml-path="])
   except getopt.GetoptError, err:
     # print help information and exit:
     print str(err) # will print something like "option -a not recognized"
@@ -18,50 +18,72 @@ def main(argv):
   days = 7
   custom_appcfg_path = False
   num_records = 100
+  custom_app_yaml_path = False
   for opt, arg in opts:
-    if opt == "-a":
+    if opt in ("-a","--appcfg-path"):
       custom_appcfg_path = arg
-    elif opt == "-r":
+    elif opt in("-y","--app-yaml-path"):
+      custom_app_yaml_path = arg
+    elif opt in ("-k","--keep-logs"):
       remove_logs = False
-    elif opt == "-f":
+    elif opt in ("-f","--log-file"):
       log_file = arg
-    elif opt == "-d":
+    elif opt in ("-d","--num-days"):
       days = arg
-    elif opt == "-n":
+    elif opt in ("-n","--num-records"):
       num_records = arg
-    elif opt == "-u":
+    elif opt in ("-h","--help"):
       # print usage
       print "./topqueries.py \n \
 \t Downloads log files (or reads from disk) and parses the top queries \n \
 options:\n \
-\t-a [path to appcfg.py if not autolocated]\n \
-\t-r (don't automatically delete the raw logs when we're done)\n \
-\t-f [file to read logs from directly from disk]\n \
-\t-d [# of days to download logs, default 7]\n \
-\t-n [# of top queries to return, default 100]"
+\t--appcfg-path : path to appcfg.py if not autolocated\n \
+\t--app-yaml-path : path to app.yaml if not autolocated\n \
+\t--keep-logs : don't automatically delete the raw logs when we're done\n \
+\t--log-file : file to read logs from disk (don't download)\n \
+\t--num-days : # of days to download logs, default 7\n \
+\t--num-records : # of top queries to return, default 100"
       sys.exit()
     else:
       assert False, "unhandled option"
     
+  # Find app.yaml (only if we're downloading logs)
+  app_yaml_path = False
+  if not log_file:
+    app_yaml_paths = []
+    if custom_app_yaml_path:
+      appcfg_paths.append(custom_app_yaml_path)
+      appcfg_paths.append(custom_app_yaml_path[:-1])
+    app_yaml_paths += ["../frontend",".","","frontend"]
+    for path in app_yaml_paths:
+      if os.path.exists(path + "/app.yaml"):
+        app_yaml_path = path
+        print "Found app.yaml in " + path
+    if not app_yaml_path:
+      print "ERROR: could not find app.yaml in any directory, try using --app-yaml-path= to specify the location"
+      sys.exit()
+      
   # Find appcfg.py (only if we're downloading logs)
   appcfg_path = False
   if not log_file:
     appcfg_paths = []
     if custom_appcfg_path:
       appcfg_paths.append(custom_appcfg_path)
+      appcfg_paths.append(custom_appcfg_path + "/")
     appcfg_paths += ["/Applications/GoogleAppEngineLauncher.app/Contents/Resources/GoogleAppEngine-default.bundle/Contents/Resources/google_appengine/",
                     "", "../", "../google_appengine/", "../../", "../../google_appengine"]
     for path in appcfg_paths:
       if os.path.exists(path + "appcfg.py"):
         appcfg_path = path
+        print "Found appcfg.py in " + path
     if not appcfg_path:
-      print "ERROR: could not find appcfg.py in any directory, try using -a to specify the location"
+      print "ERROR: could not find appcfg.py in any directory, try using --appcfg-path= to specify the location"
       sys.exit()
 
   if log_file == False:
     # Download the logs from AppEngine    
     os.system("python " + appcfg_path + \
-              "appcfg.py request_logs ../frontend/ logs -n " + str(days))
+              "appcfg.py request_logs " + app_yaml_path + " logs -n " + str(days))
     log_file = "logs"
   
   # Parse the logs to get the query strings
