@@ -4,8 +4,9 @@ tagger classes found in taggers.py, and writes them to *2.gz files '''
 import sys
 import gzip
 from csv import reader, writer
-from taggers import KeywordTagger
+from taggers import KeywordTagger, SimpleKeywordTagger
 import time
+import random
 
 def tag_listings(fname):
   ''' this is run for each file that is tagged, opens *1.gz, runs each row
@@ -18,25 +19,11 @@ def tag_listings(fname):
   outfile = gzip.open(fname+"2.gz", 'wb')
   outwriter = writer(outfile, dialect='excel-tab')
   
-  # Determine the columns for title, description, and categories
   fields = inreader.next()
-  title_col = fields.index('title')
-  descr_col = fields.index('description')
-  tag_col = fields.index('c:categories:string')
-    
   outwriter.writerow(fields) #add the header row unchanged
   
-  # Create basic keyword taggers
-  nature_tagger = KeywordTagger('Nature', {'nature':1.0, 'wetlands':1.0, \
-                'park':1.0, 'forest':1.0, 'trees':1.0}, \
-                [title_col, descr_col], tag_col)
-
-  education_tagger = KeywordTagger('Education', {'education':1.0, 'school':1.0, \
-                    'teacher':1.0, 'classroom':1.0, 'leaning':1.0}, \
-                    [title_col, descr_col], tag_col)
-  
-  # taggers is the list of Tagger subclass instances ot run each row through
-  taggers = [nature_tagger, education_tagger]
+  # Get list of tagger instances
+  taggers = get_taggers(fields)
   
   # run each row through each tagger using the doTagging() function defined
   # in the Tagger base class
@@ -48,29 +35,88 @@ def tag_listings(fname):
   infile.close()
   outfile.close()
 
+def get_taggers(fields):
+  ''' returns the current tagger instances we're using '''
+  # Determine the columns for title, description, and categories
+  title_col = fields.index('title')
+  descr_col = fields.index('description')
+  tag_col = fields.index('c:categories:string')
+  
+  # Create basic keyword taggers
+
+  # The taggers below use the SimpleKeywordTagger to easily tag without
+  # creating a dict with individual scores for each keyword.  The commented
+  # code below shows how to create a standard KeywordTagger when we're
+  # ready to assign individual scores
+
+  # nature_tagger = KeywordTagger('Nature', {'environment':1.0, 'nature':1.0, \
+  # 'environmental':1.0, 'outdoors':1.0, 'gardening':1.0, 'garden':1.0, \
+  # 'park':1.0, 'wetlands':1.0,'forest':1.0, 'trees':1.0}, \
+  # [title_col, descr_col], tag_col)
+
+  nature_tagger = SimpleKeywordTagger('Nature', 'environment nature \
+  environmental outdoors gardening garden park wetlands forest forests \
+  tree trees', [title_col, descr_col], tag_col)
+  
+  education_tagger = SimpleKeywordTagger('Education','education reading \
+  teaching teacher teach books book library literacy school schools libraries \
+  classroom class',[title_col, descr_col], tag_col)
+  
+  animals_tagger = SimpleKeywordTagger('Animals','animal animals dogs cats zoo',
+  [title_col, descr_col], tag_col)
+  
+  children_tagger = SimpleKeywordTagger('Children','children kids youth child\
+   babies kid baby', [title_col, descr_col], tag_col)
+
+  health_tagger = SimpleKeywordTagger('Health','health hospital hospitals \
+  medical healthcare mental hospice nursing cancer nurse nurses doctor doctors',
+  [title_col, descr_col], tag_col)
+  
+  seniors_tagger = SimpleKeywordTagger('Seniors','senior seniors elderly',
+  [title_col, descr_col], tag_col)
+  
+  technology_tagger = SimpleKeywordTagger('Technology','website computer computers technology web',
+  [title_col, descr_col], tag_col)
+  
+  hph_tagger = SimpleKeywordTagger('Homelessness Poverty & Hunger','habitat \
+  homeless hunger food housing poverty house poor',[title_col, descr_col], tag_col)
+  
+  mentoring_tagger = SimpleKeywordTagger('Mentoring & Tutoring','mentoring \
+  tutoring mentor counseling', [title_col, descr_col], tag_col)
+      
+  # taggers is the list of Tagger subclass instances ot run each row through
+  taggers = [nature_tagger, education_tagger, animals_tagger, \
+  children_tagger, health_tagger, seniors_tagger, technology_tagger, \
+  hph_tagger, mentoring_tagger]
+  
+  return taggers
+
 def show_tags(fname):
   ''' simple testing function to check the number of items tagged, 
   will not be in final code '''
   infile = gzip.open(fname+"2.gz", 'rb')
   inreader = reader(infile, dialect='excel-tab')
 
-  inreader.next() #skip the header row
-  num_rows = 0
-  num_ed = 0
-  num_nat = 0
-  num_tagged = 0
+  taggers = get_taggers(inreader.next())
+  tag_stats = {'Total Rows':0, 'Tagged':0}
+  for tagger in taggers:
+    tag_stats[tagger.tag_name] = 0
+
   for row in inreader:
-    num_rows += 1
-    if row[42].count("Nature") > 0:
-      num_nat += 1
-    if row[42].count("Education") > 0:
-      num_ed += 1
+    tag_stats['Total Rows'] += 1
+    for tagger in taggers:
+      if row[42].count(tagger.tag_name) > 0:
+        tag_stats[tagger.tag_name] += 1
     if row[42]:
-      num_tagged += 1
-  print "# Rows:", num_rows
-  print "# Tagged:", num_tagged
-  print "# Education:", num_ed
-  print "# Nature:", num_nat
+      tag_stats['Tagged'] += 1
+
+    # print a random 1% of tagged data for inspection
+    if random.random() < 0.01:
+      print row[7], "- Tags:", row[42]
+      print row[8]
+      print
+
+  print tag_stats
   infile.close()
 
 def show_mappings(fname):
