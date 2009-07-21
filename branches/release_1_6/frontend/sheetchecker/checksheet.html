@@ -13,6 +13,14 @@ spreadsheet URL:<br/>
 <input type='submit' value='run checker'>
 </form>
 
+<p>
+known issue: if you get ResponseTooLarge error, this is a
+<a href="http://code.google.com/p/footprint2009dev/issues/detail?id=476">known bug</a>.<br/>
+Please email provider-support@allforgood.org and we'll manually check your sheet.<br/>
+Thanks for your patience!
+</p>
+
+
 {% ifnotequal sheeturl "" %}
   <p/>
   original sheet: <a href='{{ sheeturl|escape }}'>{{ sheeturl|escape }}</a><br/>
