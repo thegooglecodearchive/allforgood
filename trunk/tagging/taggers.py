@@ -27,7 +27,7 @@ class Tagger(object):
     
     # add tag if the score, after all tagging functions, exceeds the threshold
     if score > self.score_threshold:
-      row[self.tag_col] += self.tag_name + ' '
+      row[self.tag_col] += self.tag_name + ', '
     return row
 
 class KeywordTagger(Tagger):
@@ -57,3 +57,21 @@ class KeywordTagger(Tagger):
         score += self.keywords[keyword]
     score /= len(self.keywords)
     return score
+
+class SimpleKeywordTagger(KeywordTagger):
+  ''' Creates a KeywordTagger from a whitespace separated list of keywords
+  rather than a dict, with each keyword having a score of 1.0. '''
+  def __init__(self, tag_name, keywords_list, examine_cols, tag_col):
+    '''Expand the whitespace separated list and call the KeywordTagger init '''
+    keywords_dict = dict(zip(keywords_list.split(),[1.0 for i in range(0,len(keywords_list))]))
+    KeywordTagger.__init__(self, tag_name, keywords_dict, examine_cols, tag_col)
+
+''' Right now, EducationTagger is implemented just as an instance of
+KeywordTagger, but in the future it may want to inherit from multiple
+Tagger types.  This code is how it would be implemented as a subclass.
+class EducationTagger(KeywordTagger):
+  def __init__(self, examine_cols, tag_col):
+    KeywordTagger.__init__(self, 'Education', {'education':1.0, 'school':1.0, \
+                      'teacher':1.0, 'classroom':1.0, 'leaning':1.0}, \
+                      examine_cols, tag_col)
+'''
