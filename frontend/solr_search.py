@@ -51,13 +51,20 @@ def solr_format_range(field, min_val, max_val):
   result += '%3A[' + str(min_val) +'+TO+' + str(max_val) + ']'
   return result
 
+def rewrite_query(query):
+  """ Rewrites the query string from an easy to type and understand format
+  into a Solr-readable format"""
+  return query.replace('category:', 'c\:categories\:string:')
+  
+
 def form_solr_query(args):
   """ensure args[] has all correct and well-formed members and
   return a solr query string."""
   logging.debug("form_solr_query: "+str(args))
   solr_query = ""
   if api.PARAM_Q in args and args[api.PARAM_Q] != "":
-    solr_query += urllib.quote_plus(args[api.PARAM_Q])
+    rewritten_query = rewrite_query(args[api.PARAM_Q])
+    solr_query += urllib.quote_plus(rewritten_query)
 
   if api.PARAM_VOL_STARTDATE in args or api.PARAM_VOL_ENDDATE in args:
     startdate = None
