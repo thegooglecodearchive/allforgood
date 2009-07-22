@@ -56,38 +56,37 @@ def get_taggers(fields):
 
   nature_tagger = SimpleKeywordTagger('Nature', 'environment nature \
   environmental outdoors gardening garden park wetlands forest forests \
-  tree trees', [title_col, descr_col], tag_col)
+  tree trees green trail trails sierra+club ', [title_col, descr_col], tag_col)
   
   education_tagger = SimpleKeywordTagger('Education','education reading \
   teaching teacher teach books book library literacy school schools libraries \
   classroom class',[title_col, descr_col], tag_col)
   
-  animals_tagger = SimpleKeywordTagger('Animals','animal animals dogs cats zoo',
+  animals_tagger = SimpleKeywordTagger('Animals','animal animals dog dogs cat \
+  cats zoo bird birds zoos',
   [title_col, descr_col], tag_col)
   
-  children_tagger = SimpleKeywordTagger('Children','children kids youth child\
-   babies kid baby', [title_col, descr_col], tag_col)
-
   health_tagger = SimpleKeywordTagger('Health','health hospital hospitals \
-  medical healthcare mental hospice nursing cancer nurse nurses doctor doctors',
+  medical healthcare mental hospice nursing cancer nurse nurses doctor doctors\
+  red+cross',
   [title_col, descr_col], tag_col)
   
   seniors_tagger = SimpleKeywordTagger('Seniors','senior seniors elderly',
   [title_col, descr_col], tag_col)
   
-  technology_tagger = SimpleKeywordTagger('Technology','website computer computers technology web',
+  technology_tagger = SimpleKeywordTagger('Technology','website computer \
+  computers technology web video graphic design',
   [title_col, descr_col], tag_col)
   
   hph_tagger = SimpleKeywordTagger('Homelessness Poverty & Hunger','habitat \
   homeless hunger food housing poverty house poor',[title_col, descr_col], tag_col)
   
-  mentoring_tagger = SimpleKeywordTagger('Mentoring & Tutoring','mentoring \
+  tutoring_tagger = SimpleKeywordTagger('Tutoring','mentoring \
   tutoring mentor counseling', [title_col, descr_col], tag_col)
       
   # taggers is the list of Tagger subclass instances ot run each row through
-  taggers = [nature_tagger, education_tagger, animals_tagger, \
-  children_tagger, health_tagger, seniors_tagger, technology_tagger, \
-  hph_tagger, mentoring_tagger]
+  taggers = [nature_tagger, education_tagger, animals_tagger, health_tagger, \
+  seniors_tagger, technology_tagger, hph_tagger, tutoring_tagger]
   
   return taggers
 
