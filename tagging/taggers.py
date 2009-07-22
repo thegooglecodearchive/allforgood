@@ -52,7 +52,7 @@ class KeywordTagger(Tagger):
     for keyword in self.keywords:
       keyword_count = 0
       for col in self.examine_cols:
-        keyword_count += row[col].lower().count(keyword.lower())
+        keyword_count += row[col].lower().count(keyword.lower().replace('+',' '))
       if keyword_count > 0:
         score += self.keywords[keyword]
     score /= len(self.keywords)
