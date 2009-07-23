@@ -4,7 +4,7 @@
 # This is suitable for realtime pageviews counts, YMMV for other uses.
 #
 
-from google.appengine.api import memcache
+from versioned_memcache import memcache
 from google.appengine.ext import db
 import logging
 import random

@@ -29,7 +29,7 @@ import logging
 import re
 import time
 
-from google.appengine.api import memcache
+from versioned_memcache import memcache
 from google.appengine.api import urlfetch
 from google.appengine.api import users
 from google.appengine.ext import db

@@ -24,7 +24,7 @@ import logging
 import os
 
 from django.utils import simplejson
-from google.appengine.api import memcache
+from versioned_memcache import memcache
 from google.appengine.api import urlfetch
 from StringIO import StringIO
 from facebook import Facebook

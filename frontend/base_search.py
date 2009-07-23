@@ -24,7 +24,7 @@ import urllib
 import logging
 import traceback
 
-from google.appengine.api import memcache
+from versioned_memcache import memcache
 from google.appengine.api import urlfetch
 from xml.dom import minidom
 

@@ -24,7 +24,7 @@ import time
 import urllib
 
 from django.utils import simplejson
-from google.appengine.api import memcache
+from versioned_memcache import memcache
 from google.appengine.api import urlfetch
 
 import api
