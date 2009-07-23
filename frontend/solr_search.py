@@ -46,9 +46,9 @@ def solr_format_range(field, min_val, max_val):
   """ Convert colons in the field name and build a range specifier
   in SOLR query syntax"""
   # TODO: Deal with escapification
-  result = '+AND+'
-  result += re.sub(r':', r'\%3A', field)
-  result += '%3A[' + str(min_val) +'+TO+' + str(max_val) + ']'
+  result = ' AND '
+  result += field
+  result += ':[' + str(min_val) +' TO ' + str(max_val) + ']'
   return result
 
 def rewrite_query(query):
@@ -63,8 +63,7 @@ def form_solr_query(args):
   logging.debug("form_solr_query: "+str(args))
   solr_query = ""
   if api.PARAM_Q in args and args[api.PARAM_Q] != "":
-    rewritten_query = rewrite_query(args[api.PARAM_Q])
-    solr_query += urllib.quote_plus(rewritten_query)
+    solr_query += rewrite_query(args[api.PARAM_Q])
   else:
     # Query is empty, search for anything at all.
     solr_query += "*:*"
@@ -97,14 +96,14 @@ def form_solr_query(args):
       enddate = enddate + datetime.timedelta(days=1000)
       args[api.PARAM_VOL_ENDDATE] = enddate.strftime("%Y%m%d")
 
-    solr_query += solr_format_range("c:eventrangestart:datetime", '*',
+    solr_query += solr_format_range("c\:eventrangestart\:datetime", '*',
                                      args[api.PARAM_VOL_ENDDATE])
-    solr_query += solr_format_range("c:eventrangeend:datetime",
+    solr_query += solr_format_range("c\:eventrangeend\:datetime",
                                     args[api.PARAM_VOL_STARTDATE], '*')
 
   if api.PARAM_VOL_PROVIDER in args and args[api.PARAM_VOL_PROVIDER] != "":
     if re.match(r'[a-zA-Z0-9:/_. -]+', args[api.PARAM_VOL_PROVIDER]):
-      solr_query += "+AND+c\%3Afeed_providerName\%3Astring%3A" + \
+      solr_query += " AND c\:feed_providerName\:string:" + \
                       args[api.PARAM_VOL_PROVIDER]
     else:
       # illegal providername
@@ -125,13 +124,13 @@ def form_solr_query(args):
       args[api.PARAM_VOL_DIST] = 1
     lat, lng = float(args["lat"]), float(args["long"])
     if (lat < 0.5 and lng < 0.5):
-      solr_query += solr_format_range("c:latitide:float", '*', '0.5')
-      solr_query += solr_format_range("c:longitude:float", '*', '0.5')
+      solr_query += solr_format_range("c\:latitide\:float", '*', '0.5')
+      solr_query += solr_format_range("c\:longitude\:float", '*', '0.5')
     else:
       dist = float(args[api.PARAM_VOL_DIST])
-      solr_query += solr_format_range("c:latitude:float",
+      solr_query += solr_format_range("c\:latitude\:float",
                                       lat - dist/69.1, lat + dist/69.1)
-      solr_query += solr_format_range("c:longitude:float",
+      solr_query += solr_format_range("c\:longitude\:float",
                                       lng - dist/50, lng + dist/50)
 
   # TODO: injection attack on backend
@@ -140,7 +139,7 @@ def form_solr_query(args):
 
   if api.PARAM_START not in args:
     args[api.PARAM_START] = 1
-  return solr_query
+  return urllib.quote_plus(solr_query)
 
 # note: many of the XSS and injection-attack defenses are unnecessary
 # given that the callers are also protecting us, but I figure better
