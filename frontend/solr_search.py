@@ -65,6 +65,9 @@ def form_solr_query(args):
   if api.PARAM_Q in args and args[api.PARAM_Q] != "":
     rewritten_query = rewrite_query(args[api.PARAM_Q])
     solr_query += urllib.quote_plus(rewritten_query)
+  else:
+    # Query is empty, search for anything at all.
+    solr_query += "*:*"
 
   if api.PARAM_VOL_STARTDATE in args or api.PARAM_VOL_ENDDATE in args:
     startdate = None
@@ -137,11 +140,6 @@ def form_solr_query(args):
 
   if api.PARAM_START not in args:
     args[api.PARAM_START] = 1
-    
-  # Remove the initial +AND+ if no terms are being searched
-  if solr_query.startswith('+AND+'):
-    return solr_query[5:]
-
   return solr_query
 
 # note: many of the XSS and injection-attack defenses are unnecessary
@@ -218,6 +216,7 @@ def search(args):
 
 def query(query_url, args, cache):
   """run the actual SOLR query (no filtering or sorting)."""
+  #logging.info("Query URL: " + query_url)
   result_set = searchresult.SearchResultSet(urllib.unquote(query_url),
                                             query_url,
                                             [])
