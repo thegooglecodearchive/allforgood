@@ -18,7 +18,7 @@
 import datetime
 import logging
 
-from google.appengine.api import memcache
+from versioned_memcache import memcache
 from google.appengine.ext import db
 
 def set_entity_attributes(entity, absolute_attributes, relative_attributes):

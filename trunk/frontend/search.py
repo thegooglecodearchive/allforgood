@@ -22,7 +22,7 @@ import hashlib
 import logging
 import copy
 
-from google.appengine.api import memcache
+from versioned_memcache import memcache
 
 import api
 import base_search

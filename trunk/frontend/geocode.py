@@ -22,7 +22,7 @@ import logging
 import time
 from datetime import datetime
 from google.appengine.api import urlfetch
-from google.appengine.api import memcache
+from versioned_memcache import memcache
 
 import api
 

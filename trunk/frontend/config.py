@@ -29,7 +29,7 @@ import config
 configvalue = config.config.get_value('valuename')
 """
 
-from google.appengine.api import memcache
+from versioned_memcache import memcache
 from google.appengine.ext import db
 
 
