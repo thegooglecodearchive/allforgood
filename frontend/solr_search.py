@@ -109,7 +109,7 @@ def form_solr_query(args):
       # illegal providername
       # TODO: throw 500
       logging.error("illegal providername: " + args[api.PARAM_VOL_PROVIDER])
-
+  solr_query = urllib.quote_plus(solr_query)
   # TODO: injection attack on sort
   if api.PARAM_SORT not in args:
     args[api.PARAM_SORT] = "r"
@@ -122,16 +122,12 @@ def form_solr_query(args):
     args[api.PARAM_VOL_DIST] = int(str(args[api.PARAM_VOL_DIST]))
     if args[api.PARAM_VOL_DIST] < 1:
       args[api.PARAM_VOL_DIST] = 1
-    lat, lng = float(args["lat"]), float(args["long"])
-    if (lat < 0.5 and lng < 0.5):
-      solr_query += solr_format_range("c\:latitide\:float", '*', '0.5')
-      solr_query += solr_format_range("c\:longitude\:float", '*', '0.5')
-    else:
-      dist = float(args[api.PARAM_VOL_DIST])
-      solr_query += solr_format_range("c\:latitude\:float",
-                                      lat - dist/69.1, lat + dist/69.1)
-      solr_query += solr_format_range("c\:longitude\:float",
-                                      lng - dist/50, lng + dist/50)
+    solr_query += '&qt=geo'
+    solr_query += '&lat=' + args["lat"]
+    solr_query += '&long=' + args["long"]
+    solr_query += '&radius=' + str(args[api.PARAM_VOL_DIST])
+    #Todo: implement sorting by distance.
+    #solr_query += "&sort=geo_distance+asc"
 
   # TODO: injection attack on backend
   if api.PARAM_BACKEND_URL not in args:
@@ -139,7 +135,7 @@ def form_solr_query(args):
 
   if api.PARAM_START not in args:
     args[api.PARAM_START] = 1
-  return urllib.quote_plus(solr_query)
+  return solr_query
 
 # note: many of the XSS and injection-attack defenses are unnecessary
 # given that the callers are also protecting us, but I figure better
