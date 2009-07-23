@@ -189,6 +189,10 @@ def parse(instr, maxrecs, progress):
       #print "date:",datestr
       #print "body:",body[0:100]
 
+    # craigslist is full of weird escapes-- strip them
+    body = re.sub(r'&[a-z]+;', '', body)
+    title = re.sub(r'&[a-z]+;', '', title)
+    locstr = re.sub(r'&[a-z]+;', '', locstr)
     outstr += '<VolunteerOpportunity>'
     outstr += '<volunteerOpportunityID>%s</volunteerOpportunityID>' % (item_id)
     outstr += '<sponsoringOrganizationIDs><sponsoringOrganizationID>0</sponsoringOrganizationID></sponsoringOrganizationIDs>'
