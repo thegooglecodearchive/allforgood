@@ -3,7 +3,7 @@
 
 """
 script for loading into googlebase.
-Usage: load_gbase.py username password
+Usage: pipeline.py username password
 """
 
 import sys
@@ -20,6 +20,7 @@ PASSWORD = ""
 
 LOGPATH = "/home/footprint/public_html/datahub/dashboard/"
 
+# rename these-- but remember that the dashboard has to be updated first...
 LOG_FN = "load_gbase.log"
 LOG_FN_BZ2 = "load_gbase.log.bz2"
 DETAILED_LOG_FN = "load_gbase_detail.log"
@@ -266,7 +267,7 @@ def run_shell(command, silent_ok=False, universal_newlines=True,
   return stdout, stderr, retcode
 
 
-def load_gbase(name, url, do_processing=True, do_ftp=True):
+def run_pipeline(name, url, do_processing=True, do_ftp=True):
   """shutup pylint."""
   print_progress("loading "+name+" from "+url)
 
@@ -304,57 +305,57 @@ def load_gbase(name, url, do_processing=True, do_ftp=True):
     print_progress("ftp'ing to base")
     footprint_lib.PROGRESS = True
     footprint_lib.ftp_to_base(name, USERNAME+":"+PASSWORD, tsv_data)
-    print_progress("load_gbase: done.")
+    print_progress("pipeline: done.")
 
 
 def test_loaders():
   """for testing, read from local disk as much as possible."""
-  load_gbase("americanredcross", "americanredcross.xml", False, False)
-  load_gbase("mlk_day", "mlk_day.xml", False, False)
-  load_gbase("gspreadsheets",
+  run_pipeline("americanredcross", "americanredcross.xml", False, False)
+  run_pipeline("mlk_day", "mlk_day.xml", False, False)
+  run_pipeline("gspreadsheets",
              "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw", False, False)
-  load_gbase("craigslist", "craigslist-cache.txt", False, False)
+  run_pipeline("craigslist", "craigslist-cache.txt", False, False)
 
 def loaders():
   """put all loaders in one function for easier testing."""
-  load_gbase("americanredcross", "americanredcross.xml")
-  load_gbase("americansolutions", "americansolutions.xml")
-  load_gbase("americorps", "americorps.xml")
-  load_gbase("christianvolunteering", "christianvolunteering.xml")
-  load_gbase("citizencorps", "citizencorps.xml")
-  load_gbase("extraordinaries", "extraordinaries.xml")
-  load_gbase("givingdupage", "givingdupage.xml")
-  load_gbase("habitat", "habitat.xml")
-  load_gbase("handsonnetwork", "handsonnetwork.xml")
-  load_gbase("idealist", "idealist.xml")
-  load_gbase("meetup", "meetup.xml")
-  load_gbase("mentorpro", "mentorpro.xml")
-  load_gbase("mlk_day", "mlk_day.xml")
-  load_gbase("mybarackobama", "mybarackobama.xml")
-  load_gbase("myproj_servegov", "myproj_servegov.xml")
-  load_gbase("seniorcorps", "seniorcorps.xml")
-  load_gbase("servenet", "servenet.xml")
-  load_gbase("unitedway", "unitedway.xml")
-  load_gbase("volunteergov", "volunteergov.xml")
-  load_gbase("volunteermatch", "volunteermatch.xml")
-  load_gbase("volunteertwo", "volunteertwo.xml")
-  load_gbase("ymca", "ymca.xml")
+  run_pipeline("americanredcross", "americanredcross.xml")
+  run_pipeline("americansolutions", "americansolutions.xml")
+  run_pipeline("americorps", "americorps.xml")
+  run_pipeline("christianvolunteering", "christianvolunteering.xml")
+  run_pipeline("citizencorps", "citizencorps.xml")
+  run_pipeline("extraordinaries", "extraordinaries.xml")
+  run_pipeline("givingdupage", "givingdupage.xml")
+  run_pipeline("habitat", "habitat.xml")
+  run_pipeline("handsonnetwork", "handsonnetwork.xml")
+  run_pipeline("idealist", "idealist.xml")
+  run_pipeline("meetup", "meetup.xml")
+  run_pipeline("mentorpro", "mentorpro.xml")
+  run_pipeline("mlk_day", "mlk_day.xml")
+  run_pipeline("mybarackobama", "mybarackobama.xml")
+  run_pipeline("myproj_servegov", "myproj_servegov.xml")
+  run_pipeline("seniorcorps", "seniorcorps.xml")
+  run_pipeline("servenet", "servenet.xml")
+  run_pipeline("unitedway", "unitedway.xml")
+  run_pipeline("volunteergov", "volunteergov.xml")
+  run_pipeline("volunteermatch", "volunteermatch.xml")
+  run_pipeline("volunteertwo", "volunteertwo.xml")
+  run_pipeline("ymca", "ymca.xml")
 
   # requires special crawling
-  load_gbase("gspreadsheets",
-             "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
+  run_pipeline("gspreadsheets",
+               "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
 
   # note: craiglist crawler is run asynchronously, hence the local file
-  load_gbase("craigslist", "craigslist-cache.txt")
+  run_pipeline("craigslist", "craigslist-cache.txt")
 
   # out for launch
-  # load_gbase("mybarackobama",
+  # run_pipeline("mybarackobama",
   #            "http://my.barackobama.com/page/event/search_results?"+
   #            "format=footprint")
 
   # old custom feed
   # legacy-- to be safe, remove after 9/1/2009
-  #load_gbase("idealist", "http://feeds.idealist.org/xml/feeds/"+
+  #run_pipeline("idealist", "http://feeds.idealist.org/xml/feeds/"+
   #           "Idealist-VolunteerOpportunity-VOLUNTEER_OPPORTUNITY_TYPE."+
   #           "en.open.atom.gz")
 
