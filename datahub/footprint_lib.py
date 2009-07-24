@@ -920,16 +920,17 @@ def ftp_to_base(filename, ftpinfo, instr):
   data_fh.close()
   
 def solr_retransform(fname):
+  """Create SOLR-compatible versions of a datafile"""
   print fname
-  f = open(fname, "r")
-  csv_reader = DictReader(f, dialect='our-dialect')
+  data_file = open(fname, "r")
+  csv_reader = DictReader(data_file, dialect='our-dialect')
   csv_reader.next()
   fnames = csv_reader.fieldnames[:]
   fnames.append("c:eventrangeend:datetime")
   fnames.append("c:eventrangestart:datetime")
   fnamesdict = dict([(x, x) for x in fnames])
-  f = open(fname, "r")
-  csv_reader = DictReader(f, dialect='our-dialect')
+  data_file = open(fname, "r")
+  csv_reader = DictReader(data_file, dialect='our-dialect')
   csv_writer = DictWriter(open (fname + '.transformed', 'w'),
                           dialect='excel-tab',
                           fieldnames=fnames)
@@ -958,13 +959,15 @@ def solr_retransform(fname):
       rows['c:longitude:float'] = float(rows['c:longitude:float']) - 1000.0
       
     csv_writer.writerow(rows)
-  f.close()
+  data_file.close()
   
 # TODO: add a choice of backend URL
-def update_solr_index(filename):
+def update_solr_index(filename, backend_url):
+  """Transform a datafile and update the specified backend's index"""
   in_fname = filename + '.gz'
   out_fname = filename + '.transformed'
-  
+  # TODO: work out how to use the data string directly instead of faffing
+  # around with gzip and conventional files.
   f_out = open(out_fname, 'wb')
   f_in = gzip.open(in_fname, 'rb')
   
@@ -973,10 +976,9 @@ def update_solr_index(filename):
   f_in.close()
   
   solr_retransform(out_fname)
-  
-  backend_url = 'http://google2.osuosl.org:8080/solrdev/'  
+   
   cmd = 'curl \'' + backend_url + \
-  'update/csv?commit=true&separator=%09&escape=%10\' --data-binary ' + \
+   'update/csv?commit=true&separator=%09&escape=%10\' --data-binary ' + \
    out_fname + \
    ' -H \'Content-type:text/plain; charset=utf-8\';'
   subprocess.call(cmd, shell=True)
