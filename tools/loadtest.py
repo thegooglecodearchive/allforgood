@@ -468,9 +468,6 @@ def register_request_type(name, func, freq=10, cache_hitrate="50%"):
   for i in range(freq):
     REQUEST_FREQ.append(name)
 
-#BASE_URL = "http://footprint2009dev.appspot.com/"
-BASE_URL = "http://footprint-loadtest.appspot.com/"
-
 def disable_caching(url):
   """footprint-specific method to disable caching."""
   if url.find("?") > 0:
@@ -485,7 +482,7 @@ def make_request(cached, url):
   if not cached:
     url = disable_caching(url)
   if url not in URLS_SEEN:
-    seen_url = re.sub(re.compile("^"+BASE_URL), '/', url)
+    seen_url = re.sub(re.compile("^"+OPTIONS.baseurl), '/', url)
     print "fetching "+seen_url
     URLS_SEEN[url] = True
   try:
@@ -498,10 +495,10 @@ def make_request(cached, url):
 
 def search_url(base, loc="Chicago,IL", keyword="park"):
   """construct FP search URL, defaulting to [park] near [Chicago,IL]"""
-  if BASE_URL[-1] == '/' and base[0] == '/':
-    url = BASE_URL+base[1:]
+  if OPTIONS.baseurl[-1] == '/' and base[0] == '/':
+    url = OPTIONS.baseurl+base[1:]
   else:
-    url = BASE_URL+base
+    url = OPTIONS.baseurl+base
   if loc and loc != "":
     url += "&vol_loc="+loc
   if keyword and keyword != "":
@@ -511,14 +508,14 @@ def search_url(base, loc="Chicago,IL", keyword="park"):
 def error_request(name, cached=False):
   """requests for 404 junk on the site.  Here mostly to prove that
   the framework does catch errors."""
-  if make_request(cached, BASE_URL+"foo") == "":
+  if make_request(cached, OPTIONS.baseurl+"foo") == "":
     return ""
   return "no content"
 register_request_type("error", error_request, freq=5)
 
 def static_url():
   """all static requests are roughly equivalent."""
-  return BASE_URL+"images/background-gradient.png"
+  return OPTIONS.baseurl+"images/background-gradient.png"
 
 def fp_find_embedded_objects(base_url, content):
   """cheesy little HTML parser, which also approximates browser caching
@@ -578,7 +575,7 @@ def static_fetcher_main():
 
 def homepage_request(name, cached=False):
   """request to FP homepage."""
-  content = make_request(cached, BASE_URL)
+  content = make_request(cached, OPTIONS.baseurl)
   content += make_request(cached, search_url("/ui_snippets?", keyword=""))
   return content
 register_request_type("page_home", homepage_request)
@@ -617,6 +614,7 @@ def setup_tests():
       request_type_counts[name] += 1.0
     else:
       request_type_counts[name] = 1.0
+  print "OPTIONS.baseurl: %s" % OPTIONS.baseurl
   print "OPTIONS.page_fetchers: %d" % OPTIONS.page_fetchers
   print "OPTIONS.static_fetchers: %d" % OPTIONS.static_fetchers
   print "OPTIONS.static_content_hitrate: %d%%" % OPTIONS.static_content_hitrate
@@ -643,7 +641,7 @@ def run_tests():
     # and parallel fetching.  But we do want to create load on the
     # servers
     if content and content != "":
-      fetch_static_content(BASE_URL, content)
+      fetch_static_content(OPTIONS.baseurl, content)
     else:
       result_name = testname + " (errors)"
     append_results([result_name, elapsed])
@@ -698,6 +696,9 @@ def get_options():
   group.add_option("-r", "--run_time", type="int", default=20,
                    dest="run_time",                   
                    help="how long to run the test (seconds).")
+  group.add_option("-b", "--baseurl", dest="baseurl",
+                   default="footprint-loadtest.appspot.com",
+                   help="server instance to test (domain).")
   group.add_option("-n", "--page_fetchers", type="int", dest="page_fetchers",
                    default=4, help="how many pageview fetchers.")
   group.add_option("--static_fetchers", type="int", dest="static_fetchers", 
@@ -723,6 +724,10 @@ def get_options():
                    dest="save_cookies", default=True,
                    help="Do not save authentication cookies to local disk.")
   OPTIONS, args = parser.parse_args(sys.argv[1:])
+  if OPTIONS.baseurl[-1] != "/":
+    OPTIONS.baseurl += "/"
+  if not re.search("^http://", OPTIONS.baseurl):
+    OPTIONS.baseurl = "http://" + OPTIONS.baseurl
 
 def get_quota_details():
   global OPTIONS
