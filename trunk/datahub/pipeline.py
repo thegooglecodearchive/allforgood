@@ -11,12 +11,11 @@ import re
 import gzip
 import bz2
 import logging
+import optparse
+import pipeline_keys
 import subprocess
 from datetime import datetime
 import footprint_lib
-
-USERNAME = ""
-PASSWORD = ""
 
 LOGPATH = "/home/footprint/public_html/datahub/dashboard/"
 
@@ -75,6 +74,41 @@ STOPWORDS = set([
   'gov', 'yes', 'no', '999',
   ])
 
+OPTIONS = None
+def get_options():
+  """Generates command-line options."""
+  global OPTIONS
+  parser = optparse.OptionParser()
+
+  # Standard options
+  parser.add_option('-b', '--backend_type', default='base',
+                    dest='backend_type',
+                    help='Type of backend used. Can be \'base\' or \'solr\'')
+  parser.add_option('-t', '--test_mode', action='store_true', default=False,
+                    dest='test_mode',
+                    help='Don\'t process or upload the data files')
+  # Base options
+  base_group = parser.add_option_group("Google Base options")
+  base_group.add_option('--base_ftp_user',
+                        default=pipeline_keys.BASE_FTP_USER,
+                        dest='base_ftp_user',
+                        help ='GBase username')
+  base_group.add_option('--base_ftp_pass',
+                        default=pipeline_keys.BASE_FTP_PASS,
+                        dest='base_ftp_pass',
+                        help ='GBase password')
+  base_group.add_option('--base_cust_id',
+                        default=pipeline_keys.BASE_CUSTOMER_ID,
+                        dest='base_cust_id',
+                        help ='GBase customer ID.')
+  # SOLR options
+  solr_group = parser.add_option_group("SOLR options")
+  solr_group.add_option('--solr_url',
+                        default=pipeline_keys.SOLR_URL,
+                        dest='solr_url',
+                        help ='URL of the SOLR instance to be updated.')
+  (OPTIONS, args) = parser.parse_args()
+  
 def print_progress(msg):
   """print progress message-- shutup pylint"""
   print str(datetime.now())+": "+msg
@@ -280,7 +314,6 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
 
   if do_processing:
     stdout, stderr, retcode = run_shell(["./footprint_lib.py", "--progress",
-                                         #"--ftpinfo", USERNAME+":"+PASSWORD,
                                          "--output", tsv_filename, url,
                                          "--compress_output" ],
                                         silent_ok=True, print_output=False)
@@ -301,19 +334,24 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
   print "processing popular words..."
   process_popular_words(tsv_data)
 
-  if do_ftp:
+  if OPTIONS.backend_type == 'base' and do_ftp:
     print_progress("ftp'ing to base")
     footprint_lib.PROGRESS = True
-    footprint_lib.ftp_to_base(name, USERNAME+":"+PASSWORD, tsv_data)
+    footprint_lib.ftp_to_base(name,
+                              OPTIONS.base_ftp_user+":"+OPTIONS.base_ftp_pass,
+                              tsv_data)
     print_progress("pipeline: done.")
-
+  elif OPTIONS.backend_type == 'solr':
+    print_progress('updating SOLR index')
+    footprint_lib.update_solr_index(name+'1', OPTIONS.solr_url)
 
 def test_loaders():
   """for testing, read from local disk as much as possible."""
   run_pipeline("americanredcross", "americanredcross.xml", False, False)
   run_pipeline("mlk_day", "mlk_day.xml", False, False)
   run_pipeline("gspreadsheets",
-             "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw", False, False)
+               "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw",
+               False, False)
   run_pipeline("craigslist", "craigslist-cache.txt", False, False)
 
 def loaders():
@@ -361,19 +399,18 @@ def loaders():
 
 def main():
   """shutup pylint."""
-  global USERNAME, PASSWORD
-  if len(sys.argv) < 3:
-    print "Usage:", sys.argv[0], "<gbase username> <password>"
-    sys.exit(1)
-  USERNAME = sys.argv[1]
-  PASSWORD = sys.argv[2]
+  get_options()
+  
+  if OPTIONS.backend_type not in ['base', 'solr']:
+    error_exit('Unrecognized backend type. Use --help for a list of options.')
 
-  if USERNAME == "test":
+  if OPTIONS.test_mode:
     global LOGPATH
     LOGPATH = "./"
     test_loaders()
   else:
     loaders()
+
   print_word_stats()
   print_field_stats()
   print_geo_stats()
