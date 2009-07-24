@@ -26,7 +26,7 @@
 <p>First, request a key to use the All for Good API by completing the <a href="http://spreadsheets.google.com/viewform?hl=en&formkey=cmV2MWhwSmpBMUdZV3dtRG5UWFljdlE6MA..">API Key form</a>. Once that request has been fulfilled, you may then use the API  available at:<br />
 <a href="http://www.allforgood.org/api/volopps">http://www.allforgood.org/api/volopps</a></p>
 <p>As a <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a>-based API, All for Good provides all output over HTTP at distinct <a href="http://en.wikipedia.org/wiki/Uniform_Resource_Identifier">URIs</a>, which makes it easy to test applications with browsers and command-line web clients. All for Good contains listings of volunteer opportunities, which today are defined as events (offline or online), optionally containing locations and start-end times.</p>
-<p>In their simplest form, listings have just a title, description and basic contact, time and location information.  In their fullest form, listings can contain dozens of detailed fields, as described in the <a href="#Elements">Elements</a> section and associated <a href="http://code.google.com/p/footprint2009dev/source/browse/trunk/spec/spec0.1.html">specification</a>. Because of the short lifespan of these posts, there is little point in storing results.</p>
+<p>In their simplest form, listings have just a title, description and basic contact, time and location information.  In their fullest form, listings can contain dozens of detailed fields, as described in the <a href="#Elements">Elements</a> section and associated <a href="http://code.google.com/p/allforgood/source/browse/trunk/spec/spec0.1.html">specification</a>. Because of the short lifespan of these posts, there is little point in storing results.</p>
 <h2 id="Parameters">Query parameters</h2>
 <p>All for Good uses <a href="http://code.google.com/apis/gdata/docs/2.0/reference.html#Queries">Google conventions on query parameters</a>, , e.g. q=... is used for keyword search, num= specifies the number of results and start= sets offset for pagination.</p>
 <p>The syntax for API calls requires following the aforementioned All for Good  API URL (<a href="http://www.allforgood.org/api/volopps">http://www.allforgood.org/api/volopps</a>) with a question mark (?) and then a parameter name, equal sign (=), and value. Here's the syntax for constructing API calls:<br />
@@ -114,7 +114,7 @@
   <li><em>RSS</em> - A machine-readable format that is currently recommended for all  uses other than debugging. You can specify this setting by appending the API call with: <code>&amp;output=rss</code></li>
   <li><em>HTML</em> - A  human-readable format that's currently dedicated to debugging. This is the default and will appear whenever you load the API without the output parameter and can be manually set with: <code>&amp;output=html</code></li>
 </ul>
-<p>In addition, many more output formats are planned, including XML (FPXML), xSV (comma, tab, etc. separated values) and more. Ask <a href="mailto:footprint-eng@googlegroups.com">us</a> and we'll quickly provide them. Return to this page or visit the <a href="http://code.google.com/p/footprint2009dev/">All for Good (Footprint) project site</a> for <a href="http://code.google.com/p/footprint2009dev/updates/list">updates</a>.</p>
+<p>In addition, many more output formats are planned, including XML (FPXML), xSV (comma, tab, etc. separated values) and more. Ask <a href="mailto:footprint-eng@googlegroups.com">us</a> and we'll quickly provide them. Return to this page or visit the <a href="http://code.google.com/p/allforgood/">All for Good project site</a> for <a href="http://code.google.com/p/allforgood/updates/list">updates</a>.</p>
 <h2 id="Fields">Output fields</h2>
 <p>Generally, the output fields correspond to the input fields found in FPXML (see the <a href="#Elements">Elements</a> section), with a few extra fields:</p>
 <ul>
@@ -145,8 +145,8 @@ connection.connect();
 InputStream stream = connection.getInputStream();</pre>
 <h2 id="Elements">Elements</h2>
 <p>All for Good stores one record per location, i.e. if an event has multiple locations, there's one record per location.  Likewise, for repeated events, we store one record per time range. These elements are described in the All for Good XML specification for data received from providers here:<br />
-  <a href="http://code.google.com/p/footprint2009dev/source/browse/trunk/spec/spec0.1.xsd">http://code.google.com/p/footprint2009dev/source/browse/trunk/spec/spec0.1.xsd</a><br />
-<a href="http://code.google.com/p/footprint2009dev/source/browse/trunk/spec/spec0.1.html">http://code.google.com/p/footprint2009dev/source/browse/trunk/spec/spec0.1.html</a><br />
+  <a href="http://code.google.com/p/allforgood/source/browse/trunk/spec/spec0.1.xsd">http://code.google.com/p/allforgood/source/browse/trunk/spec/spec0.1.xsd</a><br />
+<a href="http://code.google.com/p/allforgood/source/browse/trunk/spec/spec0.1.html">http://code.google.com/p/allforgood/source/browse/trunk/spec/spec0.1.html</a><br />
 </p>
 <h2 id="Notes">Developer notes and requests</h2>
 <ul>
