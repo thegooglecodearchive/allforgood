@@ -930,6 +930,7 @@ def solr_retransform(fname):
   fnames.append("c:eventrangestart:datetime")
   fnamesdict = dict([(x, x) for x in fnames])
   data_file = open(fname, "r")
+  # TODO: Switch to TSV - Faster and simpler
   csv_reader = DictReader(data_file, dialect='our-dialect')
   csv_writer = DictWriter(open (fname + '.transformed', 'w'),
                           dialect='excel-tab',
