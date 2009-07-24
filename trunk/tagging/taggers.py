@@ -26,7 +26,7 @@ class Tagger(object):
     score = reduce(lambda x, y: x+y, scores)/len(scores)
     
     # add tag if the score, after all tagging functions, exceeds the threshold
-    if score > self.score_threshold:
+    if score > self.score_threshold and len(row) > self.tag_col:
       row[self.tag_col] += self.tag_name + ', '
     return row
 
@@ -52,7 +52,7 @@ class KeywordTagger(Tagger):
     for keyword in self.keywords:
       keyword_count = 0
       for col in self.examine_cols:
-        keyword_count += row[col].lower().count(keyword.lower().replace('+',' '))
+        keyword_count += row[col].lower().count(' '+keyword.lower().replace('+',' ')+' ')
       if keyword_count > 0:
         score += self.keywords[keyword]
     score /= len(self.keywords)

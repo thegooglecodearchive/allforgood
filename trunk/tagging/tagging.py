@@ -60,10 +60,10 @@ def get_taggers(fields):
   
   education_tagger = SimpleKeywordTagger('Education','education reading \
   teaching teacher teach books book library literacy school schools libraries \
-  classroom class',[title_col, descr_col], tag_col)
+  classroom',[title_col, descr_col], tag_col)
   
-  animals_tagger = SimpleKeywordTagger('Animals','animal animals dog dogs cat \
-  cats zoo bird birds zoos',
+  animals_tagger = SimpleKeywordTagger('Animals','animal animals dog dogs cats \
+  cat zoo bird birds zoos',
   [title_col, descr_col], tag_col)
   
   health_tagger = SimpleKeywordTagger('Health','health hospital hospitals \
@@ -103,17 +103,18 @@ def show_tags(fname):
 
   for row in inreader:
     tag_stats['Total Rows'] += 1
-    for tagger in taggers:
-      if row[42].count(tagger.tag_name) > 0:
-        tag_stats[tagger.tag_name] += 1
-    if row[42]:
-      tag_stats['Tagged'] += 1
+    if len(row) >= 42:
+      for tagger in taggers:
+        if row[42].count(tagger.tag_name) > 0:
+          tag_stats[tagger.tag_name] += 1
+      if row[42]:
+        tag_stats['Tagged'] += 1
 
-    # print a random 1% of tagged data for inspection
-    if random.random() < 0.01:
-      print row[7], "- Tags:", row[42]
-      print row[8]
-      print
+      # print a random 1% of tagged data for inspection
+      if random.random() < 0.01:
+        print row[7], "- Tags:", row[42]
+        print row[8]
+        print
 
   print tag_stats
   infile.close()
