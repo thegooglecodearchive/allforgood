@@ -21,7 +21,6 @@ import gzip
 import hashlib
 import urllib
 import re
-from csv import DictReader, DictWriter, excel_tab, register_dialect, QUOTE_NONE
 from datetime import datetime
 import geocoder
 import parse_footprint
@@ -160,11 +159,6 @@ FIELDTYPES = {
   "location_string":"string",
   "orgLocation":"string",
 }
-
-class our_dialect(excel_tab):
-  quotechar = ''
-  quoting = QUOTE_NONE
-register_dialect('our-dialect', our_dialect)
 
 def print_progress(msg, filename="", progress=None):
   """print progress indicator."""
@@ -874,115 +868,6 @@ def guess_shortname(filename):
   if re.search(r'(mpsg_feed|myproj_servegov)', filename):
     return "myproj_servegov"
   return ""
-
-def ftp_to_base(filename, ftpinfo, instr):
-  """ftp the string to base, guessing the feed name from the orig filename."""
-  ftplib = __import__('ftplib')
-  stringio = __import__('StringIO')
-
-  dest_fn = guess_shortname(filename)
-  if dest_fn == "":
-    dest_fn = "footprint1.txt"
-  else:
-    dest_fn = dest_fn + "1.gz"
-
-  if re.search(r'[.]gz$', dest_fn):
-    print_progress("compressing data from "+str(len(instr))+" bytes", filename)
-    gzip_fh = gzip.open(dest_fn, 'wb', 9)
-    gzip_fh.write(instr)
-    gzip_fh.close()
-    data_fh = open(dest_fn, 'rb')
-  else:
-    data_fh = stringio.StringIO(instr)
-
-  host = 'uploads.google.com'
-  (user, passwd) = ftpinfo.split(":")
-  print_progress("connecting to " + host + " as user " + user + "...", filename)
-  ftp = ftplib.FTP(host)
-  welcomestr = re.sub(r'\n', '\\n', ftp.getwelcome())
-  print_progress("FTP server says: "+welcomestr, filename)
-  ftp.login(user, passwd)
-  print_progress("uploading filename "+dest_fn, filename)
-  success = False
-  while not success:
-    try:
-      ftp.storbinary("STOR " + dest_fn, data_fh, 8192)
-      success = True
-    except:
-      # probably ftplib.error_perm: 553: Permission denied on server. (Overwrite)
-      print_progress("upload failed-- sleeping and retrying...")
-      time.sleep(1)
-  if success:
-    print_progress("done uploading.")
-  else:
-    print_progress("giving up.")
-  ftp.quit()
-  data_fh.close()
-  
-def solr_retransform(fname):
-  """Create SOLR-compatible versions of a datafile"""
-  print fname
-  data_file = open(fname, "r")
-  csv_reader = DictReader(data_file, dialect='our-dialect')
-  csv_reader.next()
-  fnames = csv_reader.fieldnames[:]
-  fnames.append("c:eventrangeend:datetime")
-  fnames.append("c:eventrangestart:datetime")
-  fnamesdict = dict([(x, x) for x in fnames])
-  data_file = open(fname, "r")
-  # TODO: Switch to TSV - Faster and simpler
-  csv_reader = DictReader(data_file, dialect='our-dialect')
-  csv_writer = DictWriter(open (fname + '.transformed', 'w'),
-                          dialect='excel-tab',
-                          fieldnames=fnames)
-  csv_writer.writerow(fnamesdict)
-  for rows in csv_reader:
-    for key in rows.keys():
-      if key.find(':dateTime') != -1:
-        rows[key] += 'Z'
-      elif key.find(':integer') != -1:
-        if rows[key] == '':
-          rows[key] = 0
-        else:
-          rows[key] = int(rows[key])
-      
-    # Split the date range into separate fields
-    # event_date_range can be either start_date or start_date/end_date
-    split_date_range = rows["event_date_range"].split('/')
-    rows["c:eventrangeend:datetime"] = split_date_range[0]
-    if len(split_date_range) > 1:
-      rows["c:eventrangestart:datetime"] = split_date_range[1]
-    
-    # Fix to the +1000 to lat/long hack   
-    if not rows['c:latitude:float'] is None:
-      rows['c:latitude:float'] = float(rows['c:latitude:float']) - 1000.0
-    if not rows['c:longitude:float'] is None:
-      rows['c:longitude:float'] = float(rows['c:longitude:float']) - 1000.0
-      
-    csv_writer.writerow(rows)
-  data_file.close()
-  
-# TODO: add a choice of backend URL
-def update_solr_index(filename, backend_url):
-  """Transform a datafile and update the specified backend's index"""
-  in_fname = filename + '.gz'
-  out_fname = filename + '.transformed'
-  # TODO: work out how to use the data string directly instead of faffing
-  # around with gzip and conventional files.
-  f_out = open(out_fname, 'wb')
-  f_in = gzip.open(in_fname, 'rb')
-  
-  f_out.writelines(f_in)
-  f_out.close()
-  f_in.close()
-  
-  solr_retransform(out_fname)
-   
-  cmd = 'curl \'' + backend_url + \
-   'update/csv?commit=true&separator=%09&escape=%10\' --data-binary ' + \
-   out_fname + \
-   ' -H \'Content-type:text/plain; charset=utf-8\';'
-  subprocess.call(cmd, shell=True)
 
 def guess_parse_func(inputfmt, filename):
   """from the filename and the --inputfmt,guess the input type and parse func"""
