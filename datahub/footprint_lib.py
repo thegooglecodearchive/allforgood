@@ -195,8 +195,8 @@ def convert_dt_to_gbase(datestr, timestr, timezone):
     print "error parsing datetime: "+datestr+" "+timestr
     return ""
   timestr = timestr.replace(tzinfo=tzinfo)
-  #pst = dateutil.tz.tzstr("PST8PDT")
-  #timestr = timestr.astimezone(pst)
+  utc = dateutil.tz.tzutc()
+  timestr = timestr.astimezone(utc)
   if timestr.year < 1900:
     timestr = timestr.replace(year=timestr.year+1900)
   res = timestr.strftime("%Y-%m-%dT%H:%M:%S")
