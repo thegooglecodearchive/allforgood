@@ -14,6 +14,7 @@ import logging
 import optparse
 import pipeline_keys
 import subprocess
+import time
 from csv import DictReader, DictWriter, excel_tab, register_dialect, QUOTE_NONE
 from datetime import datetime
 import footprint_lib
@@ -441,6 +442,11 @@ def ftp_to_base(filename, ftpinfo, instr):
       # probably ftplib.error_perm: 553: Permission denied on server. (Overwrite)
       print_progress("upload failed-- sleeping and retrying...")
       time.sleep(1)
+      ftp = ftplib.FTP(host)
+      welcomestr = re.sub(r'\n', '\\n', ftp.getwelcome())
+      print_progress("FTP server says: "+welcomestr)
+      ftp.login(user, passwd)
+      print_progress("uploading filename "+dest_fn)
   if success:
     print_progress("done uploading.")
   else:
