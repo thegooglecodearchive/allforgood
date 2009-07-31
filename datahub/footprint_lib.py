@@ -40,6 +40,8 @@ import dateutil
 import dateutil.tz
 import dateutil.parser
 
+from taggers import get_taggers, XMLRecord
+
 FIELDSEP = "\t"
 RECORDSEP = "\n"
 
@@ -220,12 +222,11 @@ def flattener_value(node):
   else:
     return ""
 
-def flatten_to_csv(domnode):
-  """prints the children of a DOM node as CSV separated strings"""
+def flatten_to_csv(nodelist):
+  """prints a list of DOM nodes as CSV separated strings"""
   # pylint: disable-msg=W0141
   return ",".join(filter(lambda x: x != "",
-                         map(flattener_value, domnode.childNodes)))
-
+                         map(flattener_value, nodelist)))
 
 def output_field(name, value):
   """print a field value, handling long strings, header lines and
@@ -421,7 +422,7 @@ def get_direct_mapped_fields(opp, org):
     fieldval = opp.getElementsByTagName(field)
     val = ""
     if (fieldval.length > 0):
-      val = flatten_to_csv(fieldval[0])
+      val = flatten_to_csv(fieldval)
     outstr += output_field(field, val)
 
   # orgLocation
@@ -726,8 +727,17 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
     oppchunks = re.findall(
       re.compile('<VolunteerOpportunity>.+?</VolunteerOpportunity>',
                  re.DOTALL), instr)
+    
+    taggers = get_taggers()
+    
     for oppchunk in oppchunks:
       opp = xmlh.simple_parser(oppchunk, None, False)
+      rec = XMLRecord(opp)
+      #add tags
+      for tagger in taggers:
+        rec = XMLRecord(opp)
+        rec = tagger.do_tagging(rec)
+      opp = rec.opp
       if not HEADER_ALREADY_OUTPUT:
         outstr = output_header(feedinfo, opp, example_org)
       numopps, spiece = output_opportunity(opp, feedinfo, known_orgs, numopps)
