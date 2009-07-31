@@ -251,7 +251,7 @@ def fetch_and_dedup(args):
   # TODO: Update this when SOLR becomes the new default
   # Backend defaults to base for now
   if api.PARAM_BACKEND_TYPE not in args:
-    args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_BASE
+    args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_SOLR
 
   if args[api.PARAM_BACKEND_TYPE] == api.BACKEND_TYPE_BASE:
     logging.debug("Searching using BASE backend")
