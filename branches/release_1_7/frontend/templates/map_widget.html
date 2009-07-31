@@ -1,0 +1,17 @@
+<div style='margin-bottom: 14px;'>
+  <form action='/' onsubmit='submitForm("map"); return false;' class='valign'>
+    <table style='width:100%;'>
+     <tr>
+      <td valign='middle'>
+        <input id='location' name='your location'
+               class='valign' type='text' size='60' value='{{ location|escape }}'/>
+        <img class='search_button valign pointer' alt='search'
+               onclick='submitForm("map"); return false;'
+               src='/zx{{version}}/images/red-search-button-30x26.png'/>
+      </td>
+     </tr>
+    </table>
+  <script>setInputFieldValue(el('location'), '');</script>
+  </form>
+</div>
+<div id='map'></div>

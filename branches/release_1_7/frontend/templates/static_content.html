@@ -1,0 +1,43 @@
+{% extends 'layout_two_column.html' %}
+
+{% block content_left %}
+<h1>&nbsp;</h1>
+<ul id='static_content_list'>
+
+<li>
+{% ifequal path '/about' %} About {% else %} <a href='/about'>About</a> {% endifequal %}
+
+<li><a href='http://blog.allforgood.org'>Blog</a>
+	
+<li>
+{% ifequal path '/help' %} Help {% else %} <a href='/help'>Help</a> {% endifequal %}
+
+<li>
+{% ifequal path '/faq' %} FAQs {% else %} <a href='/faq'>FAQs</a> {% endifequal %}
+
+<li>
+{% ifequal path '/apps' %} Apps {% else %} <a href='/apps'>Apps</a> {% endifequal %}
+
+<li>
+{% ifequal path '/docs/api.html' %} API {% else %} <a href='/docs/api.html'>API</a> {% endifequal %}
+
+<li>
+{% ifequal path '/posting' %} Posting Listings {% else %} <a href='/posting'>Posting Listings</a> {% endifequal %}
+
+<li>
+{% ifequal path '/privacypolicy' %} Privacy Policy {% else %} <a href='/privacypolicy'>Privacy Policy</a> {% endifequal %}
+
+<li>
+{% ifequal path '/tos' %} Terms of Service {% else %} <a href='/tos'>Terms of Service</a> {% endifequal %}
+
+<li>
+{% ifequal path '/contentpolicy' %} Content Policy {% else %} <a href='/contentpolicy'>Content Policy</a> {% endifequal %}
+
+</ul>
+{% endblock content_left %}
+
+{% block content_right %}
+<div id='static_content'>
+{{ static_content }}
+</div>
+{% endblock content_right %}
