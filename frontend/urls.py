@@ -62,4 +62,5 @@ STATIC_CONTENT_FILES = {
   '/code' : 'code.html',
   '/posting' : 'spreadsheet.html',
   '/guide' : 'tour.html',
+  '/cla' : 'cla.html',
 }
