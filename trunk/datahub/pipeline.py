@@ -12,6 +12,7 @@ import gzip
 import bz2
 import logging
 import optparse
+import os
 import pipeline_keys
 import subprocess
 import time
@@ -321,7 +322,9 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
   # match the filenames to the feed filenames in Google Base, so we can
   # manually upload for testing.
   tsv_filename = name+"1.gz"
-
+  if not os.path.exists(url):
+    print_progress('Feed file missing: ' + url)
+    return
   if do_processing:
     stdout, stderr, retcode = run_shell(["./footprint_lib.py", "--progress",
                                          "--output", tsv_filename, url,
