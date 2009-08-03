@@ -88,9 +88,12 @@ def get_options():
   parser = optparse.OptionParser()
 
   # Standard options
-  parser.add_option('-b', '--backend_type', default='base',
-                    dest='backend_type',
-                    help='Type of backend used. Can be \'base\' or \'solr\'')
+  parser.add_option('-b', '--use_base', action='store_true', default=False,
+                    dest='use_base',
+                    help='Update the Base index. Can be used with --use_solr.')
+  parser.add_option('-s', '--use_solr', action='store_true', default=False,
+                    dest='use_solr',
+                    help='Update the SOLR index. Can be used with --use_base.')
   parser.add_option('-t', '--test_mode', action='store_true', default=False,
                     dest='test_mode',
                     help='Don\'t process or upload the data files')
@@ -341,15 +344,15 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
   print "processing popular words..."
   process_popular_words(tsv_data)
 
-  if OPTIONS.backend_type == 'base' and do_ftp:
+  if OPTIONS.use_base and do_ftp:
     print_progress("ftp'ing to base")
     footprint_lib.PROGRESS = True
     ftp_to_base(name,
                 OPTIONS.base_ftp_user+":"+OPTIONS.base_ftp_pass,
                 tsv_data)
     print_progress("pipeline: done.")
-  elif OPTIONS.backend_type == 'solr':
-    print_progress('updating SOLR index')
+  if OPTIONS.use_solr:
+    print_progress('Commencing SOLR index update')
     update_solr_index(name+'1', OPTIONS.solr_url)
 
 def test_loaders():
@@ -510,20 +513,17 @@ def update_solr_index(filename, backend_url):
   f_in.close()
   
   solr_filename = solr_retransform(filename)
-   
-   # TODO: Optimization - Only commit once all updates have been made.
+  print_progress('Uploading file...')
+  # HTTP POST an index update command to SOLR and commit changes.
   cmd = 'curl \'' + backend_url + \
-   'update/csv?commit=true&separator=%09&escape=%10\' --data-binary ' + \
-   solr_filename + \
-   ' -H \'Content-type:text/plain; charset=utf-8\';'
+        'update/csv?commit=true&separator=%09&escape=%10\' --data-binary @' + \
+        solr_filename + \
+        ' -H \'Content-type:text/plain; charset=utf-8\';'
   subprocess.call(cmd, shell=True)
 
 def main():
   """shutup pylint."""
   get_options()
-  
-  if OPTIONS.backend_type not in ['base', 'solr']:
-    error_exit('Unrecognized backend type. Use --help for a list of options.')
 
   if OPTIONS.test_mode:
     global LOGPATH
