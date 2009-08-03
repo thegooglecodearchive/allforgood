@@ -51,10 +51,19 @@ def solr_format_range(field, min_val, max_val):
   result += ':[' + str(min_val) +' TO ' + str(max_val) + ']'
   return result
 
-def rewrite_query(query):
+def rewrite_query(query_str):
   """ Rewrites the query string from an easy to type and understand format
   into a Solr-readable format"""
-  return query.replace('category:', 'c\:categories\:string:')
+  # Lower-case everything and make boolean operators upper-case, so they
+  # are recognized by SOLR.
+  rewritten_query = query_str.lower()
+  rewritten_query = rewritten_query.replace(' or ', ' OR ')
+  rewritten_query = rewritten_query.replace(' and ', ' AND ')
+  
+  # Replace the category filter shortcut with its proper name.
+  rewritten_query = rewritten_query.replace('category:', 'c\:categories\:string:')
+
+  return rewritten_query
   
 
 def form_solr_query(args):
