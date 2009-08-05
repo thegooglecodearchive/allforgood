@@ -42,6 +42,55 @@ DATE_FORMAT_PATTERN = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
 # max number of results to ask from SOLR (for latency-- and correctness?)
 MAX_RESULTS = 1000
 
+def build_function_query(base_lat, base_long, max_dist):
+  """Builds a function query for Solr scoring and ranking.
+  
+     For more info: http://wiki.apache.org/solr/FunctionQuery
+     Results are sorted by score. The final score is computed as follows:
+     final_score = relevancy + geo_score + duration_score"""
+  
+  # FQs don't support subtraction, so we need to add negative numbers.
+  neg_lat = '-' + base_lat
+  if neg_lat.startswith('--'):
+    neg_lat = neg_lat[2:]
+  neg_long = '-' + base_long
+  if neg_long.startswith('--'):
+    neg_long = neg_long[2:]
+
+  negative_max_dist_squared = str(max_dist * (-max_dist))
+
+  # Geo scoring - Favors nearby results
+  # Equals 1 at the base location and drops to 0 at max_dist miles away.
+  # Formula: (max_dist^2 - dist^2) / max_dist^2
+  distance_squared ='sum(' \
+                      'product(' \
+                        'sum(' + neg_lat + ', latitude),' \
+                        'sum(' + neg_lat + ', latitude)' \
+                      '),' \
+                      'product(' \
+                        'sum(' + neg_long + ', longitude),' \
+                        'sum(' + neg_long + ', longitude)' \
+                      ')' \
+                    ')'
+
+  geo_score_str = 'div(' \
+                    'sum(' + \
+                      negative_max_dist_squared + ',' + \
+                      distance_squared + \
+                    '),' + \
+                    negative_max_dist_squared + \
+                  ')'
+  
+  # Duration scoring - Favors short events
+  # Equals 1 for 1-day events (duration 0), and decays exponentially 
+  # with a half life of 10 days
+  duration_score_str = 'div(1,log(sum(10,eventduration)))'
+  
+  function_query = ' AND _val_:"'
+  function_query += 'sum(' + geo_score_str + ',' + duration_score_str + ')'
+  function_query += '"'
+  return function_query
+
 def solr_format_range(field, min_val, max_val):
   """ Convert colons in the field name and build a range specifier
   in SOLR query syntax"""
@@ -118,7 +167,6 @@ def form_solr_query(args):
       # illegal providername
       # TODO: throw 500
       logging.error("illegal providername: " + args[api.PARAM_VOL_PROVIDER])
-  solr_query = urllib.quote_plus(solr_query)
   # TODO: injection attack on sort
   if api.PARAM_SORT not in args:
     args[api.PARAM_SORT] = "r"
@@ -131,13 +179,20 @@ def form_solr_query(args):
     args[api.PARAM_VOL_DIST] = int(str(args[api.PARAM_VOL_DIST]))
     if args[api.PARAM_VOL_DIST] < 1:
       args[api.PARAM_VOL_DIST] = 1
-    solr_query += '&qt=geo'
-    solr_query += '&lat=' + args["lat"]
-    solr_query += '&long=' + args["long"]
-    solr_query += '&radius=' + str(args[api.PARAM_VOL_DIST])
-    #Todo: implement sorting by distance.
-    #solr_query += "&sort=geo_distance+asc"
 
+    lat, lng = float(args["lat"]), float(args["long"])
+    max_dist = float(args[api.PARAM_VOL_DIST]) / 60
+    if (lat < 0.5 and lng < 0.5):
+      solr_query += solr_format_range("latitude", '*', '0.5')
+      solr_query += solr_format_range("longitude", '*', '0.5')
+    else:
+      solr_query += solr_format_range("latitude",
+                                      lat - max_dist, lat + max_dist)
+      solr_query += solr_format_range("longitude",
+                                      lng - max_dist, lng + max_dist)
+
+  solr_query += build_function_query(args["lat"], args["long"], max_dist)
+  solr_query = urllib.quote_plus(solr_query)
   # TODO: injection attack on backend
   if api.PARAM_BACKEND_URL not in args:
     args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
@@ -220,7 +275,7 @@ def search(args):
 
 def query(query_url, args, cache):
   """run the actual SOLR query (no filtering or sorting)."""
-  #logging.info("Query URL: " + query_url)
+  logging.info("Query URL: " + query_url + '&debugQuery=on')
   result_set = searchresult.SearchResultSet(urllib.unquote(query_url),
                                             query_url,
                                             [])
