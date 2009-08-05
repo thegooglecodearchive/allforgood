@@ -270,6 +270,14 @@ def error_exit(msg):
 # Use a shell for subcommands on Windows to get a PATH search.
 USE_SHELL = sys.platform.startswith("win")
 
+def query_solr (query_str):
+  """Queries the Solr backend specified via the command line args."""
+  cmd = 'curl \'' + OPTIONS.solr_url + \
+        'update?commit=true\' --data-binary ' + \
+        '\'' + query_str + '\'' \
+        ' -H \'Content-type:text/plain; charset=utf-8\';'
+  subprocess.call(cmd, shell=True)
+
 def run_shell_with_retcode(command, print_output=False,
                            universal_newlines=True):
   """Executes a command and returns the output from stdout and the return code.
@@ -365,7 +373,7 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
     print_progress("pipeline: done.")
   if OPTIONS.use_solr:
     print_progress('Commencing SOLR index update')
-    update_solr_index(name+'1', OPTIONS.solr_url)
+    update_solr_index(name+'1')
 
 def test_loaders():
   """for testing, read from local disk as much as possible."""
@@ -525,7 +533,7 @@ def solr_retransform(fname):
   data_file.close()
   return out_filename
   
-def update_solr_index(filename, backend_url):
+def update_solr_index(filename):
   """Transform a datafile and update the specified backend's index"""
   in_fname = filename + '.gz'
   f_out = open(filename, 'wb')
@@ -538,9 +546,16 @@ def update_solr_index(filename, backend_url):
   solr_filename = solr_retransform(filename)
   print_progress('Uploading file...')
   # HTTP POST an index update command to SOLR and commit changes.
-  cmd = 'curl \'' + backend_url + \
+  upload_solr_file(solr_filename)
+  
+  # Remove expired documents.
+  query_solr('<delete><query>expires:[* TO NOW]</query></delete>')
+
+def upload_solr_file(filename):
+  """ Updates the Solr index with a CSV file """
+  cmd = 'curl \'' + OPTIONS.solr_url + \
         'update/csv?commit=true&separator=%09&escape=%10\' --data-binary @' + \
-        solr_filename + \
+        filename + \
         ' -H \'Content-type:text/plain; charset=utf-8\';'
   subprocess.call(cmd, shell=True)
 
