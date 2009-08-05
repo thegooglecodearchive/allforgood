@@ -274,21 +274,35 @@
        When using MoreLikeThis, fields used for similarity should be stored for 
        best performance.
    -->
-   <field name="id" type="string" indexed="true" stored="true" required="true" /> 
-<field name="c:feed_providerName:string" type="string" indexed="true" stored="true"/>
-<field name="c:feedID:string" type="string" indexed="true" stored="true"/>
-<field name="c:feed_providerID:string" type="string" indexed="true" stored="true"/>
-<field name="c:feed_providerURL:URL" type="string" indexed="true" stored="false"/>
-<field name="c:feed_description:string" type="string" indexed="true" stored="false"/>
+
+<field name="id" type="string" indexed="true" stored="true" required="true" /> 
+<field name="feed_providerName" type="string" indexed="true" stored="true"/>
+<field name="feedID" type="string" indexed="true" stored="true"/>
+<field name="feed_providerID" type="string" indexed="true" stored="true"/>
+<field name="feed_providerURL" type="string" indexed="true" stored="false"/>
+<field name="feed_description" type="string" indexed="true" stored="false"/>
 <field name="title" type="text" indexed="true" stored="true"/>
 <field name="description" type="text" indexed="true" stored="true"/>
 <field name="link" type="string" indexed="true" stored="true"/>
-<field name="c:longitude:float" type="sdouble" indexed="true" stored="true"/>
-<field name="c:latitude:float" type="sdouble" indexed="true" stored="true"/>
+
+<field name="longitude" type="sdouble" indexed="true" stored="true"/>
+<field name="latitude" type="sdouble" indexed="true" stored="true"/>
 <field name="geo_distance" type="sdouble"/>
-<dynamicField name="*:integer"  type="sint"    indexed="true"  stored="true"/> 
-<dynamicField name="*:dateTime" type="date"    indexed="true"  stored="true"/>
-<!--    c:employer:string       quantity        image_link      c:abstract:string       c:paid:boolean  c:opportunityID:string  c:organizationID:string c:volunteersSlots:integer       c:volunteersFilled:integer      c:volunteersNeeded:integer      c:minimumAge:integer    c:sexRestrictedTo:string        c:skills:string c:contactName:string    c:contactPhone:string   c:contactEmail:string   c:providerURL:URL       c:language:string       c:lastUpdated:dateTime  c:expires:dateTime      c:detailURL:URL c:org_nationalEIN:string        c:org_guidestarID:string        c:org_name:string       c:org_missionStatement:string   c:org_description:string        c:org_phone:string      c:org_fax:string        c:org_email:string      c:org_organizationURL:URL       c:org_logoURL:URL       c:org_providerURL:URL   c:categories:string     c:audiences:string      c:orgLocation:string    event_date_range        c:startTime:integer     c:endTime:integer       c:openended:boolean     c:duration:string       c:commitmentHoursPerWeek:string location        c:latitude:float        c:longitude:float       c:location_string:string        c:venue_name:string -->
+
+<field name="volunteersSlots"  type="sint"    indexed="true"  stored="true"/>
+<field name="volunteersFilled"  type="sint"    indexed="true"  stored="true"/>
+<field name="volunteersNeeded"  type="sint"    indexed="true"  stored="true"/>
+<field name="minimumAge"  type="sint"    indexed="true"  stored="true"/>
+<field name="startTime"  type="sint"    indexed="true"  stored="true"/>
+<field name="endTime"  type="sint"    indexed="true"  stored="true"/>
+
+<field name="lastUpdated" type="date"    indexed="true"  stored="true"/>
+<field name="expires" type="date"    indexed="true"  stored="true"/>
+
+<field name="openended" type="boolean"    indexed="true"  stored="true"/>
+<field name="paid" type="boolean"    indexed="true"  stored="true"/>
+
+<!--    employer       quantity        image_link      abstract       paid  opportunityID  organizationID volunteersSlots       volunteersFilled      volunteersNeeded      minimumAge    sexRestrictedTo        skills contactName    contactPhone   contactEmail   providerURL       language       lastUpdated  expires      detailURL org_nationalEIN        org_guidestarID        org_name       org_missionStatement   org_description        org_phone      org_fax        org_email      org_organizationURL       org_logoURL       org_providerURL   categories     audiences      orgLocation    event_date_range        startTime     endTime       openended     duration       commitmentHoursPerWeek location        latitude        longitude       location_string        venue_name -->
    <!-- Some sample docs exists solely to demonstrate the spellchecker
         functionality, this is the only field they container.
         Typically you might build the spellchecker of "catchall" type field

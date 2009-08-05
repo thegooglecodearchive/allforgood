@@ -477,6 +477,9 @@ def solr_retransform(fname):
   csv_writer = DictWriter(open (out_filename, 'w'),
                           dialect='excel-tab',
                           fieldnames=fnames)
+  for field_name in fnamesdict.keys():
+    if fnamesdict[field_name].startswith('c:'):
+      fnamesdict[field_name] = fnamesdict[field_name].split(':')[1]
   csv_writer.writerow(fnamesdict)
   for rows in csv_reader:
     for key in rows.keys():
