@@ -10,6 +10,9 @@ import sys
 import re
 import gzip
 import bz2
+import dateutil
+import dateutil.parser
+import dateutil.relativedelta
 import logging
 import optparse
 import os
@@ -78,9 +81,16 @@ STOPWORDS = set([
   ])
 
 class our_dialect(excel_tab):
+  """Dialect used for Solr CSV files. """
   quotechar = ''
   quoting = QUOTE_NONE
 register_dialect('our-dialect', our_dialect)
+
+def get_delta_days(date_delta):
+  """Add up the days, months and years to get the total number of days."""
+  return date_delta.days + \
+         (date_delta.months * 30) + \
+         (date_delta.years * 365)
 
 OPTIONS = None
 def get_options():
@@ -311,7 +321,6 @@ def run_shell(command, silent_ok=False, universal_newlines=True,
     error_exit("No output from %s" % command)
   return stdout, stderr, retcode
 
-
 def run_pipeline(name, url, do_processing=True, do_ftp=True):
   """shutup pylint."""
   print_progress("loading "+name+" from "+url)
@@ -468,8 +477,9 @@ def solr_retransform(fname):
   csv_reader = DictReader(data_file, dialect='our-dialect')
   csv_reader.next()
   fnames = csv_reader.fieldnames[:]
-  fnames.append("c:eventrangeend:datetime")
   fnames.append("c:eventrangestart:datetime")
+  fnames.append("c:eventrangeend:datetime")
+  fnames.append("c:eventduration:integer")
   fnamesdict = dict([(x, x) for x in fnames])
   data_file = open(fname, "r")
   # TODO: Switch to TSV - Faster and simpler
@@ -494,10 +504,17 @@ def solr_retransform(fname):
     # Split the date range into separate fields
     # event_date_range can be either start_date or start_date/end_date
     split_date_range = rows["event_date_range"].split('/')
-    rows["c:eventrangeend:datetime"] = split_date_range[0]
+    rows["c:eventrangestart:datetime"] = split_date_range[0]
     if len(split_date_range) > 1:
-      rows["c:eventrangestart:datetime"] = split_date_range[1]
-    
+      rows["c:eventrangeend:datetime"] = split_date_range[1]
+    else:
+      rows["c:eventrangeend:datetime"] = rows["c:eventrangestart:datetime"]
+
+    start_date = dateutil.parser.parse(rows["c:eventrangestart:datetime"])
+    end_date = dateutil.parser.parse(rows["c:eventrangeend:datetime"])
+    rdelta = dateutil.relativedelta.relativedelta(start_date, end_date) 
+    rows["c:eventduration:integer"] = get_delta_days(rdelta)
+
     # Fix to the +1000 to lat/long hack   
     if not rows['c:latitude:float'] is None:
       rows['c:latitude:float'] = float(rows['c:latitude:float']) - 1000.0
