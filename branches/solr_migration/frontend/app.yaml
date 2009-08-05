@@ -1,0 +1,87 @@
+#application: servicefootprint
+#application: footprint2009dev-ehysen
+application: footprint2009dev
+#application: footprint-loadtest
+
+version: 1
+runtime: python
+api_version: 1
+
+# super long expiration for images...
+default_expiration: "1000d"
+
+handlers:
+# NOTE: don't map /js|css|images directly, but instead force the
+# use of version numbers to avoid accidental version problems.
+# Unlike ?zx= this works for proxies that refuse to cache urls
+# containing question marks.
+# yes, this works for subdirectories e.g. third_party
+# the choice of "zx" is standard for google services
+- url: /zx[^/]+/((js|css|images)/.*)
+  static_files: \1
+  upload: (js|css|images)/.*
+
+# For realsimplehistory
+- url: /blank.html
+  static_files: blank.html
+  upload: blank.html
+
+# For FriendConnect
+- url: /rpc_relay.html
+  static_files: templates/rpc_relay.html
+  upload: templates/rpc_relay.html
+
+- url: /canvas.html
+  static_files: templates/canvas.html
+  upload: templates/canvas.html
+
+# Unit tests for API
+- url: /testapi/.*
+  script: testapi/main.py
+
+# For FacebookConnect
+- url: /xd_receiver.htm
+  static_files: templates/xd_receiver.htm
+  upload: templates/xd_receiver.htm
+
+- url: /test/.*
+  script: testpages.py
+
+- url: /admin/.*
+  script: main.py
+  login: admin
+
+# For data export
+- url: /export/.*
+  script: export/main.py
+
+# For Gadget
+- url: /gadget
+  expiration: "1h"
+  static_dir: html/gadget
+
+# autocompleter for search
+- url: /autocomplete/.*
+  script: autocomplete/main.py
+
+# checker for spreadsheet feeds
+- url: /sheetchecker/.*
+  script: sheetchecker/main.py
+
+- url: /robots.txt
+  static_files: robots.txt
+  upload: robots.txt
+
+# For favicon
+- url: /favicon.ico
+  static_files: images/favicon.ico
+  upload: images/favicon.ico
+
+# Temporary.
+- url: /googlehostedservice.html
+  static_files: googlehostedservice.html
+  upload: googlehostedservice.html
+
+# Keep this last
+- url: /.*
+  script: main.py
