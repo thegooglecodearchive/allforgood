@@ -91,7 +91,7 @@ def build_function_query(base_lat, base_long, max_dist):
   function_query += '"'
   return function_query
 
-def solr_format_range(field, min_val, max_val):
+def add_range_filter(field, min_val, max_val):
   """ Convert colons in the field name and build a range specifier
   in SOLR query syntax"""
   # TODO: Deal with escapification
@@ -125,38 +125,26 @@ def form_solr_query(args):
     # Query is empty, search for anything at all.
     solr_query += "*:*"
 
-  if api.PARAM_VOL_STARTDATE in args or api.PARAM_VOL_ENDDATE in args:
-    startdate = None
-    if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "":
-      try:
-        startdate = datetime.datetime.strptime(
-                       args[api.PARAM_VOL_STARTDATE].strip(), "%Y%m%d")
-      except:
-        logging.error("malformed start date: %s" % 
-           args[api.PARAM_VOL_STARTDATE])
-    if not startdate:
-      # note: default vol_startdate is "tomorrow"
-      # in base, event_date_range YYYY-MM-DDThh:mm:ss/YYYY-MM-DDThh:mm:ss
-      # appending "Z" to the datetime string would mean UTC
-      startdate = datetime.date.today() + datetime.timedelta(days=1)
-      args[api.PARAM_VOL_STARTDATE] = startdate.strftime("%Y%m%d")
-
-    enddate = None
+  if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "":
+    start_date = datetime.datetime.today()
+    try:
+      start_date = datetime.datetime.strptime(
+                     args[api.PARAM_VOL_STARTDATE].strip(), "%Y-%m-%d")
+    except:
+      logging.error("malformed start date: %s" % args[api.PARAM_VOL_STARTDATE])
+    end_date = None
     if api.PARAM_VOL_ENDDATE in args and args[api.PARAM_VOL_ENDDATE] != "":
       try:
-        enddate = datetime.datetime.strptime(
-                       args[api.PARAM_VOL_ENDDATE].strip(), "%Y%m%d")
+        end_date = datetime.datetime.strptime(
+                       args[api.PARAM_VOL_ENDDATE].strip(), "%Y-%m-%d")
       except:
         logging.error("malformed end date: %s" % args[api.PARAM_VOL_ENDDATE])
-    if not enddate:
-      enddate = datetime.date(startdate.year, startdate.month, startdate.day)
-      enddate = enddate + datetime.timedelta(days=1000)
-      args[api.PARAM_VOL_ENDDATE] = enddate.strftime("%Y%m%d")
-
-    solr_query += solr_format_range("eventrangestartdatetime", '*',
-                                     args[api.PARAM_VOL_ENDDATE])
-    solr_query += solr_format_range("eventrangeenddatetime",
-                                    args[api.PARAM_VOL_STARTDATE], '*')
+    if not end_date:
+      end_date = start_date
+    start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
+    end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
+    solr_query += add_range_filter("eventrangestart", '*', end_datetime_str)
+    solr_query += add_range_filter("eventrangeend", start_datetime_str, '*')
 
   if api.PARAM_VOL_PROVIDER in args and args[api.PARAM_VOL_PROVIDER] != "":
     if re.match(r'[a-zA-Z0-9:/_. -]+', args[api.PARAM_VOL_PROVIDER]):
@@ -182,12 +170,12 @@ def form_solr_query(args):
     lat, lng = float(args["lat"]), float(args["long"])
     max_dist = float(args[api.PARAM_VOL_DIST]) / 60
     if (lat < 0.5 and lng < 0.5):
-      solr_query += solr_format_range("latitude", '*', '0.5')
-      solr_query += solr_format_range("longitude", '*', '0.5')
+      solr_query += add_range_filter("latitude", '*', '0.5')
+      solr_query += add_range_filter("longitude", '*', '0.5')
     else:
-      solr_query += solr_format_range("latitude",
+      solr_query += add_range_filter("latitude",
                                       lat - max_dist, lat + max_dist)
-      solr_query += solr_format_range("longitude",
+      solr_query += add_range_filter("longitude",
                                       lng - max_dist, lng + max_dist)
 
   solr_query += build_function_query(args["lat"], args["long"], max_dist)
@@ -274,7 +262,7 @@ def search(args):
 
 def query(query_url, args, cache):
   """run the actual SOLR query (no filtering or sorting)."""
-  logging.info("Query URL: " + query_url + '&debugQuery=on')
+  #logging.info("Query URL: " + query_url + '&debugQuery=on')
   result_set = searchresult.SearchResultSet(urllib.unquote(query_url),
                                             query_url,
                                             [])
