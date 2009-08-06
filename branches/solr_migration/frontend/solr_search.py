@@ -113,7 +113,6 @@ def rewrite_query(query_str):
   rewritten_query = rewritten_query.replace('category:', 'categories:')
 
   return rewritten_query
-  
 
 def form_solr_query(args):
   """ensure args[] has all correct and well-formed members and
@@ -311,9 +310,9 @@ def query(query_url, args, cache):
     # Base URL is the url of the item in base, expressed with the Atom id tag.
     # TODO: This doesn't seem to be used. Consider removing it.
     base_url = ""
-    snippet = entry["abstract"]
-    title = entry["title"]
-    location = entry["location_string"]
+    snippet = entry.get('abstract', '')
+    title = entry.get('title', '')
+    location = entry.get('location_string', '')
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
                                     base_url)
 
