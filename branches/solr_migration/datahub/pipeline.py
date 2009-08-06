@@ -485,8 +485,8 @@ def solr_retransform(fname):
   csv_reader = DictReader(data_file, dialect='our-dialect')
   csv_reader.next()
   fnames = csv_reader.fieldnames[:]
-  fnames.append("c:eventrangestart:datetime")
-  fnames.append("c:eventrangeend:datetime")
+  fnames.append("c:eventrangestart:dateTime")
+  fnames.append("c:eventrangeend:dateTime")
   fnames.append("c:eventduration:integer")
   fnamesdict = dict([(x, x) for x in fnames])
   data_file = open(fname, "r")
@@ -500,6 +500,15 @@ def solr_retransform(fname):
       fnamesdict[field_name] = fnamesdict[field_name].split(':')[1]
   csv_writer.writerow(fnamesdict)
   for rows in csv_reader:
+    # Split the date range into separate fields
+    # event_date_range can be either start_date or start_date/end_date
+    split_date_range = rows["event_date_range"].split('/')
+    rows["c:eventrangestart:dateTime"] = split_date_range[0]
+    if len(split_date_range) > 1:
+      rows["c:eventrangeend:dateTime"] = split_date_range[1]
+    else:
+      rows["c:eventrangeend:dateTime"] = rows["c:eventrangestart:dateTime"]
+
     for key in rows.keys():
       if key.find(':dateTime') != -1:
         rows[key] += 'Z'
@@ -508,19 +517,10 @@ def solr_retransform(fname):
           rows[key] = 0
         else:
           rows[key] = int(rows[key])
-      
-    # Split the date range into separate fields
-    # event_date_range can be either start_date or start_date/end_date
-    split_date_range = rows["event_date_range"].split('/')
-    rows["c:eventrangestart:datetime"] = split_date_range[0]
-    if len(split_date_range) > 1:
-      rows["c:eventrangeend:datetime"] = split_date_range[1]
-    else:
-      rows["c:eventrangeend:datetime"] = rows["c:eventrangestart:datetime"]
 
-    start_date = dateutil.parser.parse(rows["c:eventrangestart:datetime"])
-    end_date = dateutil.parser.parse(rows["c:eventrangeend:datetime"])
-    rdelta = dateutil.relativedelta.relativedelta(start_date, end_date) 
+    start_date = dateutil.parser.parse(rows["c:eventrangestart:dateTime"])
+    end_date = dateutil.parser.parse(rows["c:eventrangeend:dateTime"])
+    rdelta = dateutil.relativedelta.relativedelta(end_date, start_date) 
     rows["c:eventduration:integer"] = get_delta_days(rdelta)
 
     # Fix to the +1000 to lat/long hack   
@@ -549,7 +549,7 @@ def update_solr_index(filename):
   upload_solr_file(solr_filename)
   
   # Remove expired documents.
-  query_solr('<delete><query>expires:[* TO NOW]</query></delete>')
+  query_solr('<delete><query>expires:[* TO NOW-1DAY]</query></delete>')
 
 def upload_solr_file(filename):
   """ Updates the Solr index with a CSV file """
