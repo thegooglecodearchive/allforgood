@@ -547,9 +547,6 @@ def update_solr_index(filename):
   print_progress('Uploading file...')
   # HTTP POST an index update command to SOLR and commit changes.
   upload_solr_file(solr_filename)
-  
-  # Remove expired documents.
-  query_solr('<delete><query>expires:[* TO NOW-1DAY]</query></delete>')
 
 def upload_solr_file(filename):
   """ Updates the Solr index with a CSV file """
@@ -569,6 +566,11 @@ def main():
     test_loaders()
   else:
     loaders()
+    if OPTIONS.use_solr:
+      # Remove expired documents.
+      query_solr('<delete><query>expires:[* TO NOW-1DAY]</query></delete>')
+      # Optimize index files after the update
+      query_solr('<optimize/>')
 
   print_word_stats()
   print_field_stats()
