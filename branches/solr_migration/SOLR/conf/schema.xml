@@ -295,9 +295,13 @@
 <field name="minimumAge"  type="sint"    indexed="true"  stored="true"/>
 <field name="startTime"  type="sint"    indexed="true"  stored="true"/>
 <field name="endTime"  type="sint"    indexed="true"  stored="true"/>
+<field name="eventduration"  type="sint"    indexed="true"  stored="true"/>
+
 
 <field name="lastUpdated" type="date"    indexed="true"  stored="true"/>
 <field name="expires" type="date"    indexed="true"  stored="true"/>
+<field name="eventrangestart" type="date"    indexed="true"  stored="true"/>
+<field name="eventrangeend" type="date"    indexed="true"  stored="true"/>
 
 <field name="openended" type="boolean"    indexed="true"  stored="true"/>
 <field name="paid" type="boolean"    indexed="true"  stored="true"/>
