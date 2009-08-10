@@ -178,7 +178,7 @@ def form_solr_query(args):
       solr_query += add_range_filter("longitude",
                                       lng - max_dist, lng + max_dist)
 
-  solr_query += build_function_query(args["lat"], args["long"], max_dist)
+    solr_query += build_function_query(args["lat"], args["long"], max_dist)
   solr_query = urllib.quote_plus(solr_query)
   # TODO: injection attack on backend
   if api.PARAM_BACKEND_URL not in args:
