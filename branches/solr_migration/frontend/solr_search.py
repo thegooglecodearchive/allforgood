@@ -143,8 +143,13 @@ def form_solr_query(args):
       end_date = start_date
     start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
     end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
-    solr_query += add_range_filter("eventrangestart", '*', end_datetime_str)
-    solr_query += add_range_filter("eventrangeend", start_datetime_str, '*')
+    if (api.PARAM_VOL_INCLUSIVEDATES in args and 
+       args[api.PARAM_VOL_INCLUSIVEDATES] == 'true'):
+      solr_query += add_range_filter("eventrangestart", start_datetime_str, '*')
+      solr_query += add_range_filter("eventrangeend", '*', end_datetime_str)
+    else:
+     solr_query += add_range_filter("eventrangestart", '*', end_datetime_str)
+     solr_query += add_range_filter("eventrangeend", start_datetime_str, '*')
 
   if api.PARAM_VOL_PROVIDER in args and args[api.PARAM_VOL_PROVIDER] != "":
     if re.match(r'[a-zA-Z0-9:/_. -]+', args[api.PARAM_VOL_PROVIDER]):
