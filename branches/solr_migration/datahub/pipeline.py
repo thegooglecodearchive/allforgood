@@ -104,7 +104,7 @@ def get_options():
                     help='Update the Base index. Can be used with --use_solr.')
   parser.add_option('-s', '--use_solr', action='store_true', default=False,
                     dest='use_solr',
-                    help='Update the SOLR index. Can be used with --use_base.')
+                    help='Update the Solr index. Can be used with --use_base.')
   parser.add_option('-t', '--test_mode', action='store_true', default=False,
                     dest='test_mode',
                     help='Don\'t process or upload the data files')
@@ -122,12 +122,20 @@ def get_options():
                         default=pipeline_keys.BASE_CUSTOMER_ID,
                         dest='base_cust_id',
                         help ='GBase customer ID.')
-  # SOLR options
-  solr_group = parser.add_option_group("SOLR options")
+  # Solr options
+  solr_group = parser.add_option_group("Solr options")
   solr_group.add_option('--solr_url',
                         default=pipeline_keys.SOLR_URL,
                         dest='solr_url',
-                        help ='URL of the SOLR instance to be updated.')
+                        help ='URL of the Solr instance to be updated.')
+  base_group.add_option('--solr_user',
+                        default=pipeline_keys.SOLR_USER,
+                        dest='solr_user',
+                        help ='Solr username.')
+  base_group.add_option('--solr_pass',
+                        default=pipeline_keys.SOLR_PASS,
+                        dest='solr_pass',
+                        help ='Solr password')
   (OPTIONS, args) = parser.parse_args()
   
 def print_progress(msg):
@@ -270,9 +278,10 @@ def error_exit(msg):
 # Use a shell for subcommands on Windows to get a PATH search.
 USE_SHELL = sys.platform.startswith("win")
 
-def query_solr (query_str):
+def solr_update_query (query_str):
   """Queries the Solr backend specified via the command line args."""
-  cmd = 'curl \'' + OPTIONS.solr_url + \
+  cmd = 'curl -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + '\' \'' + \
+        OPTIONS.solr_url + \
         'update?commit=true\' --data-binary ' + \
         '\'' + query_str + '\'' \
         ' -H \'Content-type:text/plain; charset=utf-8\';'
@@ -372,7 +381,7 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
                 tsv_data)
     print_progress("pipeline: done.")
   if OPTIONS.use_solr:
-    print_progress('Commencing SOLR index update')
+    print_progress('Commencing Solr index update')
     update_solr_index(name+'1')
 
 def test_loaders():
@@ -478,8 +487,8 @@ def ftp_to_base(filename, ftpinfo, instr):
   data_fh.close()
   
 def solr_retransform(fname):
-  """Create SOLR-compatible versions of a datafile"""
-  print_progress('Creating SOLR transformed file for: ' + fname)
+  """Create Solr-compatible versions of a datafile"""
+  print_progress('Creating Solr transformed file for: ' + fname)
   out_filename = fname + '.transformed'
   data_file = open(fname, "r")
   csv_reader = DictReader(data_file, dialect='our-dialect')
@@ -545,12 +554,13 @@ def update_solr_index(filename):
   
   solr_filename = solr_retransform(filename)
   print_progress('Uploading file...')
-  # HTTP POST an index update command to SOLR and commit changes.
+  # HTTP POST an index update command to Solr and commit changes.
   upload_solr_file(solr_filename)
 
 def upload_solr_file(filename):
   """ Updates the Solr index with a CSV file """
-  cmd = 'curl \'' + OPTIONS.solr_url + \
+  cmd = 'curl -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + '\' \'' + \
+        OPTIONS.solr_url + \
         'update/csv?commit=true&separator=%09&escape=%10\' --data-binary @' + \
         filename + \
         ' -H \'Content-type:text/plain; charset=utf-8\';'
@@ -568,9 +578,9 @@ def main():
     loaders()
     if OPTIONS.use_solr:
       # Remove expired documents.
-      query_solr('<delete><query>expires:[* TO NOW-1DAY]</query></delete>')
+      solr_update_query('<delete><query>expires:[* TO NOW-1DAY]</query></delete>')
       # Optimize index files after the update
-      query_solr('<optimize/>')
+      solr_update_query('<optimize/>')
 
   print_word_stats()
   print_field_stats()
