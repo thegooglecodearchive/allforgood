@@ -33,6 +33,7 @@ URL_REDIRECT = '/url'
 URL_DATAHUB_DASHBOARD = '/dashboard/datahub'
 URL_ACTION = '/action'  # User actions like starring
 URL_PSA = '/psa' # Redirect to home page for tracking adsense psas
+URL_SPEC = '/spec'
 
 STATIC_CONTENT_LOCATION = 'http://allforgood.googlecode.com/svn/trunk/frontend/html/'
 
