@@ -72,6 +72,7 @@ DATAHUB_DASHBOARD_TEMPLATE = 'datahub_dashboard.html'
 MODERATE_TEMPLATE = 'moderate.html'
 STATIC_CONTENT_TEMPLATE = 'static_content.html'
 NOT_FOUND_TEMPLATE = 'not_found.html'
+SPEC_TEMPLATE = 'spec.html'
 
 DASHBOARD_BASE_URL = "http://google1.osuosl.org/~footprint/datahub/dashboard/"
 DATAHUB_LOG = DASHBOARD_BASE_URL + "load_gbase.log.bz2"
@@ -321,6 +322,14 @@ class consumer_ui_search_view(webapp.RequestHandler):
     self.response.out.write(render_template(SEARCH_RESULTS_TEMPLATE,
                                             template_values))
 
+class spec_view(webapp.RequestHandler):
+  """view fpxml spec documentation"""
+  @expires(0)  # User specific.
+  def get(self):
+    """HTTP get method."""
+    template_values = get_default_template_values(self.request, 'SPEC')
+    self.response.out.write(render_template(SPEC_TEMPLATE,
+                                            template_values))
 
 class search_view(webapp.RequestHandler):
   """run a search from the API.  note various output formats."""
