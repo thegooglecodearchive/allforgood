@@ -385,8 +385,15 @@ def compute_stable_id(opp, org, locstr, openended, duration,
   timestr = openended + duration + hrs_per_week + startend
   title = get_title(opp)
   abstract = get_abstract(opp)
+  description = xmlh.get_tag_val(opp, 'description')
   detailURL = xmlh.get_tag_val(opp, 'detailURL')
-  hashstr = "\t".join([eid, loc, timestr, title, abstract, detailURL])
+  hashstr = "\t".join([eid,
+                      loc,
+                      timestr,
+                      title,
+                      abstract,
+                      detailURL,
+                      description])
   return hashlib.md5(hashstr).hexdigest()
 
 def get_abstract(opp):
