@@ -182,9 +182,14 @@ def form_solr_query(args):
                                       lat - max_dist, lat + max_dist)
       solr_query += add_range_filter("longitude",
                                       lng - max_dist, lng + max_dist)
-
-    solr_query += build_function_query(args["lat"], args["long"], max_dist)
+    solr_query += build_function_query(args["lat"], args["long"], max_dist)    
   solr_query = urllib.quote_plus(solr_query)
+
+#    solr_query += '&qt=geo'
+#    solr_query += '&lat=' + args["lat"]
+#    solr_query += '&long=' + args["long"]
+#    solr_query += '&radius=' + str(args[api.PARAM_VOL_DIST])
+
   # TODO: injection attack on backend
   if api.PARAM_BACKEND_URL not in args:
     args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
