@@ -26,6 +26,16 @@ Television, Televisions, TV, TVs
 #notice we use "gib" instead of "GiB" so any WordDelimiterFilter coming
 #after us won't split it into two words.
 
+# AFG Synonyms
+nature,environment,environmental
+education,school,schools
+animal,animals
+health,medical,healthcare,hospital,hospitals
+senior,seniors,elderly
+technology,computer,computers
+poverty,poor
+tutoring,mentoring,tutor,mentor,counseling
+
 # Synonym mappings can be used for spelling correction too
 pixima => pixma
 
