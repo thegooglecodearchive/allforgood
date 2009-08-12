@@ -277,28 +277,30 @@
 
 <field name="id" type="string" indexed="true" stored="true" required="true" /> 
 <field name="feed_providerName" type="string" indexed="true" stored="true"/>
-<field name="feedID" type="string" indexed="true" stored="true"/>
-<field name="feed_providerID" type="string" indexed="true" stored="true"/>
-<field name="feed_providerURL" type="string" indexed="true" stored="false"/>
+<field name="feedid" type="string" indexed="true" stored="true"/>
+<field name="feed_providerid" type="string" indexed="true" stored="true"/>
+<field name="feed_providerurl" type="string" indexed="true" stored="false"/>
 <field name="feed_description" type="string" indexed="true" stored="false"/>
 <field name="title" type="text" indexed="true" stored="true"/>
 <field name="description" type="text" indexed="true" stored="true"/>
+<field name="categories" type="text" indexed="true" stored="true"/>
+<field name="aggregatefield" type="text" indexed="true" stored="true"/>
+
 <field name="link" type="string" indexed="true" stored="true"/>
 
 <field name="longitude" type="sdouble" indexed="true" stored="true"/>
 <field name="latitude" type="sdouble" indexed="true" stored="true"/>
-<field name="geo_distance" type="sdouble"/>
 
-<field name="volunteersSlots"  type="sint"    indexed="true"  stored="true"/>
-<field name="volunteersFilled"  type="sint"    indexed="true"  stored="true"/>
-<field name="volunteersNeeded"  type="sint"    indexed="true"  stored="true"/>
-<field name="minimumAge"  type="sint"    indexed="true"  stored="true"/>
-<field name="startTime"  type="sint"    indexed="true"  stored="true"/>
-<field name="endTime"  type="sint"    indexed="true"  stored="true"/>
+<field name="volunteersslots"  type="sint"    indexed="true"  stored="true"/>
+<field name="volunteersfilled"  type="sint"    indexed="true"  stored="true"/>
+<field name="volunteersneeded"  type="sint"    indexed="true"  stored="true"/>
+<field name="minimumage"  type="sint"    indexed="true"  stored="true"/>
+<field name="starttime"  type="sint"    indexed="true"  stored="true"/>
+<field name="endtime"  type="sint"    indexed="true"  stored="true"/>
 <field name="eventduration"  type="sint"    indexed="true"  stored="true"/>
 
 
-<field name="lastUpdated" type="date"    indexed="true"  stored="true"/>
+<field name="lastupdated" type="date"    indexed="true"  stored="true"/>
 <field name="expires" type="date"    indexed="true"  stored="true"/>
 <field name="eventrangestart" type="date"    indexed="true"  stored="true"/>
 <field name="eventrangeend" type="date"    indexed="true"  stored="true"/>
@@ -356,7 +358,7 @@
  <uniqueKey>id</uniqueKey>
 
  <!-- field for the QueryParser to use when an explicit fieldname is absent -->
- <defaultSearchField>description</defaultSearchField>
+ <defaultSearchField>aggregatefield</defaultSearchField>
 
  <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
  <solrQueryParser defaultOperator="AND"/>

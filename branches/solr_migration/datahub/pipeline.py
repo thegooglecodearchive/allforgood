@@ -497,6 +497,7 @@ def solr_retransform(fname):
   fnames.append("c:eventrangestart:dateTime")
   fnames.append("c:eventrangeend:dateTime")
   fnames.append("c:eventduration:integer")
+  fnames.append("c:aggregatefield:string")
   fnamesdict = dict([(x, x) for x in fnames])
   data_file = open(fname, "r")
   # TODO: Switch to TSV - Faster and simpler
@@ -505,6 +506,7 @@ def solr_retransform(fname):
                           dialect='excel-tab',
                           fieldnames=fnames)
   for field_name in fnamesdict.keys():
+    fnamesdict[field_name] = fnamesdict[field_name].lower()
     if fnamesdict[field_name].startswith('c:'):
       fnamesdict[field_name] = fnamesdict[field_name].split(':')[1]
   csv_writer.writerow(fnamesdict)
@@ -518,6 +520,10 @@ def solr_retransform(fname):
     else:
       rows["c:eventrangeend:dateTime"] = rows["c:eventrangestart:dateTime"]
 
+    rows["c:aggregatefield:string"] = ' '.join([rows["description"],
+                                               rows["c:org_name:string"],
+                                               rows["title"],
+                                               rows["c:categories:string"]])
     for key in rows.keys():
       if key.find(':dateTime') != -1:
         rows[key] += 'Z'
