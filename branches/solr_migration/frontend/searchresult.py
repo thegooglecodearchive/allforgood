@@ -182,10 +182,11 @@ class SearchResultSet(object):
     """Extract just the slice of merged results from start to start+num.
     No need for bounds-checking -- python list slicing does that
     automatically.  Indexed from 1."""
-    start -= 1  # Adjust to zero indexing.
-    self.clipped_results = result_set[start:start + num]
-    self.clip_start_index = start
-    if self.estimated_merged_results > start + num:
+    # TODO: remove this clip hacking altogether as it is no longer needed.
+    ##start -= 1  # Adjust to zero indexing.
+    self.clipped_results = result_set
+    self.clip_start_index = 0
+    if self.estimated_merged_results > num:
       self.has_more_results = True
 
   def clip_merged_results(self, start, num):

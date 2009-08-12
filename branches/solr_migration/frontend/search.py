@@ -278,7 +278,7 @@ def fetch_result_set(args):
 
   def can_use_backfill(args, result_set):
     if (not result_set.has_more_results 
-        and result_set.num_merged_results < 
+        and result_set.estimated_merged_results < 
         int(args[api.PARAM_NUM]) + int(args[api.PARAM_START])):
       return True
     return False
