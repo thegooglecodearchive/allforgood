@@ -16,6 +16,7 @@
 """Contains Tagger classes used in footprint_lib.py to tag listings"""
 
 import xml_helpers as xmlh
+import re
 
 # Different Record classes are used to represent volunteer listings that are
 # being run through the taggers in different formats.  Each class must have
@@ -95,6 +96,7 @@ class KeywordTagger(Tagger):
     # amount to increment the score by (between 0.0 and 1.0) for each keyword.
     self.keywords = keywords_dict
     self.examine_fields = ['title', 'description']
+    self.rex = re.compile(r'\W')
     
     self.score_threshold = 0.0 # right now, we'll tag if any keywords match
     self.tagging_functions.append(self.tag_by_keywords)
@@ -103,15 +105,19 @@ class KeywordTagger(Tagger):
     """Takes the keywords defined in subclasses and checks them against
     the description, returning the average score."""
     score = 0.0
+    # For each field we're examining, create an array of words in that field,
+    # removing non-alphanumeric characters.
+    words = {}
+    for field in self.examine_fields:
+      words[field] = self.rex.sub(' ', rec.get_val(field).lower()).split()
     for keyword in self.keywords:
       keyword_count = 0
-      # Lowercase the keyword and replace + with space for multiple word
-      # support, then add surrounding spaces
-      keyword_find = ' ' + keyword.lower().replace(' +', ' ') + ' '
+      # Lowercase keyword and replace + with space for multiple word support
+      keyword_find = keyword.lower().replace(' +', ' ')
       for field in self.examine_fields:
         # Count the number of occurences of the modified keyword
         # in the value for this field
-        keyword_count += rec.get_val(field).lower().count(keyword_find)
+        keyword_count += words[field].count(keyword_find)
       if keyword_count > 0:
         score += self.keywords[keyword]
     score /= len(self.keywords)

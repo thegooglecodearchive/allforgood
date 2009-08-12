@@ -273,7 +273,7 @@ def search(args):
 
 def query(query_url, args, cache):
   """run the actual SOLR query (no filtering or sorting)."""
-  #logging.info("Query URL: " + query_url + '&debugQuery=on')
+  logging.info("Query URL: " + query_url + '&debugQuery=on')
   result_set = searchresult.SearchResultSet(urllib.unquote(query_url),
                                             query_url,
                                             [])
@@ -367,8 +367,8 @@ def query(query_url, args, cache):
       memcache.set(key, res, time=RESULT_CACHE_TIME)
 
   result_set.num_results = len(result_set.results)
-  result_set.estimated_results = int(
-    result["response"]["numFound"])
+  result_set.estimated_results = int(result["response"]["numFound"])
+  logging.info("** Estimated Results from SOLR: " + str(result_set.estimated_results))
   parse_end = time.time()
   result_set.parse_time = parse_end - parse_start
   return result_set

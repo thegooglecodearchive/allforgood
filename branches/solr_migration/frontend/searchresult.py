@@ -50,7 +50,8 @@ def js_escape(string):
 
 class SearchResult(object):
   """class to hold the results of a search to the backend."""
-  def __init__(self, url, title, snippet, location, item_id, base_url):
+  def __init__(self, url, title, snippet, location, item_id, base_url,
+               categories = [], org_name = ''):
     # TODO: HACK: workaround for issue 404-- broken servegov links
     # hack added here so the urlsig's come out correctly and the fix
     # applies everywhere including xml_url, API calls, etc.
@@ -68,6 +69,10 @@ class SearchResult(object):
     self.location = location
     self.item_id = item_id
     self.base_url = base_url
+    self.categories = categories
+    self.categories_str = self.categories_to_str(categories)
+    self.categories_api_str = self.categories_to_api_str(categories)
+    self.orgName = org_name
     # app engine does not currently support the escapejs filter in templates
     # so we have to do it our selves for now
     self.js_escaped_title = js_escape(title)
@@ -102,6 +107,27 @@ class SearchResult(object):
     self.score_notes = notes
     self.score_str = "%.4g" % (score)
 
+  def categories_to_str(self, categories):
+    """ prettyprint list of categories for use in html snippets list """
+    if len(categories) > 0 and categories[0] != '':
+	    cat_str = ' - Categor'
+	    if len(categories) > 1:
+	      cat_str += 'ies'
+	    else:
+	      cat_str += 'y'
+	    cat_str += ': <span class="categories">'
+	    cat_str += ", ".join("<a href='javascript:categorySearch(\""+cat+
+	               "\");void(0);' class='snippet_url'>"+str(cat)+"</a>" 
+	               for cat in categories)
+	    cat_str += '</span>'
+    else:
+	    cat_str = ''
+    return cat_str
+
+  def categories_to_api_str(self, categories):
+    """ prettyprint list of categories for use in api """
+    return ",".join(categories)
+  
 def compare_result_dates(dt1, dt2):
   """private helper function for dedup()"""
   if (dt1.t_startdate > dt2.t_startdate):

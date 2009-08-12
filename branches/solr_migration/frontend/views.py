@@ -448,7 +448,7 @@ class ui_snippets_view(webapp.RequestHandler):
         'result_set': result_set,
         'has_results' : (result_set.num_merged_results > 0),  # For django.
         'last_result_index' :
-            result_set.clip_start_index + len(result_set.clipped_results),
+            result_set.estimated_results,
         'display_nextpage_link' : result_set.has_more_results,
         'friends' : view_data['friends'],
         'friends_by_event_id_js': view_data['friends_by_event_id_js'],

@@ -39,3 +39,13 @@ tutoring,mentoring,tutor,mentor,counseling
 # Synonym mappings can be used for spelling correction too
 pixima => pixma
 
+# Category Tags
+nature,environment,environmental
+education,school,schools
+animal,animals
+health,medical,healthcare,hospital,hospitals
+senior,seniors,elderly
+technology,computer,computers
+poverty,poor
+tutoring,mentoring,tutor,mentor,counseling
+

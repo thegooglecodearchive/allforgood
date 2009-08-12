@@ -20,13 +20,14 @@
 <fp:interest_count>{{ result.interest_count|escape  }}</fp:interest_count>
 <fp:impressions>{{ result.impressions|escape  }}</fp:impressions>
 <fp:quality_score>{{ result.quality_score|escape  }}</fp:quality_score>
+<fp:categories>{{ result.categories_api_str|escape  }}</fp:categories>
 <fp:skills>{{ result.skills|escape  }}</fp:skills>
 <fp:virtual>{{ result.virtual|escape  }}</fp:virtual>
 <!-- addr1 may change; contact core eng team before using -->
 <fp:addr1>{{ result.addr1|escape  }}</fp:addr1>
 <!-- addrname1 may change; contact core eng team before using -->
 <fp:addrname1>{{ result.addrname1|escape  }}</fp:addrname1>
-<fp:sponsoringOrganizationName>{{ result.sponsoringOrganizationName|escape  }}</fp:sponsoringOrganizationName>
+<fp:sponsoringOrganizationName>{{ result.orgName|escape  }}</fp:sponsoringOrganizationName>
 <fp:openEnded>{{ result.openEnded|escape  }}</fp:openEnded>
 <fp:startTime>{{ result.startTime|escape  }}</fp:startTime>
 <fp:endTime>{{ result.endTime|escape  }}</fp:endTime>
