@@ -40,7 +40,7 @@ from fastpageviews import pagecount
 from third_party.recaptcha.client import captcha
 
 import api
-import base_search
+import solr_search
 import deploy
 import geocode
 import models
@@ -457,7 +457,7 @@ class ui_snippets_view(webapp.RequestHandler):
         'result_set': result_set,
         'has_results' : (result_set.num_merged_results > 0),  # For django.
         'last_result_index' :
-            result_set.clip_start_index + len(result_set.clipped_results),
+            result_set.estimated_results,
         'display_nextpage_link' : result_set.has_more_results,
         'friends' : view_data['friends'],
         'friends_by_event_id_js': view_data['friends_by_event_id_js'],
@@ -511,7 +511,7 @@ class ui_my_snippets_view(webapp.RequestHandler):
       
       # Fetch the event details for the events I like, so they can be
       # displayed in the snippets template.
-      my_events_gbase_result_set = base_search.get_from_ids(ordered_event_ids)
+      my_events_gbase_result_set = solr_search.get_from_ids(ordered_event_ids)
       for result in my_events_gbase_result_set.results:
         result.interest = my_interests.get(result.item_id, 0)
 

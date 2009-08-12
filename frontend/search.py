@@ -177,6 +177,9 @@ def normalize_query_values(args):
       delta = datetime.timedelta(days=days_to_month_end)
       last_of_month = first_of_month + delta
       date_range = (first_of_month, last_of_month)
+    elif period == '911':
+      date_range = (datetime.date(2009, 9, 7), datetime.date(2009, 9, 14))
+      args[api.PARAM_VOL_INCLUSIVEDATES] = 'true'
 
     if date_range:
       start_date = date_range[0].strftime("%Y-%m-%d")
@@ -275,7 +278,7 @@ def fetch_result_set(args):
 
   def can_use_backfill(args, result_set):
     if (not result_set.has_more_results 
-        and result_set.num_merged_results < 
+        and result_set.estimated_merged_results < 
         int(args[api.PARAM_NUM]) + int(args[api.PARAM_START])):
       return True
     return False

@@ -692,35 +692,4 @@
     <healthcheck type="file">server-enabled</healthcheck>
     -->
   </admin>
-
-<!-- begin Localsolr configuration -->
-  <updateRequestProcessorChain>
-     <processor class="com.pjaol.search.solr.update.LocalUpdateProcessorFactory">
-<str name="latField">c:latitude:float</str>
-<str name="lngField">c:longitude:float</str>
-<!--        <str name="latField">lat</str> The field used to store your latitude -->
-<!--        <str name="lngField">lng</str>  The field used to store your longitude -->
-        <int name="startTier">9</int> <!-- The lowest level to store data at, level 9 covers about 100 miles,                                             level 5 about 1000 -->
-        <int name="endTier">22</int> <!-- The highest granular level you want to search at, 15 is about 1 mile -->
-       </processor>
-       <processor class="solr.RunUpdateProcessorFactory" />    
-       <processor class="solr.LogUpdateProcessorFactory" /> 
-   </updateRequestProcessorChain>
-<!-- local lucene request handler -->
-<requestHandler name="geo" class="com.pjaol.search.solr.LocalSolrRequestHandler">
-<!-- default values for query parameters -->
-<str name="latField">c:latitude:float</str>
-<str name="lngField">c:longitude:float</str>
-<lst name="defaults">
-<str name="echoParams">explicit</str>
-</lst>
-</requestHandler>
-<requestHandler name="krog" class="org.allforgood.krogsearch.AFGRequestHandler">
-<!-- default values for query parameters -->
-<str name="latField">c:latitude:float</str>
-<str name="lngField">c:longitude:float</str>
-<lst name="defaults">
-<str name="echoParams">explicit</str>
-</lst>
-</requestHandler>`
 </config>

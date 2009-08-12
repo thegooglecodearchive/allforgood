@@ -21,6 +21,7 @@ import datetime
 import logging
 import re
 import time
+import traceback
 import urllib
 
 from django.utils import simplejson
@@ -29,6 +30,8 @@ from google.appengine.api import urlfetch
 
 import api
 import geocode
+import models
+import modelutils
 import posting
 import private_keys
 import searchresult
@@ -42,7 +45,56 @@ DATE_FORMAT_PATTERN = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
 # max number of results to ask from SOLR (for latency-- and correctness?)
 MAX_RESULTS = 1000
 
-def solr_format_range(field, min_val, max_val):
+def build_function_query(base_lat, base_long, max_dist):
+  """Builds a function query for Solr scoring and ranking.
+  
+     For more info: http://wiki.apache.org/solr/FunctionQuery
+     Results are sorted by score. The final score is computed as follows:
+     final_score = relevancy + geo_score + duration_score"""
+  
+  # FQs don't support subtraction, so we need to add negative numbers.
+  neg_lat = '-' + base_lat
+  if neg_lat.startswith('--'):
+    neg_lat = neg_lat[2:]
+  neg_long = '-' + base_long
+  if neg_long.startswith('--'):
+    neg_long = neg_long[2:]
+
+  negative_max_dist_squared = str(max_dist * (-max_dist))
+
+  # Geo scoring - Favors nearby results
+  # Equals 1 at the base location and drops to 0 at max_dist miles away.
+  # Formula: (max_dist^2 - dist^2) / max_dist^2
+  distance_squared ='sum(' \
+                      'product(' \
+                        'sum(' + neg_lat + ', latitude),' \
+                        'sum(' + neg_lat + ', latitude)' \
+                      '),' \
+                      'product(' \
+                        'sum(' + neg_long + ', longitude),' \
+                        'sum(' + neg_long + ', longitude)' \
+                      ')' \
+                    ')'
+
+  geo_score_str = 'div(' \
+                    'sum(' + \
+                      negative_max_dist_squared + ',' + \
+                      distance_squared + \
+                    '),' + \
+                    negative_max_dist_squared + \
+                  ')'
+  
+  # Duration scoring - Favors short events
+  # Equals 1 for 1-day events (duration 0), and decays exponentially 
+  # with a half life of 10 days
+  duration_score_str = 'div(1,log(sum(10,eventduration)))'
+  
+  function_query = ' AND _val_:"'
+  function_query += 'sum(' + geo_score_str + ',' + duration_score_str + ')'
+  function_query += '"'
+  return function_query
+
+def add_range_filter(field, min_val, max_val):
   """ Convert colons in the field name and build a range specifier
   in SOLR query syntax"""
   # TODO: Deal with escapification
@@ -56,15 +108,15 @@ def rewrite_query(query_str):
   into a Solr-readable format"""
   # Lower-case everything and make boolean operators upper-case, so they
   # are recognized by SOLR.
+  # TODO: Don't lowercase field names.
   rewritten_query = query_str.lower()
   rewritten_query = rewritten_query.replace(' or ', ' OR ')
   rewritten_query = rewritten_query.replace(' and ', ' AND ')
   
   # Replace the category filter shortcut with its proper name.
-  rewritten_query = rewritten_query.replace('category:', 'c\:categories\:string:')
+  rewritten_query = rewritten_query.replace('category:', 'categories:')
 
   return rewritten_query
-  
 
 def form_solr_query(args):
   """ensure args[] has all correct and well-formed members and
@@ -77,66 +129,66 @@ def form_solr_query(args):
     # Query is empty, search for anything at all.
     solr_query += "*:*"
 
-  if api.PARAM_VOL_STARTDATE in args or api.PARAM_VOL_ENDDATE in args:
-    startdate = None
-    if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "":
-      try:
-        startdate = datetime.datetime.strptime(
-                       args[api.PARAM_VOL_STARTDATE].strip(), "%Y%m%d")
-      except:
-        logging.error("malformed start date: %s" % 
-           args[api.PARAM_VOL_STARTDATE])
-    if not startdate:
-      # note: default vol_startdate is "tomorrow"
-      # in base, event_date_range YYYY-MM-DDThh:mm:ss/YYYY-MM-DDThh:mm:ss
-      # appending "Z" to the datetime string would mean UTC
-      startdate = datetime.date.today() + datetime.timedelta(days=1)
-      args[api.PARAM_VOL_STARTDATE] = startdate.strftime("%Y%m%d")
-
-    enddate = None
+  if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "":
+    start_date = datetime.datetime.today()
+    try:
+      start_date = datetime.datetime.strptime(
+                     args[api.PARAM_VOL_STARTDATE].strip(), "%Y-%m-%d")
+    except:
+      logging.error("malformed start date: %s" % args[api.PARAM_VOL_STARTDATE])
+    end_date = None
     if api.PARAM_VOL_ENDDATE in args and args[api.PARAM_VOL_ENDDATE] != "":
       try:
-        enddate = datetime.datetime.strptime(
-                       args[api.PARAM_VOL_ENDDATE].strip(), "%Y%m%d")
+        end_date = datetime.datetime.strptime(
+                       args[api.PARAM_VOL_ENDDATE].strip(), "%Y-%m-%d")
       except:
         logging.error("malformed end date: %s" % args[api.PARAM_VOL_ENDDATE])
-    if not enddate:
-      enddate = datetime.date(startdate.year, startdate.month, startdate.day)
-      enddate = enddate + datetime.timedelta(days=1000)
-      args[api.PARAM_VOL_ENDDATE] = enddate.strftime("%Y%m%d")
-
-    solr_query += solr_format_range("c\:eventrangestart\:datetime", '*',
-                                     args[api.PARAM_VOL_ENDDATE])
-    solr_query += solr_format_range("c\:eventrangeend\:datetime",
-                                    args[api.PARAM_VOL_STARTDATE], '*')
+    if not end_date:
+      end_date = start_date
+    start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
+    end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
+    if (api.PARAM_VOL_INCLUSIVEDATES in args and 
+       args[api.PARAM_VOL_INCLUSIVEDATES] == 'true'):
+      solr_query += add_range_filter("eventrangestart", start_datetime_str, '*')
+      solr_query += add_range_filter("eventrangeend", '*', end_datetime_str)
+    else:
+      solr_query += add_range_filter("eventrangestart", '*', end_datetime_str)
+      solr_query += add_range_filter("eventrangeend", start_datetime_str, '*')
 
   if api.PARAM_VOL_PROVIDER in args and args[api.PARAM_VOL_PROVIDER] != "":
     if re.match(r'[a-zA-Z0-9:/_. -]+', args[api.PARAM_VOL_PROVIDER]):
-      solr_query += " AND c\:feed_providerName\:string:" + \
+      solr_query += " AND feed_providername:" + \
                       args[api.PARAM_VOL_PROVIDER]
     else:
       # illegal providername
       # TODO: throw 500
       logging.error("illegal providername: " + args[api.PARAM_VOL_PROVIDER])
-  solr_query = urllib.quote_plus(solr_query)
   # TODO: injection attack on sort
   if api.PARAM_SORT not in args:
     args[api.PARAM_SORT] = "r"
 
   # Generate geo search parameters
-  if (args["lat"] != "" and args["long"] != ""):
+  if 'lat' in args and 'long' in args and \
+     (args["lat"] != "" and args["long"] != ""):
     logging.debug("args[lat]="+args["lat"]+"  args[long]="+args["long"])
     if api.PARAM_VOL_DIST not in args or args[api.PARAM_VOL_DIST] == "":
       args[api.PARAM_VOL_DIST] = 25
     args[api.PARAM_VOL_DIST] = int(str(args[api.PARAM_VOL_DIST]))
     if args[api.PARAM_VOL_DIST] < 1:
       args[api.PARAM_VOL_DIST] = 1
-    solr_query += '&qt=geo'
-    solr_query += '&lat=' + args["lat"]
-    solr_query += '&long=' + args["long"]
-    solr_query += '&radius=' + str(args[api.PARAM_VOL_DIST])
-    #Todo: implement sorting by distance.
-    #solr_query += "&sort=geo_distance+asc"
+
+    lat, lng = float(args["lat"]), float(args["long"])
+    max_dist = float(args[api.PARAM_VOL_DIST]) / 60
+    if (lat < 0.5 and lng < 0.5):
+      solr_query += add_range_filter("latitude", '*', '0.5')
+      solr_query += add_range_filter("longitude", '*', '0.5')
+    else:
+      solr_query += add_range_filter("latitude",
+                                      lat - max_dist, lat + max_dist)
+      solr_query += add_range_filter("longitude",
+                                      lng - max_dist, lng + max_dist)
+    solr_query += build_function_query(args["lat"], args["long"], max_dist)    
+  solr_query = urllib.quote_plus(solr_query)
 
   # TODO: injection attack on backend
   if api.PARAM_BACKEND_URL not in args:
@@ -180,11 +232,10 @@ def search(args):
   # TODO: return in TSV format for fastest possible parsing, i.e. split("\t") 
   query_url += "?wt=json"
 
-  num_to_fetch = int(args[api.PARAM_START])
-  num_to_fetch += int(args[api.PARAM_NUM] * args[api.PARAM_OVERFETCH_RATIO])
-  if num_to_fetch > MAX_RESULTS:
-    num_to_fetch = MAX_RESULTS
+
+  num_to_fetch = int(args[api.PARAM_NUM]) + 1
   query_url += "&rows=" + str(num_to_fetch)
+  query_url += "&start=" + str(int(args[api.PARAM_START]) - 1)
 
   query_url += "&q=" + solr_query
   if not have_valid_query(args):
@@ -220,7 +271,7 @@ def search(args):
 
 def query(query_url, args, cache):
   """run the actual SOLR query (no filtering or sorting)."""
-  #logging.info("Query URL: " + query_url)
+  logging.info("Query URL: " + query_url + '&debugQuery=on')
   result_set = searchresult.SearchResultSet(urllib.unquote(query_url),
                                             query_url,
                                             [])
@@ -230,7 +281,7 @@ def query(query_url, args, cache):
   result_set.parse_time = 0
 
   fetch_start = time.time()
-  fetch_result = urlfetch.fetch(query_url, 
+  fetch_result = urlfetch.fetch(query_url,
                    deadline = api.CONST_MAX_FETCH_DEADLINE)
   fetch_end = time.time()
   result_set.fetch_time = fetch_end - fetch_start
@@ -245,29 +296,30 @@ def query(query_url, args, cache):
   doc_list = result["response"]["docs"]
 
   for i, entry in enumerate(doc_list):
-    if not "c:detailURL:URL" in entry:
+    if not "detailurl" in entry:
       # URL is required
       logging.warning("skipping Base record %d: detailurl is missing..." % i)
       continue
-    url = entry["c:detailURL:URL"]
+    url = entry["detailurl"]
     # ID is the 'stable id' of the item generated by base.
     # Note that this is not the base url expressed as the Atom id element.
     item_id = entry["id"]
-    # Base URL is the url of the item in base, expressed with the Atom id tag.
-    # TODO: This doesn't seem to be used. Consider removing it.
-    base_url = ""
-    snippet = entry["c:abstract:string"]
-    title = entry["title"]
-    location = entry["c:location_string:string"]
+    # Base URL is the url of the item in base. For Solr we just use the ID hash
+    base_url = item_id
+    snippet = entry.get('abstract', '')
+    title = entry.get('title', '')
+    location = entry.get('location_string', '')
+    categories = entry.get('categories', '').split(',')
+    org_name = entry.get('org_name', '')
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
-                                    base_url)
+                                    base_url, categories, org_name)
 
     # TODO: escape?
-    res.provider = entry["c:feed_providerName:string"]
+    res.provider = entry["feed_providername"]
     res.orig_idx = i+1
     res.latlong = ""
-    latstr = entry["c:latitude:float"]
-    longstr = entry["c:longitude:float"]
+    latstr = entry["latitude"]
+    longstr = entry["longitude"]
     if latstr and longstr and latstr != "" and longstr != "":
       res.latlong = str(latstr) + "," + str(longstr)
     # TODO: remove-- working around a DB bug where all latlongs are the same
@@ -307,8 +359,7 @@ def query(query_url, args, cache):
       if name not in except_names:
         # these attributes are likely to become part of the "g" namespace
         # http://base.google.com/support/bin/answer.py?answer=58085&hl=en
-        # TODO: Should this be entry["c:" + name]?
-        setattr(res, name, ["c:" + name])
+        setattr(res, name, name)
 
     result_set.results.append(res)
     if cache and res.item_id:
@@ -316,8 +367,108 @@ def query(query_url, args, cache):
       memcache.set(key, res, time=RESULT_CACHE_TIME)
 
   result_set.num_results = len(result_set.results)
-  result_set.estimated_results = int(
-    result["response"]["numFound"])
+  result_set.estimated_results = int(result["response"]["numFound"])
   parse_end = time.time()
   result_set.parse_time = parse_end - parse_start
+  return result_set
+
+def get_from_ids(ids):
+  """Return a result set containing multiple results for multiple ids.
+
+  Args:
+    ids: List of stable IDs of volunteer opportunities.
+
+  Returns:
+    searchresult.SearchResultSet with just the entries in ids.
+  """
+
+  result_set = searchresult.SearchResultSet('', '', [])
+
+  # First get all that we can from memcache
+  results = {}
+  try:
+    # get_multi returns a dictionary of the keys and values that were present
+    # in memcache. Even with the key_prefix specified, that key_prefix won't
+    # be on the keys in the returned dictionary.
+    hits = memcache.get_multi(ids, RESULT_CACHE_KEY)
+  except:
+    # TODO(mblain): Scope to only 'memcache down' exception.
+    logging.exception('get_from_ids: ignoring busted memcache. stack: %s',
+                      ''.join(traceback.format_stack()))
+
+  temp_results_dict = {}
+
+  for key in hits:
+    result = hits[key]
+    temp_results_dict[result.item_id] = result
+
+  # OK, we've collected what we can from memcache. Now look up the rest.
+  # Find the Google Base url from the datastore, then look that up in base.
+  missing_ids = []
+  for item_id in ids:
+    if not item_id in hits:
+      missing_ids.append(item_id)
+
+  datastore_results = modelutils.get_by_ids(models.VolunteerOpportunity,
+      missing_ids)
+
+  datastore_missing_ids = []
+  for item_id in ids:
+    if not item_id in datastore_results:
+      datastore_missing_ids.append(item_id)
+  if datastore_missing_ids:
+    logging.warning('Could not find entry in datastore for ids: %s' %
+                    datastore_missing_ids)
+
+  # Bogus args for search. TODO: Remove these, why are they needed above?
+  args = {}
+  args[api.PARAM_VOL_STARTDATE] = (datetime.date.today() +
+                       datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+  datetm = time.strptime(args[api.PARAM_VOL_STARTDATE], "%Y-%m-%d")
+  args[api.PARAM_VOL_ENDDATE] = (datetime.date(datetm.tm_year, datetm.tm_mon,
+      datetm.tm_mday) + datetime.timedelta(days=60))
+
+  # TODO(mblain): Figure out how to pull in multiple base entries in one call.
+  for (item_id, volunteer_opportunity_entity) in datastore_results.iteritems():
+    if not volunteer_opportunity_entity.base_url:
+      logging.warning('no base_url in datastore for id: %s' % item_id)
+      continue
+    logging.info("Datastore Entry: " + volunteer_opportunity_entity.base_url) ##
+    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + \
+               '?wt=json&q=id:' + \
+               volunteer_opportunity_entity.base_url
+    temp_results = query(query_url, args, True)
+    if not temp_results.results:
+      # The base URL may have changed from under us. Oh well.
+      # TODO: "info" is not defined so this logging line breaks.
+      # logging.warning('Did not get results from base. id: %s base_url: %s '
+      #                 'Last update: %s Previous failure: %s' %
+      #                 (id, info.base_url, info.last_base_url_update,
+      #                  info.last_base_url_update_failure))
+      volunteer_opportunity_entity.base_url_failure_count += 1
+      volunteer_opportunity_entity.last_base_url_update_failure = \
+          datetime.datetime.now()
+      volunteer_opportunity_entity.put()
+      continue
+    if temp_results.results[0].item_id != item_id:
+      logging.error('First result is not expected result. '
+                    'Expected: %s Found: %s. len(results): %s' %
+                    (item_id, temp_results.results[0].item_id, len(results)))
+      # Not sure if we should touch the VolunteerOpportunity or not.
+      continue
+    temp_result = temp_results.results[0]
+    temp_results_dict[temp_result.item_id] = temp_result
+
+  # Our temp result set should now contain both stuff that was looked up from
+  # cache as well as stuff that got fetched directly from Base.  Now order
+  # the events according to the original list of id's.
+  
+  # First reverse the list of id's, so events come out in the right order
+  # after being prepended to the events list.
+  ids.reverse()
+  for id in ids:
+    result = temp_results_dict.get(id, None)
+    if result:
+      result_set.results.insert(0, result)
+
   return result_set

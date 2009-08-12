@@ -23,12 +23,12 @@ function setKeywordAndExecute(keywords) {
 }
 
 function createExampleSearchText() {
-  var html = 'E.g., ';
+  var html = 'Categories: ';
   var links = [];
   for (var i = 0; i < popularSearches.length; i++) {
-    links.push('<a onclick="setKeywordAndExecute(\'' + popularSearches[i] +
+    links.push('<a onclick="setKeywordAndExecute(\'category:' + popularSearches[i] +
         '\');return false;"' +
         'href="javascript:void(0);">' + popularSearches[i] + '</' + 'a>');
   }
-  el('example_searches').innerHTML = 'E.g., ' + links.join(', ');
+  el('example_searches').innerHTML = html + links.join(', ');
 }

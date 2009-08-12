@@ -14,7 +14,7 @@ limitations under the License.
 */
 
 function goPopular(index) {
-  setInputFieldValue(el('keywords'), popularSearches[index]);
+  setInputFieldValue(el('keywords'), 'category:'.popularSearches[index]);
   submitForm('');
 }
 
