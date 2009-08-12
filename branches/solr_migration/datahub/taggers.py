@@ -113,7 +113,7 @@ class KeywordTagger(Tagger):
     for keyword in self.keywords:
       keyword_count = 0
       # Lowercase keyword and replace + with space for multiple word support
-      keyword_find = keyword.lower().replace(' +', ' ')
+      keyword_find = keyword.lower().replace('+', ' ')
       for field in self.examine_fields:
         # Count the number of occurences of the modified keyword
         # in the value for this field
