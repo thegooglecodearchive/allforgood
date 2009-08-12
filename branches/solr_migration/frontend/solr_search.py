@@ -309,8 +309,10 @@ def query(query_url, args, cache):
     snippet = entry.get('abstract', '')
     title = entry.get('title', '')
     location = entry.get('location_string', '')
+    categories = entry.get('categories', '').split(',')
+    org_name = entry.get('org_name', '')
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
-                                    base_url)
+                                    base_url, categories, org_name)
 
     # TODO: escape?
     res.provider = entry["feed_providername"]

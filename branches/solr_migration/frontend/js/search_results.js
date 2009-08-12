@@ -486,7 +486,7 @@ function categorySearch(category) {
 }
 
 function renderPaginator(div, totalNum, forceShowNextLink) {
-  alert(totalNum+' '+currentPageNum+' '+numPages+' '+forceShowNextLink);
+  // alert(totalNum+' '+currentPageNum+' '+numPages+' '+forceShowNextLink);
   if (!lastSearchQuery || searchResults.length == 0 || totalNum == 0) {
     return;
   }
