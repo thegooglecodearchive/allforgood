@@ -233,9 +233,7 @@ def search(args):
   query_url += "?wt=json"
 
 
-  num_to_fetch = int(args[api.PARAM_NUM]) + int(args[api.PARAM_START])
-  if num_to_fetch > MAX_RESULTS:
-    num_to_fetch = MAX_RESULTS
+  num_to_fetch = int(args[api.PARAM_NUM]) + 1
   query_url += "&rows=" + str(num_to_fetch)
   query_url += "&start=" + str(int(args[api.PARAM_START]) - 1)
 
@@ -368,7 +366,6 @@ def query(query_url, args, cache):
 
   result_set.num_results = len(result_set.results)
   result_set.estimated_results = int(result["response"]["numFound"])
-  logging.info("** Estimated Results from SOLR: " + str(result_set.estimated_results))
   parse_end = time.time()
   result_set.parse_time = parse_end - parse_start
   return result_set
