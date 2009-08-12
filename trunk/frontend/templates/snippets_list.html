@@ -34,13 +34,6 @@
   </script>
 <h1 class='snippets_list_header'>Your Activities</h1>
 {% endifequal %}
-{% ifequal current_page "SEARCH" %}
-<h1 class='snippets_list_header'>Volunteering activities
-  {% if query_param_q %}
-    matching '{{query_param_q|escape}}'  {# use escapejs (django 1.0) #}
-  {% endif %}
-</h1>
-{% endifequal %}
 
 {% for result in result_set.clipped_results %}
   <div class='snippet'>
@@ -103,7 +96,7 @@
           <script type="text/javascript">
 addthis.button('#share_{{forloop.counter0}}', { username: "footprint2009dev", services_compact: "email, twitter, facebook, myspace, friendfeed, bebo", ui_click: true }, { title: "{{ result.title|escape }}", url: "{{ result.url }}", templates: {twitter: '\{\{url\}\} via www.allforgood.org'} });
 </script>
-          
+
 <!--          <span style='position: relative;' class='pointer'
                onclick='popupModalElement("add_to_calendar{{ forloop.counter0 }}");return false;'>
             <div id='add_to_calendar{{ forloop.counter0 }}'
@@ -124,6 +117,7 @@ addthis.button('#share_{{forloop.counter0}}', { username: "footprint2009dev", se
           - <a href='/moderateblacklist?action=blacklist&key={{result.merge_key|urlencode}}'>blacklist</a>
 {% endif %}
         </div>
+        {{ result.categories_str }}
         <div class='snippet_interest_info' id='interest_info_{{forloop.counter0}}'></div>
 
       </div>

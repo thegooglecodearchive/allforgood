@@ -183,6 +183,10 @@ input#location { width: 180px; }
   font-size: 12px;
 }
 
+.categories {
+	color: #666;
+}
+
 .snippet_url {
   color: #666;
   text-decoration: none;

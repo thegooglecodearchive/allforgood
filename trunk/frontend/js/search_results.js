@@ -474,6 +474,17 @@ function goToPage(pageNum) {
   }
 }
 
+function categorySearch(category) {
+  if (category == '') {
+    return;
+  }
+  if (lastSearchQuery) {
+    // Change query, and re-do the last search.
+    lastSearchQuery.setKeywords("category:"+category);
+    lastSearchQuery.execute();
+  }
+}
+
 function renderPaginator(div, totalNum, forceShowNextLink) {
   if (!lastSearchQuery || searchResults.length == 0 || totalNum == 0) {
     return;
@@ -519,6 +530,7 @@ function renderPaginator(div, totalNum, forceShowNextLink) {
   //div.innerHTML += "<br/>currentPageNum="+currentPageNum;
   //div.innerHTML += "<br/>numPages="+numPages;
   //div.innerHTML += "<br/>forceShowNextLink="+forceShowNextLink;
+  
 }
 
 /** Loads the Maps API asynchronously and notifies the asynchronous load
