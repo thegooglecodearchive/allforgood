@@ -187,9 +187,11 @@ def form_solr_query(args):
                                       lat - max_dist, lat + max_dist)
       solr_query += add_range_filter("longitude",
                                       lng - max_dist, lng + max_dist)
-    solr_query += build_function_query(args["lat"], args["long"], max_dist)    
-  solr_query = urllib.quote_plus(solr_query)
+    solr_query += build_function_query(args["lat"], args["long"], max_dist)
 
+  solr_query = urllib.quote_plus(solr_query)
+  solr_query += returned_fields_specifier()
+  
   # TODO: injection attack on backend
   if api.PARAM_BACKEND_URL not in args:
     args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
@@ -269,9 +271,26 @@ def search(args):
 
   return results
 
+def returned_fields_specifier():
+  """Adds a filter to returned fields, reducing the response size"""
+  specifier = '&fl='
+  specifier += 'abstract,' + \
+               'categories,org_name,' + \
+               'description,' + \
+               'detailurl,' + \
+               'event_date_range,' + \
+               'feed_providername,' + \
+               'id,' + \
+               'latitude,' + \
+               'location_string,' + \
+               'longitude,' + \
+               'title'
+  return specifier
+
+
 def query(query_url, args, cache):
   """run the actual SOLR query (no filtering or sorting)."""
-  logging.info("Query URL: " + query_url + '&debugQuery=on')
+  #logging.info("Query URL: " + query_url + '&debugQuery=on')
   result_set = searchresult.SearchResultSet(urllib.unquote(query_url),
                                             query_url,
                                             [])
