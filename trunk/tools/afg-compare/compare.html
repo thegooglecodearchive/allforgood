@@ -45,8 +45,12 @@ Results for {{ right_url }}
 
 <table border=1>
 <tr>
-<td>{{ left_url }}</td>
-<td>{{ right_url }}</td>
+<td>{{ left_url }}<br>
+Latency: {{ left_latency }} msec
+</td>
+<td>{{ right_url }}<br>
+Latency: {{ right_latency }} msec
+</td>
 </tr>
 
 {% for zip_result in results %}
