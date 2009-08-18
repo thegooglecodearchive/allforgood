@@ -32,7 +32,6 @@ import parse_craigslist
 import parse_volunteermatch
 import subprocess
 import sys
-import time
 import xml_helpers as xmlh
 from optparse import OptionParser
 
@@ -378,7 +377,9 @@ def compute_stable_id(opp, org, locstr, openended, duration,
     eid = xmlh.get_tag_val(org, "organizationURL")
   # TODO: if two providers have same listing, good odds the
   # locations will be slightly different...
-  loc = locstr
+  # Strip numbers from listings to prevent identical locations 
+  # varying only by postcode.
+  stripped_loc = stripped_string = re.sub('\d+', '', locstr)
 
   # TODO: if two providers have same listing, the time info
   # is unlikely to be exactly the same, incl. missing fields
@@ -388,7 +389,7 @@ def compute_stable_id(opp, org, locstr, openended, duration,
   description = xmlh.get_tag_val(opp, 'description')
   detailURL = xmlh.get_tag_val(opp, 'detailURL')
   hashstr = "\t".join([eid,
-                      loc,
+                      stripped_loc,
                       timestr,
                       title,
                       abstract,
