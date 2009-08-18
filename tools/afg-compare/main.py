@@ -20,6 +20,8 @@
 import os
 import urllib
 
+import time
+
 import wsgiref.handlers
 
 from google.appengine.ext import webapp
@@ -55,8 +57,14 @@ def getAFGAPI(base_url, query, location):
   url += '&vol_loc=%s' % urllib.quote_plus(location)
   url += '&q=%s' % urllib.quote_plus(query)
 
+  start_time = time.time()
   result = urlfetch.fetch(url)
-  return (url, result)
+  end_time = time.time()
+
+  # Return latency in msec
+  latency = (end_time - start_time) * 1000.0
+
+  return (url, result, latency)
 
 class CompareHandler(webapp.RequestHandler):
   """Run the compare"""
@@ -77,8 +85,9 @@ class CompareHandler(webapp.RequestHandler):
       'results': 'yes'
     }
 
-    (left_query_url, left_result) = getAFGAPI(left_base_url, query, loc)
+    (left_query_url, left_result, left_latency) = getAFGAPI(left_base_url, query, loc)
     template_values['left_url'] = left_query_url
+    template_values['left_latency'] = left_latency
     left_rss = left_result.content
     dom1 = minidom.parseString(left_rss)
     left_results = [getItemInfo(i) for i in dom1.getElementsByTagName('item')]
@@ -86,8 +95,9 @@ class CompareHandler(webapp.RequestHandler):
     
     template_values['results'] = left_results
 
-    (right_query_url, right_result) = getAFGAPI(right_base_url, query, loc)
+    (right_query_url, right_result, right_latency) = getAFGAPI(right_base_url, query, loc)
     template_values['right_url'] = right_query_url
+    template_values['right_latency'] = right_latency
     dom1 = minidom.parseString(right_result.content)
     right_results = [getItemInfo(i) for i in dom1.getElementsByTagName('item')]
     dom1.unlink()
