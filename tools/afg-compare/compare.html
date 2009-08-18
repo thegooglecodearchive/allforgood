@@ -1,0 +1,77 @@
+<html>
+<head>
+<title>AFG Compare Tool</title>
+<style type="text/css">
+<!--
+#header {
+  float: right;
+  top: 5px;
+  left: 5px;
+  width: 100px;
+  height: 80px;
+  border: 1px;
+  border-style: solid;
+  margin: 2px;
+  padding: 2px;
+}
+#query {
+  position: absolute;
+  top: 5px;
+  left: 155px;
+}
+-->
+</style>
+<body>
+<div id="header">
+<center><img src="/static/2shoes.jpg"></center>
+<center><font size=-1>AFG Compare</font></center>
+</div>
+<form action="/compare" method="GET">
+<table>
+<tr>
+  <td>Query:</td>
+  <td><input type="text" name="query" value="{{ query }}" size="60"></td>
+</tr>
+<tr>
+  <td>Location:</td>
+  <td><input type="text" name="loc" value="{{ location }}" size="60"></td>
+  <td><input type="submit" value="Submit"></td>
+</tr>
+</table>
+{% if results %}
+<hr>
+Results for {{ left_url }}<br>
+Results for {{ right_url }}
+
+<table border=1>
+<tr>
+<td>{{ left_url }}</td>
+<td>{{ right_url }}</td>
+</tr>
+
+{% for zip_result in results %}
+<tr>
+{% for result in zip_result %}
+<td>
+<a href="{{result.link}}"><strong>{{ result.title }}</strong></a><br>
+{{ result.description }}
+</td>
+{% endfor %}
+</tr>
+{% endfor %}
+
+</table>
+{% endif %}
+<hr>
+<table>
+<tr>
+<td>Left:</td>
+<td><input type="text" name="left" size="60" value="{{left_base_url}}"></td>
+</tr>
+<tr>
+<td>Right:</td>
+<td><input type="text" name="right" size="60" value="{{ right_base_url }}"></td>
+</tr>
+</form>
+</body>
+</html>
