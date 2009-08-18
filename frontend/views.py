@@ -456,8 +456,7 @@ class ui_snippets_view(webapp.RequestHandler):
     template_values.update({
         'result_set': result_set,
         'has_results' : (result_set.num_merged_results > 0),  # For django.
-        'last_result_index' :
-            result_set.estimated_results,
+        'last_result_index' : result_set.estimated_results,
         'display_nextpage_link' : result_set.has_more_results,
         'friends' : view_data['friends'],
         'friends_by_event_id_js': view_data['friends_by_event_id_js'],
