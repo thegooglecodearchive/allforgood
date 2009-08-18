@@ -30,11 +30,14 @@ from xml.dom import minidom
 
 def getTagText(item, tag):
   node = item.getElementsByTagName(tag)[0]
-  c = node.firstChild
-  if c.nodeType == c.TEXT_NODE:
-    return c.data
-  else:
-    return 'No value for ' + c.tagName
+  try:
+    c = node.firstChild
+    if c.nodeType == c.TEXT_NODE:
+      return c.data
+    else:
+      return 'No value for ' + c.tagName
+  except:
+    return ''
     
 def getItemInfo(afgitem):
   info = {}
