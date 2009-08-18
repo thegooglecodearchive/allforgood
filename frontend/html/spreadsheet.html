@@ -75,7 +75,7 @@ Instructions:</p>
 
 		<ul>
 		<li>The URL can be hosted anywhere.  We'd strongly prefer plain HTTP -- no redirects, passwords, HTTPS or FTP.
-		<li>Please keep the data to N=1M records or X=20MB (compressed ok), picking the "best" records to place in this set.  If you can't do that (e.g. engineering resources), we may take the first N records and X bytes on our end.
+		<li>Please keep the data to N=500,000 records or X=200MB, picking the "best" records to place in this set.  If you can't do that (e.g. engineering resources), we may take the first N records and X bytes on our end.
 		<li>Contents of the URL should be updated "atomically" (all at once), otherwise timing bugs can leave us with a partial and/or corrupted file.
 		<li>Reasonable up-time and bandwidth -- the crawler will visit 1-10 times per day, and download the file
 		as quickly as you let us.  If the URL is down at the time we crawl, we may not revisit until the next day.
