@@ -110,18 +110,18 @@ class SearchResult(object):
   def categories_to_str(self, categories):
     """ prettyprint list of categories for use in html snippets list """
     if len(categories) > 0 and categories[0] != '':
-	    cat_str = ' - Categor'
-	    if len(categories) > 1:
-	      cat_str += 'ies'
-	    else:
-	      cat_str += 'y'
-	    cat_str += ': <span class="categories">'
-	    cat_str += ", ".join("<a href='javascript:categorySearch(\""+cat+
-	               "\");void(0);' class='snippet_url'>"+str(cat)+"</a>" 
-	               for cat in categories)
-	    cat_str += '</span>'
+      cat_str = ' - Categor'
+      if len(categories) > 1:
+        cat_str += 'ies'
+      else:
+        cat_str += 'y'
+      cat_str += ': <span class="categories">'
+      cat_str += ", ".join("<a href='javascript:categorySearch(\""+cat+
+                 "\");void(0);' class='snippet_url'>"+str(cat)+"</a>" 
+                 for cat in categories)
+      cat_str += '</span>'
     else:
-	    cat_str = ''
+      cat_str = ''
     return cat_str
 
   def categories_to_api_str(self, categories):
@@ -183,8 +183,7 @@ class SearchResultSet(object):
     No need for bounds-checking -- python list slicing does that
     automatically.  Indexed from 1."""
     # TODO: remove this clip hacking altogether as it is no longer needed.
-    ##start -= 1  # Adjust to zero indexing.
-    self.clipped_results = result_set
+    self.clipped_results = result_set[0:num]
     self.clip_start_index = 0
     if self.estimated_merged_results > num:
       self.has_more_results = True
