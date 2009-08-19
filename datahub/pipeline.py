@@ -125,9 +125,11 @@ def get_options():
   # Solr options
   solr_group = parser.add_option_group("Solr options")
   solr_group.add_option('--solr_url',
-                        default=pipeline_keys.SOLR_URL,
-                        dest='solr_url',
-                        help ='URL of the Solr instance to be updated.')
+                        default=pipeline_keys.SOLR_URLS,
+                        dest='solr_urls',
+                        action='append',
+                        help ='URL of a Solr instance to be updated. ' + \
+                              'This option may be used multiple times.')
   base_group.add_option('--solr_user',
                         default=pipeline_keys.SOLR_USER,
                         dest='solr_user',
@@ -278,10 +280,10 @@ def error_exit(msg):
 # Use a shell for subcommands on Windows to get a PATH search.
 USE_SHELL = sys.platform.startswith("win")
 
-def solr_update_query (query_str):
+def solr_update_query (query_str, url):
   """Queries the Solr backend specified via the command line args."""
   cmd = 'curl -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + '\' \'' + \
-        OPTIONS.solr_url + \
+        url + \
         'update?commit=true\' --data-binary ' + \
         '\'' + query_str + '\'' \
         ' -H \'Content-type:text/plain; charset=utf-8\';'
@@ -381,7 +383,7 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
                 tsv_data)
     print_progress("pipeline: done.")
   if OPTIONS.use_solr:
-    print_progress('Commencing Solr index update')
+    print_progress('Commencing Solr index updates')
     update_solr_index(name+'1')
 
 def test_loaders():
@@ -572,14 +574,15 @@ def update_solr_index(filename):
   f_in.close()
   
   solr_filename = solr_retransform(filename)
-  print_progress('Uploading file...')
-  # HTTP POST an index update command to Solr and commit changes.
-  upload_solr_file(solr_filename)
+  for solr_url in OPTIONS.solr_urls:
+    print_progress('Uploading file to ' + solr_url)
+    # HTTP POST an index update command to Solr and commit changes.
+    upload_solr_file(solr_filename, solr_url)
 
-def upload_solr_file(filename):
+def upload_solr_file(filename, url):
   """ Updates the Solr index with a CSV file """
   cmd = 'curl -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + '\' \'' + \
-        OPTIONS.solr_url + \
+        url + \
         'update/csv?commit=true&separator=%09&escape=%10\' --data-binary @' + \
         filename + \
         ' -H \'Content-type:text/plain; charset=utf-8\';'
@@ -596,10 +599,15 @@ def main():
   else:
     loaders()
     if OPTIONS.use_solr:
-      # Remove expired documents.
-      solr_update_query('<delete><query>expires:[* TO NOW-1DAY]</query></delete>')
-      # Optimize index files after the update
-      solr_update_query('<optimize/>')
+      for solr_url in OPTIONS.solr_urls:
+        print_progress('Post-processing SOLR instance at: ' + solr_url)       
+        solr_update_query(
+          '<delete><query>expires:[* TO NOW-1DAY]</query></delete>',
+          solr_url)
+        print_progress('Removed expired documents.')
+
+        solr_update_query('<optimize/>', solr_url)
+        print_progress('Optimized index.')
 
   print_word_stats()
   print_field_stats()
