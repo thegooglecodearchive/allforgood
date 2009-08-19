@@ -15,13 +15,21 @@
 <h3><b>If you are an organization with fewer than 10 volunteer activities</b></h3>
 <p>If you only have a few listings to post, the easiest way to get them on All for Good is to post them to one of our partner web sites.  These sites have already integrated their listings with All for Good, so anything you post there will automatically appear on All for Good.  (Note that this won't happen immediately, so don't worry if your listings don't appear on All for Good instantly.)  If you'd like to use this option, we recommend you post your activities on one of these sites:</p>
 
-<ul>
-<li><a href="http://www.idealist.org">www.idealist.org</a></li>
-<li><a href="http://www.serve.gov">www.serve.gov</a></li>
-<li><a href="http://www.volunteermatch.org">www.volunteermatch.org</a></li>
-<li><a href="http://www.meetup.com">www.meetup.com</a></li>
-<li><a href="http://www.craigslist.org">www.craigslist.org</a></li>
-</ul>
+<ul id='providers'></ul>
+<script>
+/* randomize order of partners */
+/* from http://javascript.about.com/library/blsort2.htm */
+function randOrd(){return (Math.round(Math.random())-0.5);} 
+providers = new Array('http://www.craigslist.org','http://www.idealist.org','http://www.meetup.com','http://www.serve.gov','http://www.volunteermatch.org','http://www.volunteersolutions.org');
+providers.sort(randOrd);
+var list = document.getElementById('providers');
+for(var i=0;i<providers.length;i++){
+  var value = providers[i].replace(/^http:\/\//, '').replace(/www[.]/,'');
+  var li = document.createElement('li');
+  li.innerHTML = "<a href='"+providers[i]+"'>"+value+"</a>";
+  list.appendChild(li);
+}
+</script>
 
 <p>If your listings are already posted on one of these sites or any other site we already receive listings from (<a href="http://www.allforgood.org/about">see the list here</a>), you don't need to submit again!</p>
 

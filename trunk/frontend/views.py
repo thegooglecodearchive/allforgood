@@ -1058,7 +1058,19 @@ class static_content(webapp.RequestHandler):
     remote_url = (urls.STATIC_CONTENT_LOCATION +
         urls.STATIC_CONTENT_FILES[self.request.path])
 
-    text = memcache.get(self.STATIC_CONTENT_MEMCACHE_KEY + remote_url)
+    # &debug=1 reads from local files rather than the repository for debugging
+    text = None
+    debug = self.request.get('debug') or '0'
+    if debug == '1':
+      path = os.path.join(os.path.dirname(__file__), 'html/'+
+                          urls.STATIC_CONTENT_FILES[self.request.path])
+      logging.info("debug: reading html from "+path)
+      fh = open(path, 'r')
+      text = fh.read()
+      logging.info("read %d bytes." % len(text))
+
+    if not text:
+      text = memcache.get(self.STATIC_CONTENT_MEMCACHE_KEY + remote_url)
     if not text:
       # Content is not in memcache.  Fetch from remote location.
       # We have to append ?zx= to URL to avoid urlfetch's cache.
