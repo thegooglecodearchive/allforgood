@@ -10,9 +10,9 @@ import sys
 import re
 import gzip
 import bz2
-import dateutil
-import dateutil.parser
-import dateutil.relativedelta
+import commands
+from dateutil import parser
+from dateutil import relativedelta
 import logging
 import optparse
 import os
@@ -510,6 +510,8 @@ def solr_retransform(fname):
     if fnamesdict[field_name].startswith('c:'):
       fnamesdict[field_name] = fnamesdict[field_name].split(':')[1]
   csv_writer.writerow(fnamesdict)
+  now = parser.parse(commands.getoutput("date"))
+  today = now.date()
   for rows in csv_reader:
     # Split the date range into separate fields
     # event_date_range can be either start_date or start_date/end_date
@@ -533,10 +535,21 @@ def solr_retransform(fname):
         else:
           rows[key] = int(rows[key])
 
-    start_date = dateutil.parser.parse(rows["c:eventrangestart:dateTime"])
-    end_date = dateutil.parser.parse(rows["c:eventrangeend:dateTime"])
-    rdelta = dateutil.relativedelta.relativedelta(end_date, start_date) 
-    rows["c:eventduration:integer"] = get_delta_days(rdelta)
+    start_date = parser.parse(rows["c:eventrangestart:dateTime"], ignoretz=True)
+    end_date = parser.parse(rows["c:eventrangeend:dateTime"], ignoretz=True)
+
+    duration_rdelta = relativedelta.relativedelta(end_date, start_date) 
+    duration_delta_days = get_delta_days(duration_rdelta)
+
+    # Fix for events that are ongoing or whose dates were unsucessfully
+    # parsed. These events have start and end dates on 1971-01-01.
+    #
+    # These events get a large eventduration (used for ranking) so that
+    # they are not erroneously boosted for having a short duration.
+    current_rdelta = relativedelta.relativedelta(today, end_date)
+    current_delta_days = get_delta_days(current_rdelta)
+    rows["c:eventduration:integer"] = max(duration_delta_days,
+                                          current_delta_days)
 
     # Fix to the +1000 to lat/long hack   
     if not rows['c:latitude:float'] is None:
