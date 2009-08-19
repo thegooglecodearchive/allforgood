@@ -89,6 +89,16 @@ def build_function_query(base_lat, base_long, max_dist):
   # with a half life of 10 days
   duration_score_str = 'div(1,log(sum(10,eventduration)))'
   
+  # Now set the weights for each score (relevance has a hardcoded weight of 1)
+  # Relevancy isn't really applicable to volunteer opportunity, so we set
+  # other weights way higher. Location is more important than duration, hence
+  # the 6:3 ratio.
+  geo_weight = '6'
+  duration_weight = '3'
+  geo_score_str = 'product(' + geo_weight + ',' + geo_score_str + ')'
+  duration_score_str = 'product(' + duration_weight + ',' + \
+                       duration_score_str + ')'
+
   function_query = ' AND _val_:"'
   function_query += 'sum(' + geo_score_str + ',' + duration_score_str + ')'
   function_query += '"'
@@ -176,17 +186,18 @@ def form_solr_query(args):
     args[api.PARAM_VOL_DIST] = int(str(args[api.PARAM_VOL_DIST]))
     if args[api.PARAM_VOL_DIST] < 1:
       args[api.PARAM_VOL_DIST] = 1
-
-    lat, lng = float(args["lat"]), float(args["long"])
     max_dist = float(args[api.PARAM_VOL_DIST]) / 60
-    if (lat < 0.5 and lng < 0.5):
-      solr_query += add_range_filter("latitude", '*', '0.5')
-      solr_query += add_range_filter("longitude", '*', '0.5')
-    else:
-      solr_query += add_range_filter("latitude",
-                                      lat - max_dist, lat + max_dist)
-      solr_query += add_range_filter("longitude",
-                                      lng - max_dist, lng + max_dist)
+
+    # TODO: Re-add locationless listings as a query param.
+    #lat, lng = float(args["lat"]), float(args["long"])
+    #if (lat < 0.5 and lng < 0.5):
+    #  solr_query += add_range_filter("latitude", '*', '0.5')
+    #  solr_query += add_range_filter("longitude", '*', '0.5')
+    #else:
+    #  solr_query += add_range_filter("latitude",
+    #                                  lat - max_dist, lat + max_dist)
+    #  solr_query += add_range_filter("longitude",
+    #                                  lng - max_dist, lng + max_dist)
     solr_query += build_function_query(args["lat"], args["long"], max_dist)
 
   solr_query = urllib.quote_plus(solr_query)
