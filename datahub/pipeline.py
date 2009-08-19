@@ -542,6 +542,14 @@ def solr_retransform(fname):
 
     duration_rdelta = relativedelta.relativedelta(end_date, start_date) 
     duration_delta_days = get_delta_days(duration_rdelta)
+    
+    # Check whether start/end dates are the wrong way around.
+    if duration_delta_days < 0:
+      print_progress('Date error: start > end. Swapping dates...')
+      duration_delta_days = -duration_delta_days
+      temp = rows["c:eventrangestart:dateTime"]
+      rows["c:eventrangestart:dateTime"] = rows["c:eventrangeend:dateTime"]
+      rows["c:eventrangeend:dateTime"] = temp
 
     # Fix for events that are ongoing or whose dates were unsucessfully
     # parsed. These events have start and end dates on 1971-01-01.
