@@ -290,6 +290,7 @@
 
 <field name="longitude" type="sdouble" indexed="true" stored="true"/>
 <field name="latitude" type="sdouble" indexed="true" stored="true"/>
+<field name="randomsalt" type="sdouble" indexed="true" stored="true"/>
 
 <field name="volunteersslots"  type="sint"    indexed="true"  stored="true"/>
 <field name="volunteersfilled"  type="sint"    indexed="true"  stored="true"/>

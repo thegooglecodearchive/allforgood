@@ -45,7 +45,7 @@ DATE_FORMAT_PATTERN = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
 # max number of results to ask from SOLR (for latency-- and correctness?)
 MAX_RESULTS = 1000
 
-def build_function_query(base_lat, base_long, max_dist):
+def build_function_query(base_lat, base_long, max_dist, get_random_results):
   """Builds a function query for Solr scoring and ranking.
   
      For more info: http://wiki.apache.org/solr/FunctionQuery
@@ -98,9 +98,17 @@ def build_function_query(base_lat, base_long, max_dist):
   geo_score_str = 'product(' + geo_weight + ',' + geo_score_str + ')'
   duration_score_str = 'product(' + duration_weight + ',' + \
                        duration_score_str + ')'
+  score_str = 'sum(' + geo_score_str + ',' + duration_score_str + ')'
 
-  function_query = ' AND _val_:"'
-  function_query += 'sum(' + geo_score_str + ',' + duration_score_str + ')'
+  # Add the salt to the final score to make results more varied per page.
+  if get_random_results:
+    # If the query is empty, we assume the user wants to browse, so we up the
+    # random salt 10x.
+    score_str = 'sum(' + score_str + ',product(10, randomsalt))'
+  else:
+    score_str = 'sum(' + score_str + ',randomsalt)'
+  function_query = ' AND _val_:"' + score_str
+  
   function_query += '"'
   return function_query
 
@@ -133,11 +141,13 @@ def form_solr_query(args):
   return a solr query string."""
   logging.debug("form_solr_query: "+str(args))
   solr_query = ""
+  query_is_empty = False
   if api.PARAM_Q in args and args[api.PARAM_Q] != "":
     solr_query += rewrite_query(args[api.PARAM_Q])
   else:
     # Query is empty, search for anything at all.
     solr_query += "*:*"
+    query_is_empty = True
 
   if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "":
     start_date = datetime.datetime.today()
@@ -198,7 +208,10 @@ def form_solr_query(args):
     #                                  lat - max_dist, lat + max_dist)
     #  solr_query += add_range_filter("longitude",
     #                                  lng - max_dist, lng + max_dist)
-    solr_query += build_function_query(args["lat"], args["long"], max_dist)
+    solr_query += build_function_query(args["lat"],
+                                       args["long"],
+                                       max_dist,
+                                       query_is_empty)
 
   solr_query = urllib.quote_plus(solr_query)
   solr_query += returned_fields_specifier()
