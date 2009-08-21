@@ -453,16 +453,17 @@ class ui_snippets_view(webapp.RequestHandler):
     else:
       template_values['query_param_loc'] = None
 
+    hp_num = min(6,len(result_set.clipped_results))
     template_values.update({
         'result_set': result_set,
         'has_results' : (result_set.num_merged_results > 0),  # For django.
-        'last_result_index' :
-            result_set.estimated_results,
+        'last_result_index' : result_set.estimated_results,
         'display_nextpage_link' : result_set.has_more_results,
         'friends' : view_data['friends'],
         'friends_by_event_id_js': view_data['friends_by_event_id_js'],
         'query_param_q' : unique_args.get(api.PARAM_Q, None),
         'full_list' : self.request.get('minimal_snippets_list') != '1',
+        'six_results' : result_set.clipped_results[:hp_num],
       })
 
     if self.request.get('minimal_snippets_list'):
@@ -1059,7 +1060,19 @@ class static_content(webapp.RequestHandler):
     remote_url = (urls.STATIC_CONTENT_LOCATION +
         urls.STATIC_CONTENT_FILES[self.request.path])
 
-    text = memcache.get(self.STATIC_CONTENT_MEMCACHE_KEY + remote_url)
+    # &debug=1 reads from local files rather than the repository for debugging
+    text = None
+    debug = self.request.get('debug') or '0'
+    if debug == '1':
+      path = os.path.join(os.path.dirname(__file__), 'html/'+
+                          urls.STATIC_CONTENT_FILES[self.request.path])
+      logging.info("debug: reading html from "+path)
+      fh = open(path, 'r')
+      text = fh.read()
+      logging.info("read %d bytes." % len(text))
+
+    if not text:
+      text = memcache.get(self.STATIC_CONTENT_MEMCACHE_KEY + remote_url)
     if not text:
       # Content is not in memcache.  Fetch from remote location.
       # We have to append ?zx= to URL to avoid urlfetch's cache.
