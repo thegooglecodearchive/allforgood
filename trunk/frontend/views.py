@@ -453,6 +453,7 @@ class ui_snippets_view(webapp.RequestHandler):
     else:
       template_values['query_param_loc'] = None
 
+    hp_num = min(6,len(result_set.clipped_results))
     template_values.update({
         'result_set': result_set,
         'has_results' : (result_set.num_merged_results > 0),  # For django.
@@ -462,6 +463,7 @@ class ui_snippets_view(webapp.RequestHandler):
         'friends_by_event_id_js': view_data['friends_by_event_id_js'],
         'query_param_q' : unique_args.get(api.PARAM_Q, None),
         'full_list' : self.request.get('minimal_snippets_list') != '1',
+        'six_results' : result_set.clipped_results[:hp_num],
       })
 
     if self.request.get('minimal_snippets_list'):
