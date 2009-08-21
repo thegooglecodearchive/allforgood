@@ -164,7 +164,8 @@ def get_taggers():
     'libraries')
   
   animals_tagger = WSVKeywordTagger('Animals', 'animal animals dog dogs ' +
-    'cat cats zoo bird birds zoos')
+    'cat cats zoo bird birds zoos puppies puppy kitten kitty critter ' +
+    'critters frog frogs turtle turtles kittens')
   
   health_tagger = WSVKeywordTagger('Health', 'health hospital hospitals ' +
     'medical healthcare mental hospice nursing cancer nurse nurses doctor ' +
@@ -173,7 +174,7 @@ def get_taggers():
   seniors_tagger = WSVKeywordTagger('Seniors', 'senior seniors elderly')
   
   technology_tagger = WSVKeywordTagger('Technology', 'website computer ' +
-    'computers technology web video graphic design')
+    'computers technology web video graphic design internet')
   
   hph_tagger = WSVKeywordTagger('Poverty', 'habitat ' +
     'homeless hunger food housing poverty house poor')

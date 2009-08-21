@@ -29,7 +29,7 @@ function runSnippetsQuery() {
        test that "No Results" message doesn't show "USA". */
     vol_loc_term = '&vol_loc=USA&vol_dist=1500';
   }
-  var url = '/ui_snippets?start=0&num=6&minimal_snippets_list=1' + vol_loc_term;
+  var url = '/ui_snippets?start=0&num=15&minimal_snippets_list=1' + vol_loc_term;
   jQuery.ajax({
         url: url,
         async: true,

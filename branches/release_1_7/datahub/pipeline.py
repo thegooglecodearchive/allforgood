@@ -10,13 +10,14 @@ import sys
 import re
 import gzip
 import bz2
-import dateutil
-import dateutil.parser
-import dateutil.relativedelta
+import commands
+from dateutil import parser
+from dateutil import relativedelta
 import logging
 import optparse
 import os
 import pipeline_keys
+import random
 import subprocess
 import time
 from csv import DictReader, DictWriter, excel_tab, register_dialect, QUOTE_NONE
@@ -125,14 +126,16 @@ def get_options():
   # Solr options
   solr_group = parser.add_option_group("Solr options")
   solr_group.add_option('--solr_url',
-                        default=pipeline_keys.SOLR_URL,
-                        dest='solr_url',
-                        help ='URL of the Solr instance to be updated.')
-  base_group.add_option('--solr_user',
+                        default=pipeline_keys.SOLR_URLS,
+                        dest='solr_urls',
+                        action='append',
+                        help ='URL of a Solr instance to be updated. ' + \
+                              'This option may be used multiple times.')
+  solr_group.add_option('--solr_user',
                         default=pipeline_keys.SOLR_USER,
                         dest='solr_user',
                         help ='Solr username.')
-  base_group.add_option('--solr_pass',
+  solr_group.add_option('--solr_pass',
                         default=pipeline_keys.SOLR_PASS,
                         dest='solr_pass',
                         help ='Solr password')
@@ -278,10 +281,10 @@ def error_exit(msg):
 # Use a shell for subcommands on Windows to get a PATH search.
 USE_SHELL = sys.platform.startswith("win")
 
-def solr_update_query (query_str):
+def solr_update_query (query_str, url):
   """Queries the Solr backend specified via the command line args."""
   cmd = 'curl -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + '\' \'' + \
-        OPTIONS.solr_url + \
+        url + \
         'update?commit=true\' --data-binary ' + \
         '\'' + query_str + '\'' \
         ' -H \'Content-type:text/plain; charset=utf-8\';'
@@ -381,7 +384,7 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
                 tsv_data)
     print_progress("pipeline: done.")
   if OPTIONS.use_solr:
-    print_progress('Commencing Solr index update')
+    print_progress('Commencing Solr index updates')
     update_solr_index(name+'1')
 
 def test_loaders():
@@ -498,6 +501,7 @@ def solr_retransform(fname):
   fnames.append("c:eventrangeend:dateTime")
   fnames.append("c:eventduration:integer")
   fnames.append("c:aggregatefield:string")
+  fnames.append("c:randomsalt:float")
   fnamesdict = dict([(x, x) for x in fnames])
   data_file = open(fname, "r")
   # TODO: Switch to TSV - Faster and simpler
@@ -510,7 +514,14 @@ def solr_retransform(fname):
     if fnamesdict[field_name].startswith('c:'):
       fnamesdict[field_name] = fnamesdict[field_name].split(':')[1]
   csv_writer.writerow(fnamesdict)
+  now = parser.parse(commands.getoutput("date"))
+  today = now.date()
   for rows in csv_reader:
+    # The random salt is added to the result score during ranking to prevent
+    # groups of near-identical results with identical scores from appearing
+    # together in the same result pages without harming quality.
+    rows["c:randomsalt:float"] = str(random.uniform(0.0, 1.0))
+    
     # Split the date range into separate fields
     # event_date_range can be either start_date or start_date/end_date
     split_date_range = rows["event_date_range"].split('/')
@@ -533,10 +544,29 @@ def solr_retransform(fname):
         else:
           rows[key] = int(rows[key])
 
-    start_date = dateutil.parser.parse(rows["c:eventrangestart:dateTime"])
-    end_date = dateutil.parser.parse(rows["c:eventrangeend:dateTime"])
-    rdelta = dateutil.relativedelta.relativedelta(end_date, start_date) 
-    rows["c:eventduration:integer"] = get_delta_days(rdelta)
+    start_date = parser.parse(rows["c:eventrangestart:dateTime"], ignoretz=True)
+    end_date = parser.parse(rows["c:eventrangeend:dateTime"], ignoretz=True)
+
+    duration_rdelta = relativedelta.relativedelta(end_date, start_date) 
+    duration_delta_days = get_delta_days(duration_rdelta)
+    
+    # Check whether start/end dates are the wrong way around.
+    if duration_delta_days < 0:
+      print_progress('Date error: start > end. Swapping dates...')
+      duration_delta_days = -duration_delta_days
+      temp = rows["c:eventrangestart:dateTime"]
+      rows["c:eventrangestart:dateTime"] = rows["c:eventrangeend:dateTime"]
+      rows["c:eventrangeend:dateTime"] = temp
+
+    # Fix for events that are ongoing or whose dates were unsucessfully
+    # parsed. These events have start and end dates on 1971-01-01.
+    #
+    # These events get a large eventduration (used for ranking) so that
+    # they are not erroneously boosted for having a short duration.
+    current_rdelta = relativedelta.relativedelta(today, end_date)
+    current_delta_days = get_delta_days(current_rdelta)
+    rows["c:eventduration:integer"] = max(duration_delta_days,
+                                          current_delta_days)
 
     # Fix to the +1000 to lat/long hack   
     if not rows['c:latitude:float'] is None:
@@ -559,14 +589,15 @@ def update_solr_index(filename):
   f_in.close()
   
   solr_filename = solr_retransform(filename)
-  print_progress('Uploading file...')
-  # HTTP POST an index update command to Solr and commit changes.
-  upload_solr_file(solr_filename)
+  for solr_url in OPTIONS.solr_urls:
+    print_progress('Uploading file to ' + solr_url)
+    # HTTP POST an index update command to Solr and commit changes.
+    upload_solr_file(solr_filename, solr_url)
 
-def upload_solr_file(filename):
+def upload_solr_file(filename, url):
   """ Updates the Solr index with a CSV file """
   cmd = 'curl -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + '\' \'' + \
-        OPTIONS.solr_url + \
+        url + \
         'update/csv?commit=true&separator=%09&escape=%10\' --data-binary @' + \
         filename + \
         ' -H \'Content-type:text/plain; charset=utf-8\';'
@@ -583,10 +614,15 @@ def main():
   else:
     loaders()
     if OPTIONS.use_solr:
-      # Remove expired documents.
-      solr_update_query('<delete><query>expires:[* TO NOW-1DAY]</query></delete>')
-      # Optimize index files after the update
-      solr_update_query('<optimize/>')
+      for solr_url in OPTIONS.solr_urls:
+        print_progress('Post-processing SOLR instance at: ' + solr_url)       
+        solr_update_query(
+          '<delete><query>expires:[* TO NOW-1DAY]</query></delete>',
+          solr_url)
+        print_progress('Removed expired documents.')
+
+        solr_update_query('<optimize/>', solr_url)
+        print_progress('Optimized index.')
 
   print_word_stats()
   print_field_stats()
