@@ -17,6 +17,7 @@ import logging
 import optparse
 import os
 import pipeline_keys
+import random
 import subprocess
 import time
 from csv import DictReader, DictWriter, excel_tab, register_dialect, QUOTE_NONE
@@ -130,11 +131,11 @@ def get_options():
                         action='append',
                         help ='URL of a Solr instance to be updated. ' + \
                               'This option may be used multiple times.')
-  base_group.add_option('--solr_user',
+  solr_group.add_option('--solr_user',
                         default=pipeline_keys.SOLR_USER,
                         dest='solr_user',
                         help ='Solr username.')
-  base_group.add_option('--solr_pass',
+  solr_group.add_option('--solr_pass',
                         default=pipeline_keys.SOLR_PASS,
                         dest='solr_pass',
                         help ='Solr password')
@@ -500,6 +501,7 @@ def solr_retransform(fname):
   fnames.append("c:eventrangeend:dateTime")
   fnames.append("c:eventduration:integer")
   fnames.append("c:aggregatefield:string")
+  fnames.append("c:randomsalt:float")
   fnamesdict = dict([(x, x) for x in fnames])
   data_file = open(fname, "r")
   # TODO: Switch to TSV - Faster and simpler
@@ -515,6 +517,11 @@ def solr_retransform(fname):
   now = parser.parse(commands.getoutput("date"))
   today = now.date()
   for rows in csv_reader:
+    # The random salt is added to the result score during ranking to prevent
+    # groups of near-identical results with identical scores from appearing
+    # together in the same result pages without harming quality.
+    rows["c:randomsalt:float"] = str(random.uniform(0.0, 1.0))
+    
     # Split the date range into separate fields
     # event_date_range can be either start_date or start_date/end_date
     split_date_range = rows["event_date_range"].split('/')
