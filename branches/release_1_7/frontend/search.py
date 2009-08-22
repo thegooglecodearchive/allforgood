@@ -190,6 +190,8 @@ def normalize_query_values(args):
 
   if api.PARAM_Q not in args:
     args[api.PARAM_Q] = ""
+  else:
+    args[api.PARAM_Q] = args[api.PARAM_Q].strip()
   dbgargs(api.PARAM_Q)
 
   if api.PARAM_VOL_LOC not in args:
