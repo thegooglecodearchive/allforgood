@@ -144,10 +144,7 @@ connection = url.openConnection();
 connection.connect();
 InputStream stream = connection.getInputStream();</pre>
 <h2 id="Elements">Elements</h2>
-<p>All for Good stores one record per location, i.e. if an event has multiple locations, there's one record per location.  Likewise, for repeated events, we store one record per time range. These elements are described in the All for Good XML specification for data received from providers here:<br />
-  <a href="http://code.google.com/p/allforgood/source/browse/trunk/spec/spec0.1.xsd">http://code.google.com/p/allforgood/source/browse/trunk/spec/spec0.1.xsd</a><br />
-<a href="http://code.google.com/p/allforgood/source/browse/trunk/spec/spec0.1.html">http://code.google.com/p/allforgood/source/browse/trunk/spec/spec0.1.html</a><br />
-</p>
+<p>All for Good stores one record per location, i.e. if an event has multiple locations, there's one record per location.  Likewise, for repeated events, we store one record per time range. These elements are described in the <a href="/spec">All for Good XML specification for data received from providers.</a></p>
 <h2 id="Notes">Developer notes and requests</h2>
 <ul>
   <li><em>maximum results</em> - As with most search engines, we have limits on the number of result records, both per query (999) and total (TBD). Please ask us if you need to download all results, and explain why.</li>
