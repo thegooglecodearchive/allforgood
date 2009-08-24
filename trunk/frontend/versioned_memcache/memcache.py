@@ -26,35 +26,72 @@ changing app versions.
 """
 
 # Pylint doesn't like the names memcache uses -- disable those warnings
+# Also disabling no docstring warning
+# pylint: disable-msg=C0111
 # pylint: disable-msg=W0622
-# pylint: disable-msg=C0103
 
 import os
 
 from google.appengine.api import memcache
 
-# The method called below sets the namespace used by any memcache 
-# call whose namespace parameter is None (the default).
-memcache.namespace_manager.set_request_namespace(
-    os.environ["CURRENT_VERSION_ID"])
+#
+# Wrap memcache API calls with calls that set the namespace to
+# the App Engine version string, obtained from the environment
+# variables.
+#
+# These calls do not support a namespace parameter, so as not
+# to confuse the user.
+#
+# The Client() object is not supported by this wrapper either.
+#
 
-# Pass-throughs to memcache. By defining these here we give ourselves
-# the flexibility to fix things if the above not-really-documented
-# API changes or goes away.
+def get(key):
+  return memcache.get(key, 
+    namespace=os.environ["CURRENT_VERSION_ID"])
 
-set = memcache.set
-set_multi = memcache.set_multi
-get = memcache.get
-get_multi = memcache.get_multi
-delete = memcache.delete
-delete_multi = memcache.delete_multi
-add = memcache.add
-add_multi = memcache.add_multi
-replace = memcache.replace
-replace_multi = memcache.replace_multi
-incr = memcache.incr
-decr = memcache.decr
-flush_all = memcache.flush_all
-get_stats = memcache.get_stats
-Client = memcache.Client
+def get_multi(keys, key_prefix=''):
+  return memcache.get_multi(keys, key_prefix,
+    namespace=os.environ["CURRENT_VERSION_ID"])
+
+def delete(key, seconds=0):
+  return memcache.delete(key, seconds,
+    namespace=os.environ["CURRENT_VERSION_ID"])
+
+def delete_multi(keys, seconds=0, key_prefix=''):
+  return memcache.delete_multi(keys, seconds, key_prefix,
+    namespace=os.environ["CURRENT_VERSION_ID"])
+
+def set(key, value, time=0, min_compress_len=0):
+  return memcache.set(key, value, time, min_compress_len,
+    namespace=os.environ["CURRENT_VERSION_ID"])
+
+def add(key, value, time=0, min_compress_len=0):
+  return memcache.add(key, value, time, min_compress_len,
+    namespace=os.environ["CURRENT_VERSION_ID"])
+
+def replace(key, value, time=0, min_compress_len=0):
+  return memcache.replace(key, value, time, min_compress_len,
+    namespace=os.environ["CURRENT_VERSION_ID"])
+
+def set_multi(mapping, time=0, key_prefix='', min_compress_len=0):
+  return memcache.set_multi(mapping, time, key_prefix, min_compress_len,
+    namespace=os.environ["CURRENT_VERSION_ID"])
+
+def add_multi(mapping, time=0, key_prefix='', min_compress_len=0):
+  return memcache.add_multi(mapping, time, key_prefix, min_compress_len,
+    namespace=os.environ["CURRENT_VERSION_ID"])
+
+def replace_multi(mapping, time=0, key_prefix='', min_compress_len=0):
+  return memcache.replace_multi(mapping, time, key_prefix, min_compress_len,
+    namespace=os.environ["CURRENT_VERSION_ID"])
+
+def incr(key, delta=1, initial_value=None):
+  return memcache.incr(key, delta,
+    namespace=os.environ["CURRENT_VERSION_ID"],
+    initial_value=initial_value)
+
+def decr(key, delta=1, initial_value=None):
+  return memcache.decr(key, delta,
+    namespace=os.environ["CURRENT_VERSION_ID"],
+    initial_value=initial_value)
 
