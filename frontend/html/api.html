@@ -118,6 +118,7 @@
 <h2 id="Fields">Output fields</h2>
 <p>Generally, the output fields correspond to the input fields found in FPXML (see the <a href="#Elements">Elements</a> section), with a few extra fields:</p>
 <ul>
+  <li><em>categories</em> - We run a system of classifiers against each listing to sort it into relevant categories.  They appear in this field as a comma-separated last.</li>
   <li><em>quality_score</em> - Internally, we score each record using heuristics to predict what will be popular with users, then use this for ranking.  This field contains that value, between 0.0 and 1.0</li>
   <li><em>pageviews</em> - Whenever possible, trusted clients report to All for Good the number of pageviews from each listing.  This value is the total lifetime pageviews for this listing.</li>
 </ul>
