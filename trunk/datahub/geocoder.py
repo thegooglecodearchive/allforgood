@@ -144,7 +144,7 @@ def geocode_call(query, retries=4):
   respcode = int(respcode)
   if respcode in (400, 601, 602, 603):  # problem with the query
     return None
-  if respcode in (500, 620):  # problem with the server
+  if respcode in (403, 500, 620):  # problem with the server
     print_debug("Connection problem or quota exceeded.  Sleeping...")
     time.sleep(1)
     return geocode_call(query, retries - 1)
