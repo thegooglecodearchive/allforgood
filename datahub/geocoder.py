@@ -136,11 +136,14 @@ def geocode_call(query, retries=4):
     return geocode_call(query, retries - 1)
 
   print_debug("response length: "+str(len(res)))
-  node = xmlh.simple_parser(res, [], SHOW_PROGRESS)
-  respcode = xmlh.get_tag_val(node, "code")
-  if respcode == "":
-    print_debug("unparseable response: "+res)
-    return False
+  if re.search(r'403 Forbidden', res):
+    respcode = 403
+  else:
+    node = xmlh.simple_parser(res, [], SHOW_PROGRESS)
+    respcode = xmlh.get_tag_val(node, "code")
+    if respcode == "":
+      print_debug("unparseable response: "+res)
+      return False
   respcode = int(respcode)
   if respcode in (400, 601, 602, 603):  # problem with the query
     return None
