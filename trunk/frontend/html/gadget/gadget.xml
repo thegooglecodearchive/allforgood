@@ -541,6 +541,7 @@ function fetchRecords(xmlContent, timerId) {
     } else {
       var searchText = prefs.getString('searchText');
       var location = prefs.getString('prefLocation');
+      // TODO: this sort of concatenation is not suitable for i18n
       var html = ['<div class="afg-record-na">', prefs.getMsg('your_search')];
       if (searchText) {
         html.push(' <strong>\'', searchText, '\'</strong> ');
@@ -548,7 +549,7 @@ function fetchRecords(xmlContent, timerId) {
         html.push(' ', prefs.getMsg('near'),
             ' <strong>\'', location, '\'</strong> ');
       }
-      html.push(prefs.getMsg('not_match'), '<br/>');
+      html.push(' ', prefs.getMsg('not_match'), '<br/>');
       if (searchText) {
         html.push('<a href="#" onclick="showDialog(\'search\'); ',
             'return false;">', prefs.getMsg('search_again'), '</a></div>');
