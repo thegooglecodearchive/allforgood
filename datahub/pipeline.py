@@ -398,6 +398,7 @@ def test_loaders():
 
 def loaders():
   """put all loaders in one function for easier testing."""
+  run_pipeline("aarp", "aarp.xml")
   run_pipeline("americanredcross", "americanredcross.xml")
   run_pipeline("americansolutions", "americansolutions.xml")
   run_pipeline("americorps", "americorps.xml")

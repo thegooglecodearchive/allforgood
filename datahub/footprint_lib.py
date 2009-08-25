@@ -842,6 +842,8 @@ def guess_shortname(filename):
     return "unitedway"
   if re.search(r'americanredcross', filename):
     return "americanredcross"
+  if re.search(r'aarp', filename):
+    return "aarp"
   if re.search(r'citizencorps', filename):
     return "citizencorps"
   if re.search(r'ymca', filename):
@@ -947,6 +949,10 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '126', 'ymca', 'ymca', 'http://www.ymca.net/',
       'YMCA')
+  if shortname == "aarp":
+    return "fpxml", fp.parser(
+      '127', 'aarp', 'aarp', 'http://www.aarp.org/',
+      'AARP')
 
   if shortname == "habitat":
     parser = fp.parser(
