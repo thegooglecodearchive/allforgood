@@ -537,6 +537,9 @@ def solr_retransform(fname):
                                                rows["title"],
                                                rows["c:categories:string"]])
     for key in rows.keys():
+      # Fix to the "double semicolons instead of commas" Base hack.
+      rows[key] = rows[key].replace(';;', ',')
+
       if key.find(':dateTime') != -1:
         rows[key] += 'Z'
       elif key.find(':integer') != -1:
