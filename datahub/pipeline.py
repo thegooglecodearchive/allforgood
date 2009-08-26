@@ -283,8 +283,8 @@ USE_SHELL = sys.platform.startswith("win")
 
 def solr_update_query (query_str, url):
   """Queries the Solr backend specified via the command line args."""
-  cmd = 'curl -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + '\' \'' + \
-        url + \
+  cmd = 'curl -s -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + \
+        '\' \'' + url + \
         'update?commit=true\' --data-binary ' + \
         '\'' + query_str + '\'' \
         ' -H \'Content-type:text/plain; charset=utf-8\';'
@@ -600,8 +600,8 @@ def update_solr_index(filename):
 
 def upload_solr_file(filename, url):
   """ Updates the Solr index with a CSV file """
-  cmd = 'curl -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + '\' \'' + \
-        url + \
+  cmd = 'curl -s -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + \
+        '\' \'' + url + \
         'update/csv?commit=true&separator=%09&escape=%10\' --data-binary @' + \
         filename + \
         ' -H \'Content-type:text/plain; charset=utf-8\';'
