@@ -151,11 +151,13 @@ def process_popular_words(content):
   # TODO: handle phrases (via whitelist, then later do something smart.
   print_progress("cleaning content: %d bytes" % len(content))
   cleaner_regexp = re.compile('<[^>]*>', re.DOTALL)
-  cleaned_content = re.sub(cleaner_regexp, '', content).lower()
-  print_progress("splitting words, %d bytes" % len(cleaned_content))
-  words = re.split(r'[^a-zA-Z0-9]+', cleaned_content)
+  # Overwrite content to save RAM.
+  content = re.sub(cleaner_regexp, '', content).lower()
+  print_progress("splitting words, %d bytes" % len(content))
   print_progress("loading words")
-  for word in words:
+  # Iterate words rather than allocating several million of them at once.
+  for wordmatch in re.finditer(r'([a-zA-Z0-9])+', content):
+    word = wordmatch.group(0)
     # ignore common english words
     if word in STOPWORDS:
       continue
