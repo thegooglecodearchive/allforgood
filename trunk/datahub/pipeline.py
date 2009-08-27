@@ -81,6 +81,9 @@ STOPWORDS = set([
   'gov', 'yes', 'no', '999',
   ])
 
+OPTIONS = None
+FILENAMES = None
+
 class our_dialect(excel_tab):
   """Dialect used for Solr CSV files. """
   quotechar = ''
@@ -93,10 +96,9 @@ def get_delta_days(date_delta):
          (date_delta.months * 30) + \
          (date_delta.years * 365)
 
-OPTIONS = None
 def get_options():
   """Generates command-line options."""
-  global OPTIONS
+  global OPTIONS, FILENAMES
   parser = optparse.OptionParser()
 
   # Standard options
@@ -139,8 +141,8 @@ def get_options():
                         default=pipeline_keys.SOLR_PASS,
                         dest='solr_pass',
                         help ='Solr password')
-  (OPTIONS, args) = parser.parse_args()
-  
+  (OPTIONS, FILENAMES) = parser.parse_args()
+
 def print_progress(msg):
   """print progress message-- shutup pylint"""
   print str(datetime.now())+": "+msg
@@ -154,10 +156,9 @@ def process_popular_words(content):
   # Overwrite content to save RAM.
   content = re.sub(cleaner_regexp, '', content).lower()
   print_progress("splitting words, %d bytes" % len(content))
-  print_progress("loading words")
   # Iterate words rather than allocating several million of them at once.
-  for wordmatch in re.finditer(r'([a-zA-Z0-9])+', content):
-    word = wordmatch.group(0)
+  for wordmatch in re.finditer(r'([a-zA-Z0-9]+)', content):
+    word = wordmatch.group(1)
     # ignore common english words
     if word in STOPWORDS:
       continue
@@ -353,7 +354,7 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
   # match the filenames to the feed filenames in Google Base, so we can
   # manually upload for testing.
   tsv_filename = name+"1.gz"
-  if not os.path.exists(url):
+  if not re.search(r'^https?://', url) and not os.path.exists(url):
     print_progress('Feed file missing: ' + url)
     return
   if do_processing:
@@ -400,47 +401,23 @@ def test_loaders():
 
 def loaders():
   """put all loaders in one function for easier testing."""
-  run_pipeline("aarp", "aarp.xml")
-  run_pipeline("americanredcross", "americanredcross.xml")
-  run_pipeline("americansolutions", "americansolutions.xml")
-  run_pipeline("americorps", "americorps.xml")
-  run_pipeline("christianvolunteering", "christianvolunteering.xml")
-  run_pipeline("citizencorps", "citizencorps.xml")
-  run_pipeline("extraordinaries", "extraordinaries.xml")
-  run_pipeline("givingdupage", "givingdupage.xml")
-  run_pipeline("habitat", "habitat.xml")
-  run_pipeline("handsonnetwork", "handsonnetwork.xml")
-  run_pipeline("idealist", "idealist.xml")
-  run_pipeline("meetup", "meetup.xml")
-  run_pipeline("mentorpro", "mentorpro.xml")
-  run_pipeline("mlk_day", "mlk_day.xml")
-  run_pipeline("mybarackobama", "mybarackobama.xml")
-  run_pipeline("myproj_servegov", "myproj_servegov.xml")
-  run_pipeline("seniorcorps", "seniorcorps.xml")
-  run_pipeline("servenet", "servenet.xml")
-  run_pipeline("unitedway", "unitedway.xml")
-  run_pipeline("volunteergov", "volunteergov.xml")
-  run_pipeline("volunteermatch", "volunteermatch.xml")
-  run_pipeline("volunteertwo", "volunteertwo.xml")
-  run_pipeline("ymca", "ymca.xml")
-
+  for name in ["aarp", "americanredcross", "americansolutions",
+               "americorps", "christianvolunteering",
+               "citizencorps", "extraordinaries", "givingdupage",
+               "habitat", "handsonnetwork", "idealist", "meetup",
+               "mentorpro", "mlk_day", "mybarackobama",
+               "myproj_servegov", "seniorcorps", "servenet",
+               "unitedway", "volunteergov", "volunteermatch",
+               "volunteertwo", "ymca"]:
+    if not FILENAMES or name in FILENAMES:
+      run_pipeline(name, name+".xml")
   # requires special crawling
-  run_pipeline("gspreadsheets",
-               "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
-
+  if not FILENAMES or "gspreadsheets" in FILENAMES:
+    run_pipeline("gspreadsheets",
+                 "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
   # note: craiglist crawler is run asynchronously, hence the local file
-  run_pipeline("craigslist", "craigslist-cache.txt")
-
-  # out for launch
-  # run_pipeline("mybarackobama",
-  #            "http://my.barackobama.com/page/event/search_results?"+
-  #            "format=footprint")
-
-  # old custom feed
-  # legacy-- to be safe, remove after 9/1/2009
-  #run_pipeline("idealist", "http://feeds.idealist.org/xml/feeds/"+
-  #           "Idealist-VolunteerOpportunity-VOLUNTEER_OPPORTUNITY_TYPE."+
-  #           "en.open.atom.gz")
+  if not FILENAMES or "craigslist" in FILENAMES:
+    run_pipeline("craigslist", "craigslist-cache.txt")
 
 def ftp_to_base(filename, ftpinfo, instr):
   """ftp the string to base, guessing the feed name from the orig filename."""
@@ -550,19 +527,32 @@ def solr_retransform(fname):
         else:
           rows[key] = int(rows[key])
 
-    start_date = parser.parse(rows["c:eventrangestart:dateTime"], ignoretz=True)
-    end_date = parser.parse(rows["c:eventrangeend:dateTime"], ignoretz=True)
+    try:
+      start_date = parser.parse(rows["c:eventrangestart:dateTime"], ignoretz=True)
+      end_date = parser.parse(rows["c:eventrangeend:dateTime"], ignoretz=True)
+    except:
+      print_progress("error parsing start or end date-- rejecting record.")
+      continue
 
     duration_rdelta = relativedelta.relativedelta(end_date, start_date) 
     duration_delta_days = get_delta_days(duration_rdelta)
     
     # Check whether start/end dates are the wrong way around.
     if duration_delta_days < 0:
-      print_progress('Date error: start > end. Swapping dates...')
-      duration_delta_days = -duration_delta_days
-      temp = rows["c:eventrangestart:dateTime"]
-      rows["c:eventrangestart:dateTime"] = rows["c:eventrangeend:dateTime"]
-      rows["c:eventrangeend:dateTime"] = temp
+      # removing this code for now-- too scary wrt. typos
+      # e.g. what happens if 9/11/2009 - 9/7/2009  and it turns out
+      # that the 7 was supposed to be a 17 i.e. simple typo-- by
+      # swapping you've made it worse.  Correct solution is to add
+      # to spreadsheet checker, then reject start>end here.
+      # even this is the wrong place to do this-- should apply to
+      # both Base and SOLR.
+      #print_progress('Date error: start > end. Swapping dates...')
+      #duration_delta_days = -duration_delta_days
+      #temp = rows["c:eventrangestart:dateTime"]
+      #rows["c:eventrangestart:dateTime"] = rows["c:eventrangeend:dateTime"]
+      #rows["c:eventrangeend:dateTime"] = temp
+      print_progress("start>end: rejecting record.")
+      continue
 
     # Fix for events that are ongoing or whose dates were unsucessfully
     # parsed. These events have start and end dates on 1971-01-01.
