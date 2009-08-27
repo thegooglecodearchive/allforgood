@@ -34,40 +34,46 @@ expects the caller to pass in the providerID and providerName)
 import xml_helpers as xmlh
 import re
 import urllib
-import sys
-import time
 from datetime import datetime
 
+MAX_BLANKROWS = 2
 CURRENT_ROW = None
 
 def parser_error(msg):
+  """print a parser error in a machine-readable format."""
   if CURRENT_ROW != None:
     msg = "row "+str(CURRENT_ROW)+": "+msg
   print "parse_gspreadsheet ERROR: "+msg
 
 def raw_recordval(record, key):
+  """strip and stringify the value if there is one, else return empty string."""
   if key in record:
     return str(record[key]).strip()
   return ""
 
 def recordval(record, key):
+  """interior and exterior strip and stringify the value if there is one,
+  else return empty string."""
   return re.sub(r'\s+', ' ', raw_recordval(record, key))
 
 KNOWN_ORGS = {}
 
 def get_dtval(record, field_name):
+  """get a field, and check that it's a legal date string."""
   val = recordval(record, field_name)
   if val != "" and not re.match(r'\d\d?/\d\d?/\d\d\d\d', val):
     parser_error("bad value in "+field_name+": '"+val+"'-- try MM/DD/YYYY")
   return val
 
 def get_tmval(record, field_name):
+  """get a field, and check that it's a legal time string."""
   val = recordval(record, field_name)
   if val != "" and not re.match(r'\d?\d:\d\d(:\d\d)?', val):
     parser_error("bad value in "+field_name+": '"+val+"'-- try HH:MM:SS")
   return val
 
 def record_to_fpxml(record):
+  """convert a spreadsheet record to an FPXML fragment."""
   fpxml = ""
   fpxml += '<VolunteerOpportunity>'
   fpxml += xmlh.output_val("volunteerOpportunityID", recordval(record, 'oppid'))
@@ -110,8 +116,10 @@ def record_to_fpxml(record):
   elif freq.find("monthly") >= 0:
     fpxml += '<iCalRecurrence>FREQ=MONTHLY</iCalRecurrence>'
   else:
-    parser_error("unsupported frequency: '"+recordval(record,'Frequency')+"'-- skipping")
-  fpxml += xmlh.output_val('commitmentHoursPerWeek', recordval(record,'CommitmentHours'))
+    parser_error("unsupported frequency: '"+
+                 recordval(record,'Frequency')+"'-- skipping")
+  fpxml += xmlh.output_val('commitmentHoursPerWeek',
+                           recordval(record,'CommitmentHours'))
   fpxml += '</dateTimeDuration>'
   fpxml += '</dateTimeDurations>'
   fpxml += '<locations>'
@@ -121,17 +129,21 @@ def record_to_fpxml(record):
   else:
     fpxml += xmlh.output_val('virtual', 'No')
     fpxml += xmlh.output_val('name', recordval(record,'LocationName'))
-    fpxml += xmlh.output_val('streetAddress1', recordval(record,'LocationStreet'))
+    fpxml += xmlh.output_val('streetAddress1',
+                             recordval(record,'LocationStreet'))
     fpxml += xmlh.output_val('city', recordval(record,'LocationCity'))
-    fpxml += xmlh.output_val('region', recordval(record,'LocationProvince'))
-    fpxml += xmlh.output_val('postalCode', recordval(record,'LocationPostalCode'))
+    fpxml += xmlh.output_val('region',
+                             recordval(record,'LocationProvince'))
+    fpxml += xmlh.output_val('postalCode',
+                             recordval(record,'LocationPostalCode'))
     fpxml += xmlh.output_val('country', recordval(record,'LocationCountry'))
   fpxml += '</location>'
   fpxml += '</locations>'
   fpxml += xmlh.output_val('paid', recordval(record,'Paid'))
   fpxml += xmlh.output_val('minimumAge', recordval(record,'MinimumAge'))
   # TODO: seniors only, kidfriendly
-  fpxml += xmlh.output_val('sexRestrictedTo', recordval(record,'SexRestrictedTo'))
+  fpxml += xmlh.output_val('sexRestrictedTo',
+                           recordval(record,'SexRestrictedTo'))
   fpxml += xmlh.output_val('skills', recordval(record,'Skills'))
   fpxml += xmlh.output_val('contactName', recordval(record,'ContactName'))
   fpxml += xmlh.output_val('contactPhone', recordval(record,'ContactPhone'))
@@ -145,12 +157,14 @@ def record_to_fpxml(record):
   return fpxml
 
 def cellval(data, row, col):
+  """get a given cell value, no checking."""
   key = 'R'+str(row)+'C'+str(col)
   if key not in data:
     return None
   return data[key]
 
 def parse_gspreadsheet(instr, data, updated, progress):
+  """parser func for google spreadsheets."""
   # look ma, watch me parse XML a zillion times faster!
   #<entry><id>http://spreadsheets.google.com/feeds/cells/pMY64RHUNSVfKYZKPoVXPBg
   #/1/public/basic/R14C15</id><updated>2009-04-28T03:34:21.900Z</updated>
@@ -184,13 +198,14 @@ def parse_gspreadsheet(instr, data, updated, progress):
   return maxrow, maxcol
 
 def read_gspreadsheet(url, data, updated, progress):
-  # read the spreadsheet into a big string
+  """read the spreadsheet into a big string."""
   infh = urllib.urlopen(url)
   instr = infh.read()
   infh.close()
   return parse_gspreadsheet(instr, data, updated, progress)
 
 def find_header_row(data, regexp_str):
+  """locate the header row and start column."""
   regexp = re.compile(regexp_str, re.IGNORECASE|re.DOTALL)
   header_row = header_startcol = -1
   for row in range(20):
@@ -209,10 +224,14 @@ def find_header_row(data, regexp_str):
   return header_row, header_startcol
 
 def parse(instr, maxrecs, progress):
+  """parser main."""
   # TODO: a spreadsheet should really be an object and cellval a method
+  # TODO: use maxrecs
   data = {}
   updated = {}
   maxrow, maxcol = parse_gspreadsheet(instr, data, updated, progress)
+  if progress:
+    print str(datetime.now())+": maxrow="+str(maxrow)+" maxcol="+str(maxcol)
   # find header row: look for "opportunity title" (case insensitive)
   header_row, header_startcol = find_header_row(data, 'opportunity\s*title')
 
@@ -227,7 +246,8 @@ def parse(instr, maxrecs, progress):
     header_str = header_str.lower()
     if header_str.find("title") >= 0:
       field_name = "OpportunityTitle"
-    elif header_str.find("organization") >= 0 and header_str.find("sponsor") >= 0:
+    elif (header_str.find("organization") >= 0 and
+          header_str.find("sponsor") >= 0):
       field_name = "SponsoringOrganization"
     elif header_str.find("description") >= 0:
       field_name = "Description"
@@ -303,7 +323,6 @@ def parse(instr, maxrecs, progress):
   global CURRENT_ROW
   CURRENT_ROW = row = data_startrow
   blankrows = 0
-  MAX_BLANKROWS = 2
   volopps = '<VolunteerOpportunities>'
   numorgs = numopps = 0
   while True:
