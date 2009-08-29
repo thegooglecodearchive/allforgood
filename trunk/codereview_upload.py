@@ -1368,7 +1368,10 @@ def RealMain(argv, data=None):
     if editor == None or editor == "":
       ErrorExit("Please set the EDITOR environment variable.")
     tempfh, filename = tempfile.mkstemp()
-    msg = "demo URL: http://your-url/foo/\ndescription: (start on next line)\n"
+    msg = "demo URLs (very important!):\n"
+    msg += "old/existing: http://\n"
+    msg += "new/proposed: http://\n\n"
+    msg += "description: (start on next line)\n"
     os.write(tempfh, msg)
     os.close(tempfh)
     print "running EDITOR:", editor, filename
