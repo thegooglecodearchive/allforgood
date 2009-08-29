@@ -402,7 +402,7 @@ def query(query_url, args, cache):
       if name not in except_names:
         # these attributes are likely to become part of the "g" namespace
         # http://base.google.com/support/bin/answer.py?answer=58085&hl=en
-        setattr(res, name, name)
+        setattr(res, name, "")
 
     result_set.results.append(res)
     if cache and res.item_id:
