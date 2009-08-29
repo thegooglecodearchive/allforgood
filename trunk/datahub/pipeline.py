@@ -404,6 +404,7 @@ def loaders():
   for name in ["aarp", "americanredcross", "americansolutions",
                "americorps", "christianvolunteering",
                "citizencorps", "extraordinaries", "givingdupage",
+               "greentheblock",
                "habitat", "handsonnetwork", "idealist", "meetup",
                "mentorpro", "mlk_day", "mybarackobama",
                "myproj_servegov", "seniorcorps", "servenet",

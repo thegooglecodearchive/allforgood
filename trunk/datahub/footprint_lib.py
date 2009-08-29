@@ -844,6 +844,8 @@ def guess_shortname(filename):
     return "americanredcross"
   if re.search(r'aarp', filename):
     return "aarp"
+  if re.search(r'greentheblock', filename):
+    return "greentheblock"
   if re.search(r'citizencorps', filename):
     return "citizencorps"
   if re.search(r'ymca', filename):
@@ -953,6 +955,10 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '127', 'aarp', 'aarp', 'http://www.aarp.org/',
       'AARP')
+  if shortname == "greentheblock":
+    return "fpxml", fp.parser(
+      '128', 'greentheblock', 'greentheblock', 'http://greentheblock.net/',
+      'Green the Block')
 
   if shortname == "habitat":
     parser = fp.parser(
