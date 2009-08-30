@@ -66,6 +66,49 @@ def getAFGAPI(base_url, query, location):
 
   return (url, result, latency)
 
+
+class VMCompareHandler(webapp.RequestHandler):
+  """Run the compare against VM"""
+  def get(self):
+
+    left_base_url = self.request.get('left')
+    query = self.request.get('query')
+    loc = self.request.get('loc')
+    
+    template_values = { 
+      'left_base_url': left_base_url, 
+      'left_url': '',
+      'right_url': 'http://www.volunteermatch.org/',
+      'query': query,
+      'location': loc,
+      'results': False,
+    }
+
+    if left_base_url:
+      (left_query_url, left_result, left_latency) = getAFGAPI(left_base_url, query, loc)
+      template_values['left_url'] = left_query_url
+      template_values['left_latency'] = left_latency
+      left_rss = left_result.content
+      dom1 = minidom.parseString(left_rss)
+      left_results = [getItemInfo(i) for i in dom1.getElementsByTagName('item')]
+      dom1.unlink()
+
+      # Figure out VM URL
+      vm_url = 'http://www.volunteermatch.org/search/index.jsp?l=%s&k=%s' % (        
+        urllib.quote_plus(loc),
+        urllib.quote_plus(query))      
+      template_values['right_url'] = vm_url
+      
+      template_values['results'] = True
+      template_values['left_results'] = left_results
+    else:
+      # Add default value for left_base_url
+      template_values['left_base_url'] = 'http://www.allforgood.org/'
+
+    path = os.path.join(os.path.dirname(__file__), 'vm_compare.html')
+    self.response.out.write(template.render(path, template_values))
+
+
 class CompareHandler(webapp.RequestHandler):
   """Run the compare"""
   def get(self):
@@ -122,6 +165,7 @@ def main():
   application = webapp.WSGIApplication(
     [ ('/', MainHandler),
       ('/compare', CompareHandler),
+      ('/vmcompare', VMCompareHandler),
     ],
     debug=True)
   wsgiref.handlers.CGIHandler().run(application)

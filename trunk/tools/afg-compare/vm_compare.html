@@ -26,7 +26,7 @@
 <center><img src="/static/2shoes.jpg"></center>
 <center><font size=-1>AFG Compare</font></center>
 </div>
-<form action="/compare" method="GET">
+<form action="/vmcompare" method="GET">
 <table>
 <tr>
   <td>Query:</td>
@@ -37,6 +37,7 @@
   <td><input type="text" name="loc" value="{{ location }}" size="60"></td>
   <td><input type="submit" value="Submit"></td>
 </tr>
+
 </table>
 {% if results %}
 <hr>
@@ -49,22 +50,33 @@ Results for {{ right_url }}
 Latency: {{ left_latency }} msec
 </td>
 <td>{{ right_url }}<br>
-Latency: {{ right_latency }} msec
 </td>
 </tr>
-
-{% for zip_result in results %}
 <tr>
-{% for result in zip_result %}
+
+<!-- left side results: AFG -->
+<td valign="top">
+<table>
+{% for result in left_results %}
+<tr>
 <td>
 <a href="{{result.link}}"><strong>{{ result.title }}</strong></a><br>
 {{ result.description }}
 </td>
-{% endfor %}
 </tr>
 {% endfor %}
-
 </table>
+</td>
+
+<!-- right side: VM in iframe -->
+<td width="66%" height="100%">
+<iframe src="{{ right_url }}" width="100%" height="800">
+</iframe>
+</td>
+
+</tr>
+</table>
+
 {% endif %}
 <hr>
 
@@ -78,11 +90,11 @@ Latency: {{ right_latency }} msec
 <tr>
 <td>Right:</td>
 <td>
-  <input type="text" name="right" size="60" value="{{ right_base_url }}">
+  VolunteerMatch
 </td>
 </tr>
 </table>
-<a href="/vmcompare">To compare with VolunteerMatch go here</a>
+
 </form>
 </body>
 </html>
