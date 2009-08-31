@@ -209,8 +209,8 @@ def get_taggers():
     'tutoring mentor counseling')
 
   september11_tagger = SimpleRegexTagger('September11',
-    '(9[\/\.]11|sep(t(ember)?)?[ -]?(11|eleven)(th)?|' +
-    'National Day of Service( (and|&) Rememb(e)?rance)?)')
+    '(9[\/\.]11|sep(t(\.|ember)?)?[ -]?(11|eleven)(th)?|' +
+    'National Day of Service (and|&) Rememb(e)?rance)')
   
   # taggers is the list of Tagger subclass instances ot run each row through
   taggers = [nature_tagger, education_tagger, animals_tagger, health_tagger,
