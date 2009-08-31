@@ -214,7 +214,17 @@ def form_solr_query(args):
                                        query_is_empty)
 
   solr_query = urllib.quote_plus(solr_query)
-  solr_query += returned_fields_specifier()
+
+  # Specify which fields to return. Returning less fields decreases latency as
+  # the search is performed on a different machine than the front-end.
+  solr_query += '&fl='
+  if api.PARAM_OUTPUT not in args:
+    solr_query += api.DEFAULT_OUTPUT_FIELDS
+  else:
+    if args[api.PARAM_OUTPUT] in api.FIELDS_BY_OUTPUT_TYPE:
+      solr_query += api.FIELDS_BY_OUTPUT_TYPE[args[api.PARAM_OUTPUT]]
+    else:
+      solr_query += '*'
   
   # TODO: injection attack on backend
   if api.PARAM_BACKEND_URL not in args:
@@ -294,23 +304,6 @@ def search(args):
         del results[i]
 
   return results
-
-def returned_fields_specifier():
-  """Adds a filter to returned fields, reducing the response size"""
-  specifier = '&fl='
-  specifier += 'abstract,' + \
-               'categories,org_name,' + \
-               'description,' + \
-               'detailurl,' + \
-               'event_date_range,' + \
-               'feed_providername,' + \
-               'id,' + \
-               'latitude,' + \
-               'location_string,' + \
-               'longitude,' + \
-               'title'
-  return specifier
-
 
 def query(query_url, args, cache):
   """run the actual SOLR query (no filtering or sorting)."""
@@ -399,10 +392,10 @@ def query(query_url, args, cache):
     # attributes of our result object
     except_names = ["title", "description"]
     for name in posting.argnames:
-      if name not in except_names:
-        # these attributes are likely to become part of the "g" namespace
-        # http://base.google.com/support/bin/answer.py?answer=58085&hl=en
-        setattr(res, name, "")
+      if name not in except_names and name.lower() in entry:
+        # Solr field names are all lowercase.
+        # TODO: fix list in posting.py so it matches solr's fieldnames.
+        setattr(res, name, entry[name.lower()])
 
     result_set.results.append(res)
     if cache and res.item_id:
