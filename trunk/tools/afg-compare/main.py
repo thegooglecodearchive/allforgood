@@ -47,6 +47,9 @@ def getItemInfo(afgitem):
   info['description'] = getTagText(afgitem, 'description')
   info['link'] = getTagText(afgitem, 'link')
   info['guid'] = getTagText(afgitem, 'guid')
+  info['startdate'] = getTagText(afgitem, 'fp:startDate')
+  info['enddate'] = getTagText(afgitem, 'fp:endDate')
+  info['location'] = getTagText(afgitem, 'fp:location_name')
   return info
 
 def getAFGAPI(base_url, query, location):

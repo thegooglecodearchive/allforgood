@@ -19,6 +19,9 @@
   top: 5px;
   left: 155px;
 }
+html {
+  font-family: arial;
+}
 -->
 </style>
 <body>
@@ -60,10 +63,16 @@ Latency: {{ left_latency }} msec
 {% for result in left_results %}
 <tr>
 <td>
-<a href="{{result.link}}"><strong>{{ result.title }}</strong></a><br>
-{{ result.description }}
+{{ forloop.counter }}. <a href="{{result.link}}"><strong>{{ result.title }}</strong></a><br>
+<font size=-1>dates: {{ result.startdate }} - {{ result.end }}  location: {{ result.location }}<br>
+{{ result.description }}<br>
+</font>
+{% ifequal forloop.counter 3 %}<br>{% endifequal %}
+{% ifequal forloop.counter 5 %}<br>{% endifequal %}
 </td>
 </tr>
+
+
 {% endfor %}
 </table>
 </td>
