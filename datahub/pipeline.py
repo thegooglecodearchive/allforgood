@@ -373,6 +373,10 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
   tsv_data = gzip_fh.read()
   gzip_fh.close()
 
+  if len(tsv_data) == 0:
+    print_progress("Warning: TSV file is empty. Aborting upload.")
+    return
+
   print "processing field stats..."
   process_field_stats(tsv_data)
 
