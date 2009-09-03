@@ -19,7 +19,7 @@
 
 import os
 import urllib
-
+import logging
 import time
 
 import wsgiref.handlers
@@ -61,6 +61,7 @@ def getAFGAPI(base_url, query, location):
   url += '&q=%s' % urllib.quote_plus(query)
 
   start_time = time.time()
+  logging.info("fetching "+url)
   result = urlfetch.fetch(url)
   end_time = time.time()
 
