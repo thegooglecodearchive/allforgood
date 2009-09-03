@@ -191,7 +191,7 @@ argnames = {
   "biweeklySat":1, "recurrence":1, "audienceAll":1, "audienceAge":1, 
   "minAge":1, "audienceSexRestricted":1, "sexRestrictedTo":1,
   "commitmentHoursPerWeek":1, "city":1, "region":1, "postalCode":1,
-  "country":1, "street1":1, "street2":1, "location_string":1
+  "country":1, "street1":1, "street2":1, "location_string":1, "id":1
 }
 
 # TODO: replace with a better parser-- after wasting hours, I gave up
