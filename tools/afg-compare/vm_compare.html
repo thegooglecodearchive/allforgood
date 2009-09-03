@@ -70,7 +70,8 @@ Latency: {{ left_latency }} msec
 <tr>
 <td>
 {{ forloop.counter }}. <a href="{{result.link}}"><strong>{{ result.title }}</strong></a><br>
-<font size=-1>dates: {{ result.startdate }} - {{ result.end }}  location: {{ result.location }}<br>
+<font size=-1>dates: {{ result.startdate }}<br>
+{{ result.end }}  location: {{ result.location }}<br>
 {{ result.description }}<br>
 </font>
 {% ifequal forloop.counter 3 %}<br>{% endifequal %}

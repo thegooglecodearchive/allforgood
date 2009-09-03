@@ -15,9 +15,8 @@
 # limitations under the License.
 #
 
-
-
 import os
+import re
 import urllib
 import logging
 import time
@@ -83,9 +82,9 @@ class VMCompareHandler(webapp.RequestHandler):
       'left_base_url': left_base_url, 
       'left_url': '',
       'right_url': 'http://www.volunteermatch.org/',
-      'query': query,
       'location': loc,
       'results': False,
+      'query': query,
     }
 
     if left_base_url:
@@ -97,12 +96,36 @@ class VMCompareHandler(webapp.RequestHandler):
       left_results = [getItemInfo(i) for i in dom1.getElementsByTagName('item')]
       dom1.unlink()
 
+      # optional VM category
+      match = re.search('category:([a-zA-Z0-9._-]+)', query)
+      vmcat = ""
+      if match:
+        afgcat = match.group(1).lower()
+        if afgcat.find('nature') >= 0:
+          vmcat = '&categories=13'   # Environment
+        elif afgcat.find('education') >= 0:
+          vmcat = '&categories=15'   # Education & Literacy
+        elif afgcat.find('animals') >= 0:
+          vmcat = '&categories=30'   # Animals
+        elif afgcat.find('health') >= 0:
+          vmcat = '&categories=11'   # Health & Medicine
+        elif afgcat.find('seniors') >= 0:
+          vmcat = '&categories=12'   # Seniors
+        elif afgcat.find('technology') >= 0:
+          vmcat = '&categories=37'   # Computers & Technology
+        elif afgcat.find('tutoring') >= 0:
+          # no VM equivalent, just search on tutoring
+          query += " tutoring"
+        else:
+          logging.error("unknown category: "+afgcat)
+        query = re.sub('category:([a-zA-Z0-9._-]+)', '', query)
+
       # Figure out VM URL
-      vm_url = 'http://www.volunteermatch.org/search/index.jsp?l=%s&k=%s' % (        
-        urllib.quote_plus(loc),
-        urllib.quote_plus(query))      
+      vm_url = 'http://www.volunteermatch.org/search/index.jsp?l=%s&k=%s' % (
+        urllib.quote_plus(loc), urllib.quote_plus(query))
+      vm_url += vmcat
+        
       template_values['right_url'] = vm_url
-      
       template_values['results'] = True
       template_values['left_results'] = left_results
     else:
