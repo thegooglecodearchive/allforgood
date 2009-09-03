@@ -29,6 +29,12 @@ html {
 <center><img src="/static/2shoes.jpg"></center>
 <center><font size=-1>AFG Compare</font></center>
 </div>
+
+<i>note: the volunteermatch comparison is *strictly* for quality testing
+purposes only, i.e. this is not a 'competitive' system etc. -- the idea
+is to detect horrible bugs by looking at how another high quality site
+does on the same query.</i><br/>
+
 <form action="/vmcompare" method="GET">
 <table>
 <tr>
@@ -78,7 +84,7 @@ Latency: {{ left_latency }} msec
 </td>
 
 <!-- right side: VM in iframe -->
-<td width="66%" height="100%">
+<td width="66%" height="100%" valign='top'>
 <iframe src="{{ right_url }}" width="100%" height="800">
 </iframe>
 </td>
