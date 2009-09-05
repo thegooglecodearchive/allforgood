@@ -69,7 +69,6 @@ class Tagger(object):
     # from multiple types of Taggers.
     self.tagging_functions = []
 
-  
   def do_tagging(self, rec):
     """takes a record to be tagged, runs tagging functions"""
     scores = [f(rec) for f in self.tagging_functions]
@@ -86,6 +85,37 @@ class Tagger(object):
     
     return rec
 
+class RegexTagger(Tagger):
+  """RegexTagger is  a class for applying tagging based on matching a
+  regex in the title or description of a listing. This can be expensive."""
+  def __init__(self, tag_name, regex_dict):
+    """Create relevant variables for the RegexTagger."""
+    Tagger.__init__(self, tag_name)
+    self.regex_dict = regex_dict
+    self.examine_fields = ['title', 'description']
+
+    self.score_threshold = 0.0 # right now, we'll tag if any keywords match
+    self.tagging_functions.append(self.tag_by_regex)
+
+  def tag_by_regex(self, rec):
+    """Takes the regex defined in subclasses and checks them against
+    the examined field, returning the average score."""
+    score = 0.0
+    for regex in self.regex_dict:
+      rex = re.compile(regex)
+      for field in self.examine_fields:
+        search_match = rex.search(rec.get_val(field), re.I)
+        if search_match is not None:
+          score += self.regex_dict[regex]
+    score /= len(self.regex_dict)
+    return score
+
+class SimpleRegexTagger(RegexTagger):
+  """Class for tagging on a single regular expression."""
+  def __init__(self, tag_name, regex):
+    RegexTagger.__init__(self, tag_name, {regex:1.0})
+
+    
 class KeywordTagger(Tagger):
   """KeywordTagger is a base class for all Taggers that apply basic tagging 
   rules based on if a keyword appears in the description of a listing."""
@@ -96,7 +126,6 @@ class KeywordTagger(Tagger):
     # amount to increment the score by (between 0.0 and 1.0) for each keyword.
     self.keywords = keywords_dict
     self.examine_fields = ['title', 'description']
-    self.rex = re.compile(r'\W')
     
     self.score_threshold = 0.0 # right now, we'll tag if any keywords match
     self.tagging_functions.append(self.tag_by_keywords)
@@ -105,20 +134,17 @@ class KeywordTagger(Tagger):
     """Takes the keywords defined in subclasses and checks them against
     the description, returning the average score."""
     score = 0.0
-    # For each field we're examining, create an array of words in that field,
-    # removing non-alphanumeric characters.
-    words = {}
-    for field in self.examine_fields:
-      words[field] = self.rex.sub(' ', rec.get_val(field).lower()).split()
     for keyword in self.keywords:
       keyword_count = 0
       # Lowercase keyword and replace + with space for multiple word support
-      keyword_find = keyword.lower().replace('+', ' ')
+      # Ensure we require whitespace around the word or the start/end line
+      keyword_find = re.compile('[^\s]' + keyword.lower().replace('+', ' ')
+                                + '[$\s]')
       for field in self.examine_fields:
         # Count the number of occurences of the modified keyword
         # in the value for this field
-        keyword_count += words[field].count(keyword_find)
-      if keyword_count > 0:
+        keyword_match = keyword_find.search(rec.get_val(field), re.I)
+      if keyword_match:
         score += self.keywords[keyword]
     score /= len(self.keywords)
     return score
@@ -181,9 +207,14 @@ def get_taggers():
   
   tutoring_tagger = WSVKeywordTagger('Tutoring', 'mentoring ' +
     'tutoring mentor counseling')
-      
+
+  september11_tagger = SimpleRegexTagger('September11',
+    '(9[\/\.]11|sep(t(\.|ember)?)?[ -]?(11|eleven)(th)?|' +
+    'National Day of Service (and|&) Rememb(e)?rance)')
+  
   # taggers is the list of Tagger subclass instances ot run each row through
   taggers = [nature_tagger, education_tagger, animals_tagger, health_tagger,
-  seniors_tagger, technology_tagger, hph_tagger, tutoring_tagger]
+             seniors_tagger, technology_tagger, hph_tagger, tutoring_tagger,
+             september11_tagger]
   
   return taggers

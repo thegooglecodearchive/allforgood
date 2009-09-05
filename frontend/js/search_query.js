@@ -23,12 +23,19 @@ function setKeywordAndExecute(keywords) {
 }
 
 function createExampleSearchText() {
+  // Put categories to receive the "New!" superscript in here
+  var new_popular = ["September 11"]
   var html = 'Categories: ';
   var links = [];
   for (var i = 0; i < popularSearches.length; i++) {
-    links.push('<a onclick="setKeywordAndExecute(\'category:' + popularSearches[i] +
-        '\');return false;"' +
-        'href="javascript:void(0);">' + popularSearches[i] + '</' + 'a>');
+    if (new_popular.indexOf(popularSearches[i]) != -1){
+      var pop_str = popularSearches[i] + "</a><span class='new_pop'>New!</span>"
+    } else {
+      var pop_str = popularSearches[i] + '</a>'
+    }
+    links.push('<a onclick="setKeywordAndExecute(\'category:' + 
+                popularSearches[i].replace(" ", "") + '\');return false;"' +
+        'href="javascript:void(0);">' + pop_str);
   }
   el('example_searches').innerHTML = html + links.join(', ');
 }

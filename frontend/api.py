@@ -36,6 +36,24 @@ PARAM_SORT = 'sort'
 PARAM_CACHE = 'cache'
 PARAM_FIELDS = 'fields'
 
+# If PARAM_OUTPUT matches one of these entries, only certain fields will be
+# returned. Otherwise, all fields are returned.
+FIELDS_BY_OUTPUT_TYPE = {'html' :
+                           'abstract,' + \
+                           'categories,org_name,' + \
+                           'detailurl,' + \
+                           'event_date_range,' + \
+                           'feed_providername,' + \
+                           'id,' + \
+                           'latitude,' + \
+                           'location_string,' + \
+                           'longitude,' + \
+                           'title'
+                           }
+# Fielts to be returned when PARAM_OUTPUT is not set.
+# TODO: remove this once all output types have been specified.
+DEFAULT_OUTPUT_FIELDS = FIELDS_BY_OUTPUT_TYPE['html']
+
 # E.g., 'today'. The presence of this param implies that 'vol_startdate'
 # and 'vol_enddate' will be automatically calculated, overriding
 # the values of those two params if they were passed in also.

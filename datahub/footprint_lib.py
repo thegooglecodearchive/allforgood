@@ -738,8 +738,54 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
     
     taggers = get_taggers()
     
+    phoneRx = re.compile(
+          '[^0-9]'+ # not a number
+          '([0-9]{3}[^0-9][0-9]{3}[^0-9][0-9]{4})'+ # NNN-NNN-NNNN
+          '(\s*(x|ex|ext)(ension)?\s*([0-9]+))?' # opt. extension, capture 'x'
+          '[^0-9]', # not a number
+      re.IGNORECASE)
     for oppchunk in oppchunks:
       opp = xmlh.simple_parser(oppchunk, None, False)
+
+      # extractor/guesser for contactPhone-- note that this operates
+      # on the output FPXML rather than the raw input, i.e. could miss
+      # some cases.  The rationale:
+      #  - operating on raw inputs means writing this N times for
+      #    each feed format (mostly testing...).
+      #  - most providers are FPXML now, i.e. not much value.
+      contactPhone = xmlh.get_tag_val(opp, "contactPhone")
+      if contactPhone == "":
+        # US-only
+        # doesn't work for non-numbers, e.g. 1-800-VOLUNTEER
+        # doesn't work with smushed numbers, e.g. 8005567629
+        #print "searching for phone:" # in "+re.sub(r'\n',' ',oppchunk)
+        m = re.search(phoneRx, oppchunk)
+        if m:
+          extractedPhone = m.group(1)
+          if m.group(5):
+            extractedPhone += " ext."+ m.group(5)
+          print_progress("extracted phone: "+extractedPhone)
+          newnode = opp.createElement('contactPhone')
+          newnode.appendChild(opp.createTextNode(extractedPhone))
+          opp.firstChild.appendChild(newnode)
+      else:
+        pass
+        #print_progress("already had phone: "+contactPhone)
+          
+      # extractor/guesser for contactEmail-- see notes above in phone
+      contactEmail = xmlh.get_tag_val(opp, "contactEmail")
+      if contactEmail == "":
+        #print "searching for email:" # in "+re.sub(r'\n',' ',oppchunk)
+        m = re.search(r'[^a-z]([a-z0-9.+!-]+@([a-z0-9-]+[.])+[a-z]+)',
+                      oppchunk, re.IGNORECASE)
+        if m:
+          print_progress("extracted email: "+m.group(1))
+          newnode = opp.createElement('contactEmail')
+          newnode.appendChild(opp.createTextNode(m.group(1)))
+          opp.firstChild.appendChild(newnode)
+      else:
+        pass
+        #print_progress("already had email: "+contactEmail)
       rec = XMLRecord(opp)
       #add tags
       for tagger in taggers:
