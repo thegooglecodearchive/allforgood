@@ -413,7 +413,7 @@ def loaders():
                "mentorpro", "mlk_day", "mybarackobama",
                "myproj_servegov", "seniorcorps", "servenet",
                "unitedway", "volunteergov", "volunteermatch",
-               "volunteertwo", "ymca"]:
+               "volunteertwo", "washoecounty", "ymca"]:
     if not FILENAMES or name in FILENAMES:
       run_pipeline(name, name+".xml")
   # requires special crawling

@@ -896,6 +896,8 @@ def guess_shortname(filename):
     return "citizencorps"
   if re.search(r'ymca', filename):
     return "ymca"
+  if re.search(r'washoe', filename):
+    return "washoecounty"
   if re.search("habitat", filename):
     return "habitat"
   if re.search("americansolutions", filename):
@@ -1005,6 +1007,10 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '128', 'greentheblock', 'greentheblock', 'http://greentheblock.net/',
       'Green the Block')
+  if shortname == "washoecounty":
+    return "fpxml", fp.parser(
+      '129', 'washoecounty', 'washoecounty', 'http://www.washoecounty.us/',
+      'Washoe County, Nevada')
 
   if shortname == "habitat":
     parser = fp.parser(
