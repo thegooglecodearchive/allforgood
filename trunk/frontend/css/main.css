@@ -506,6 +506,12 @@ h1 {
   text-decoration: underline;
 }
 
+.new_pop {
+  font-size:10px;
+  color: yellow;
+  vertical-align: super;
+}
+
 .snippets_list_header {
   color: #666 ;
   font-size: 18pt;
