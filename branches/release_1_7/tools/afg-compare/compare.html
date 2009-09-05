@@ -57,8 +57,12 @@ Latency: {{ right_latency }} msec
 <tr>
 {% for result in zip_result %}
 <td>
-<a href="{{result.link}}"><strong>{{ result.title }}</strong></a><br>
-{{ result.description }}
+{{ forloop.parentloop.counter }}. <a href="{{result.link}}"><strong>{{ result.title }}</strong></a><br>
+<font size=-1>dates: {{ result.startdate }} - {{ result.end }}  location: {{ result.location }}<br>
+{{ result.description }}<br>
+</font>
+{% ifequal forloop.parentloop.counter 3 %}<br>{% endifequal %}
+{% ifequal forloop.parentloop.counter 5 %}<br>{% endifequal %}
 </td>
 {% endfor %}
 </tr>

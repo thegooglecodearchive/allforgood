@@ -206,16 +206,16 @@
          of documents requested.  -->
     <queryResultCache
       class="solr.LRUCache"
-      size="512"
-      initialSize="512"
-      autowarmCount="512"/>
+      size="8192"
+      initialSize="8192"
+      autowarmCount="8192"/>
 
   <!-- documentCache caches Lucene Document objects (the stored fields for each document).
        Since Lucene internal document ids are transient, this cache will not be autowarmed.  -->
     <documentCache
       class="solr.LRUCache"
-      size="16384"
-      initialSize="16384"
+      size="65536"
+      initialSize="65536"
       autowarmCount="0"/>
 
     <!-- If true, stored fields that are not requested will be loaded lazily.
