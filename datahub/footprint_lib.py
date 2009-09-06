@@ -764,7 +764,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
           extractedPhone = m.group(1)
           if m.group(5):
             extractedPhone += " ext."+ m.group(5)
-          print_progress("extracted phone: "+extractedPhone)
+          #print_progress("extracted phone: "+extractedPhone)
           newnode = opp.createElement('contactPhone')
           newnode.appendChild(opp.createTextNode(extractedPhone))
           opp.firstChild.appendChild(newnode)
@@ -779,7 +779,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
         m = re.search(r'[^a-z]([a-z0-9.+!-]+@([a-z0-9-]+[.])+[a-z]+)',
                       oppchunk, re.IGNORECASE)
         if m:
-          print_progress("extracted email: "+m.group(1))
+          #print_progress("extracted email: "+m.group(1))
           newnode = opp.createElement('contactEmail')
           newnode.appendChild(opp.createTextNode(m.group(1)))
           opp.firstChild.appendChild(newnode)
