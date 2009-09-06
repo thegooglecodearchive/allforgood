@@ -34,7 +34,7 @@ DETAILED_LOG_FN = "load_gbase_detail.log"
 # this file needs to be copied over to frontend/autocomplete/
 POPULAR_WORDS_FN = "popular_words.txt"
 FIELD_STATS_FN = "field_stats.txt"
-GEO_STATS_FN = "geo_stats.txt"
+FIELD_HISTOGRAMS_FN = "field_histograms.txt"
 
 STOPWORDS = set([
   'a', 'about', 'above', 'across', 'after', 'afterwards', 'again', 'against',
@@ -195,7 +195,16 @@ def print_word_stats():
 FIELD_VALUES = None
 FIELD_NAMES = None
 NUM_RECORDS_TOTAL = 0
-LATLNG_DENSITY = {}
+
+# 
+LATLNG_HISTOGRAM = {}
+# key = number of days in the future
+STARTDATE_HISTOGRAM = {}
+# key = hour of the day, GMT
+STARTHOUR_HISTOGRAM = {}
+# length in days
+DURATION_HISTOGRAM = {}
+
 def process_field_stats(content):
   """update the field-value histograms."""
   global FIELD_NAMES, FIELD_VALUES, NUM_RECORDS_TOTAL
@@ -207,12 +216,14 @@ def process_field_stats(content):
         FIELD_VALUES = [{} for i in range(len(fields))]
       continue
     NUM_RECORDS_TOTAL += 1
-    lat_val = lng_val = None
+    lat_val = lng_val = event_date_range = start_time = None
     for i, val in enumerate(fields):
       if lat_val is None and FIELD_NAMES[i].find('latitude') >= 0:
         lat_val = val
-      if lng_val is None and FIELD_NAMES[i].find('longitude') >= 0:
+      elif lng_val is None and FIELD_NAMES[i].find('longitude') >= 0:
         lng_val = val
+      elif event_date_range is None and FIELD_NAMES[i].find('event_date_range') >= 0:
+        event_date_range = val
       val = val[0:300]
       if val in FIELD_VALUES[i]:
         FIELD_VALUES[i][val] += 1
@@ -227,10 +238,34 @@ def process_field_stats(content):
     lat_val = re.sub(r'([.]\d\d)\d+', r'\1', str(lat_fltval))
     lng_val = re.sub(r'([.]\d\d)\d+', r'\1', str(lng_fltval))
     latlng = lat_val + ',' + lng_val
-    if latlng in LATLNG_DENSITY:
-      LATLNG_DENSITY[latlng] += 1
+    if latlng in LATLNG_HISTOGRAM:
+      LATLNG_HISTOGRAM[latlng] += 1
     else:
-      LATLNG_DENSITY[latlng] = 1
+      LATLNG_HISTOGRAM[latlng] = 1
+    # 2010-01-01T00:00:00/2010-04-15T00:00:00
+    match = re.search(r'(....-..-..)T(..):..:../(....-..-..)T(..):..:..',
+                      event_date_range)
+    if match:
+      start_date = match.group(1)
+      start_hour = match.group(2)
+      end_date = match.group(3)
+      if start_date in STARTDATE_HISTOGRAM:
+        STARTDATE_HISTOGRAM[start_date] += 1
+      else:
+        STARTDATE_HISTOGRAM[start_date] = 1
+      if start_hour in STARTHOUR_HISTOGRAM:
+        STARTHOUR_HISTOGRAM[start_hour] += 1
+      else:
+        STARTHOUR_HISTOGRAM[start_hour] = 1
+      duration = (datetime.strptime(end_date, "%Y-%m-%d") -
+                  datetime.strptime(start_date, "%Y-%m-%d"))
+      duration_days = duration.days
+      if duration_days > 365:
+        duration_days = 365
+      if duration_days in DURATION_HISTOGRAM:
+        DURATION_HISTOGRAM[duration_days] += 1
+      else:
+        DURATION_HISTOGRAM[duration_days] = 1
 
 def print_field_stats():
   """dump field-value stats."""
@@ -248,13 +283,23 @@ def print_field_stats():
   outfh.close()
   print_progress("done writing "+FIELD_STATS_FN)
 
-def print_geo_stats():
-  print_progress("writing "+GEO_STATS_FN+"...")
-  outfh = open(LOGPATH+GEO_STATS_FN, "w")
-  for latlng, freq in LATLNG_DENSITY.iteritems():
-    outfh.write("%s %d\n" % (latlng, freq))
+def print_field_histograms():
+  print_progress("writing "+FIELD_HISTOGRAMS_FN+"...")
+  outfh = open(LOGPATH+FIELD_HISTOGRAMS_FN, "w")
+  outfh.write("latlong histogram:\n")
+  for val, freq in LATLNG_HISTOGRAM.iteritems():
+    outfh.write("%s %d\n" % (str(val), freq))
+  outfh.write("start_date histogram:\n")
+  for val, freq in STARTDATE_HISTOGRAM.iteritems():
+    outfh.write("%s %d\n" % (str(val), freq))
+  outfh.write("start_hour histogram:\n")
+  for val, freq in STARTHOUR_HISTOGRAM.iteritems():
+    outfh.write("%s %d\n" % (str(val), freq))
+  outfh.write("duration histogram:\n")
+  for val, freq in DURATION_HISTOGRAM.iteritems():
+    outfh.write("%s %d\n" % (str(val), freq))
   outfh.close()
-  print_progress("done writing "+GEO_STATS_FN)
+  print_progress("done writing "+FIELD_HISTOGRAMS_FN)
 
 def append_log(outstr):
   """append to the detailed and truncated log, for stats collection."""
@@ -530,7 +575,7 @@ def solr_retransform(fname):
         if rows[key] == '':
           rows[key] = 0
         else:
-          rows[key] = int(rows[key])
+          rows[key] = int(re.sub(r'^.*([0-9]+).*$', '\1', rows[key]))
 
     try:
       start_date = parser.parse(rows["c:eventrangestart:dateTime"], ignoretz=True)
@@ -627,7 +672,7 @@ def main():
 
   print_word_stats()
   print_field_stats()
-  print_geo_stats()
+  print_field_histograms()
 
 if __name__ == "__main__":
   main()
