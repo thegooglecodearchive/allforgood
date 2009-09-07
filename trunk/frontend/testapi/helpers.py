@@ -448,7 +448,7 @@ class ApiTesting(object):
     
   def test_provider(self):
     """run a hardcoded test query (&vol_provider=)."""
-    provider = "HandsOn Network"
+    provider = "unitedway"
     result_set = self.get_result_set({'q':'hospital', 'vol_provider':provider})
     if not self.assert_nonempty_results(result_set):
       return False
