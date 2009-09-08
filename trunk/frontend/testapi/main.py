@@ -67,8 +67,13 @@ class RunTests(webapp.RequestHandler):
 
     errors = ''
     if not remoteUrl:
-      errors = 'No remote url given in request, using default url'
-      apiUrl = testapi.helpers.DEFAULT_TEST_URL
+      host = os.environ["HTTP_HOST"]
+      if re.search(r'appspot.com', host):
+        apiUrl = "http://" + host + "/api/volopps"
+        errors = 'No remote url given in request, using same host: ' + apiUrl
+      else:
+        apiUrl = testapi.helpers.DEFAULT_TEST_URL
+        errors = 'No remote url given in request, using default url: ' + apiUrl
     else:
       apiUrl = remoteUrl
 
