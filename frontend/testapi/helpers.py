@@ -191,22 +191,24 @@ class ApiTesting(object):
     self.test_type = ""
     
   def success(self, datastore_insert):
+    """note a test success."""
     self.datastore_insert = datastore_insert
 
-    """test whether to insert entity into the Datastore"""
+    # test whether to insert entity into the Datastore
     if self.datastore_insert:
-      """report test success. returns True to make it easy on callers."""
-      res = TestResults(test_type=self.test_type, result_code=TestResultCode.PASS)
+      # report test success. returns True to make it easy on callers.
+      res = TestResults(test_type=self.test_type,
+                        result_code=TestResultCode.PASS)
       res.put()
     self.output('<p class="result success">Passed</p>')
     return True
 
   def fail(self, code, msg, datastore_insert):
+    """note a test failure."""
     self.datastore_insert = datastore_insert
-
-    """test whether to insert entity into the Datastore"""
+    # test whether to insert entity into the Datastore
     if self.datastore_insert:
-      """report test failure. returns False to make it easy on callers."""
+      # report test failure. returns False to make it easy on callers.
       res = TestResults(test_type=self.test_type, result_code=code,
                         result_string=msg)
       res.put()
@@ -287,9 +289,10 @@ class ApiTesting(object):
     datemsg = 'Date of last run: ' +str(self.testresult.timestamp)
     if self.response_type != "rss":
       msg += '&amp;output=' + self.response_type
-    self.output('<p class="test">Checking Datastore for <em>'+msg+'</em></p>'+datemsg)
+    self.output('<p class="test">Checking Datastore for <em>'+msg+'</em></p>'+
+                datemsg)
     if self.testresult.result_code == 0:
-	  return self.success(False)
+      return self.success(False)
     elif self.testresult.result_code == 4:
       return self.fail(
         TestResultCode.DATA_MISMATCH,
@@ -320,7 +323,7 @@ class ApiTesting(object):
     for test_type in test_types:
       test_type = test_type.strip()
       if self.read_from_cache:
-        """query the Datastore for existing test data"""
+        # query the Datastore for existing test data
         testresults = db.GqlQuery("SELECT * FROM TestResults " +
                                   "WHERE test_type = :1 " +
                                   #"AND result_code = 0 " +
@@ -334,7 +337,7 @@ class ApiTesting(object):
             res = False
       else:
         if not self.run_test(test_type):
-            res = False
+          res = False
     return res
   
   def get_result_set(self, arg_list):
@@ -358,10 +361,9 @@ class ApiTesting(object):
     if not self.assert_nonempty_results(result_set):
       return False
     if len(result_set) != expected_count:
-      return self.fail(
-        TestResultCode.DATA_MISMATCH,
-        'Requested num='+str(expected_count)+' but received '+
-        str(len(result_set))+' results.', True)
+      return self.fail(TestResultCode.DATA_MISMATCH,
+                       'Requested num='+str(expected_count)+' but received '+
+                       str(len(result_set))+' results.', True)
     return self.success(True)
   
   def int_test_bogus_query(self):
@@ -413,10 +415,9 @@ class ApiTesting(object):
     if self.assert_empty_results(result_set):
       return self.success(True)
     else:
-      return self.fail(
-        TestResultCode.DATA_MISMATCH,
-        'some item(s) found for location <strong>' + location +
-        '</strong> or result set invalid', True)
+      return self.fail(TestResultCode.DATA_MISMATCH,
+                       'some item(s) found for location <strong>' + location +
+                       '</strong> or result set invalid', True)
    
   def int_test_valid_geo(self):
     """run a query and check the geo results."""
@@ -438,7 +439,8 @@ class ApiTesting(object):
     if not result:
       return self.fail(
         TestResultCode.DATA_MISMATCH,
-        'One or more items did not fall in the requested location/distance.', True)
+        'One or more items did not fall in the requested location/distance.',
+        True)
     return self.success(True)
   
   def test_geo(self):
@@ -462,8 +464,8 @@ class ApiTesting(object):
     if not result:
       return self.fail(
         TestResultCode.DATA_MISMATCH,
-        'One or more items did not match provider <strong>provider+</strong>', True)
-    
+        'One or more items did not match provider <strong>provider+</strong>',
+        True)
     return self.success(True)
   
   def test_start(self):
