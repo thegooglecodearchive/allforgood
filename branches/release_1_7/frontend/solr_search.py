@@ -234,6 +234,18 @@ def form_solr_query(args):
     args[api.PARAM_START] = 1
   return solr_query
 
+def parseLatLng(val):
+  """ return precisely zero if a lat|lng value is very nearly zero."""
+  try:
+    if val is None or val == "":
+      return 0.0
+    floatval = float(val)
+    if floatval > -0.01 and floatval < 0.01:
+      return 0.0
+    return floatval
+  except:
+    return 0.0
+
 # note: many of the XSS and injection-attack defenses are unnecessary
 # given that the callers are also protecting us, but I figure better
 # safe than sorry, and defense-in-depth.
@@ -255,7 +267,8 @@ def search(args):
       if param in args and args[param]:
         if param == api.PARAM_VOL_LOC:
           # vol_loc must render a lat, long pair
-          if not args["lat"] or not args["long"]:
+          if (not args["lat"] or parseLatLng(args["lat"]) == 0 or 
+              not args["long"] or parseLatLng(args["long"]) == 0):
             continue
         valid_query = True
         break
@@ -315,7 +328,7 @@ def query(query_url, args, cache):
   result_set.args = args
   result_set.fetch_time = 0
   result_set.parse_time = 0
-
+  
   fetch_start = time.time()
   fetch_result = urlfetch.fetch(query_url,
                    deadline = api.CONST_MAX_FETCH_DEADLINE)
