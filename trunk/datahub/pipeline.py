@@ -575,7 +575,8 @@ def solr_retransform(fname):
         if rows[key] == '':
           rows[key] = 0
         else:
-          rows[key] = int(re.sub(r'^.*([0-9]+).*$', r'\1', rows[key]))
+          # find the first numbers from the string, e.g. abc123.4 => 123
+          rows[key] = int(re.sub(r'^.*?([0-9]+).*$', r'\1', rows[key]))
 
     try:
       start_date = parser.parse(rows["c:eventrangestart:dateTime"], ignoretz=True)
