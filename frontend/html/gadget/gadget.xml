@@ -1,42 +1,62 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="__MSG_title__"
+  <ModulePrefs title="All for Good"
                description="__MSG_description__"
                width="250"
                height="361"
                author="Gadgetfactory"
-               screenshot="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/afg.png"
-               thumbnail="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/afg-thm.png"
+               screenshot="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/afg.png"
+               thumbnail="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/afg-thm.png"
                author_email="developer.gadget@gmail.com">
     <Require feature="setprefs" />
     <Require feature="dynamic-height" />
     <Require feature="views" />
+    <Require feature="minimessage" />
     <Locale lang="en"
-            messages="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/afg_en_ALL.xml" />
-    <Locale messages="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/afg_en_ALL.xml" />
+            messages="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/afg_en_ALL.xml" />
+    <Locale messages="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/afg_en_ALL.xml" />
   </ModulePrefs>
-  <UserPref name="storiesToRead"
-            display_name="__MSG_listings_per_page__"
-            default_value="4"
-            datatype="enum">
-    <EnumValue value="4" />
-    <EnumValue value="5" />
-    <EnumValue value="6" />
-    <EnumValue value="7" />
-    <EnumValue value="8" />
-    <EnumValue value="9" />
-    <EnumValue value="10" />
+  <UserPref name="storiesToRead" 
+            display_name="__MSG_listings_per_page__" 
+            default_value="4" 
+            datatype="enum"> 
+    <EnumValue value="4" /> 
+    <EnumValue value="5" /> 
+    <EnumValue value="6" /> 
+    <EnumValue value="7" /> 
+    <EnumValue value="8" /> 
+    <EnumValue value="9" /> 
+    <EnumValue value="10" /> 
   </UserPref>
-  <UserPref name="themesFolder"
-            display_name="__MSG_themes_folder__"
-            default_value="" />
-  <UserPref name="prefLocation"
-            display_name="__MSG_default_location__"
+  <UserPref name="timePeriod" display_name="__MSG_time_period__" default_value="" datatype="enum">
+    <EnumValue value="" display_value="__MSG_everything__"/>
+    <EnumValue value="today" display_value="__MSG_today__"/>
+    <EnumValue value="this_weekend" display_value="__MSG_this_weekend__"/>
+    <EnumValue value="this_week" display_value="__MSG_this_week__"/>
+    <EnumValue value="this_month" display_value="__MSG_this_month__"/>
+    <EnumValue value="911" display_value="__MSG_september_11__"/>
+  </UserPref>
+  <UserPref name="category" display_name="__MSG_category__" default_value="" datatype="enum">
+    <EnumValue value="" display_value="__MSG_all__"/>
+    <EnumValue value="Animals" display_value="__MSG_animals__"/>
+    <EnumValue value="Education" display_value="__MSG_education__"/>
+    <EnumValue value="Health" display_value="__MSG_health__"/>
+    <EnumValue value="Nature" display_value="__MSG_nature__"/>
+    <EnumValue value="Seniors" display_value="__MSG_seniors__"/>
+    <EnumValue value="September11" display_value="__MSG_september_11__"/>
+    <EnumValue value="Technology" display_value="__MSG_technology__"/>
+  </UserPref>
+  <UserPref name="prefLocation" 
+            display_name="__MSG_default_location__" 
             default_value="" />
   <UserPref name="preferredKeywords"
             display_name="__MSG_preferred_keywords__"
             default_value="" />
+  <UserPref name="themesFolder"
+            display_name="__MSG_themes_folder__"
+            default_value="" />
   <UserPref name="searchText" datatype="hidden" default_value="" />
+  <UserPref name="hideSettings" datatype="hidden" default_value="0" />
 <Content type="html" view="home">
 <![CDATA[
 <style type="text/css">
@@ -85,6 +105,9 @@ a:hover {
   color: #039;
   text-decoration: underline;
 }
+
+.mmlib_table { font-size: 10px; font-weight:normal; }
+.mmlib_table td { vertical-align: top; }
 
 /* Feed data related styles. */
 .clear {
@@ -203,6 +226,33 @@ a:hover {
   color: #fff;
   text-decoration: underline;
 }
+
+#afg-settings {
+  color: #fff;
+  margin: auto;
+  overflow:hidden;
+  text-align:left;
+  width:100%;
+}
+
+#afg-settings li {
+  float: left;
+  line-height: 20px;
+  padding-right: 5px;
+}
+.normal li {
+  width: 45%;
+}
+.small li {
+  width: 90%;
+}
+.separator {
+  background-color: #ccc;
+  clear: both;
+  height: 1px;
+  margin: 10px 0;
+  padding: 0;
+}
 </style>
 <script>
 /**
@@ -210,6 +260,12 @@ a:hover {
  * @type {_IG_Prefs}
  */
 var prefs = new _IG_Prefs();
+
+/**
+ * Object for showing mini message.
+ * @type {_IG_MiniMessage}
+ */
+var miniMsg;
 
 /**
  * URL relates to get feed functionality.
@@ -240,6 +296,7 @@ var feedParams = {
   q: '',
   key: 'gf-gadget',
   start: 1,
+  timeperiod: prefs.getString('timePeriod'),
   num: prefs.getInt('storiesToRead') * PAGES_PER_QUERY + 1
 };
 
@@ -257,22 +314,32 @@ var curPage = 1;
 var nextPageInfo = {};
 
 /**
+ * The container in which gadget is running on.
+ */
+var container = (function() {
+  var urlParam = _args();
+  return urlParam.container || urlParam.synd || 'unknown';
+})();
+
+/**
  * Adjust the height of the mask automatically.
  * Height 100% for the absolute positioned div is not supported in IE6.
  * This function will be called on window resize event and
  * while showing the Popup container with mask.
  */
 function adjustMaskHeight() {
-  _gel('afg-gadget-mask').style.height = _gel('afg-main').offsetHeight + 'px';
+  var dialogHeight = _gel('afg-gadget-dialog').offsetHeight;
+  var rootElementHeight = _gel('afg-main').offsetHeight;
+  var height = Math.max(dialogHeight + 50, rootElementHeight);
+  _gel('afg-gadget-mask').style.height = height + 'px';
+  _IG_AdjustIFrameHeight(height);
 }
 
 /**
  * Adjust iframe height.
  */
 function adjustIFrameHeight() {
-  var rootElement = _gel('afg-main');
-  var gadgetHeight = rootElement.clientHeight || rootElement.offsetHeight;
-  _IG_AdjustIFrameHeight(gadgetHeight);
+  _IG_AdjustIFrameHeight(_gel('afg-main').offsetHeight);
 }
 
 /**
@@ -340,26 +407,24 @@ function stopEvents(event) {
 
 /**
  * This function updates the Branding title based on the location.
- * @param {string} val Search location value.
+ * @param {string} location Search location value.
  * @param {string} searchText Search text.
+ * @param {string} category Category text.
  */
-function updateTitle(val, searchText) {
+function updateTitle(location, searchText, category) {
   prefs.set('searchText' , searchText || '');
   var str = [prefs.getMsg('recent_listings'), ' '];
-  if (val) {
-    str.push(prefs.getMsg('near'), ' <strong>', val, '<\/strong> ');
-    _gel('afg-change-location').style.display = 'block';
-    _gel('afg-set-location').style.display = 'none';
-  } else {
-    _gel('afg-change-location').style.display = 'none';
-    _gel('afg-set-location').style.display = 'block';
-  }
   if (searchText) {
-    str.push(prefs.getMsg('matching'), ' <strong>\'',
-        searchText, '\'<\/strong>');
+    str.push(prefs.getMsg('for'), ' <strong>\'', searchText, '\'<\/strong> ');
     _gel('afg-clear-search').style.display = 'block';
   } else {
     _gel('afg-clear-search').style.display = 'none';
+  }
+  if (location) {
+    str.push(prefs.getMsg('near'), ' <strong>', location, '<\/strong> ');
+  }
+  if (category) {
+    str.push(prefs.getMsg('in_category'), ' <strong>', category, '<\/strong>');
   }
   _gel('afg-branding-title').innerHTML = str.join('');
 }
@@ -393,19 +458,18 @@ function loading() {
 function showDialog(showString) {
   _gel('afg-search-region-home').style.display = 'block';
   var searchForm = _gel('afg-search-form');
-  var locationForm = _gel('afg-location-form');
+  var settingsForm = _gel('afg-settings-form');
   var focusElement;
-  if (showString == 'location') {
+  if (showString == 'settings') {
     searchForm.style.display = 'none';
-    locationForm.style.display = 'block';
-    focusElement = locationForm.elements[0];
+    settingsForm.style.display = 'block';
+    focusElement = settingsForm.elements[0];
   } else {
-    locationForm.style.display = 'none';
+    settingsForm.style.display = 'none';
     searchForm.style.display = 'block';
     focusElement = searchForm.elements[0];
   }
   focusElement.focus();
-  focusElement.value = '';
   adjustMaskHeight();
 }
 
@@ -414,6 +478,7 @@ function showDialog(showString) {
  */
 function hideDialog() {
   _gel('afg-search-region-home').style.display = 'none';
+
 }
 
 /**
@@ -541,21 +606,20 @@ function fetchRecords(xmlContent, timerId) {
     } else {
       var searchText = prefs.getString('searchText');
       var location = prefs.getString('prefLocation');
-      // TODO: this sort of concatenation is not suitable for i18n
       var html = ['<div class="afg-record-na">', prefs.getMsg('your_search')];
       if (searchText) {
-        html.push(' <strong>\'', searchText, '\'</strong> ');
+        html.push(' <strong>\'', searchText, '\'</strong>');
       } else if (location) {
         html.push(' ', prefs.getMsg('near'),
-            ' <strong>\'', location, '\'</strong> ');
+            ' <strong>\'', location, '\'</strong>');
       }
       html.push(' ', prefs.getMsg('not_match'), '<br/>');
       if (searchText) {
         html.push('<a href="#" onclick="showDialog(\'search\'); ',
             'return false;">', prefs.getMsg('search_again'), '</a></div>');
       } else if (location) {
-        html.push('<a href="#" onclick="showDialog(\'location\'); ',
-            'return false;">', prefs.getMsg('change_location'), '</a></div>');
+        html.push('<a href="#" onclick="showDialog(\'settings\'); ',
+            'return false;">', prefs.getMsg('change_settings'), '</a></div>');
       }
       _gel('afg-content').innerHTML = html.join('');
       adjustIFrameHeight();
@@ -576,7 +640,10 @@ function requestFeed() {
   loading();
   // Call responseErrorHandler function after 5 seconds.
   var timerId = setTimeout(responseErrorHandler, 5000);
-  _IG_FetchXmlContent(feedUrlString, _IG_Callback(fetchRecords, timerId));
+  var callback = function(xmlContent){
+    fetchRecords(xmlContent, timerId);
+  }
+  _IG_FetchXmlContent(feedUrlString, callback);
 }
 
 /**
@@ -607,14 +674,17 @@ function navigatePage(step) {
  *     dialog window or not (optional).
  */
 function search(opt_searchTxt, opt_hidePopup) {
-  var location = prefs.getString('prefLocation');
+  var location = ' ' + prefs.getString('prefLocation');
   var prefKeywords = prefs.getString('preferredKeywords');
+  var category = prefs.getString('category');
   var searchText = opt_searchTxt || _gel('afg-search-text').value || '';
-  updateTitle(_trim(location), searchText);
-
+  updateTitle(_trim(location), searchText, category);
+  if (category) {
+    category = 'category:' + category;
+  }
   feedParams.start = 1;
   feedParams.vol_loc = location;
-  feedParams.q = prefKeywords + ' ' + searchText;
+  feedParams.q = [category, prefKeywords, searchText].join(' ');
   // Reset FeedRecord and pagination related variables.
   feedRecords = [];
   curPage = 1;
@@ -674,13 +744,11 @@ function clearSearch() {
 
 /**
  * Set the location and restart the search.
- * @param {string} optLocation Optional location text.
+ * @param {string} location Location text.
  */
-function setLocation(optLocation) {
-  var location = optLocation || _gel('afg-location-text').value || '';
-  prefs.set('prefLocation', location);
-  search();
-  hideDialog();
+function setLocation(location) {
+  _gel('afg-location-text').value = location;
+  setSettings();
 }
 
 /**
@@ -691,7 +759,7 @@ function setLogoImage() {
   var themePath = _trim(prefs.getString('themesFolder'));
   var imgPath = themePath ?
       themePath + '/logo' :
-      'http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/logo';
+      'http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/logo';
   if (typeof(window.innerWidth) == 'number') {
     // Non-IE
     gadgetWidth = window.innerWidth;
@@ -706,16 +774,19 @@ function setLogoImage() {
   var brandLogoStyle = _gel('branding-logo').style;
   var logoImage = _gel('logo-img');
   var logoImageStyle = logoImage.style;
+  var settingsClass = 'normal';
   if (gadgetWidth <= 150) {
     imgPath += '_180';
     brandLogoStyle.width = '83px';
     brandLogoStyle.height = '';
     logoImageStyle.height = '11px';
+    settingsClass = 'small';
   } else if (gadgetWidth <= 180){
     imgPath += '_180';
     brandLogoStyle.width = '95px';
     brandLogoStyle.height = '';
     logoImageStyle.height = '14px';
+    settingsClass = 'small';
   } else if (gadgetWidth <= 200){
     imgPath += '_200';
     brandLogoStyle.width = '110px';
@@ -728,6 +799,137 @@ function setLogoImage() {
   }
   //Setting the source for logo image.
   logoImage.src = imgPath + '.gif';
+  _gel('afg-settings').className = settingsClass;
+}
+
+/**
+ * To get the select box value.
+ * @param {string} id The slect bxox element id.
+ * @return {string} The value of the select box.
+ */
+function getSelectBoxValue(id) {
+  var element = _gel(id);
+  return element.options[element.selectedIndex].value;
+}
+
+/**
+ * Set the default selected value for the passed select box element.
+ * @param {string} elementId The select box element id.
+ * @param {string} value The default value of the select box.
+ */
+function setSelectBoxValue(elementId, value) {
+  var element = _gel(elementId);
+  var options = element.options;
+  for (var i = 0; i < options.length; i++) {
+    if (options[i].value == value) {
+      element.selectedIndex = i;
+      return;
+    }
+  }
+}
+
+/**
+ * Special promotion for September 11 activities.
+ */
+function promote() {
+  if (!miniMsg) {
+    miniMsg = new _IG_MiniMessage(__MODULE_ID__, _gel('mini-message'));
+  }
+  var currentDate = new Date();
+  var promoStart = new Date();
+  promoStart.setFullYear(2009,8,1);
+  promoStart.setHours(0,0,0);
+  
+  var promoEnd =  new Date();
+  promoEnd.setFullYear(2009,8,15);
+  promoEnd.setHours(0,0,1);
+  if (promoStart < currentDate && currentDate < promoEnd) {
+    var categoryElement = _gel('settings-categories');
+    insertOption(categoryElement,
+        new Option(prefs.getMsg('september_11'), 'September11'), 1);
+    var timePeriodElement = _gel('settings-time-period');
+    insertOption(timePeriodElement,
+         new Option(prefs.getMsg('september_11'), '911'), 1);
+
+    // Call promotion message.
+    var onMessageHide = function() {
+      setTimeout(adjustIFrameHeight, 500);
+      return true;
+    };
+    var msg = [
+      prefs.getMsg('promotion911'),
+      ' <a href="javascript:setCategory(\'September11\')">',
+      prefs.getMsg('find_listings'), '</a>'
+    ].join('');
+    window.msgElement = miniMsg.createDismissibleMessage(msg, onMessageHide);
+    hideMiniMessage();
+  } else {
+    if (prefs.getString('timePeriod') == '911') {
+      prefs.set('timePeriod', '');
+    }
+    if (prefs.getString('category') == 'September11') {
+      prefs.set('category', '');
+    }
+  }
+}
+
+/**
+ * Insert option at specified index.
+ */
+function insertOption(selectBox, optionElement, index) {
+  try {
+    selectBox.add(optionElement, selectBox.options[index]);
+  } catch(err) {
+    selectBox.add(optionElement, index);
+  }
+}
+
+/**
+ * To set the default settings of the gadget.
+ * It includes location, stories to read and categories.
+ */
+function setSettings() {
+  _gel('afg-cancel-button1').style.display = '';
+
+  var location = _gel('afg-location-text').value || '';
+  prefs.set('hideSettings', 1);
+  prefs.set('prefLocation', location);
+  prefs.set('storiesToRead', getSelectBoxValue('settings-stories'));
+  prefs.set('category', getSelectBoxValue('settings-categories'));
+  prefs.set('timePeriod', getSelectBoxValue('settings-time-period'));
+  
+  feedParams.num = prefs.getInt('storiesToRead') * PAGES_PER_QUERY + 1;
+  hideMiniMessage();
+  hideDialog();
+
+  search();
+}
+
+/**
+ * To set the default values for the settings popup.
+ */
+function setDefaultSettingsUI() {
+  setSelectBoxValue('settings-stories', prefs.getString('storiesToRead'));
+  setSelectBoxValue('settings-categories', prefs.getString('category'));
+  setSelectBoxValue('settings-time-period', prefs.getString('timePeriod'));
+  _gel('afg-location-text').value = prefs.getString('prefLocation');
+}
+
+/**
+ * To set/change the category.
+ */
+function setCategory(category) {
+  setSelectBoxValue('settings-categories', category);
+  setSettings();
+}
+
+/**
+ * To hide the promotion mini message.
+ */
+function hideMiniMessage() {
+  if (window.msgElement && (prefs.getString('category') == 'September11')) {
+    miniMsg.dismissMessage(window.msgElement);
+  }
 }
 
 /**
@@ -736,7 +938,14 @@ function setLogoImage() {
 function init() {
   handleTheme();
   setLogoImage();
-  search();
+  promote();
+  setDefaultSettingsUI();
+  if (container == 'open' || prefs.getInt('hideSettings') == 1) {
+    search();
+  } else {
+    _gel('afg-cancel-button1').style.display = 'none';
+    showDialog('settings');
+  }
 }
 
 /**
@@ -745,7 +954,6 @@ function init() {
  */
 window.onresize = function() {
   setLogoImage();
-  adjustIFrameHeight();
   adjustMaskHeight();
 };
 
@@ -756,26 +964,31 @@ _IG_RegisterOnloadHandler(init);
 
 </script>
 <div id="afg-main">
+  <div id="mini-message"></div>
   <div id="afg-header-region">
     <div id="afg-branding-region">
       <div id="afg-branding-btn">
         <img id="afg-search-button" class="afg-search-button"
             alt="__MSG_search__" title="__MSG_search__"
-            src="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_search_btn__.gif"
-            onerror="this.src='http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_search_btn__.gif'"
+            src="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_search_btn__.gif"
+            onerror="this.src='http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_search_btn__.gif'"
             onclick="showDialog('search')">
       </div>
       <h2 id="afg-branding-title"></h2>
       <ul id="header-links">
-      <li id="afg-set-location"><a href="javascript:showDialog('location')">__MSG_set_location__</a></li>
-      <li id="afg-change-location"><a href="javascript:showDialog('location')">__MSG_change_location__</a></li>
+      <li id="afg-change-settings"><a href="javascript:showDialog('settings')">__MSG_change_settings__</a></li>
       <li id="afg-clear-search"><a href="javascript:clearSearch()">__MSG_clear_search__</a></li>
       </ul>
       <div class="clear">&nbsp;</div>
     </div>
   </div>
   <div id="afg-content-region">
-    <div id="afg-content"></div>
+    <div id="afg-content">
+      <div style="padding:20px 5px;">
+        <a href="javascript:showDialog('settings')">__MSG_configure__</a>
+        __MSG_see_listings__.
+      </div>
+    </div>
   </div>
   <div id="afg-footer-region">
     <div style="margin:5px">
@@ -783,19 +996,19 @@ _IG_RegisterOnloadHandler(init);
         <form target="_blank" action="http://www.gmodules.com/ig/creator">
           <input type="hidden" name="synd" value="open" />
           <input type="hidden" name="url"
-              value="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/gadget.xml"/>
+              value="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/gadget.xml"/>
           <input type="hidden" name="nocache" value="1" />
           <input type="image" title="__MSG_embed__" class="afg-embed-button" id="afg-embed-button"
-              style="cursor:pointer;" src="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_embed_btn__.gif"
-              onerror="this.src='http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_embed_btn__.gif'"/>
+              style="cursor:pointer;" src="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_embed_btn__.gif"
+              onerror="this.src='http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_embed_btn__.gif'"/>
         </form>
       </div>
       <a id="branding-logo" class="image-cropper" target="_blank"
           href="http://www.allforgood.org">
         <div>
           <img id="logo-img" alt="__MSG_brand_title__" title="__MSG_brand_title__"
-              src="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/logo.gif"
-              onerror="this.src='http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/logo.gif'"/>
+              src="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/logo.gif"
+              onerror="this.src='http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/logo.gif'"/>
         </div>
       </a>
       <div class="clear">&nbsp;</div>
@@ -821,35 +1034,75 @@ _IG_RegisterOnloadHandler(init);
         <div>
           <input id="afg-go-button" class="afg-go-button" tabIndex="2"
               alt="__MSG_go__" title="__MSG_go__" type="image"
-              src="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_go_btn__.gif"
-              onerror="this.src='http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_go_btn__.gif'"/>
+              src="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_go_btn__.gif"
+              onerror="this.src='http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_go_btn__.gif'"/>
           <img id="afg-cancel-button" class="afg-cancel-button"
               alt="__MSG_cancel__" title="__MSG_cancel__" tabIndex="3"
               onclick="hideDialog();" onkeypress="hideDialog();"
-              src="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_cancel_btn__.gif"
-              onerror="this.src='http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_cancel_btn__.gif'" />
+              src="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_cancel_btn__.gif"
+              onerror="this.src='http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_cancel_btn__.gif'" />
         </div>
       </form>
-      <form name="frmSearch" id="afg-location-form" action="#" onsubmit="setLocation();return false;">
-        <div style="width:90%; margin:auto;">
-          <input name="locationText" id="afg-location-text" tabIndex="1" type="text" onkeyup="isCancel(event);" autocomplete="off" class="afg-text"/>
-          <div style="text-align:left; color: #fff; margin:1px 0 2px">
-            __MSG_example__
-            <a href="javascript:setLocation('__MSG_default_location_value__')" class="afg-popup-link">
-                __MSG_default_location_value__</a>
-          </div>
-        </div>
-        <div>
-          <input id="afg-ok-button" class="afg-ok-button" tabIndex="2"
+      <form name="frmSettings" id="afg-settings-form" action="#" onsubmit="setSettings();return false;">
+        <ul id="afg-settings" style="margin: auto;">
+          <li>__MSG_category__</li>
+          <li>
+            <select name="categories" id="settings-categories" style="width: 100%;" tabIndex="3">
+              <option value="">__MSG_all__</option>
+              <option value="Animals">__MSG_animals__</option>
+              <option value="Education">__MSG_education__</option>
+              <option value="Health">__MSG_health__</option>
+              <option value="Nature">__MSG_nature__</option>
+              <option value="Seniors">__MSG_seniors__</option>
+              <option value="Technology">__MSG_technology__</option>
+            </select>
+          </li>
+          <li class="separator" style="width:100%">&nbsp;</li>
+          <li style="clear:both;">__MSG_listings_per_page__</li>
+          <li>
+            <select name="stories" id="settings-stories" style="width: 100%;" tabIndex="1">
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </li>
+          <li class="separator" style="width:100%">&nbsp;</li>
+          <li style="clear:both;">__MSG_time_period__</li>
+          <li>
+            <select name="timePeriod" id="settings-time-period" style="width: 100%;" tabIndex="2">
+              <option value="">__MSG_everything__</option>
+              <option value="today">__MSG_today__</option>
+              <option value="this_weekend">__MSG_this_weekend__</option>
+              <option value="this_week">__MSG_this_week__</option>
+              <option value="this_month">__MSG_this_month__</option>
+            </select>
+          </li>
+          <li class="separator" style="width:100%">&nbsp;</li>
+          <li style="clear:both;">__MSG_location__</li>
+          <li>
+            <input name="locationText" id="afg-location-text" tabIndex="3" type="text" onkeyup="isCancel(event);" autocomplete="off" class="afg-text"/>
+            <div style="text-align:left; color: #fff; margin:1px 0 2px">
+              __MSG_example__
+              <a href="javascript:setLocation('__MSG_default_location_value__')" class="afg-popup-link">
+                  __MSG_default_location_value__</a>
+            </div>
+          </li>
+          <li style="text-align:center;clear:both;float:none;width:100%;padding:0;">
+            <input id="afg-ok-button" class="afg-ok-button" tabIndex="4"
               alt="__MSG_ok__" title="__MSG_ok__" type="image"
-              src="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_ok_btn__.gif"
-              onerror="this.src='http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_ok_btn__.gif'"/>
-          <img id="afg-cancel-button1" class="afg-cancel-button"
-              alt="__MSG_cancel__" title="__MSG_cancel__" tabIndex="3"
+              src="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_ok_btn__.gif"
+              onerror="this.src='http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_ok_btn__.gif'"/>
+            <img id="afg-cancel-button1" class="afg-cancel-button"
+              alt="__MSG_cancel__" title="__MSG_cancel__" tabIndex="5"
               onclick="hideDialog();" onkeypress="hideDialog();"
-              src="http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_cancel_btn__.gif"
-              onerror="this.src='http://footprint2009dev.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_cancel_btn__.gif'" />
-        </div>
+              src="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_cancel_btn__.gif"
+              onerror="this.src='http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_cancel_btn__.gif'" />
+          </li>
+        </ul>
       </form>
     </div>
   </div>
@@ -857,4 +1110,3 @@ _IG_RegisterOnloadHandler(init);
 ]]>
 </Content>
 </Module>
-
