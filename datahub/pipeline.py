@@ -457,7 +457,8 @@ def loaders():
                "habitat", "handsonnetwork", "idealist", "meetup",
                "mentorpro", "mlk_day", "mybarackobama",
                "myproj_servegov", "seniorcorps", "servenet",
-               "unitedway", "volunteergov", "volunteermatch",
+               "unitedway", "universalgiving",
+               "volunteergov", "volunteermatch",
                "volunteertwo", "washoecounty", "ymca"]:
     if not FILENAMES or name in FILENAMES:
       run_pipeline(name, name+".xml")
