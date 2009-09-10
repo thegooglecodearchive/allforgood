@@ -98,7 +98,7 @@ def get_tag_val(entity, tag):
   outstr = ""
   for node in nodes[0].childNodes:
     if node.nodeType == node.TEXT_NODE:
-      outstr += xml.sax.saxutils.escape(node.data.strip()).encode('UTF-8')
+      outstr += xml.sax.saxutils.unescape(node.data.strip()).encode('UTF-8')
     elif node.nodeType == node.CDATA_SECTION_NODE:
       outstr += node.data.strip().encode('UTF-8')
   outstr = re.sub(r'\n', r'\\n', outstr)
@@ -187,7 +187,7 @@ def output_val(name, val):
   return "<" + name + ">" + str(val) + "</" + name + ">"
 def output_node(name, node, nodename):
   """return <name>get_tag_val(node)</name>."""
-  return output_val(name, get_tag_val(node, nodename))
+  return output_val(name, xml.sax.saxutils.escape(get_tag_val(node, nodename)))
 def output_plural(name, val):
   """return <names><name>val</name></names>."""
   return "<" + name + "s>" + output_val(name, val) + "</" + name + "s>"

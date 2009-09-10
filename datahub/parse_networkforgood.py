@@ -17,6 +17,7 @@ parser for Network For Good feeds
 """
 
 import xml_helpers as xmlh
+import xml.sax.saxutils
 import re
 from datetime import datetime
 
@@ -37,7 +38,7 @@ def register_org(item):
   orgstr = '<Organization>'
   orgstr += '<organizationID>%d</organizationID>' % (MAX_ORGID)
   orgstr += '<nationalEIN />'
-  orgstr += '<name>%s</name>' % (orgname)
+  orgstr += '<name>%s</name>' % (xml.sax.saxutils.escape(orgname))
   orgstr += '<missionStatement />'
   orgstr += '<description />'
   orgstr += '<location>'
