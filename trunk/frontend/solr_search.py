@@ -228,7 +228,12 @@ def form_solr_query(args):
   
   # TODO: injection attack on backend
   if api.PARAM_BACKEND_URL not in args:
-    args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
+    try:
+      args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
+    except:
+      raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- "+
+                     "please install correct private_keys.py file")
+  logging.info("backend="+args[api.PARAM_BACKEND_URL])
 
   if api.PARAM_START not in args:
     args[api.PARAM_START] = 1
@@ -277,10 +282,13 @@ def search(args):
 
   solr_query = form_solr_query(args)
   query_url = args[api.PARAM_BACKEND_URL]
+  if query_url.find("?") < 0:
+    # yeah yeah, should really parse the URL
+    query_url += "?"
+
   # Return results in JSON format
   # TODO: return in TSV format for fastest possible parsing, i.e. split("\t") 
-  query_url += "?wt=json"
-
+  query_url += "&wt=json"
 
   num_to_fetch = int(args[api.PARAM_NUM]) + 1
   query_url += "&rows=" + str(num_to_fetch)
@@ -483,9 +491,12 @@ def get_from_ids(ids):
       logging.warning('no base_url in datastore for id: %s' % item_id)
       continue
     logging.info("Datastore Entry: " + volunteer_opportunity_entity.base_url) ##
-    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + \
-               '?wt=json&q=id:' + \
-               volunteer_opportunity_entity.base_url
+    try:
+      query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + \
+          '?wt=json&q=id:' + volunteer_opportunity_entity.base_url
+    except:
+      raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- "+
+                     "please install correct private_keys.py file")
     temp_results = query(query_url, args, True)
     if not temp_results.results:
       # The base URL may have changed from under us. Oh well.
