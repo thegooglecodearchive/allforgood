@@ -663,7 +663,8 @@ def main():
     loaders()
     if OPTIONS.use_solr:
       for solr_url in OPTIONS.solr_urls:
-        print_progress('Post-processing SOLR instance at: ' + solr_url)       
+        print_progress('Performing clean-up and index optimization of ' + \
+                       'SOLR instance at: ' + solr_url)
         solr_update_query(
           '<delete><query>expires:[* TO NOW-1DAY]</query></delete>',
           solr_url)
