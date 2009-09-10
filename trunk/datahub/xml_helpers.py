@@ -26,7 +26,7 @@ import time
 
 # asah: I give up, allowing UTF-8 is just too hard without incurring
 # crazy performance penalties
-SIMPLE_CHARS = ''.join(map(chr, range(32, 126)))
+SIMPLE_CHARS = ''.join(map(chr, range(32, 127)))
 SIMPLE_CHARS_CLASS = '[^\\n%s]' % re.escape(SIMPLE_CHARS)
 SIMPLE_CHARS_RE = re.compile(SIMPLE_CHARS_CLASS)
 
@@ -95,10 +95,12 @@ def get_tag_val(entity, tag):
     return ""
   if (nodes[0].firstChild.data == None):
     return ""
-  outstr = "".join([node.data for node in nodes[0].childNodes if node.nodeType in [node.TEXT_NODE, node.CDATA_SECTION_NODE]])
-  outstr = outstr.strip()
-  #outstr = nodes[0].firstChild.data
-  outstr = xml.sax.saxutils.escape(outstr).encode('UTF-8')
+  outstr = ""
+  for node in nodes[0].childNodes:
+    if node.nodeType == node.TEXT_NODE:
+      outstr += xml.sax.saxutils.escape(node.data.strip()).encode('UTF-8')
+    elif node.nodeType == node.CDATA_SECTION_NODE:
+      outstr += node.data.strip().encode('UTF-8')
   outstr = re.sub(r'\n', r'\\n', outstr)
   return outstr
 
