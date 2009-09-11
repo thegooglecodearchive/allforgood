@@ -60,9 +60,14 @@ class SearchResult(object):
       # and myproject.nationalservice.gov (aka mlk_day), and not
       # break once the feed changes
       r'(myproject[.].+?[.]gov.+?)subProjectId', r'\1&subProjectId', url)
-    
+
     # TODO: Consider using kwargs or something to make this more generic.
-    self.url = url
+    # for safety, strip anything not completely kosher.  Here's how I
+    # tested it on the actual data files:
+    #   cat *1.gz|gunzip -c | perl -F"\t" -ane 'print "$F[15] >$1<\n" if
+    #       $F[15] =~ /([^a-zA-Z0-9`~!@\#\$\%^&*()_+\-=;:\/?,.\\|])/;'
+    # note that this isn't perfect wrt. UTF-8
+    self.url = re.sub(r'[^a-zA-Z0-9`~!@\#\$\%^&*()_+\-=;:\/?,.\\|]', '', url)
     self.url_sig = None
     self.title = title
     self.snippet = snippet
