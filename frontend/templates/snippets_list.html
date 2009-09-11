@@ -19,7 +19,8 @@
 
   var searchResults = [];
 {% for result in result_set.clipped_results %}
-  searchResults.push(new SearchResult('{{result.url|escape}}', '{{result.url_sig|escape}}', '{{result.js_escaped_title|escape}}', '{{result.location|escape}}', '{{result.js_escaped_snippet|escape}}', new Date('{{ result.startdate|date:"r" }}'), new Date('{{ result.enddate|date:"r" }}'), '{{result.item_id|escape}}', '{{result.base_url|escape}}', {{result.interest|yesno:"1,0"}}, {{result.interest_count|default:0}}, '{{result.host_website|escape}}'));
+  {# TODO(asah): URLESCAPE result.url?  currently, we're going unescaped and filtering scary characters in searchresult.py #}
+  searchResults.push(new SearchResult('{{result.url}}', '{{result.url_sig|escape}}', '{{result.js_escaped_title|escape}}', '{{result.location|escape}}', '{{result.js_escaped_snippet|escape}}', new Date('{{ result.startdate|date:"r" }}'), new Date('{{ result.enddate|date:"r" }}'), '{{result.item_id|escape}}', '{{result.base_url|escape}}', {{result.interest|yesno:"1,0"}}, {{result.interest_count|default:0}}, '{{result.host_website|escape}}'));
   updateInterestInfoDisplay({{forloop.counter0}});
 {% endfor %}
 </script>

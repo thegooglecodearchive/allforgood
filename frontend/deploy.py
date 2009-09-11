@@ -106,8 +106,18 @@ def load_keys():
   logging.debug("host=" + http_host + "  facebook key=" + FACEBOOK_API_KEY)
 
   # facebook secret keys are a special case
-  FACEBOOK_SECRET = private_keys.FACEBOOK_SECRETS.get(http_host, 
-    private_keys.DEFAULT_FACEBOOK_SECRET)
+  dfl_fb_secret = None
+  try:
+    dfl_fb_secret = private_keys.DEFAULT_FACEBOOK_SECRET
+  except:
+    raise NameError("error reading private_keys.DEFAULT_FACEBOOK_SECRET-- "+
+                     "please install correct private_keys.py file")
+  try:
+    FACEBOOK_SECRET = private_keys.FACEBOOK_SECRETS.get(
+      http_host, dfl_fb_secret)
+  except:
+    raise NameError("error reading private_keys.FACEBOOK_SECRETS-- "+
+                     "please install correct private_keys.py file")
 
 def load_standard_template_values(template_values):
   """set template_values[...] for various keys"""
