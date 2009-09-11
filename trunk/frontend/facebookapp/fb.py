@@ -7,7 +7,7 @@ import os
 
 from google.appengine.ext import webapp
 from google.appengine.ext import db
-from facebookapi.fb_model import EventsData
+from facebookapp.fb_model import EventsData
 
 from third_party import json
 

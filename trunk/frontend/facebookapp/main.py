@@ -4,7 +4,7 @@ import wsgiref.handlers
 # AppEngine imports
 from google.appengine.ext import webapp
 
-from facebookapi import fb
+from facebookapp import fb
 
 # Map URLs to request handler class
 application = webapp.WSGIApplication([
