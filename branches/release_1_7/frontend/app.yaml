@@ -3,7 +3,7 @@ application: servicefootprint
 #application: footprint2009dev
 #application: footprint-loadtest
 
-version: release-1-7-r191
+version: release-1-7-r196
 runtime: python
 api_version: 1
 
@@ -71,6 +71,10 @@ handlers:
 - url: /robots.txt
   static_files: robots.txt
   upload: robots.txt
+
+# For Facebook app
+- url: /fb/.*
+  script: facebookapp/main.py
 
 # For favicon
 - url: /favicon.ico
