@@ -73,7 +73,7 @@ handlers:
   upload: robots.txt
 
 # For Facebook app
-  url: /fb/.*
+- url: /fb/.*
   script: facebookapp/main.py
 
 # For favicon
