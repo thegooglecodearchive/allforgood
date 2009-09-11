@@ -54,33 +54,29 @@ def parse_fast(instr, maxrecs, progress):
   """fast parser but doesn't check correctness,
   i.e. must be pre-checked by caller."""
   numorgs = numopps = 0
-  outstr = '<?xml version="1.0" ?>'
-  outstr += '<FootprintFeed schemaVersion="0.1">'
+  outstr_list = ['<?xml version="1.0" ?>']
+  outstr_list.append('<FootprintFeed schemaVersion="0.1">')
 
   # note: processes Organizations first, so ID lookups work
-  feedchunks = re.findall(
-    re.compile('<FeedInfo>.+?</FeedInfo>', re.DOTALL), instr)
-  for feedchunk in feedchunks:
-    node = xmlh.simple_parser(feedchunk, KNOWN_ELNAMES, False)
+  for match in re.finditer(re.compile('<FeedInfo>.+?</FeedInfo>',
+                                      re.DOTALL), instr):
+    node = xmlh.simple_parser(match.group(0), KNOWN_ELNAMES, False)
     xmlh.set_default_value(node, node.firstChild, "feedID", "0")
     set_default_time_elem(node, node.firstChild, "createdDateTime")
-    outstr += xmlh.prettyxml(node, True)
+    outstr_list.append(xmlh.prettyxml(node, True))
 
-  orgchunks = re.findall(
-    re.compile('<Organization>.+?</Organization>', re.DOTALL), instr)
-  outstr += '<Organizations>'
-  for orgchunk in orgchunks:
-    node = xmlh.simple_parser(orgchunk, KNOWN_ELNAMES, False)
+  outstr_list.append('<Organizations>')
+  for match in re.finditer(re.compile('<Organization>.+?</Organization>',
+                                      re.DOTALL), instr):
+    node = xmlh.simple_parser(match.group(0), KNOWN_ELNAMES, False)
     numorgs += 1
-    outstr += xmlh.prettyxml(node, True)
-  outstr += '</Organizations>'
+    outstr_list.append(xmlh.prettyxml(node, True))
+  outstr_list.append('</Organizations>')
                
-  oppchunks = re.findall(
-    re.compile('<VolunteerOpportunity>.+?</VolunteerOpportunity>',
-               re.DOTALL), instr)
-  outstr += '<VolunteerOpportunities>'
-  for oppchunk in oppchunks:
-    opp = xmlh.simple_parser(oppchunk, KNOWN_ELNAMES, False)
+  outstr_list.append('<VolunteerOpportunities>')
+  for match in re.finditer(re.compile(
+      '<VolunteerOpportunity>.+?</VolunteerOpportunity>', re.DOTALL), instr):
+    opp = xmlh.simple_parser(match.group(0), KNOWN_ELNAMES, False)
     numopps += 1
     if (maxrecs > 0 and numopps > maxrecs):
       break
@@ -109,11 +105,11 @@ def parse_fast(instr, maxrecs, progress):
     time_elems += opp.getElementsByTagName("endTime")
     for el in time_elems:
       xmlh.set_default_attr(opp, el, "olsonTZ", "America/Los_Angeles")
-    outstr += xmlh.prettyxml(opp, True)
-  outstr += '</VolunteerOpportunities>'
+    outstr_list.append(xmlh.prettyxml(opp, True))
+  outstr_list.append('</VolunteerOpportunities>')
 
-  outstr += '</FootprintFeed>'
-  return outstr, numorgs, numopps
+  outstr_list.append('</FootprintFeed>')
+  return "".join(outstr_list), numorgs, numopps
 
 def parse(instr, maxrecs, progress):
   """return python DOM object given FPXML"""
@@ -138,6 +134,7 @@ def parser(providerID, providerName, feedID, providerURL, feedDescription):
   feedinfo += xmlh.output_val('description', feedDescription)
   feedinfo += "</FeedInfo>"
   def parse_func(instr, maxrecs, progress):
+    """closure-- generated parse func"""
     outstr, numorgs, numopps = parse_fast(instr, maxrecs, progress)
     return re.sub(re.compile(r'<FeedInfo>.+?</FeedInfo>', re.DOTALL),
                   feedinfo, outstr), numorgs, numopps
