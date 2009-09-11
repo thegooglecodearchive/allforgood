@@ -522,7 +522,7 @@ def get_feed_fields(feedinfo):
 
 def output_opportunity(opp, feedinfo, known_orgs, totrecs):
   """main function for outputting a complete opportunity."""
-  outstr = ""
+  outstr_list = []
   opp_id = xmlh.get_tag_val(opp, "volunteerOpportunityID")
   if (opp_id == ""):
     print_progress("no opportunityID")
@@ -580,12 +580,12 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
                                     xmlh.get_tag_val(opploc, "name"))
       opp_id = compute_stable_id(opp, org, locstr, openended, duration,
                            hrs_per_week, startend)
-      outstr += output_field("id", opp_id)
-      outstr += repeated_fields
-      outstr += time_fields
-      outstr += loc_fields
-      outstr += RECORDSEP
-  return totrecs, outstr
+      outstr_list.append(output_field("id", opp_id))
+      outstr_list.append(repeated_fields)
+      outstr_list.append(time_fields)
+      outstr_list.append(loc_fields)
+      outstr_list.append(RECORDSEP)
+  return totrecs, "".join(outstr_list)
 
 def get_time_fields(openended, duration, hrs_per_week, event_date_range):
   """output time-related fields, e.g. for multiple times per event."""
@@ -714,38 +714,34 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       ]
     numopps = 0
 
-    feedchunks = re.findall(
-      re.compile('<FeedInfo>.+?</FeedInfo>', re.DOTALL), instr)
-    for feedchunk in feedchunks:
+    for match in re.finditer(re.compile('<FeedInfo>.+?</FeedInfo>',
+                                        re.DOTALL), instr):
       print_progress("found FeedInfo.", progress=progress)
-      feedinfo = xmlh.simple_parser(feedchunk, known_elnames, False)
+      feedinfo = xmlh.simple_parser(match.group(0), known_elnames, False)
 
-    orgchunks = re.findall(
-      re.compile('<Organization>.+?</Organization>', re.DOTALL), instr)
-    for orgchunk in orgchunks:
+    for match in re.finditer(re.compile('<Organization>.+?</Organization>',
+                                        re.DOTALL), instr):
       if progress and len(known_orgs) % 250 == 0:
         print_progress(str(len(known_orgs))+" organizations seen.")
-      org = xmlh.simple_parser(orgchunk, known_elnames, False)
+      org = xmlh.simple_parser(match.group(0), known_elnames, False)
       org_id = xmlh.get_tag_val(org, "organizationID")
       if (org_id != ""):
         known_orgs[org_id] = org
       if example_org == None:
         example_org = org
 
-    oppchunks = re.findall(
-      re.compile('<VolunteerOpportunity>.+?</VolunteerOpportunity>',
-                 re.DOTALL), instr)
-    
     taggers = get_taggers()
-    
     phoneRx = re.compile(
           '[^0-9]'+ # not a number
           '([0-9]{3}[^0-9][0-9]{3}[^0-9][0-9]{4})'+ # NNN-NNN-NNNN
           '(\s*(x|ex|ext)(ension)?\s*([0-9]+))?' # opt. extension, capture 'x'
           '[^0-9]', # not a number
-      re.IGNORECASE)
-    for oppchunk in oppchunks:
-      opp = xmlh.simple_parser(oppchunk, None, False)
+      re.IGNORECASE)    
+
+    oppslist_output = []
+    for oppmatch in re.finditer(re.compile(
+        '<VolunteerOpportunity>.+?</VolunteerOpportunity>', re.DOTALL), instr):
+      opp = xmlh.simple_parser(oppmatch.group(0), None, False)
 
       # extractor/guesser for contactPhone-- note that this operates
       # on the output FPXML rather than the raw input, i.e. could miss
@@ -759,7 +755,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
         # doesn't work for non-numbers, e.g. 1-800-VOLUNTEER
         # doesn't work with smushed numbers, e.g. 8005567629
         #print "searching for phone:" # in "+re.sub(r'\n',' ',oppchunk)
-        m = re.search(phoneRx, oppchunk)
+        m = re.search(phoneRx, oppmatch.group(0))
         if m:
           extractedPhone = m.group(1)
           if m.group(5):
@@ -777,7 +773,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       if contactEmail == "":
         #print "searching for email:" # in "+re.sub(r'\n',' ',oppchunk)
         m = re.search(r'[^a-z]([a-z0-9.+!-]+@([a-z0-9-]+[.])+[a-z]+)',
-                      oppchunk, re.IGNORECASE)
+                      oppmatch.group(0), re.IGNORECASE)
         if m:
           #print_progress("extracted email: "+m.group(1))
           newnode = opp.createElement('contactEmail')
@@ -795,64 +791,10 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       if not HEADER_ALREADY_OUTPUT:
         outstr = output_header(feedinfo, opp, example_org)
       numopps, spiece = output_opportunity(opp, feedinfo, known_orgs, numopps)
-      outstr += spiece
+      oppslist_output.append(spiece)
       if (maxrecs > 0 and numopps > maxrecs):
         break
-
-    ## note: preserves order, so diff works (vs. one sweep per element type)
-    #chunks = re.findall(
-    #  re.compile('<(?:Organization|VolunteerOpportunity|FeedInfo)>.+?'+
-    #             '</(?:Organization|VolunteerOpportunity|FeedInfo)>',
-    #             re.DOTALL), instr)
-    #for chunk in chunks:
-    #  node = xmlh.simple_parser(chunk, known_elnames, False)
-    #  if re.search("<FeedInfo>", chunk):
-    #    print_progress("found FeedInfo.", progress=progress)
-    #    feedinfo = xmlh.simple_parser(chunk, known_elnames, False)
-    #    continue
-    #  if re.search("<Organization>", chunk):
-    #    if progress and len(known_orgs) % 250 == 0:
-    #      print_progress(str(len(known_orgs))+" organizations seen.")
-    #    org = xmlh.simple_parser(chunk, known_elnames, False)
-    #    org_id = xmlh.get_tag_val(org, "organizationID")
-    #    if (org_id != ""):
-    #      known_orgs[org_id] = org
-    #    if example_org == None:
-    #      example_org = org
-    #    continue
-    #  if re.search("<VolunteerOpportunity>", chunk):
-    #    global HEADER_ALREADY_OUTPUT
-    #    opp = xmlh.simple_parser(chunk, None, False)
-    #    if numopps == 0:
-    #      # reinitialize
-    #      outstr = output_header(feedinfo, node, example_org)
-    #    numopps, spiece = output_opportunity(opp, feedinfo, known_orgs, numopps)
-    #    outstr += spiece
-    #    if (maxrecs > 0 and numopps > maxrecs):
-    #      break
-
-    #numopps = 0
-    #nodes = xml.dom.pulldom.parseString(instr)
-    #example_org = None
-    #for type,node in nodes:
-    #  if type == 'START_ELEMENT':
-    #    if node.nodeName == 'FeedInfo':
-    #      nodes.expandNode(node)
-    #      feedinfo = node
-    #    elif node.nodeName == 'Organization':
-    #      nodes.expandNode(node)
-    #      id = xmlh.get_tag_val(node, "organizationID")
-    #      if (id != ""):
-    #        known_orgs[id] = node
-    #      if example_org == None:
-    #        example_org = node
-    #    elif node.nodeName == 'VolunteerOpportunity':
-    #      nodes.expandNode(node)
-    #      if numopps == 0:
-    #        outstr += output_header(feedinfo, node, example_org)
-    #      numopps, spiece = output_opportunity(node, feedinfo, 
-    #                      known_orgs, numopps)
-    #      outstr += spiece
+    outstr += "".join(oppslist_output)
   else:
     # not fastparse
     footprint_xml = parse_footprint.parse(instr, maxrecs, progress)    
@@ -1015,8 +957,8 @@ def guess_parse_func(inputfmt, filename):
       'Washoe County, Nevada')
   if shortname == "universalgiving":
     return "fpxml", fp.parser(
-      '130', 'universalgiving', 'universalgiving', 'http://www.universalgiving.org/',
-      'Universal Giving')
+      '130', 'universalgiving', 'universalgiving',
+      'http://www.universalgiving.org/', 'Universal Giving')
 
   if shortname == "habitat":
     parser = fp.parser(
