@@ -4,6 +4,8 @@
 import datetime
 import time
 import os
+import logging
+import hashlib
 
 from google.appengine.ext import webapp
 from google.appengine.ext import db
@@ -95,9 +97,11 @@ class Events(webapp.RequestHandler):
     else:
       query = "select * from EventsData WHERE fb_user_id = :1 ORDER BY date_added DESC"
     query += self._getPostQuerystring()
+    #logging.info("_getEvents: user_id="+str(user_id)+"  gql="+query)
     results = db.GqlQuery(query, user_id)
     events = {}
     order = []
+    #logging.info("_getEvents: found results: "+str(results))
     for result in results:
       event = {
         'reference': str(result.key()),
@@ -142,9 +146,11 @@ class Events(webapp.RequestHandler):
     else:
       query = "select * from EventsData WHERE fb_network_id = :1 ORDER BY date_added DESC"
     query += self._getPostQuerystring()
+    #logging.info("_getNetworkEvents: network_id="+str(network_id)+"  gql="+query)
     results = db.GqlQuery(query, network_id)
     events = {}
     order = []
+    #logging.info("_getNetworkEvents: found results: "+str(results))
     for result in results:
       event = {
         'reference': str(result.key()),
@@ -160,21 +166,21 @@ class Events(webapp.RequestHandler):
 
   """ Request handlers. """
   def get(self):
-    try:
-      # To check whether request is from authorised source.
-      if os.getenv('REMOTE_ADDR') != '140.211.167.213':
-        self.error(400)
-        return
-      path = self.request.path;
+    key = self.request.get('key') or "<no key provided>"
+    hashkey = hashlib.md5("pre-nonce"+key+"post-nonce").hexdigest()
+    REQUIRED_HASHKEY = '18cf191fc4f98b4132fb0be8906a198d'
+    if hashkey != REQUIRED_HASHKEY:
+      logging.exception("bad key="+key+"  hashkey="+hashkey)
+      self.error(400)
+      return
 
-      if path.startswith('/fb/addEvent'):
-        self.addEvent()
-      elif path.startswith('/fb/getEvents'):
-        self.getEvents()
-      elif path.startswith('/fb/getNetworkEvents'):
-        self.getNetworkEvents()
-    except:
-      pass
+    path = self.request.path;
+    if path.startswith('/fb/addEvent'):
+      self.addEvent()
+    elif path.startswith('/fb/getEvents'):
+      self.getEvents()
+    elif path.startswith('/fb/getNetworkEvents'):
+      self.getNetworkEvents()
 
   def post(self):
     self.get()
