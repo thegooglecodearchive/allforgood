@@ -450,7 +450,8 @@ def test_loaders():
 
 def loaders():
   """put all loaders in one function for easier testing."""
-  for name in ["aarp", "americanredcross", "americansolutions",
+  for name in ["911dayofservice",
+               "aarp", "americanredcross", "americansolutions",
                "americorps", "christianvolunteering",
                "citizencorps", "extraordinaries", "givingdupage",
                "greentheblock",
