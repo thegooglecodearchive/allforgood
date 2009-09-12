@@ -838,6 +838,8 @@ def guess_shortname(filename):
     return "citizencorps"
   if re.search(r'ymca', filename):
     return "ymca"
+  if re.search(r'911dayofservice', filename):
+    return "911dayofservice"
   if re.search(r'universalgiving', filename):
     return "universalgiving"
   if re.search(r'washoe', filename):
@@ -959,6 +961,10 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '130', 'universalgiving', 'universalgiving',
       'http://www.universalgiving.org/', 'Universal Giving')
+  if shortname == "911dayofservice":
+    return "fpxml", fp.parser(
+      '131', '911dayofservice', '911dayofservice', 'http://www.911dayofservice.org/',
+      'National Day of Service and Remembrance')
 
   if shortname == "habitat":
     parser = fp.parser(
