@@ -613,7 +613,7 @@ function fetchRecords(xmlContent, timerId) {
         html.push(' ', prefs.getMsg('near'),
             ' <strong>\'', location, '\'</strong>');
       }
-      html.push(' ', prefs.getMsg('not_match'), '<br/>');
+      html.push('&nbsp;', prefs.getMsg('not_match'), '<br/>');
       if (searchText) {
         html.push('<a href="#" onclick="showDialog(\'search\'); ',
             'return false;">', prefs.getMsg('search_again'), '</a></div>');
@@ -674,7 +674,7 @@ function navigatePage(step) {
  *     dialog window or not (optional).
  */
 function search(opt_searchTxt, opt_hidePopup) {
-  var location = ' ' + prefs.getString('prefLocation');
+  var location = prefs.getString('prefLocation');
   var prefKeywords = prefs.getString('preferredKeywords');
   var category = prefs.getString('category');
   var searchText = opt_searchTxt || _gel('afg-search-text').value || '';
