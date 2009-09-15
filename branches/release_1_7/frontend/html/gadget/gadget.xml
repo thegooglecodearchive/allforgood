@@ -29,7 +29,7 @@
     <EnumValue value="10" /> 
   </UserPref>
   <UserPref name="timePeriod" display_name="__MSG_time_period__" default_value="" datatype="enum">
-    <EnumValue value="" display_value="__MSG_everything__"/>
+    <EnumValue value="everything" display_value="__MSG_everything__"/>
     <EnumValue value="today" display_value="__MSG_today__"/>
     <EnumValue value="this_weekend" display_value="__MSG_this_weekend__"/>
     <EnumValue value="this_week" display_value="__MSG_this_week__"/>
@@ -613,7 +613,7 @@ function fetchRecords(xmlContent, timerId) {
         html.push(' ', prefs.getMsg('near'),
             ' <strong>\'', location, '\'</strong>');
       }
-      html.push(prefs.getMsg('not_match'), '<br/>');
+      html.push('&nbsp;', prefs.getMsg('not_match'), '<br/>');
       if (searchText) {
         html.push('<a href="#" onclick="showDialog(\'search\'); ',
             'return false;">', prefs.getMsg('search_again'), '</a></div>');
@@ -674,7 +674,7 @@ function navigatePage(step) {
  *     dialog window or not (optional).
  */
 function search(opt_searchTxt, opt_hidePopup) {
-  var location = ' ' + prefs.getString('prefLocation');
+  var location = prefs.getString('prefLocation');
   var prefKeywords = prefs.getString('preferredKeywords');
   var category = prefs.getString('category');
   var searchText = opt_searchTxt || _gel('afg-search-text').value || '';
@@ -865,7 +865,7 @@ function promote() {
     hideMiniMessage();
   } else {
     if (prefs.getString('timePeriod') == '911') {
-      prefs.set('timePeriod', '');
+      prefs.set('timePeriod', 'everything');
     }
     if (prefs.getString('category') == 'September11') {
       prefs.set('category', '');
@@ -1074,7 +1074,7 @@ _IG_RegisterOnloadHandler(init);
           <li style="clear:both;">__MSG_time_period__</li>
           <li>
             <select name="timePeriod" id="settings-time-period" style="width: 100%;" tabIndex="2">
-              <option value="">__MSG_everything__</option>
+              <option value="everything">__MSG_everything__</option>
               <option value="today">__MSG_today__</option>
               <option value="this_weekend">__MSG_this_weekend__</option>
               <option value="this_week">__MSG_this_week__</option>
