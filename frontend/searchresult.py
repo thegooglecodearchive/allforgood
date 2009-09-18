@@ -331,6 +331,9 @@ class SearchResultSet(object):
       nonblacklisted_results = []
 
       for result in self.results:
+        if re.search('ACORN', result.title + result.snippet):
+          logging.info("blacklisting ACORN listing.")
+          continue
         if result.merge_key not in opp_stats:
           unknown_keys.add(result.merge_key)
           nonblacklisted_results.append(result)
