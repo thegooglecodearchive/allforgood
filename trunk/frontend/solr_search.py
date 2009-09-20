@@ -376,6 +376,11 @@ def query(query_url, args, cache):
 
     # TODO: escape?
     res.provider = entry["feed_providername"]
+    if (res.provider == "myproj_servegov" and
+        re.search(r'[^a-z]acorn[^a-z]', " "+result_content+" ", re.IGNORECASE)):
+      # per-provider rule because case-insensitivity
+      logging.warning("skipping: ACORN anywhere for myproj_servegov.")
+      continue
     res.orig_idx = i+1
     res.latlong = ""
     latstr = entry["latitude"]
