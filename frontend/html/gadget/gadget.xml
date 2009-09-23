@@ -494,28 +494,27 @@ function showRecordsAndUpdatePagination() {
     html.push(getHtmlForOneRecord(i));
   }
   // Add pagination.
-  if (curPage !== 1 || nextPageInfo['page-' + curPage]) {
-    html.push('<div class="pagination">',
-              '<div style="width:100%;overflow:hidden;">');
-    if (curPage !== 1) {
-      html.push('<a href="#" onclick="navigatePage(-1);return false;" ',
-                'style="float:left;"  class="afg-pagination">&lt; ',
-                prefs.getMsg('previous'), '</a>');
-    }
-    if (nextPageInfo['page-' + curPage]) {
-      html.push('<a href="#" onclick="navigatePage(1);return false;" ',
-                'style="float:right;" class="afg-pagination">',
-                prefs.getMsg('next'), ' &gt;</a>');
-    }
-    html.push('</div></div>');
-  }
-  html.push('<div style="text-align:right;"><a target="_blank" ' +
+  html.push('<div class="pagination">',
+      '<div style="width:100%;overflow:hidden;"><a target="_blank" ' +
       'href="http://www.allforgood.org/search#cache=1&num=10' +
       '&start=', feedParams.start,
       '&vol_loc=', _esc(feedParams.vol_loc),
       '&timeperiod=', feedParams.timeperiod,
       '&q=', _esc(feedParams.q),
-      '">', prefs.getMsg('see_more'), ' &gt;&gt;</a></div>');
+      '" style="float:left;"  class="afg-pagination">',
+      prefs.getMsg('see_more'),
+      ' &gt;&gt;</a><span style="float:right;"> &nbsp;');
+  if (curPage !== 1) {
+    html.push('<a href="#" onclick="navigatePage(-1);return false;" ',
+              'class="afg-pagination">&lt; ',
+              prefs.getMsg('previous'), '</a> &nbsp;');
+  }
+  if (nextPageInfo['page-' + curPage]) {
+    html.push('<a href="#" onclick="navigatePage(1);return false;" ',
+              'class="afg-pagination">',
+              prefs.getMsg('next'), ' &gt;</a>');
+  }
+  html.push('</span></div></div>');
   // Update content html.
   _gel('afg-content').innerHTML = html.join('');
   adjustIFrameHeight();
@@ -694,6 +693,7 @@ function search(opt_searchTxt, opt_hidePopup) {
   feedParams.start = 1;
   feedParams.vol_loc = location;
   feedParams.q = [category, prefKeywords, searchText].join(' ');
+  feedParams.timeperiod = prefs.getString('timePeriod');
   // Reset FeedRecord and pagination related variables.
   feedRecords = [];
   curPage = 1;

@@ -29,7 +29,7 @@
   <msg name="try_again" desc="While showing error message, to allow user to reload.">Try again</msg>
   <msg name="search_again" desc="While showing error message, to allow user to search again.">Search again</msg>
   <msg name="listings_per_page" desc="Listings per page label for user preferences settings.">Listings per page</msg>
-  <msg name="previous" desc="Label for previous link.">Previous</msg>
+  <msg name="previous" desc="Label for previous link.">Prev</msg>
   <msg name="next" desc="Label for next link.">Next</msg>
   <msg name="preferred_keywords" desc="User preference label for preferred keywords.">Preferred keywords</msg>
   <msg name="example" desc="Label for example.">E.g.,</msg>
@@ -69,5 +69,5 @@
   </msg>
   <msg name="configure" desc="Link text to show the open syndication default message.">Configure</msg>
   <msg name="see_listings" desc="Text to show the open syndication default message.">to see the listings in this page</msg>
-  <msg name="see_more" desc="Link text to the site.">See more listings</msg>
+  <msg name="see_more" desc="Link text to the site.">See more</msg>
 </messagebundle>
