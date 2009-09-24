@@ -41,7 +41,6 @@ from third_party.recaptcha.client import captcha
 
 import api
 import solr_search
-import deploy
 import geocode
 import models
 import modelutils
@@ -52,18 +51,15 @@ import userinfo
 import utils
 import view_helper
 import searchresult
-
-TEMPLATE_DIR = 'templates/'
+import apiwriter
+from template_helpers import get_default_template_values, render_template
 
 HOMEPAGE_TEMPLATE = 'homepage.html'
 TEST_PAGEVIEWS_TEMPLATE = 'test_pageviews.html'
 SEARCH_RESULTS_TEMPLATE = 'search_results.html'
-SEARCH_RESULTS_DEBUG_TEMPLATE = 'search_results_debug.html'
-SEARCH_RESULTS_RSS_TEMPLATE = 'search_results.rss'
 SEARCH_RESULTS_MISSING_KEY_TEMPLATE = 'search_results_missing_key.html'
 SNIPPETS_LIST_TEMPLATE = 'snippets_list.html'
 SNIPPETS_LIST_MINI_TEMPLATE = 'snippets_list_mini.html'
-SNIPPETS_LIST_RSS_TEMPLATE = 'snippets_list.rss'
 MY_EVENTS_TEMPLATE = 'my_events.html'
 POST_TEMPLATE = 'post.html'
 POST_RESULT_TEMPLATE = 'post_result.html'
@@ -115,63 +111,6 @@ def get_unique_args_from_request(request):
     unique_args[arg] = allvals[len(allvals)-1]
   return unique_args
 
-def optimize_page_speed(request):
-  """OK to optimize the page: minimize CSS, minimize JS, Sprites, etc."""
-  # page_optim=1 forces optimization
-  page_optim = request.get('page_optim')
-  if page_optim == "1":
-    return True
-  # page_debug=1 forces no optimization
-  page_debug = request.get('page_debug')
-  if page_debug == "1":
-    return False
-  # optimize in production and on appspot
-  if (request.host_url.find("appspot.com") >= 0 or
-      request.host_url.find("allforgood.org") >= 0):
-    return True
-  return False
-
-def get_default_template_values(request, current_page):
-  # for debugging login issues
-  no_login = (request.get('no_login') == "1")
-
-  version = request.get('dbgversion')
-  # don't allow junk
-  if not version or not re.search(r'^[0-9a-z._-]+$', version):
-    version = os.getenv('CURRENT_VERSION_ID')
-
-  template_values = {
-    'user' : userinfo.get_user(request),
-    'current_page' : current_page,
-    'host' : urllib.quote(request.host_url),
-    'path' : request.path,
-    'version' : version,
-    'no_login' : no_login,
-    'optimize_page' : optimize_page_speed(request),
-    'view_url': request.url,
-    }
-  load_userinfo_into_dict(template_values['user'], template_values)
-  return template_values
-
-def load_userinfo_into_dict(user, userdict):
-  """populate the given dict with user info."""
-  if user:
-    userdict["user"] = user
-    userdict["user_days_since_joined"] = (datetime.now() -
-                                          user.get_user_info().first_visit).days
-  else:
-    userdict["user"] = None
-    userdict["user_days_since_joined"] = None
-
-def render_template(template_filename, template_values):
-  """wrapper for template.render() which handles path."""
-  path = os.path.join(os.path.dirname(__file__),
-                      TEMPLATE_DIR + template_filename)
-  deploy.load_standard_template_values(template_values)
-  rendered = template.render(path, template_values)
-  return rendered
-
-
 def require_moderator(handler_method):
   """Decorator ensuring the current FP user is a logged in moderator.
 
@@ -208,7 +147,6 @@ def require_usig(handler_method):
       return
     return handler_method(self)
   return decorate
-
 
 def require_admin(handler_method):
   """Decorator ensuring the current App Engine user is an administrator."""
@@ -250,7 +188,6 @@ def expires(seconds):
         # Expire immediately.
         self.response.headers['Cache-Control'] = 'no-cache'
         self.response.headers['Expires'] = 'Thu, 01 Jan 2009 00:00:00 GMT'
-        pass
       else:
         self.response.headers['Cache-Control'] = 'public'
         self.response.headers['Expires'] = email.Utils.formatdate(
@@ -365,61 +302,30 @@ class search_view(webapp.RequestHandler):
     output = None
     if api.PARAM_OUTPUT in unique_args:
       output = unique_args[api.PARAM_OUTPUT]
+      
+    if not output:
+      output = "html"
 
-    if not output or output == "html":
+    if output == "html":
       if "geocode_responses" not in unique_args:
         unique_args["geocode_responses"] = 1
-      tpl = SEARCH_RESULTS_DEBUG_TEMPLATE
-    elif output == "rss":
-      self.response.headers["Content-Type"] = "application/rss+xml"
-      tpl = SEARCH_RESULTS_RSS_TEMPLATE
-    elif output == "csv":
-      # TODO: implement SEARCH_RESULTS_CSV_TEMPLATE
-      tpl = SEARCH_RESULTS_RSS_TEMPLATE
-    elif output == "tsv":
-      # TODO: implement SEARCH_RESULTS_TSV_TEMPLATE
-      tpl = SEARCH_RESULTS_RSS_TEMPLATE
-    elif output == "xml":
-      # TODO: implement SEARCH_RESULTS_XML_TEMPLATE
-      #tpl = SEARCH_RESULTS_XML_TEMPLATE
-      tpl = SEARCH_RESULTS_RSS_TEMPLATE
-    elif output == "rssdesc":
-      # TODO: implement SEARCH_RESULTS_RSSDESC_TEMPLATE
-      tpl = SEARCH_RESULTS_RSS_TEMPLATE
-    else:
-      # TODO: implement SEARCH_RESULTS_ERROR_TEMPLATE
-      # TODO: careful about escapification/XSS
-      tpl = SEARCH_RESULTS_DEBUG_TEMPLATE
-
+    
     latlng_string = ""
     if "lat" in result_set.args and "long" in result_set.args:
       latlng_string = "%s,%s" % (result_set.args["lat"],
                                  result_set.args["long"])
+      result_set.args["latlong"] = latlng_string
     logging.debug("geocode("+result_set.args[api.PARAM_VOL_LOC]+") = "+
                   result_set.args["lat"]+","+result_set.args["long"])
-    template_values = get_default_template_values(self.request, 'SEARCH')
-    template_values.update({
-        'result_set': result_set,
-        # TODO: remove this stuff...
-        'latlong': latlng_string,
-        'keywords': result_set.args[api.PARAM_Q],
-        'location': result_set.args[api.PARAM_VOL_LOC],
-        'max_distance': result_set.args[api.PARAM_VOL_DIST],
-      })
 
-    # pagecount.GetPageCount() is expensive-- only do for debug mode,
-    # where this is printed.
-    if tpl == SEARCH_RESULTS_DEBUG_TEMPLATE:
-      for res in result_set.clipped_results:
-        res.merged_clicks = pagecount.GetPageCount(
-          pagecount.CLICKS_PREFIX+res.merge_key)
-        if res.merged_impressions < 1.0:
-          res.merged_ctr = "0"
-        else:
-          res.merged_ctr = "%.2f" % (
-            100.0 * float(res.merged_clicks) / float(res.merged_impressions))
+    writer = apiwriter.get_writer(output)
+    writer.setup(self.request, result_set)
+    logging.info("Clipped results: %d" % len(result_set.clipped_results))
+    for result in result_set.clipped_results:
+      writer.add_result(result)
 
-    self.response.out.write(render_template(tpl, template_values))
+    self.response.headers["Content-Type"] = writer.content_type
+    self.response.out.write(writer.finalize())
 
 
 class ui_snippets_view(webapp.RequestHandler):
@@ -1253,4 +1159,3 @@ class datahub_dashboard_view(webapp.RequestHandler):
     logging.debug("datahub_dashboard_view: %s" % template_values['msg'])
     self.response.out.write(render_template(DATAHUB_DASHBOARD_TEMPLATE,
                                             template_values))
-

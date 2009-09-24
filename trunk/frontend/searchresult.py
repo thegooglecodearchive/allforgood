@@ -51,7 +51,7 @@ def js_escape(string):
 class SearchResult(object):
   """class to hold the results of a search to the backend."""
   def __init__(self, url, title, snippet, location, item_id, base_url,
-               categories = [], org_name = ''):
+               categories = None, org_name = ''):
     # TODO: HACK: workaround for issue 404-- broken servegov links
     # hack added here so the urlsig's come out correctly and the fix
     # applies everywhere including xml_url, API calls, etc.
@@ -74,7 +74,7 @@ class SearchResult(object):
     self.location = location
     self.item_id = item_id
     self.base_url = base_url
-    self.categories = categories
+    self.categories = categories if categories else []
     self.categories_str = self.categories_to_str(categories)
     self.categories_api_str = self.categories_to_api_str(categories)
     self.orgName = org_name
