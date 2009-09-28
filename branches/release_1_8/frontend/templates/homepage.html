@@ -1,0 +1,112 @@
+{% extends 'layout_full.html' %}
+
+{% block content %}
+<div id='home'>
+  <div id='leadin'>
+    <div id='leadin_header'>
+      All for Good helps you find and share ways to do good.
+    </div>
+    <div id='leadin_subheader'>
+      Each of us has a role to play in improving our communities and our country.
+      Small actions add up to a big difference.
+    </div>
+  </div>
+
+  <div id='home_popular'>
+    <div id='home_popular_title'>Popular&nbsp;searches</div>
+    <div id='popular_list'></div>
+  </div>
+
+  <div id='home_mini'>
+   <div id='mini_without_location' style='display:none;'>
+    Find volunteer activities near you
+   </div>
+
+   <div id='mini_with_location' style='display:none;'>
+    <div id='location_message'>Volunteer activities</div>
+    <div id='location_subheader'><span id='location_text_prefixed'>In <span id='location_text'></span></span> &nbsp;-
+      <a href='javascript:void(0)' onclick='doHomepageChangeLocationClick();return false;'>
+        Change location
+      </a>
+    </div>
+   </div>
+
+   <div id='location_form' style='display:none;'>
+    <form action='/' onsubmit='submitForm("");return false;' class='valign'>
+      <input id='location' name='enter your location' size='40' value=''/>
+      <input type=button onclick='submitForm("");return false;' value="Set location" />
+    </form>
+   </div>
+
+   <div id='snippets' class="hp"></div>
+   <div id='more' style='display:none;'><a id='more_link'>See more...</a></div>
+   {# defined in homepage.js; requires id=snippets and id=more in the DOM #}
+   <script>runSnippetsQuery();</script>
+  </div>
+
+  <div id='home_left'>
+    <div id='home_video'>
+      <a href="javascript:void(0);" onclick="setKeywordAndExecute('category:September11');return false;"><img src="http://serve.gov/logos_removed/rememberserve_350.jpg" width="290" border="0" /></a><br />
+    </div>
+
+          <ul>
+              <li><b>Learn</b> more <a href="http://www.911dayofservice.org/">about the day &raquo;</a></li>
+              <li><b>Read</b> the President and First Lady's <br /><a href="http://serve.gov/assets/documents/09_0828_potus.pdf">Call to Service &raquo;</a></li>
+              <li style="font-size:16px;"><a href="javascript:void(0);" onclick="setKeywordAndExecute('category:September11');return false;"><b>Find ways to serve &raquo;</b></a></li>
+              
+          </ul>
+    <!--
+    <div id='home_video'>
+      <div id='home_video_header'>How to use All for Good</div>
+      <div id='home_video_placeholder'></div>
+    </div>
+  
+
+    <div id='home_bullets'>
+	
+      <ul>
+        <li><b>Read</b> the <a href="/guide">product guide &raquo;</a></li>
+      </ul>
+	-->
+      <div id='home_bullets_header'>Help improve your community</div>
+
+      <ul>
+        <li><b>Find</b> volunteer activities near you.</li>
+        <li><b>Share</b> volunteer activities with your friends.</li>
+        <li><b>See</b> what your friends are interested in.</li>
+        <li><b>Track</b> volunteer activities you care about.</li>
+        <li><b>Sign in</b> with
+          <a href='javascript:void(0);' onclick="requestFacebookSignIn();return false">Facebook</a>,
+          <a href='javascript:void(0);' onclick="google.friendconnect.requestSignIn('GOOGLE');return false">Google</a>, or
+          <a href='javascript:void(0);' onclick="google.friendconnect.requestSignIn('');return false">more &raquo;</a>
+        </li>
+      </ul>
+
+      <div id='home_bullets_header'>Get All for Good on your site</div>
+      <div id='home_app_promo'>
+      <img src="/zx{{version}}/images/afg-gadget.gif" id='home_app_screen' />
+
+
+<p><br />
+
+<a class="addlink" href="http://www.google.com/ig/directory?type=gadgets&amp;url=www.allforgood.org/gadget/gadget.xml&amp;nocache=1"><img border="0" alt="Add" src="/zx0000/images/add_small.png"/><span>to iGoogle »</span></a><br/>
+
+<a class="addlink" href="http://www.gmodules.com/ig/creator?synd=open&amp;url=http%3A//www.allforgood.org/gadget/gadget.xml&amp;h=315&amp;w=250"><img border="0" alt="Add" src="/zx0000/images/add_small.png"/><span> to your page »</span></a> <br/>
+<a class="addlink" href="/apps/wordpress"><img border="0" alt="Add" src="/zx0000/images/add_small.png"/><span>to WordPress »</span></a><br/>
+<a class="addlink" href="/apps/blogger"><img border="0" alt="Add" src="/zx0000/images/add_small.png"/><span>to Blogger »</span></a><br/>
+<a class="addlink" href="/apps/gmail"><img border="0" alt="Add" src="/zx0000/images/add_small.png"/><span>to Gmail »</span></a><br/>
+</p>
+    <ul>
+      <li><b>Get</b> more <a href="/apps">All for Good apps &raquo;</a></li>
+    </ul>
+    </div>
+
+    </div>
+  </div>
+</div>
+<script type='text/javascript'>
+renderHomepage();
+createExampleSearchText();
+</script>
+{% endblock content %}
+

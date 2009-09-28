@@ -1,0 +1,56 @@
+{# TODO: find a better solution than "ifnotequal" #}
+{% for result in result_set.clipped_results %}<item>
+<title>{% ifnotequal result.title 'title' %}{{ result.title|escape }}{% endifnotequal %}</title>
+<link>{% ifnotequal result.xml_url 'xml_url' %}{{ result.xml_url|escape }}{% endifnotequal %}</link>
+<description>{% ifnotequal result.snippet 'snippet' %}{{ result.snippet|escape }}{% endifnotequal %}</description>
+<pubDate>{% ifnotequal result.pubDate 'pubDate' %}{{ result.pubDate|escape }}{% endifnotequal %}</pubDate>
+<guid>{% ifnotequal result.xml_url 'xml_url' %}{{ result.xml_url|escape }}{% endifnotequal %}</guid>
+<fp:id>{% ifnotequal result.id 'id' %}{{ result.id|escape }}{% endifnotequal %}</fp:id>
+{# groupid is a stable ID for the dedup'd set of results, #}
+{#   including same listing but different time/location #}
+<fp:groupid>{% ifnotequal result.merge_key 'merge_key' %}{{ result.merge_key|escape }}{% endifnotequal %}</fp:groupid>
+<fp:provider>{% ifnotequal result.provider 'provider' %}{{ result.provider|escape }}{% endifnotequal %}</fp:provider>
+<fp:startDate>{% ifnotequal result.startdate 'startdate' %}{{ result.startdate|escape }}{% endifnotequal %}</fp:startDate>
+<fp:endDate>{% ifnotequal result.enddate 'enddate' %}{{ result.enddate|escape }}{% endifnotequal %}</fp:endDate>
+<fp:base_url>{% ifnotequal result.base_url 'base_url' %}{{ result.base_url|escape }}{% endifnotequal %}</fp:base_url>
+<fp:xml_url>{% ifnotequal result.xml_url 'xml_url' %}{{ result.xml_url|escape }}{% endifnotequal %}</fp:xml_url>
+<fp:url_short>{% ifnotequal result.url_short 'url_short' %}{{ result.url_short|escape }}{% endifnotequal %}</fp:url_short>
+<fp:latlong>{% ifnotequal result.latlong 'latlong' %}{{ result.latlong|escape }}{% endifnotequal %}</fp:latlong>
+<fp:location_name>{% ifnotequal result.location 'location' %}{{ result.location|escape }}{% endifnotequal %}</fp:location_name>
+{# fp:interest didn't make sense-- API is anonymous so there can't per per-user interest #}
+<fp:interest_count>{% ifnotequal result.interest_count 'interest_count' %}{{ result.interest_count|escape }}{% endifnotequal %}</fp:interest_count>
+<fp:impressions>{% ifnotequal result.impressions 'impressions' %}{{ result.impressions|escape }}{% endifnotequal %}</fp:impressions>
+<fp:quality_score>{% ifnotequal result.quality_score 'quality_score' %}{{ result.quality_score|escape }}{% endifnotequal %}</fp:quality_score>
+<fp:categories>{% ifnotequal result.categories_api_str 'categories_api_str' %}{{ result.categories_api_str|escape }}{% endifnotequal %}</fp:categories>
+<fp:skills>{% ifnotequal result.skills 'skills' %}{{ result.skills|escape }}{% endifnotequal %}</fp:skills>
+<fp:virtual>{% ifnotequal result.virtual 'virtual' %}{{ result.virtual|escape }}{% endifnotequal %}</fp:virtual>
+<!-- addr1 may change; contact core eng team before using -->
+<fp:addr1>{% ifnotequal result.addr1 'addr1' %}{{ result.addr1|escape }}{% endifnotequal %}</fp:addr1>
+<!-- addrname1 may change; contact core eng team before using -->
+<fp:addrname1>{% ifnotequal result.addrname1 'addrname1' %}{{ result.addrname1|escape }}{% endifnotequal %}</fp:addrname1>
+<fp:sponsoringOrganizationName>{% ifnotequal result.orgName 'orgName' %}{{ result.orgName|escape }}{% endifnotequal %}</fp:sponsoringOrganizationName>
+<fp:openEnded>{% ifnotequal result.openEnded 'openEnded' %}{{ result.openEnded|escape }}{% endifnotequal %}</fp:openEnded>
+<fp:startTime>{% ifnotequal result.startTime 'startTime' %}{{ result.startTime|escape }}{% endifnotequal %}</fp:startTime>
+<fp:endTime>{% ifnotequal result.endTime 'endTime' %}{{ result.endTime|escape }}{% endifnotequal %}</fp:endTime>
+<fp:contactNoneNeeded>{% ifnotequal result.contactNoneNeeded 'contactNoneNeeded' %}{{ result.contactNoneNeeded|escape }}{% endifnotequal %}</fp:contactNoneNeeded>
+<fp:contactEmail>{% ifnotequal result.contactEmail 'contactEmail' %}{{ result.contactEmail|escape }}{% endifnotequal %}</fp:contactEmail>
+<fp:contactPhone>{% ifnotequal result.contactPhone 'contactPhone' %}{{ result.contactPhone|escape }}{% endifnotequal %}</fp:contactPhone>
+<fp:contactName>{% ifnotequal result.contactName 'contactName' %}{{ result.contactName|escape }}{% endifnotequal %}</fp:contactName>
+<fp:detailUrl>{% ifnotequal result.detailUrl 'detailUrl' %}{{ result.detailUrl|escape }}{% endifnotequal %}</fp:detailUrl>
+{# TODO: make something better than weekly #}
+{# TODO: make something better than biweekly #}
+{# TODO: make something better than recurrence #}
+<fp:audienceAll>{% ifnotequal result.audienceAll 'audienceAll' %}{{ result.audienceAll|escape }}{% endifnotequal %}</fp:audienceAll>
+<fp:audienceAge>{% ifnotequal result.audienceAge 'audienceAge' %}{{ result.audienceAge|escape }}{% endifnotequal %}</fp:audienceAge>
+<fp:minAge>{% ifnotequal result.minAge 'minAge' %}{{ result.minAge|escape }}{% endifnotequal %}</fp:minAge>
+<fp:audienceSexRestricted>{% ifnotequal result.audienceSexRestricted 'audienceSexRestricted' %}{{ result.audienceSexRestricted|escape }}{% endifnotequal %}</fp:audienceSexRestricted>
+{# TODO: sexRestrictedTo - ref policy team #}
+{# TODO: make something better than commitmentHoursPerWeek #}
+<fp:street1>{% ifnotequal result.street1 'street1' %}{{ result.street1|escape }}{% endifnotequal %}</fp:street1>
+<fp:street2>{% ifnotequal result.street2 'street2' %}{{ result.street2|escape }}{% endifnotequal %}</fp:street2>
+<fp:city>{% ifnotequal result.city 'city' %}{{ result.city|escape }}{% endifnotequal %}</fp:city>
+<fp:region>{% ifnotequal result.region 'region' %}{{ result.region|escape }}{% endifnotequal %}</fp:region>
+<fp:postalCode>{% ifnotequal result.postalCode 'postalCode' %}{{ result.postalCode|escape }}{% endifnotequal %}</fp:postalCode>
+<fp:country>{% ifnotequal result.country 'country' %}{{ result.country|escape }}{% endifnotequal %}</fp:country>
+</item>
+{% endfor %}
