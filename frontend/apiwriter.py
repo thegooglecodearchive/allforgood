@@ -275,7 +275,7 @@ class RssApiWriter(ApiWriter):
         name = field_info[0]
         attr = field_info[1]
         if hasattr(result, attr):
-          content = getattr(result, name).encode('ascii','ignore')
+          content = getattr(result, attr).encode('ascii','ignore')
         else:
           content = ''
         if len(field_info) == 3:
