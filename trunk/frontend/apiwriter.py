@@ -268,14 +268,20 @@ class RssApiWriter(ApiWriter):
       if len(field_info) == 1:
         name = field_info[0]
         if hasattr(result, name):
-          content = getattr(result, name).encode('ascii','ignore')
+          try:
+            content = str(getattr(result, name))
+          except UnicodeEncodeError:
+            content = getattr(result, name).encode('ascii','ignore')
         else:
           content = ''
       else:
         name = field_info[0]
         attr = field_info[1]
         if hasattr(result, attr):
-          content = getattr(result, attr).encode('ascii','ignore')
+          try:
+            content = str(getattr(result, attr))
+          except UnicodeEncodeError:
+            content = getattr(result, attr).encode('ascii','ignore')
         else:
           content = ''
         if len(field_info) == 3:
