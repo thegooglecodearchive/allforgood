@@ -947,10 +947,6 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '126', 'ymca', 'ymca', 'http://www.ymca.net/',
       'YMCA')
-  if shortname == "newyorkcares":
-    return "fpxml", fp.parser(
-      '127', 'newyorkcares', 'newyorkcares', 'http://www.newyorkcares.org/feeds/nycares.xml',
-      'New York Cares')
   if shortname == "aarp":
     return "fpxml", fp.parser(
       '127', 'aarp', 'aarp', 'http://www.aarp.org/',
@@ -971,6 +967,10 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '131', '911dayofservice', '911dayofservice', 'http://www.911dayofservice.org/',
       'National Day of Service and Remembrance')
+  if shortname == "newyorkcares":
+    return "fpxml", fp.parser(
+      '132', 'newyorkcares', 'newyorkcares', 'http://www.newyorkcares.org/',
+      'New York Cares')
 
   if shortname == "habitat":
     parser = fp.parser(
@@ -1183,7 +1183,7 @@ def test_parse(footprint_xmlstr, maxrecs):
 
 
 def process_file(filename, options, providerName="", providerID="",
-                 providerURL=""):
+                 feedID="", providerURL=""):
   shortname = guess_shortname(filename)
   inputfmt, parsefunc = guess_parse_func(options.inputfmt, filename)
   infh = open_input_filename(filename)
@@ -1218,6 +1218,11 @@ def process_file(filename, options, providerName="", providerID="",
     footprint_xmlstr = re.sub(
       '<providerName></providerName>',
       '<providerName>%s</providerName>' % providerName, footprint_xmlstr)
+  if (providerID != "" and
+      footprint_xmlstr.find('<feedID></feedID>')):
+    footprint_xmlstr = re.sub(
+      '<feedID></feedID>',
+      '<feedID>%s</feedID>' % feedID, footprint_xmlstr)
   if (providerURL != "" and
       footprint_xmlstr.find('<providerURL></providerURL>')):
     footprint_xmlstr = re.sub(
@@ -1301,13 +1306,15 @@ def main():
       providerURL = "http://spreadsheets.google.com/feeds/cells/"
       providerURL += match.group(1)
       providerURL += "/1/public/basic"
+      feedID = re.sub(r'[^a-z]', '', providerName.lower())[0:24]
       if PROGRESS:
-        print "processing spreadsheet", providerURL, "name="+providerName
+        print "processing spreadsheet", providerURL, "named", providerName,\
+            " - feedID", feedID
       providerBytes, providerNumorgs, providerNumopps, tmpstr = process_file(
-        providerURL, options, providerName, providerID, providerURL)
+        providerURL, options, providerName, providerID, feedID, providerURL)
       if PROGRESS:
         print "done processing spreadsheet: name="+providerName, \
-            "records="+str(providerNumopps), \
+            "feedID="+feedID, "records="+str(providerNumopps), \
             "url="+providerURL
       bytes += providerBytes
       numorgs += providerNumorgs

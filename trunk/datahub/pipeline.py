@@ -457,7 +457,6 @@ def loaders():
                "greentheblock",
                "habitat", "handsonnetwork", "idealist", "meetup",
                "mentorpro", "mlk_day", "mybarackobama",
-               "newyorkcares", 
                "myproj_servegov", "seniorcorps", "servenet",
                "unitedway", "universalgiving",
                "volunteergov", "volunteermatch",
