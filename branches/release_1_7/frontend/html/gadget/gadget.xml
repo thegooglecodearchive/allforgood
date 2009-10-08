@@ -16,17 +16,17 @@
             messages="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/afg_en_ALL.xml" />
     <Locale messages="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/afg_en_ALL.xml" />
   </ModulePrefs>
-  <UserPref name="storiesToRead" 
-            display_name="__MSG_listings_per_page__" 
-            default_value="4" 
-            datatype="enum"> 
-    <EnumValue value="4" /> 
-    <EnumValue value="5" /> 
-    <EnumValue value="6" /> 
-    <EnumValue value="7" /> 
-    <EnumValue value="8" /> 
-    <EnumValue value="9" /> 
-    <EnumValue value="10" /> 
+  <UserPref name="storiesToRead"
+            display_name="__MSG_listings_per_page__"
+            default_value="4"
+            datatype="enum">
+    <EnumValue value="4" />
+    <EnumValue value="5" />
+    <EnumValue value="6" />
+    <EnumValue value="7" />
+    <EnumValue value="8" />
+    <EnumValue value="9" />
+    <EnumValue value="10" />
   </UserPref>
   <UserPref name="timePeriod" display_name="__MSG_time_period__" default_value="" datatype="enum">
     <EnumValue value="everything" display_value="__MSG_everything__"/>
@@ -46,8 +46,8 @@
     <EnumValue value="September11" display_value="__MSG_september_11__"/>
     <EnumValue value="Technology" display_value="__MSG_technology__"/>
   </UserPref>
-  <UserPref name="prefLocation" 
-            display_name="__MSG_default_location__" 
+  <UserPref name="prefLocation"
+            display_name="__MSG_default_location__"
             default_value="" />
   <UserPref name="preferredKeywords"
             display_name="__MSG_preferred_keywords__"
@@ -494,21 +494,27 @@ function showRecordsAndUpdatePagination() {
     html.push(getHtmlForOneRecord(i));
   }
   // Add pagination.
-  if (curPage !== 1 || nextPageInfo['page-' + curPage]) {
-    html.push('<div class="pagination">',
-              '<div style="width:100%;overflow:hidden;">');
-    if (curPage !== 1) {
-      html.push('<a href="#" onclick="navigatePage(-1);return false;" ',
-                'style="float:left;"  class="afg-pagination">&lt; ',
-                prefs.getMsg('previous'), '</a>');
-    }
-    if (nextPageInfo['page-' + curPage]) {
-      html.push('<a href="#" onclick="navigatePage(1);return false;" ',
-                'style="float:right;" class="afg-pagination">',
-                prefs.getMsg('next'), ' &gt;</a>');
-    }
-    html.push('</div></div>');
+  html.push('<div class="pagination">',
+      '<div style="width:100%;overflow:hidden;"><a target="_blank" ' +
+      'href="http://www.allforgood.org/search#cache=1&num=10' +
+      '&start=', feedParams.start,
+      '&vol_loc=', _esc(feedParams.vol_loc),
+      '&timeperiod=', feedParams.timeperiod,
+      '&q=', _esc(feedParams.q),
+      '" style="float:left;"  class="afg-pagination">',
+      prefs.getMsg('see_more'),
+      ' &gt;&gt;</a><span style="float:right;"> &nbsp;');
+  if (curPage !== 1) {
+    html.push('<a href="#" onclick="navigatePage(-1);return false;" ',
+              'class="afg-pagination">&lt; ',
+              prefs.getMsg('previous'), '</a> &nbsp;');
   }
+  if (nextPageInfo['page-' + curPage]) {
+    html.push('<a href="#" onclick="navigatePage(1);return false;" ',
+              'class="afg-pagination">',
+              prefs.getMsg('next'), ' &gt;</a>');
+  }
+  html.push('</span></div></div>');
   // Update content html.
   _gel('afg-content').innerHTML = html.join('');
   adjustIFrameHeight();
@@ -537,7 +543,7 @@ function fetchRecords(xmlContent, timerId) {
   // Cancels the timeout set previously.
   clearTimeout(timerId);
   var recordsRequested = prefs.getInt('storiesToRead') * PAGES_PER_QUERY + 1;
-  var pageRef, recordRef, item, jsonFeed, curNode;
+  var pageRef, recordRef, item, jsonFeed, curNode, startDate, endDate;
 
   try {
     if (typeof xmlContent != 'object') {
@@ -591,8 +597,10 @@ function fetchRecords(xmlContent, timerId) {
           }
         }
       }
-      jsonFeed.period = getDateStr(jsonFeed.stdate) +
-          ' - ' + getDateStr(jsonFeed.enddate);
+      startDate = getDateStr(jsonFeed.stdate);
+      endDate = getDateStr(jsonFeed.enddate)
+      jsonFeed.period = (startDate == endDate) ? startDate :
+          startDate + ' - ' + endDate;
       feedRecords.push(jsonFeed);
     }
     showRecordsAndUpdatePagination();
@@ -685,6 +693,7 @@ function search(opt_searchTxt, opt_hidePopup) {
   feedParams.start = 1;
   feedParams.vol_loc = location;
   feedParams.q = [category, prefKeywords, searchText].join(' ');
+  feedParams.timeperiod = prefs.getString('timePeriod');
   // Reset FeedRecord and pagination related variables.
   feedRecords = [];
   curPage = 1;
@@ -839,7 +848,7 @@ function promote() {
   var promoStart = new Date();
   promoStart.setFullYear(2009,8,1);
   promoStart.setHours(0,0,0);
-  
+
   var promoEnd =  new Date();
   promoEnd.setFullYear(2009,8,15);
   promoEnd.setHours(0,0,1);
@@ -897,7 +906,7 @@ function setSettings() {
   prefs.set('storiesToRead', getSelectBoxValue('settings-stories'));
   prefs.set('category', getSelectBoxValue('settings-categories'));
   prefs.set('timePeriod', getSelectBoxValue('settings-time-period'));
-  
+
   feedParams.num = prefs.getInt('storiesToRead') * PAGES_PER_QUERY + 1;
   hideMiniMessage();
   hideDialog();
