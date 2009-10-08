@@ -220,7 +220,9 @@ def normalize_query_values(args):
         args["lat"], args["long"], zoom = res.split(",")
     args["lat"] = args["lat"].strip()
     args["long"] = args["long"].strip()
-    if api.PARAM_VOL_DIST not in args:
+    if api.PARAM_VOL_DIST in args:
+      args[api.PARAM_VOL_DIST] = int(args[api.PARAM_VOL_DIST])
+    else:
       zoom = int(zoom)
       if zoom == 1:
         # country zoomlevel is kinda bogus--
