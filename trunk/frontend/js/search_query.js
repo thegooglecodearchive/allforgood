@@ -24,7 +24,7 @@ function setKeywordAndExecute(keywords) {
 
 function createExampleSearchText() {
   // Put categories to receive the "New!" superscript in here
-  var new_popular = ["September 11"]
+  var new_popular = [] // ["September 11"]
   var html = 'Categories: ';
   var links = [];
   for (var i = 0; i < popularSearches.length; i++) {
