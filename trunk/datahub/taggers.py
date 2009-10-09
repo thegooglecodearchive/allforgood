@@ -247,23 +247,49 @@ def get_taggers():
     'National Day of Service (and|&) Rememb(e)?rance)')
   
   vetted_tagger = FeedProviderIDTagger('Vetted', [
+      '102', # handsonnetwork
+      #UGC '103', # idealist
+      '104', # volunteermatch
+      #105 - unused / not live
+      '106', # Americorps
+      '107', # volunteergov
+      #108 - unused / not live
+      #109 - unused / not live
+      #UGC '110', extraordinaries
       '111', # habitat
+      #UGC '112', meetup
+      #113 - unused / not live
+      '114', # ServeNet.org
       '115', # americansolutions
+      '118', # volunteer2
+      '119', # MENTOR (mentorpro)
+      #UGC '120', myproj_servegov (serve.gov)
+      '121', # seniorcorps
       '122', # unitedway
       '123', # americanredcross
       '124', # citizencorps/FEMA
+      '125', # givingdupage
       '126', # ymca
       '127', # aarp
+      '128', # greentheblock
       '129', # washoecounty
-      '1004', # sierra club
-      '1003', # united jewish communities
+      '130', # universalgiving
+      #UGC '131', 911dayofservice
       '1002', # girl scouts
+      '1003', # united jewish communities
+      '1004', # sierra club
+      '1005', # 1Sky
+      '1007', # Communities In Schools of Rockingham County
       '1023', # american cancer society
       '1049', # US Coast Guard Auxiliary
+      '1050', # National Public Lands Day
       '1051', # Be Red Cross Ready
       '1053', # rappahannock united way
       '1055', # Jewish Big Brothers Big Sisters
       '1056', # American Red Cross
+      '1063', # great non-profits
+      #vetted but not live         Tech Mission
+      #vetted but not live         American Red Cross (via VM)
       ])
                                  
   # taggers is the list of Tagger subclass instances to run each row through
