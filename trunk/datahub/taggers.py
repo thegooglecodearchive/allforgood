@@ -245,7 +245,7 @@ def get_taggers():
   september11_tagger = SimpleRegexTagger('September11',
     '(9[\/\.]11|sep(t(\.|ember)?)?[ -]?(11|eleven)(th)?|' +
     'National Day of Service (and|&) Rememb(e)?rance)')
-
+  
   vetted_tagger = FeedProviderIDTagger('Vetted', [
       '111', # habitat
       '115', # americansolutions
@@ -267,6 +267,8 @@ def get_taggers():
       ])
                                  
   # taggers is the list of Tagger subclass instances to run each row through
+  # README: you also need to modify frontend/searchresult.py so your new
+  # categories are displayed in the consumer UI next to each result.
   taggers = [
     # vetted/UGC
     vetted_tagger,
