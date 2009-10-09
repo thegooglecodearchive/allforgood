@@ -69,9 +69,9 @@ class Tagger(object):
     # from multiple types of Taggers.
     self.tagging_functions = []
 
-  def do_tagging(self, rec):
+  def do_tagging(self, rec, feedinfo):
     """takes a record to be tagged, runs tagging functions"""
-    scores = [f(rec) for f in self.tagging_functions]
+    scores = [f(rec, feedinfo) for f in self.tagging_functions]
     
     # get the average score from the tagging functions
     if len(scores) > 0:
@@ -97,7 +97,7 @@ class RegexTagger(Tagger):
     self.score_threshold = 0.0 # right now, we'll tag if any keywords match
     self.tagging_functions.append(self.tag_by_regex)
 
-  def tag_by_regex(self, rec):
+  def tag_by_regex(self, rec, feedinfo):
     """Takes the regex defined in subclasses and checks them against
     the examined field, returning the average score."""
     score = 0.0
@@ -109,6 +109,22 @@ class RegexTagger(Tagger):
           score += self.regex_dict[regex]
     score /= len(self.regex_dict)
     return score
+
+class FeedProviderIDTagger(Tagger):
+  """class for applying tagging based on matching a
+  regex on the feed providerName of a listing."""
+  def __init__(self, tag_name, id_list):
+    """Create relevant variables for the RegexTagger."""
+    Tagger.__init__(self, tag_name)
+    self.id_list = id_list
+    self.score_threshold = 0.0 # tag if found
+    self.tagging_functions.append(self.tag_by_source_id)
+
+  def tag_by_source_id(self, rec, feedinfo):
+    """matches the feed_providerID against the list of vetted IDs."""
+    if xmlh.get_tag_val(feedinfo, "providerID") in self.id_list:
+      return 1.0
+    return 0.0
 
 class SimpleRegexTagger(RegexTagger):
   """Class for tagging on a single regular expression."""
@@ -130,7 +146,7 @@ class KeywordTagger(Tagger):
     self.score_threshold = 0.0 # right now, we'll tag if any keywords match
     self.tagging_functions.append(self.tag_by_keywords)
   
-  def tag_by_keywords(self, rec):
+  def tag_by_keywords(self, rec, feedinfo):
     """Takes the keywords defined in subclasses and checks them against
     the description, returning the average score."""
     score = 0.0
@@ -208,13 +224,60 @@ def get_taggers():
   tutoring_tagger = WSVKeywordTagger('Tutoring', 'mentoring ' +
     'tutoring mentor counseling')
 
+  # skills-based matching
+  artist_tagger = WSVKeywordTagger('Artist', 'artist artists' +
+    'drawing painter painters painting sculpting sculptor sculptors')
+  lawyer_tagger = WSVKeywordTagger('Lawyer', 'lawyer lawyers' +
+    'attorney attorneys pro+bono')
+  doctor_tagger = WSVKeywordTagger('Doctor', 'doctor doctors ' +
+    'medical+professional medical+professionals nurse nurses')
+  programmer_tagger = WSVKeywordTagger('Programmer', 'programmer ' +
+    'programmers software+developer software+developers '+
+    'software+engineer software+engineer')
+  repairman_tagger = WSVKeywordTagger('Repairman', 'plumber plumbers ' +
+    'electrician electricians carpenter carpenters bricklayer bricklayers '+
+    'woodworker woodworkers')
+  video_tagger = WSVKeywordTagger('Videographer', 'videographer ' +
+    'videographers video+editor')
+  grdesign_tagger = WSVKeywordTagger('Graphic Designer', 'graphic+designer ' +
+    'graphic+designers graphic+artist graphic+artists')
+
   september11_tagger = SimpleRegexTagger('September11',
     '(9[\/\.]11|sep(t(\.|ember)?)?[ -]?(11|eleven)(th)?|' +
     'National Day of Service (and|&) Rememb(e)?rance)')
-  
-  # taggers is the list of Tagger subclass instances ot run each row through
-  taggers = [nature_tagger, education_tagger, animals_tagger, health_tagger,
-             seniors_tagger, technology_tagger, hph_tagger, tutoring_tagger,
-             september11_tagger]
-  
+
+  vetted_tagger = FeedProviderIDTagger('Vetted', [
+      '111', # habitat
+      '115', # americansolutions
+      '122', # unitedway
+      '123', # americanredcross
+      '124', # citizencorps/FEMA
+      '126', # ymca
+      '127', # aarp
+      '129', # washoecounty
+      '1004', # sierra club
+      '1003', # united jewish communities
+      '1002', # girl scouts
+      '1023', # american cancer society
+      '1049', # US Coast Guard Auxiliary
+      '1051', # Be Red Cross Ready
+      '1053', # rappahannock united way
+      '1055', # Jewish Big Brothers Big Sisters
+      '1056', # American Red Cross
+      ])
+                                 
+  # taggers is the list of Tagger subclass instances to run each row through
+  taggers = [
+    # vetted/UGC
+    vetted_tagger,
+    # topics
+    nature_tagger, education_tagger, animals_tagger, health_tagger,
+    seniors_tagger, technology_tagger, hph_tagger, tutoring_tagger,
+    # skills
+    artist_tagger, lawyer_tagger, doctor_tagger, programmer_tagger,
+    repairman_tagger, video_tagger, grdesign_tagger,
+    # special events
+    #september11_tagger
+    ]
+
   return taggers
