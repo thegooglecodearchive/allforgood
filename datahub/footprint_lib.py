@@ -786,7 +786,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       #add tags
       for tagger in taggers:
         rec = XMLRecord(opp)
-        rec = tagger.do_tagging(rec)
+        rec = tagger.do_tagging(rec, feedinfo)
       opp = rec.opp
       if not HEADER_ALREADY_OUTPUT:
         outstr = output_header(feedinfo, opp, example_org)
