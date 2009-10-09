@@ -30,6 +30,11 @@ import models
 import modelutils
 import utils
 
+# only display certain categories-- this alows us to use the tagging
+# system for tags that aren't displayed to end users.
+UI_CATEGORIES = ['Nature', 'Education', 'Animals', 'Health', 'Seniors',
+                 'Technology', 'Poverty', 'Tutoring']
+
 def get_rfc2822_datetime(when = None):
   """GAE server localtime appears to be UTC and timezone %Z
   is an empty string so to satisfy RFC date format
@@ -75,8 +80,9 @@ class SearchResult(object):
     self.item_id = item_id
     self.base_url = base_url
     self.categories = categories if categories else []
-    self.categories_str = self.categories_to_str(categories)
-    self.categories_api_str = self.categories_to_api_str(categories)
+    self.categories = [cat for cat in self.categories if cat in UI_CATEGORIES]
+    self.categories_str = self.categories_to_str(self.categories)
+    self.categories_api_str = self.categories_to_api_str(self.categories)
     self.orgName = org_name
     # app engine does not currently support the escapejs filter in templates
     # so we have to do it our selves for now
