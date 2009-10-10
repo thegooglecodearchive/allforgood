@@ -28,13 +28,13 @@ class XMLRecord(object):
   def __init__(self, opp):
     """initialize record from dom record opp"""
     self.opp = opp
-  
+
   def get_val(self, field):
     """return a value for this record"""
     return xmlh.get_tag_val(self.opp, field)
-  
+
   def add_tag(self, tag):
-    """add a tag to the record""" 
+    """add a tag to the record"""
     newnode = self.opp.createElement('categories')
     newnode.appendChild(self.opp.createTextNode(str(tag)))
     self.opp.firstChild.appendChild(newnode)
@@ -44,11 +44,11 @@ class DictRecord(object):
   def __init__(self, fields, row):
     """initialize record with list of field names and list of values"""
     self.record = dict(zip(fields.split(), row.split()))
-  
+
   def get_val(self, field):
     """return a value for this record"""
     return self.record[field]
-  
+
   def add_tag(self, tag):
     """add a tag to the record"""
     if len(self.record['c:categories:string']) > 0:
@@ -72,17 +72,17 @@ class Tagger(object):
   def do_tagging(self, rec, feedinfo):
     """takes a record to be tagged, runs tagging functions"""
     scores = [f(rec, feedinfo) for f in self.tagging_functions]
-    
+
     # get the average score from the tagging functions
     if len(scores) > 0:
       score = sum(scores) / len(scores)
     else:
       score = 0.0
-    
+
     # add tag if the score, after all tagging functions, exceeds the threshold
     if score > self.score_threshold:
       rec.add_tag(self.tag_name)
-    
+
     return rec
 
 class RegexTagger(Tagger):
@@ -131,21 +131,21 @@ class SimpleRegexTagger(RegexTagger):
   def __init__(self, tag_name, regex):
     RegexTagger.__init__(self, tag_name, {regex:1.0})
 
-    
+
 class KeywordTagger(Tagger):
-  """KeywordTagger is a base class for all Taggers that apply basic tagging 
+  """KeywordTagger is a base class for all Taggers that apply basic tagging
   rules based on if a keyword appears in the description of a listing."""
   def __init__(self, tag_name, keywords_dict):
     """Create relevant variables for the KeywordTagger."""
-    Tagger.__init__(self, tag_name)    
+    Tagger.__init__(self, tag_name)
     # self.keywords holds the keywords that trigger this tag, along with the
     # amount to increment the score by (between 0.0 and 1.0) for each keyword.
     self.keywords = keywords_dict
     self.examine_fields = ['title', 'description']
-    
+
     self.score_threshold = 0.0 # right now, we'll tag if any keywords match
     self.tagging_functions.append(self.tag_by_keywords)
-  
+
   def tag_by_keywords(self, rec, feedinfo):
     """Takes the keywords defined in subclasses and checks them against
     the description, returning the average score."""
@@ -154,8 +154,8 @@ class KeywordTagger(Tagger):
       keyword_count = 0
       # Lowercase keyword and replace + with space for multiple word support
       # Ensure we require whitespace around the word or the start/end line
-      keyword_find = re.compile('[^\s]' + keyword.lower().replace('+', ' ')
-                                + '[$\s]')
+      keyword_find = re.compile('(^|\s)' + keyword.lower().replace('+', ' ')
+                                + '($|\s)')
       for field in self.examine_fields:
         # Count the number of occurences of the modified keyword
         # in the value for this field
@@ -167,7 +167,7 @@ class KeywordTagger(Tagger):
 
 class WSVKeywordTagger(KeywordTagger):
   """Creates a KeywordTagger from a whitespace separated list of keywords
-  rather than a dict, with each keyword having a score of 1.0. 
+  rather than a dict, with each keyword having a score of 1.0.
   Supports phrases by separating words with +'s."""
   def __init__(self, tag_name, keywords_list):
     """Expand the whitespace separated list and call the KeywordTagger init"""
@@ -181,11 +181,11 @@ class WSVKeywordTagger(KeywordTagger):
 # class EducationTagger(KeywordTagger):
 #  def __init__(self):
 #    KeywordTagger.__init__(self, 'Education', {'education':1.0, 'school':1.0,
-#                      'teacher':1.0, 'classroom':1.0, 'leaning':1.0}) 
+#                      'teacher':1.0, 'classroom':1.0, 'leaning':1.0})
 
 def get_taggers():
   """returns the current tagger instances we're using"""
-  
+
   # Create basic keyword taggers
 
   # The taggers below use the WSVKeywordTagger to easily tag without
@@ -200,27 +200,27 @@ def get_taggers():
   nature_tagger = WSVKeywordTagger('Nature', 'environment nature ' +
     'environmental outdoors gardening garden park wetlands forest forests ' +
     'tree trees green trail trails sierra+club ')
-  
+
   education_tagger = WSVKeywordTagger('Education', 'education reading ' +
     'teaching teacher teach books book library literacy school schools ' +
     'libraries')
-  
+
   animals_tagger = WSVKeywordTagger('Animals', 'animal animals dog dogs ' +
     'cat cats zoo bird birds zoos puppies puppy kitten kitty critter ' +
     'critters frog frogs turtle turtles kittens')
-  
+
   health_tagger = WSVKeywordTagger('Health', 'health hospital hospitals ' +
     'medical healthcare mental hospice nursing cancer nurse nurses doctor ' +
     'doctors red+cross')
-  
+
   seniors_tagger = WSVKeywordTagger('Seniors', 'senior seniors elderly')
-  
+
   technology_tagger = WSVKeywordTagger('Technology', 'website computer ' +
     'computers technology web video graphic design internet')
-  
+
   hph_tagger = WSVKeywordTagger('Poverty', 'habitat ' +
     'homeless hunger food housing poverty house poor')
-  
+
   tutoring_tagger = WSVKeywordTagger('Tutoring', 'mentoring ' +
     'tutoring mentor counseling')
 
@@ -245,7 +245,7 @@ def get_taggers():
   september11_tagger = SimpleRegexTagger('September11',
     '(9[\/\.]11|sep(t(\.|ember)?)?[ -]?(11|eleven)(th)?|' +
     'National Day of Service (and|&) Rememb(e)?rance)')
-  
+
   vetted_tagger = FeedProviderIDTagger('Vetted', [
       '102', # handsonnetwork
       #UGC '103', # idealist
@@ -291,7 +291,7 @@ def get_taggers():
       #vetted but not live         Tech Mission
       #vetted but not live         American Red Cross (via VM)
       ])
-                                 
+
   # taggers is the list of Tagger subclass instances to run each row through
   # README: you also need to modify frontend/searchresult.py so your new
   # categories are displayed in the consumer UI next to each result.
