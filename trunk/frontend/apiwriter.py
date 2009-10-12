@@ -104,6 +104,9 @@ class JsonApiWriter(ApiWriter):
   #Fields we output per item
   item_fields = [
     ('id',),
+    ('title',),
+    ('description', 'snippet'),
+    ('pubDate',), 
     # groupid is a stable ID for the dedup'd set of results, 
     #   including same listing but different time/location 
     ('groupid', 'merge_key'),
