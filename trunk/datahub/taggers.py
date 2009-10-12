@@ -224,23 +224,34 @@ def get_taggers():
   tutoring_tagger = WSVKeywordTagger('Tutoring', 'mentoring ' +
     'tutoring mentor counseling')
 
+  gardening_tagger = WSVKeywordTagger('Gardening', 'garden gardens ' +
+    'gardener gardeners gardening')
+
   # skills-based matching
-  artist_tagger = WSVKeywordTagger('Artist', 'artist artists' +
-    'drawing painter painters painting sculpting sculptor sculptors')
-  lawyer_tagger = WSVKeywordTagger('Lawyer', 'lawyer lawyers' +
-    'attorney attorneys pro+bono')
+  lawyer_tagger = WSVKeywordTagger('Lawyer', 'lawyer lawyers ' +
+    'attorney attorneys legal+counsel family+law court+system ' +
+    'court+facilities court+forms legal+information legal+help')
   doctor_tagger = WSVKeywordTagger('Doctor', 'doctor doctors ' +
     'medical+professional medical+professionals nurse nurses')
+  # sigh-- therapy also catches massage therapists, pet therapists,
+  # physical therapists, etc.
+  #psych_tagger = WSVKeywordTagger('Psych', 'therapist therapists ' +
+  #  'psychologist psychologists psychiatrist psychiatrists')
   programmer_tagger = WSVKeywordTagger('Programmer', 'programmer ' +
     'programmers software+developer software+developers '+
     'software+engineer software+engineer')
   repairman_tagger = WSVKeywordTagger('Repairman', 'plumber plumbers ' +
     'electrician electricians carpenter carpenters bricklayer bricklayers '+
     'woodworker woodworkers')
-  video_tagger = WSVKeywordTagger('Videographer', 'videographer ' +
+  artist_tagger = WSVKeywordTagger('Artist', 'artist artists' +
+    'drawing painter painters painting sculpting sculptor sculptors')
+  graphicdesigner_tagger = WSVKeywordTagger('GraphicDesigner',
+    'graphic+designer graphic+designers graphic+design graphic+skills '+
+    'graphics+skills graphic+artist graphic+artists')
+  videographer_tagger = WSVKeywordTagger('Videographer', 'videographer ' +
     'videographers video+editor')
-  grdesign_tagger = WSVKeywordTagger('Graphic Designer', 'graphic+designer ' +
-    'graphic+designers graphic+artist graphic+artists')
+  spanish_tagger = WSVKeywordTagger('SpanishSpeaker', 'spanish+speaking ' +
+    'spanish+speaker bilingual+spanish reads+spanish writes+spanish')
 
   september11_tagger = SimpleRegexTagger('September11',
     '(9[\/\.]11|sep(t(\.|ember)?)?[ -]?(11|eleven)(th)?|' +
@@ -301,9 +312,11 @@ def get_taggers():
     # topics
     nature_tagger, education_tagger, animals_tagger, health_tagger,
     seniors_tagger, technology_tagger, hph_tagger, tutoring_tagger,
+    gardening_tagger,
     # skills
     artist_tagger, lawyer_tagger, doctor_tagger, programmer_tagger,
-    repairman_tagger, video_tagger, grdesign_tagger,
+    repairman_tagger, videographer_tagger, graphicdesigner_tagger,
+    spanish_tagger,
     # special events
     #september11_tagger
     ]
