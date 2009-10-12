@@ -1,0 +1,90 @@
+<messagebundle>
+  <msg name="title">All for Good</msg>
+  <msg name="description">
+  Get all good events in and around your location, embed it and more.
+  </msg>
+  <msg name="default_location" desc="Default location label for user preferences settings.">
+    Default location
+  </msg>
+  <msg name="themes_folder" desc="Themes folder label for user preferences settings.">
+    Themes folder
+  </msg>
+  <msg name="default_location_value" desc="Value for default location.">
+    San Francisco, CA
+  </msg>
+  <msg name="brand_title" desc="Title of the brand logo.">All for Good</msg>
+  <msg name="loading" desc="Label for loading.">Loading...</msg>
+  <msg name="go" desc="Go button tooltip.">Go</msg>
+  <msg name="ok" desc="OK button tooltip.">OK</msg>
+  <msg name="embed" desc="Embed button tooltip.">Embed widget code</msg>
+  <msg name="search" desc="Search button tooltip.">Search</msg>
+  <msg name="cancel" desc="Cancel button tooltip.">Cancel</msg>
+  <msg name="recent_listings" desc="Label for recent listings.">
+    Recent listings
+  </msg>
+  <msg name="near" desc="Label for near."> near </msg>
+  <msg name="matching" desc="Label for matching.">matching</msg>
+  <msg name="no_data" desc="Data may not be available.">Data may not be available.</msg>
+  <msg name="your_search" desc="Label appended at the beginning with error message.">Your search</msg>
+  <msg name="not_match" desc="Label appended at the end with error message.">did not match any volunteer opportunities.</msg>
+  <msg name="try_again" desc="While showing error message, to allow user to reload.">Try again</msg>
+  <msg name="search_again" desc="While showing error message, to allow user to search again.">Search again</msg>
+  <msg name="listings_per_page" desc="Listings per page label for user preferences settings.">Listings per page</msg>
+  <msg name="previous" desc="Label for previous link.">Previous</msg>
+  <msg name="next" desc="Label for next link.">Next</msg>
+  <msg name="preferred_keywords" desc="User preference label for preferred keywords.">Preferred keywords</msg>
+  <msg name="example" desc="Label for example.">E.g.,</msg>
+  <msg name="education" desc="Label for education.">Education</msg>
+  <msg name="health" desc="Label for health.">Health</msg>
+  <msg name="nature" desc="Label for nature.">Nature</msg>
+  <msg name="hunger" desc="Label for hunger.">Hunger</msg>
+  <msg name="website" desc="Label for website.">Website</msg>
+  <msg name="seniors" desc="Label for seniors.">Seniors</msg>
+  <msg name="animals" desc="Label for animals.">Animals</msg>
+  <msg name="set_location" desc="Label for set location used in title region of gadget.">Set location</msg>
+  <msg name="change_location" desc="Label for change location used in title region of gadget.">Change location</msg>
+  <msg name="clear_search" desc="Label for clear search used in title region of gadget.">clear search</msg>
+  <msg name="go_btn" desc="Image file name for go button.">go</msg>
+  <msg name="ok_btn" desc="Image file name for ok button.">ok</msg>
+  <msg name="embed_btn" desc="Image file name for embed button.">embed</msg>
+  <msg name="search_btn" desc="Image file name for search button.">search</msg>
+  <msg name="cancel_btn" desc="Image file name for cancel button.">cancel</msg>
+  <msg name="social_access_err" desc="Error displayed when user has not enabled opensocial feature.">This gadget lets you share and collaborate with friends on iGoogle. Please adjust the gadget's settings to use these features.</msg>
+  <msg name="sign_in_err" desc="Error displayed when user is not signed in.">This gadget lets you share and collaborate with friends on iGoogle. Sign in to use these features.</msg>
+  <msg name="share" desc="Tooltip for share image.">Share</msg>
+  <msg name="shared" desc="Tooltip of image to mark the news as shared.">Shared</msg>
+  <msg name="add_this" desc="Label for link to share the gadget.">Add All for Good</msg>
+  <msg name="share_this_article" desc="Label on share news popup.">Sharing this article will post to your friend's updates.</msg>
+  <msg name="limit_exceeds_err" desc="Error displayed when quota of creating activity exceeds maximum limit.">Daily maximum limit has been reached.</msg>
+  <msg name="activity_err" desc="Error displayed when activity has not been shared.">Error in sharing activity. Please adjust the gadget's settings to use share feature.</msg>
+  <msg name="no_friends_msg" desc="Message shown when user has no friends and some news or score has been shared.">No friend added.</msg>
+  <msg name="learn_more" desc="Text for Learn More link.">Learn more</msg>
+  <msg name="like_to_share" desc="Confirmation text to share the information.">Would you like to share?</msg>
+  <msg name="dont_show_msg" desc="Label for checkbox on popup.">Don&#39;t show this message again.</msg>
+  <msg name="add_to_calendar" desc="Label for add to calender link">Add to Calendar</msg>
+  <msg name="time_period" desc="Time period label for user preferences settings">Time period</msg>
+  <msg name="category" desc="Categories label for user preferences settings">Category</msg>
+  <msg name="technology" desc="Label for technology.">Technology</msg>
+  <msg name="today" desc="A user preferences value for time period.">Today</msg>
+  <msg name="this_week" desc="A user preferences value for time period.">This week</msg>
+  <msg name="this_weekend" desc="A user preferences value for time period.">This weekend</msg>
+  <msg name="this_month" desc="A user preferences value for time period.">This month</msg>
+  <msg name="everything" desc="Default user preferences value for time period.">Anytime</msg>
+  <msg name="change_settings" desc="Label for change settings used in title region of gadget.">change settings</msg>
+  <msg name="in_category" desc="Conjuction to display the category in title section.">in category</msg>
+  <msg name="september_11" desc="A user preferences value for time period.">September 11</msg>
+  <msg name="thumbs_up" desc="lable for thumbs up link">Thumbs up</msg>
+  <msg name="thumbs_dwn" desc="lable for thumbs up link">Thumbs down</msg>
+  <msg name="yes" desc="lable for yes image title">Yes</msg>
+  <msg name="no" desc="lable for no image title">No</msg>
+  <msg name="may_be" desc="lable for may be image title">May be</msg>
+  <msg name="attending" desc="lable for attending">attending</msg>
+  <msg name="may_attend" desc="lable for attending">may attend</msg>
+  <msg name="is" desc="lable for is">is</msg>
+  <msg name="attending" desc="lable for attending">attending</msg>
+  <msg name="not_attending" desc="lable for not attending">not attending</msg>
+  <msg name="voted_up" desc="lable for attending">voted up</msg>
+  <msg name="voted_dwn" desc="lable for attending">voted down</msg>
+  <msg name="has" desc="lable for attending">has</msg>
+
+</messagebundle>
