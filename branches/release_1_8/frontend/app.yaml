@@ -1,9 +1,10 @@
 #application: servicefootprint
 #application: footprint2009dev-ehysen
-application: footprint2009dev
+#application: footprint2009dev
 #application: footprint-loadtest
+application: footprint2009qa
 
-version: 1
+version: release-1-8-r237
 runtime: python
 api_version: 1
 
