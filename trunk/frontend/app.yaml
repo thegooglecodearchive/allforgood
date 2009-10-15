@@ -1,7 +1,13 @@
-#application: servicefootprint
-#application: footprint2009dev-ehysen
+
+# Application names
+# No need to uncomment these, just use the application name parameter
+# with appcfg.py (or preferably the push_release.py script)
+# Deploy:
+# application: servicefootprint
+# QA:
+# application: footprint2009qa
+# Dev sandbox:
 application: footprint2009dev
-#application: footprint-loadtest
 
 version: 1
 runtime: python
