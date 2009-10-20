@@ -1,13 +1,7 @@
-
-# Application names
-# No need to uncomment these, just use the application name parameter
-# with appcfg.py (or preferably the push_release.py script)
-# Deploy:
-# application: servicefootprint
-# QA:
-# application: footprint2009qa
-# Dev sandbox:
+#application: servicefootprint
+#application: footprint2009dev-ehysen
 application: footprint2009dev
+#application: footprint-loadtest
 
 version: 1
 runtime: python
@@ -78,10 +72,6 @@ handlers:
   static_files: robots.txt
   upload: robots.txt
 
-# For Facebook app
-- url: /fb/.*
-  script: facebookapp/main.py
-
 # For favicon
 - url: /favicon.ico
   static_files: images/favicon.ico
@@ -91,6 +81,16 @@ handlers:
 - url: /googlehostedservice.html
   static_files: googlehostedservice.html
   upload: googlehostedservice.html
+  
+# FPXML
+- url: /fpxml.xml
+  static_files: fpxml.xml
+  upload: fpxml.xml
+  
+# parser script
+- url: /fpxml_parse.py
+  static_files: fpxml_parse.py
+  upload: fpxml_parse.py
 
 # Keep this last
 - url: /.*
