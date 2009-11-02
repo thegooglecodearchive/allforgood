@@ -258,10 +258,11 @@ def get_taggers():
     'National Day of Service (and|&) Rememb(e)?rance)')
 
   vetted_tagger = FeedProviderIDTagger('Vetted', [
+      #UGC '101', # usaservice (no longer active)
       '102', # handsonnetwork
-      #UGC '103', # idealist
+      '103', # idealist
       '104', # volunteermatch
-      #105 - unused / not live
+      #UGC '105', # craigslist
       '106', # Americorps
       '107', # volunteergov
       #108 - unused / not live
