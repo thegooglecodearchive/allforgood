@@ -22,6 +22,7 @@ from xml.dom.minidom import Document
 import template_helpers
 import api
 from fastpageviews import pagecount
+from templatetags.dateutils_tags import custom_date_format
 
 SEARCH_RESULTS_DEBUG_TEMPLATE = 'search_results_debug.html'
 
@@ -181,7 +182,12 @@ class JsonApiWriter(ApiWriter):
       else:
         name = field_info[0]
         attr = field_info[1]
-        content = getattr(result, attr, '')
+        if (name == "endDate" and 
+            custom_date_format(getattr(result, attr)) == 'Present'):
+          content = ''
+        else:
+          content = getattr(result, attr, '')
+
         item[name] = content
         #TODO: figure out a way to add comments to JSON
     self.items.append(item)
@@ -282,7 +288,11 @@ class RssApiWriter(ApiWriter):
         attr = field_info[1]
         if hasattr(result, attr):
           try:
-            content = str(getattr(result, attr))
+            if (name == "endDate" and
+                custom_date_format(getattr(result, attr)) == 'Present'):
+              content = ''
+            else:
+              content = str(getattr(result, attr))
           except UnicodeEncodeError:
             content = getattr(result, attr).encode('ascii','ignore')
         else:
