@@ -359,16 +359,20 @@ function getDateObj(str) {
  * @return {string} Holds date string in 'MM/dd/yyyy' format.
  */
 function getDateStr(str) {
-  var date = getDateObj(str);
-  var day = date.getDate();
-  var month = date.getMonth() + 1;
-  if (day < 10) {
-    day = '0' + day;
-  }
-  if (month < 10) {
-    month = '0' + month;
-  }
-  return [month, day, date.getFullYear()].join('/');
+  var rtn = '';
+  if (str) {
+    var date = getDateObj(str);
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    if (day < 10) {
+      day = '0' + day;
+    }
+    if (month < 10) {
+      month = '0' + month;
+    }
+    rtn = [month, day, date.getFullYear()].join('/');
+  } 
+  return rtn;
 }
 
 /**
@@ -600,7 +604,7 @@ function fetchRecords(xmlContent, timerId) {
       startDate = getDateStr(jsonFeed.stdate);
       endDate = getDateStr(jsonFeed.enddate)
       jsonFeed.period = (startDate == endDate) ? startDate :
-          startDate + ' - ' + endDate;
+          startDate + ' - ' + (endDate ? endDate : prefs.getMsg('Present'));
       feedRecords.push(jsonFeed);
     }
     showRecordsAndUpdatePagination();
