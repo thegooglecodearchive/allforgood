@@ -70,4 +70,5 @@
   <msg name="configure" desc="Link text to show the open syndication default message.">Configure</msg>
   <msg name="see_listings" desc="Text to show the open syndication default message.">to see the listings in this page</msg>
   <msg name="see_more" desc="Link text to the site.">See more</msg>
+  <msg name="Present" desc="Present">Present</msg>
 </messagebundle>
