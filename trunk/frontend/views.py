@@ -29,6 +29,11 @@ import logging
 import re
 import time
 
+import private_keys
+class CAMPAIGN_SPREADSHEET:
+  KEY = '0Ak1XDmmFyJT2dC04N1JmYVJ0ME9nbjZYSWwwWTh5Umc'
+  NAME = 'CS3 Campaigns'
+
 from versioned_memcache import memcache
 from google.appengine.api import urlfetch
 from google.appengine.api import users
@@ -256,8 +261,60 @@ class consumer_ui_search_view(webapp.RequestHandler):
     template_values = get_default_template_values(self.request, 'SEARCH')
     template_values['result_set'] = {}
     template_values['is_main_page'] = True
+    self.handle_sponsored(template_values)
     self.response.out.write(render_template(SEARCH_RESULTS_TEMPLATE,
                                             template_values))
+    
+  def handle_sponsored(self, template_values):
+    #temp hack, need to find best way to pass campaign_id
+    campaign_id = template_values.get('campaign_id', None)
+    if campaign_id:
+      try:
+        logging.warn('Campaign ID is %s' % campaign_id)
+        template_values['campaign_id'] = campaign_id
+        import gdata
+        import gdata.service
+        import gdata.spreadsheet
+        import gdata.spreadsheet.service
+        import gdata.alt
+        import gdata.alt.appengine
+        query = gdata.spreadsheet.service.DocumentQuery()
+        # We use the structured query option to get back a minimal
+        # result set.  This is preferable to getting the whole sheet
+        # and parsing on our end.
+        # NOTE: GData API strips whitespace (including underscores) from
+        # column names.  So the column 'campaign_id' is actually 'campaignid'
+        # when using the GData API.
+        query['sq'] = 'campaignid==%s' % (campaign_id)
+        gd_client = gdata.spreadsheet.service.SpreadsheetsService()
+        gdata.alt.appengine.run_on_appengine(gd_client, store_tokens=False,
+                                             single_user_mode=True)
+        gd_client.email = private_keys.AFG_GOOGLE_DOCS_LOGIN['username']
+        gd_client.password = private_keys.AFG_GOOGLE_DOCS_LOGIN['password']
+        gd_client.source = CAMPAIGN_SPREADSHEET.NAME
+        gd_client.ProgrammaticLogin()
+        rows = gd_client.GetListFeed(
+          key= CAMPAIGN_SPREADSHEET.KEY,
+          # wksht_id is the 1s based index of which sheet to use
+          wksht_id = '1',
+          query = query )
+        # make sure we get some results
+        if rows and len(rows.entry):
+          row = rows.entry[0]
+          content_type = row.custom['contenttype'].text
+          content_data = row.custom['contentdata'].text
+          if content_type and content_data:
+            template_values['campaign_branding_type'] = content_type
+            template_values['campaign_branding_source'] = content_data
+            return True
+      except:
+        # log the exception, but continue normally
+        import traceback
+        tb = traceback.format_exc()
+        logging.error('Error Handling Campaign: ' + str(tb) )
+    if template_values.has_key('campaign_id'):
+      del template_values['campaign_id']
+    return False
 
 class spec_view(webapp.RequestHandler):
   """view fpxml spec documentation"""
@@ -335,6 +392,7 @@ class ui_snippets_view(webapp.RequestHandler):
   @expires(0)  # User specific.
   def get(self):
     """HTTP get method."""
+    campaign_id = self.request.get('campaign_id', None)
     unique_args = get_unique_args_from_request(self.request)
     result_set = search.search(unique_args)
     result_set.request_url = self.request.url

@@ -217,6 +217,20 @@ def form_solr_query(args):
                                        args["long"],
                                        max_dist,
                                        query_is_empty)
+    
+  if api.PARAM_CAMPAIGN_ID in args:
+    # we need to exclude the opted out opprotunities
+    # they can be tagged as opt_out_all_campaigns
+    # or opt_out_campaign_XXX where XXX is the campaign ID.
+    exclusion = '!categories:%s !categories:%s' % (
+      'optout_all_campaigns',
+      'optout_campaign_' + args[api.PARAM_CAMPAIGN_ID]
+    )
+    # TODO: campaign_ids are per-campaign, but opprotunities
+    # might prefer to opt out of an entire sponsor.
+    # should probablly add a 'sponsor_id' to the spreadsheet,
+    # and have optout_sponsor_XXX as well.
+    solr_query += exclusion
 
   solr_query = urllib.quote_plus(solr_query)
 
@@ -242,6 +256,7 @@ def form_solr_query(args):
 
   if api.PARAM_START not in args:
     args[api.PARAM_START] = 1
+
   return solr_query
 
 def parseLatLng(val):

@@ -650,3 +650,10 @@ a.addlink {
 	padding-top: 5px;
 	display: block;
 }
+
+#campaign_frame {
+  border: 0px;
+  overflow: hidden;
+  width: 300px;
+  height: 600px;
+}
