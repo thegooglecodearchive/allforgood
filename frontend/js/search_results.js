@@ -360,7 +360,12 @@ executeSearchFromHashParams = function(currentLocation) {
        user-specific info. */
     var url;
     if (currentPageName == 'SEARCH') {
-      url = '/ui_snippets?';
+      if (typeof campaignId != 'undefined' ) {
+        url = '/ui_snippets?campaign_id=' + campaignId + '&'
+      }
+      else {
+        url = '/ui_snippets?';
+      }
     } else if (currentPageName == 'MY_EVENTS') {
       url = '/ui_my_snippets?';
     }

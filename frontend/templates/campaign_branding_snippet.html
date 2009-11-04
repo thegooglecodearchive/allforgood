@@ -1,0 +1,10 @@
+<div id='campaign_left_branding' style="height:600px;width:300px;">
+    {% ifequal campaign_branding_type "iframe" %}
+    <iframe id='campaign_frame' src="{{campaign_branding_source}}">
+    </iframe>
+    {% endifequal %}
+</div>
+<script>
+   var campaignId = '{{campaign_id}}';
+</script>
+<p></p>
