@@ -303,9 +303,12 @@ class consumer_ui_search_view(webapp.RequestHandler):
           row = rows.entry[0]
           content_type = row.custom['contenttype'].text
           content_data = row.custom['contentdata'].text
+          content_target = row.custom['contenttarget'].text
           if content_type and content_data:
             template_values['campaign_branding_type'] = content_type
             template_values['campaign_branding_source'] = content_data
+            if content_target:
+              template_values['campaign_branding_target'] = content_target
             return True
       except:
         # log the exception, but continue normally
