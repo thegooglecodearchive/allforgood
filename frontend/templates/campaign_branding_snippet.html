@@ -1,7 +1,17 @@
-<div id='campaign_left_branding' style="height:600px;width:300px;">
+<div id='campaign_branding_snippet' style="width:300px;margin-bottom:30px">
     {% ifequal campaign_branding_type "iframe" %}
     <iframe id='campaign_frame' src="{{campaign_branding_source}}">
     </iframe>
+    {% endifequal %}
+    {% ifequal campaign_branding_type "local-image" %}
+    <div id='campaign_div'>
+        <span id='sponsored-by'>Sponsored By:</span>
+        <p>
+        <a href='{{ campaign_branding_target }}' target="_top">
+            <img src="/zx{{version}}/images/branding/{{campaign_branding_source}}"
+                 style="border-style: none">
+        </a>
+    </div>
     {% endifequal %}
 </div>
 <script>
