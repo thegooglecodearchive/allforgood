@@ -304,11 +304,18 @@ class consumer_ui_search_view(webapp.RequestHandler):
           content_type = row.custom['contenttype'].text
           content_data = row.custom['contentdata'].text
           content_target = row.custom['contenttarget'].text
+          content_action = row.custom['contentcalltoaction'].text
           if content_type and content_data:
             template_values['campaign_branding_type'] = content_type
             template_values['campaign_branding_source'] = content_data
             if content_target:
               template_values['campaign_branding_target'] = content_target
+              template_values['campaign_branding_target_sig'] = utils.signature(
+                content_target + campaign_id
+              )
+            if content_action:
+              #TODO: replace any external links with redirect links
+              template_values['campaign_branding_action'] = content_action
             return True
       except:
         # log the exception, but continue normally
