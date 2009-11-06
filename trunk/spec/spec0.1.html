@@ -323,11 +323,19 @@ blockquote {
 <span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_date.asp"><code>date</code></a>
 </span><br/>
  <span class="info">required: optional.</span><br/>
-        <div class="doc-text">The start date of the opportunity. Optional. No default. Highly recommended if openEnded is No.</div>      </div><div class="entry"><div class="entryName"><a name="endDate">endDate (element)</a></div>
+        <div class="doc-text">The start date of the opportunity. Optional. No default. Highly recommended if openEnded is No.<br/>
+<br/>
+             If left unspecified, the implementation is liable to either display its own epoch (e.g., 12/31/1969 00:00:00) as the opportunity start date or force <a href="#openEnded"><code>openEnded</code></a> to Yes.<br/>
+<br/>
+             Implementations should avoid displaying default dates when <a href="#startDate"><code>startDate</code></a> is unspecified.</div>      </div><div class="entry"><div class="entryName"><a name="endDate">endDate (element)</a></div>
 <span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_date.asp"><code>date</code></a>
 </span><br/>
  <span class="info">required: optional.</span><br/>
-        <div class="doc-text">The end date of the opportunity. Optional. No default. Highly recommended if openEnded is No.</div>      </div><div class="entry"><div class="entryName"><a name="iCalRecurrence">iCalRecurrence (element)</a></div>
+        <div class="doc-text">The end date of the opportunity. Optional. No default. Highly recommended if openEnded is No.<br/>
+<br/>
+             If left unspecified, the implementation is liable to either display its own epoch (e.g., 12/31/1969 00:00:00) as the opportunity end date or force <a href="#openEnded"><code>openEnded</code></a> to Yes.<br/>
+<br/>
+             Implementations should avoid displaying default dates when <a href="#endDate"><code>endDate</code></a> is unspecified.</div>      </div><div class="entry"><div class="entryName"><a name="iCalRecurrence">iCalRecurrence (element)</a></div>
 <span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
 </span><br/>
  <span class="info">required: optional.</span><br/>
