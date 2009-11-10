@@ -1143,7 +1143,9 @@
         <xs:annotation>
           <xs:documentation>
            <![CDATA[
-             The start date of the opportunity. Optional. No default. Highly recommended if openEnded is No.
+             The start date of the opportunity. Optional. No default. Highly recommended if openEnded is No.<br/><br/>
+             If left unspecified, the implementation is liable to either display its own epoch (e.g., 12/31/1969 00:00:00) as the opportunity start date or force <code>openEnded</code> to Yes.<br/><br/>
+             Implementations should avoid displaying default dates when <code>startDate</code> is unspecified.
            ]]>
           </xs:documentation>
         </xs:annotation>
@@ -1153,7 +1155,9 @@
         <xs:annotation>
           <xs:documentation>
            <![CDATA[
-             The end date of the opportunity. Optional. No default. Highly recommended if openEnded is No.
+             The end date of the opportunity. Optional. No default. Highly recommended if openEnded is No.<br/><br/>
+             If left unspecified, the implementation is liable to either display its own epoch (e.g., 12/31/1969 00:00:00) as the opportunity end date or force <code>openEnded</code> to Yes.<br/><br/>
+             Implementations should avoid displaying default dates when <code>endDate</code> is unspecified.
            ]]>
           </xs:documentation>
         </xs:annotation>
