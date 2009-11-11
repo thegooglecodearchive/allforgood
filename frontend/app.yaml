@@ -4,7 +4,7 @@ application: servicefootprint
 #application: footprint-loadtest
 #application: footprint2009qa
 
-version: release-1-8-r249
+version: release-1-8-r257
 runtime: python
 api_version: 1
 
