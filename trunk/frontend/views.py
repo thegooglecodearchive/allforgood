@@ -33,6 +33,10 @@ import private_keys
 class CAMPAIGN_SPREADSHEET:
   KEY = '0Ak1XDmmFyJT2dC04N1JmYVJ0ME9nbjZYSWwwWTh5Umc'
   NAME = 'CS3 Campaigns'
+  
+class SHORT_NAME_SPREADSHEET:
+  KEY = '0Ak1XDmmFyJT2dHRsMFVTd044Nkp5aVZJdVZzT2hrbkE'
+  NAME = 'AFG.org Short to Long Names'
 
 from versioned_memcache import memcache
 from google.appengine.api import urlfetch
@@ -1227,3 +1231,48 @@ class datahub_dashboard_view(webapp.RequestHandler):
     logging.debug("datahub_dashboard_view: %s" % template_values['msg'])
     self.response.out.write(render_template(DATAHUB_DASHBOARD_TEMPLATE,
                                             template_values))
+
+class short_name_view(webapp.RequestHandler):
+  """Redirects short name to long URL from spreadsheet."""
+  @expires(0)
+  def get(self):
+    """Redirect to long url, or 404 if not found in spreadsheet."""
+    import gdata
+    import gdata.service
+    import gdata.spreadsheet
+    import gdata.spreadsheet.service
+    import gdata.alt
+    import gdata.alt.appengine
+    query = gdata.spreadsheet.service.DocumentQuery()
+    # We use the structured query option to get back a minimal
+    # result set.  This is preferable to getting the whole sheet
+    # and parsing on our end.
+    # NOTE: GData API strips whitespace (including underscores) from
+    # column names.  So the column 'campaign_id' is actually 'campaignid'
+    # when using the GData API.
+    short_name = self.request.path.split('/')[-1]
+    query['sq'] = 'short==%s' % (short_name)
+    gd_client = gdata.spreadsheet.service.SpreadsheetsService()
+    gdata.alt.appengine.run_on_appengine(gd_client, store_tokens=False,
+                                         single_user_mode=True)
+    gd_client.email = private_keys.AFG_GOOGLE_DOCS_LOGIN['username']
+    gd_client.password = private_keys.AFG_GOOGLE_DOCS_LOGIN['password']
+    gd_client.source = SHORT_NAME_SPREADSHEET.NAME
+    gd_client.ProgrammaticLogin()
+    rows = gd_client.GetListFeed(
+      key= SHORT_NAME_SPREADSHEET.KEY,
+      # wksht_id is the 1s based index of which sheet to use
+      wksht_id = '1',
+      query = query )
+    # make sure we get some results
+    if rows and len(rows.entry):
+      row = rows.entry[0]
+      long_url = row.custom['long'].text
+      if not long_url.startswith('/'):
+        long_url = '/' + long_url
+        self.redirect(long_url)
+        return
+    self.error(404)
+      
+    
+  

@@ -44,6 +44,7 @@ APPLICATION = webapp.WSGIApplication(
      (urls.URL_MODERATE, views.moderate_view),
      (urls.URL_MODERATE_BLACKLIST, views.moderate_blacklist_view),
      (urls.URL_DATAHUB_DASHBOARD, views.datahub_dashboard_view),
+     (urls.URL_SHORT_NAMES, views.short_name_view)
     ] +
     [ (url, views.static_content) for url in
          urls.STATIC_CONTENT_FILES.iterkeys() ] + 
