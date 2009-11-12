@@ -95,3 +95,7 @@ def decr(key, delta=1, initial_value=None):
     namespace=os.environ["CURRENT_VERSION_ID"],
     initial_value=initial_value)
 
+def flush_all():
+  return memcache.flush_all()
+
+
