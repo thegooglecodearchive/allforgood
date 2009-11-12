@@ -98,4 +98,6 @@ def decr(key, delta=1, initial_value=None):
 def flush_all():
   return memcache.flush_all()
 
+def get_stats():
+  return memcache.get_stats()
 
