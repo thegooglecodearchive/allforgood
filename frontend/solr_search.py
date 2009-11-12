@@ -36,6 +36,8 @@ import posting
 import private_keys
 import searchresult
 
+from query_rewriter import get_rewriters
+
 RESULT_CACHE_TIME = 900 # seconds
 RESULT_CACHE_KEY = 'searchresult:'
 
@@ -124,13 +126,16 @@ def add_range_filter(field, min_val, max_val):
 def rewrite_query(query_str):
   """ Rewrites the query string from an easy to type and understand format
   into a Solr-readable format"""
+  # First run query_rewriter classes
+  rewritten_query = run_query_rewriters(query_str)
+
   # Lower-case everything and make boolean operators upper-case, so they
   # are recognized by SOLR.
   # TODO: Don't lowercase field names.
-  rewritten_query = query_str.lower()
+  rewritten_query = rewritten_query.lower()
   rewritten_query = rewritten_query.replace(' or ', ' OR ')
   rewritten_query = rewritten_query.replace(' and ', ' AND ')
-  
+
   # Replace the category filter shortcut with its proper name.
   rewritten_query = rewritten_query.replace('category:', 'categories:')
 
@@ -212,6 +217,20 @@ def form_solr_query(args):
                                        args["long"],
                                        max_dist,
                                        query_is_empty)
+    
+  if api.PARAM_CAMPAIGN_ID in args:
+    # we need to exclude the opted out opprotunities
+    # they can be tagged as opt_out_all_campaigns
+    # or opt_out_campaign_XXX where XXX is the campaign ID.
+    exclusion = '!categories:%s !categories:%s' % (
+      'optout_all_campaigns',
+      'optout_campaign_' + args[api.PARAM_CAMPAIGN_ID]
+    )
+    # TODO: campaign_ids are per-campaign, but opprotunities
+    # might prefer to opt out of an entire sponsor.
+    # should probablly add a 'sponsor_id' to the spreadsheet,
+    # and have optout_sponsor_XXX as well.
+    solr_query += exclusion
 
   solr_query = urllib.quote_plus(solr_query)
 
@@ -237,6 +256,7 @@ def form_solr_query(args):
 
   if api.PARAM_START not in args:
     args[api.PARAM_START] = 1
+
   return solr_query
 
 def parseLatLng(val):
@@ -540,3 +560,9 @@ def get_from_ids(ids):
       result_set.results.insert(0, result)
 
   return result_set
+
+
+def run_query_rewriters(query):
+  rewriters = get_rewriters()
+  query = rewriters.rewrite_query(query)
+  return query

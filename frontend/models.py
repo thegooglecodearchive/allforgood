@@ -15,7 +15,7 @@
 
 """Datastore models."""
 
-from versioned_memcache import memcache
+from google.appengine.api import memcache
 from google.appengine.ext import db
 
 import modelutils
@@ -29,7 +29,81 @@ class BadAccountType(Error):
   pass
 
 
+NEW_EDITED_VERIFIED = "90.NEW_EDITED_VERIFIED"
+NEW_VERIFIED        = "80.NEW_VERIFIED"
+NEW_EDITED          = "70.NEW_EDITED"
+NEW                 = "50.NEW"
+NEW_DEFERRED        = "40.NEW_DEFERRED"
+ACCEPTED_MANUAL     = "10.ACCEPTED_MANUAL"
+ACCEPTED_AUTOMATIC  = "10.ACCEPTED_AUTOMATIC"
+REJECTED_MANUAL     = "10.REJECTED_MANUAL"
+REJECTED_AUTOMATIC  = "10.REJECTED_AUTOMATIC"
+
 # Models
+
+class Posting(db.Model):
+  """Postings going through the approval process."""
+  # Key is assigned ID (not the stable ID)
+  item_id = db.StringProperty(default="")
+  status = db.StringProperty(default=NEW)
+
+  # for queries, parse-out these fields - note that we don't care about datatypes
+  quality_score = db.FloatProperty(default=1.0)
+  creation_time = db.DateTimeProperty(auto_now_add=True)
+  start_date = db.DateProperty(auto_now_add=True)
+
+  # listing_xml is the full contents for the listing, assuming it gets approved
+  # note: listing_xml also used for fulltext queries
+  listing_xml = db.TextProperty(default="")
+
+  # parse-out these fields to improve latency in the moderation UI
+  title = db.StringProperty(default="")
+  description = db.TextProperty(default="")
+  # as per http://code.google.com/p/googleappengine/issues/detail?id=105
+  # there's no point in GeoPT esp. given that we're only using this for display
+  # there's even bugs (http://aralbalkan.com/1355) in GeoPT, so the heck with it.
+  #todo latlong = db.StringProperty(default="")
+
+  def statusChar(self):
+    if self.status.find("ACCEPTED")>=0:
+      return "A"
+    if self.status.find("REJECTED")>=0:
+      return "R"
+    return ""
+  def showInModerator(self):
+    return (self.status.find("NEW")>=0)
+  def isLive(self):
+    return (self.status.find("ACCEPTED")>=0)
+  def reset(self):
+    self.status = NEW
+    self.put()
+  def edit(self):
+    self.status = NEW_EDITED
+    self.put()
+  def verify(self):
+    if self.status == NEW:
+      self.status = NEW_VERIFIED
+      self.put()
+    elif self.status == NEW_EDITED:
+      # TODO: how do we know the edits didn't after the email was sent?
+      self.status = NEW_EDITED_VERIFIED
+      self.put()
+  def accept(self, type="MANUAL"):
+    if type == "AUTOMATIC":
+      self.status = ACCEPTED_AUTOMATIC
+    else:
+      self.status = ACCEPTED_MANUAL
+    self.put()
+  def reject(self, type="MANUAL"):
+    if type == "AUTOMATIC":
+      self.status = REJECTED_AUTOMATIC
+    else:
+      self.status = REJECTED_MANUAL
+    self.put()
+  def computeQualityScore(self):
+    # TODO: walk the object to look for missing/bad fields
+    self.quality_score = 1.0
+    self.put()
 
 class UserInfo(db.Model):
   """Basic user statistics/preferences data."""

@@ -39,12 +39,12 @@ APPLICATION = webapp.WSGIApplication(
      (urls.URL_MY_EVENTS, views.my_events_view),
      (urls.URL_ACTION, views.action_view),
      (urls.URL_ADMIN, views.admin_view),
-     #(urls.URL_POST, views.post_view), USER POSTING - currently disabled
+     (urls.URL_POST, views.post_view),
      (urls.URL_REDIRECT, views.redirect_view),
      (urls.URL_MODERATE, views.moderate_view),
      (urls.URL_MODERATE_BLACKLIST, views.moderate_blacklist_view),
      (urls.URL_DATAHUB_DASHBOARD, views.datahub_dashboard_view),
-     (urls.URL_SPEC, views.spec_view),
+     (urls.URL_SHORT_NAMES, views.short_name_view)
     ] +
     [ (url, views.static_content) for url in
          urls.STATIC_CONTENT_FILES.iterkeys() ] + 

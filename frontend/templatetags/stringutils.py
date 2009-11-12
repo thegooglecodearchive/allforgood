@@ -86,6 +86,24 @@ def split_query(query):
   terms += query.split()    # Add other terms, separated by spaces
   return list(set(terms))    # Return only the unique terms
 
+def add_commas(value):
+  """adds commas to numbers, from http://www.djangosnippets.org/snippets/1155/"""
+  import re
+  __test__ = {}
+  re_digits_nondigits = re.compile(r'\d+|\D+')
+  parts = re_digits_nondigits.findall('%i' % (value,))
+  for i in xrange(len(parts)):
+    s = parts[i]
+    if s.isdigit():
+      r = []
+      for j, c in enumerate(reversed(s)):
+        if j and (not (j % 3)):
+          r.insert(0, ',')
+        r.insert(0, c)
+      parts[i] = ''.join(r)
+      break
+  return ''.join(parts)
+
 # Prevents pylint from triggering on the 'register' name. Django expects this
 # module to have a 'register' variable.
 # pylint: disable-msg=C0103
@@ -93,3 +111,4 @@ register = webapp.template.create_template_register()
 register.filter('truncate_chars', truncate_chars)
 register.filter('as_letter', as_letter)
 register.filter('bold_query', bold_query)
+register.filter('add_commas', add_commas)

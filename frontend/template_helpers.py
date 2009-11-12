@@ -47,6 +47,9 @@ def get_default_template_values(request, current_page):
     'view_url': request.url,
     }
   load_userinfo_into_dict(template_values['user'], template_values)
+  campaign_id = request.get('campaign_id')
+  if campaign_id:
+    template_values['campaign_id'] = campaign_id
   return template_values
 
 def optimize_page_speed(request):

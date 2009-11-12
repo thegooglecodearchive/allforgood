@@ -36,6 +36,10 @@
 <h1 class='snippets_list_header'>Your Activities</h1>
 {% endifequal %}
 
+{% if not campaign_id %}
+<p style='text-align:right'>approximately {{ result_set.estimated_merged_results|add_commas }} results found.</p>
+{% endif %}
+
 {% for result in result_set.clipped_results %}
   <div class='snippet'>
     <table class='snippet_table'>
