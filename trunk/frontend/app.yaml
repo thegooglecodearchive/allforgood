@@ -72,8 +72,8 @@ handlers:
   static_files: robots.txt
   upload: robots.txt
 
-# For Facebook app	    
-- url: /fb/.*		
+# For Facebook app
+- url: /fb/.*
   script: facebookapp/main.py
 
 # For favicon
