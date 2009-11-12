@@ -123,7 +123,7 @@ def normalize_query_values(args):
   # RESERVED: type
 
   def dbgargs(arg):
-    logging.debug("args[%s]=%s" % (arg, args[arg]))
+    logging.warn("args[%s]=%s" % (arg, args[arg]))
 
   num = int(args.get(api.PARAM_NUM, 10)) 
   args[api.PARAM_NUM] = min_max(num, api.CONST_MIN_NUM, api.CONST_MAX_NUM)
@@ -133,7 +133,7 @@ def normalize_query_values(args):
   args[api.PARAM_START] = min_max(
     start_index, api.CONST_MIN_START, api.CONST_MAX_START-num)
   dbgargs(api.PARAM_START)
-
+  
   if api.PARAM_OVERFETCH_RATIO in args:
     overfetch_ratio = float(args[api.PARAM_OVERFETCH_RATIO])
   elif args[api.PARAM_START] > 1:

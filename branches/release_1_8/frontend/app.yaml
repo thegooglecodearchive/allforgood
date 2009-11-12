@@ -1,10 +1,8 @@
 application: servicefootprint
-#application: footprint2009dev-ehysen
 #application: footprint2009dev
-#application: footprint-loadtest
 #application: footprint2009qa
 
-version: release-1-8-r257
+version: release-1-8-r264
 runtime: python
 api_version: 1
 
@@ -86,6 +84,16 @@ handlers:
 - url: /googlehostedservice.html
   static_files: googlehostedservice.html
   upload: googlehostedservice.html
+  
+# FPXML
+- url: /fpxml.xml
+  static_files: fpxml.xml
+  upload: fpxml.xml
+  
+# parser script
+- url: /fpxml_parse.py
+  static_files: fpxml_parse.py
+  upload: fpxml_parse.py
 
 # Keep this last
 - url: /.*

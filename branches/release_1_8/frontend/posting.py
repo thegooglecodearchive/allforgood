@@ -19,6 +19,8 @@ import re
 import hashlib
 import geocode
 import utils
+import models
+import cgi
 from xml.dom import minidom
 from xml.sax.saxutils import escape
 from google.appengine.ext import db
@@ -182,7 +184,7 @@ def create_from_xml(xml):
 
 argnames = {
   "title":1, "description":1, "skills":1, "virtual":1, "addr1":1, "addrname1":1, 
-  "sponsoringOrganizationName":1, "openEnded":1, "startDate":1,
+  "sponsoringOrganizationsName":1, "openEnded":1, "startDate":1,
   "startTime":1, "endTime":1, "endDate":1, "contactNoneNeeded":1,
   "contactEmail":1, "contactPhone":1, "contactName":1, "detailURL":1,
   "weeklySun":1, "weeklyMon":1, "weeklyTue":1, "weeklyWed":1, "weeklyThu":1,
@@ -191,7 +193,7 @@ argnames = {
   "biweeklySat":1, "recurrence":1, "audienceAll":1, "audienceAge":1, 
   "minAge":1, "audienceSexRestricted":1, "sexRestrictedTo":1,
   "commitmentHoursPerWeek":1, "city":1, "region":1, "postalCode":1,
-  "country":1, "street1":1, "street2":1, "location_string":1, "id":1
+  "country":1, "street1":1, "street2":1, "location_string":1
 }
 
 # TODO: replace with a better parser-- after wasting hours, I gave up
@@ -345,20 +347,21 @@ def create_from_args(vals, computed_vals):
   #xml += "<volunteerOpportunityID>%d</volunteerOpportunityID>" % (item_id)
   #xml += "<sponsoringOrganizationIDs><sponsoringOrganizationID>%d</sponsoringOrganizationID></sponsoringOrganizationIDs>" % (item_id)
   #xml += "<volunteerHubOrganizationIDs><volunteerHubOrganizationID>%s</volunteerHubOrganizationID></volunteerHubOrganizationIDs>" % ("")
-  xml += "<title>%s</title>" % (vals["title"])
-  xml += "<description>%s</description>" % (vals["description"])
-  xml += "<skills>%s</skills>" % (vals["skills"])
-  xml += "<minimumAge>%s</minimumAge>" % (str(computed_vals["computedMinAge"]))
-  xml += "<detailURL>%s</detailURL>" % (vals["detailURL"])
+  xml += "<sponsoringOrganizationsName>%s</sponsoringOrganizationsName>" % (escape(vals["sponsoringOrganizationsName"]))
+  xml += "<title>%s</title>" % (escape(vals["title"]))
+  xml += "<description>%s</description>" % (escape(vals["description"]))
+  xml += "<skills>%s</skills>" % (escape(vals["skills"]))
+  xml += "<minimumAge>%s</minimumAge>" % (escape(str(computed_vals["computedMinAge"])))
+  xml += "<detailURL>%s</detailURL>" % (escape(vals["detailURL"]))
   xml += "<locations>"
   xml += "<location>"
-  xml += "<name>%s</name>" % (vals["addrname1"])
-  xml += "<city>%s</city>" % (vals["city"])
-  xml += "<region>%s</region>" % (vals["region"])
-  xml += "<postalCode>%s</postalCode>" % (vals["postalCode"])
-  xml += "<country>%s</country>" % (vals["country"])
-  xml += "<latitude>%s</latitude>" % (computed_vals["latitude"])
-  xml += "<longitude>%s</longitude>" % (computed_vals["longitude"])
+  xml += "<name>%s</name>" % (escape(vals["addrname1"]))
+  xml += "<city>%s</city>" % (escape(vals["city"]))
+  xml += "<region>%s</region>" % (escape(vals["region"]))
+  xml += "<postalCode>%s</postalCode>" % (escape(vals["postalCode"]))
+  xml += "<country>%s</country>" % (escape(vals["country"]))
+  xml += "<latitude>%s</latitude>" % (escape(computed_vals["latitude"]))
+  xml += "<longitude>%s</longitude>" % (escape(computed_vals["longitude"]))
   xml += "</location>"
   xml += "</locations>"
   # TODO: category tags
@@ -367,18 +370,17 @@ def create_from_args(vals, computed_vals):
   #xml += "</categoryTags>"
   xml += "<dateTimeDurations>"
   xml += "<dateTimeDuration>"
-  xml += "<openEnded>%s</openEnded>" % (vals["openEnded"])
+  xml += "<openEnded>%s</openEnded>" % (escape(vals["openEnded"]))
   if vals["openEnded"] == "No":
-    xml += "<startDate>%s</startDate>" % (computed_vals["startDate"])
-    xml += "<startTime>%s</startTime>" % (computed_vals["startTime"])
-    xml += "<endDate>%s</endDate>" % (computed_vals["endDate"])
-    xml += "<endTime>%s</endTime>" % (computed_vals["endTime"])
+    xml += "<startDate>%s</startDate>" % (escape(computed_vals["startDate"]))
+    xml += "<startTime>%s</startTime>" % (escape(computed_vals["startTime"]))
+    xml += "<endDate>%s</endDate>" % (escape(computed_vals["endDate"]))
+    xml += "<endTime>%s</endTime>" % (escape(computed_vals["endTime"]))
   xml += "<commitmentHoursPerWeek>%d</commitmentHoursPerWeek>" % \
       (computed_vals["computedCommitmentHoursPerWeek"])
   xml += "</dateTimeDuration>"
   xml += "</dateTimeDurations>"
   xml += "</VolunteerOpportunity>"
-  #logging.info(re.sub(r'><', '>\n<', xml))
   item_id = create_from_xml(xml)
   return 200, item_id, xml
 

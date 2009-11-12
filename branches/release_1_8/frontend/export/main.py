@@ -27,8 +27,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
 import utils 
-import models 
-import posting 
+import models
 from fastpageviews import pagecount
 from testapi import helpers
 
@@ -46,6 +45,10 @@ FIELD_TYPE_STR = 4
 FIELD_TYPE_DATETIME = 5
 FIELD_TYPE_DATE = 6
 FIELD_TYPE_REF = 7
+
+# The maximum number of rows GQL
+# at this time will return
+GQL_MAX_ROWS = 1000
 
 ROW_MARKER_LEN = 4
 ROW_MARKER = "row="
@@ -89,7 +92,9 @@ def verify_dig_sig(request, caller):
   the hash of the string they pass to us equals QT
   """
   digsig = utils.get_last_arg(request, "digsig", "")
-  if hashlib.sha512(digsig).hexdigest() != QT:
+  # check the passed &digsig with QT...
+  # and work it if they match
+  if hashlib.sha512(digsig).hexdigest() != hashlib.sha512(QT).hexdigest():
     pagecount.IncrPageCount("export.%s.noDigSig" % caller, 1)
     raise Fail("no &digsig")
 
@@ -102,7 +107,6 @@ def get_limit(request, caller):
     raise Fail("non integer &limit")
 
   if limit < 1:
-    # 1000 is the max records that can be fetched ever
     limit = 1000
 
   return limit
@@ -122,7 +126,7 @@ def get_model(table, caller):
   elif table == "Config":
     model = config.Config
   elif table == "Posting":
-    model = posting.Posting
+    model = models.Posting
   elif table == "PageCountShard":
     model = pagecount.PageCountShard
   elif table == "TestResults":
@@ -133,13 +137,13 @@ def get_model(table, caller):
 
   return model
 
-def get_min_key(table, min_key = ""):
+def get_min_key(table, min_key = "", offset = 0):
   """
   get the next key in our sequence
   or get the lowest key value in the table
   """
   if min_key == "":
-    query = table.gql("ORDER BY __key__ LIMIT 1")
+    query = table.gql(("ORDER BY __key__ LIMIT %d, 1" % (offset)))
     row = query.get()
   else:
     row = table(key_name = min_key)
@@ -151,12 +155,37 @@ def get_min_key(table, min_key = ""):
       return None
 
   return row.key()
+  
+def get_next_key(table, curr_key):
+  query = table.gql(("WHERE __key__ > %s LIMIT 0, 2" % key))
+  row = query.get()
+  return row.key()
+  
+def get_max_key(table, max_key = ""):
+  """
+  get the next key in our sequence
+  or get the lowest key value in the table
+  """
+  if max_key == "":
+    query = table.gql("ORDER BY __key__ DESC LIMIT 1")
+    row = query.get()
+  else:
+    row = table(key_name = max_key)
+
+  if not row:
+    if max_key == "":
+      raise Fail("no data in %s" % table)
+    else:
+      return None
+
+  return row.key()
 
 def export_table_as_tsv(table, min_key, limit):
   """ 
   get rows from this table as TSV
   """
-
+  # neither \t nor \n should appear in the data without
+  # being properly escaped in double quotes
   delim, recsep = ("\t", "\n")
 
   def get_fields(table_object):
@@ -198,24 +227,43 @@ def export_table_as_tsv(table, min_key, limit):
   else:
     inequality = ">"
 
-  try:
-    query = table.gql(("WHERE __key__ %s :1 ORDER BY __key__" % inequality), 
-          get_min_key(table, min_key))
-  except:
-    query = None
+  done = False
+    
+  startKey = get_min_key(table, min_key)
   
-  if query:
-    rsp = query.fetch(limit)
-    for row in rsp:
-      line = []
-      for field in fields:
-        if field == "key":
-          value = row.key().id_or_name()
-        else:
-          value = getattr(row, field, None)
-        line.append(esc_value(value, delim, recsep))
-      output.append(delim.join(line))
-    return "%s%s" % (recsep.join(output), recsep)
+  lastKey = ""
+  processed = 0
+  while done == False:  
+    try:
+      queryString = "WHERE __key__ %s :1 ORDER BY __key__" % inequality
+      query = table.gql(queryString,startKey)
+    except:
+      query = None
+      return "query error!
+    cnt = 0
+    if query:
+      rsp = query.fetch(limit)
+      cnt = query.count(limit)
+      for row in rsp:
+        line = []
+        for field in fields:
+          if field == "key":
+            value = row.key().id_or_name()
+            lastKey = row.key()
+          else:
+            value = getattr(row, field, None)
+          line.append(esc_value(value, delim, recsep))
+        output.append(delim.join(line))
+    else:
+      output = "query was null..."
+    
+    inequality = ">"
+    startKey = lastKey
+    processed += cnt
+    if cnt < GQL_MAX_ROWS:
+      done = True
+    
+  return "%s%s" % (recsep.join(output), recsep)
 
 class ExportTableTSV(webapp.RequestHandler):
   """ export the data in the table """
@@ -238,6 +286,7 @@ class ExportTableTSV(webapp.RequestHandler):
     limit = get_limit(self.request, "ExportTableTSV")
     min_key = utils.get_last_arg(self.request, "min_key", "")
     model = get_model(table, "ExportTableTSV")
+    self.response.headers['Content-Type'] = 'text/plain'
     self.response.out.write(export_table_as_tsv(model, min_key, limit))
     pagecount.IncrPageCount("export.ExportTableTSV.success", 1)
 
