@@ -1251,6 +1251,9 @@ class short_name_view(webapp.RequestHandler):
     # column names.  So the column 'campaign_id' is actually 'campaignid'
     # when using the GData API.
     short_name = self.request.path.split('/')[-1]
+    # NOTE: I get back an error if the short name includes dashes (-)
+    # in it.  I think I need to escape them but the GData docs are unclear
+    # as to the escape format.
     query['sq'] = 'short==%s' % (short_name)
     gd_client = gdata.spreadsheet.service.SpreadsheetsService()
     gdata.alt.appengine.run_on_appengine(gd_client, store_tokens=False,
