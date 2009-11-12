@@ -247,7 +247,8 @@ def normalize_query_values(args):
         # search suitable for walking.
         args[api.PARAM_VOL_DIST] = 1
   else:
-    args[api.PARAM_VOL_LOC] = args[api.PARAM_VOL_DIST] = ""
+    args[api.PARAM_VOL_LOC] = ""
+    args[api.PARAM_VOL_DIST] = 0
   dbgargs(api.PARAM_VOL_LOC)
 
 def fetch_and_dedup(args):
