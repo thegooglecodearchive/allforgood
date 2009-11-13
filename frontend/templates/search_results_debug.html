@@ -19,7 +19,7 @@ results: backend-estimated={{result_set.estimated_results|escape}}  merged-estim
 {% for result in result_set.clipped_results %}
 <span style='font-size:12px'>{{result.idx|escape}}.   <a href="{{result.url}}">{{result.title|escape}}</a></span>
 loc: {% ifequal result.latlong "0.0,0.0" %}**LOCATIONLESS**{% else %}{{result.location|escape}} ({{result.latlong|escape}}){% endifequal %}
-id: {{result.id|escape}}     provider: {{result.provider|escape}}
+id: {{result.item_id|escape}}     provider: {{result.provider|escape}}
 desc: {{result.snippet|escape}}
 score: {{result.score_str|escape}} (orig result #{{result.orig_idx|escape}}){{result.score_notes|escape}}
 stats: {{result.merged_impressions|escape}} views, {{result.merged_clicks|escape}} clicks  ({{result.merged_ctr|escape}}% CTR)

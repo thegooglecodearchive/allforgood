@@ -104,7 +104,7 @@ class JsonApiWriter(ApiWriter):
   
   #Fields we output per item
   item_fields = [
-    ('id',),
+    ('id', 'item_id'),
     ('title',),
     ('description', 'snippet'),
     ('pubDate',), 
@@ -322,10 +322,10 @@ class RssApiWriter(ApiWriter):
         text = self.doc.createTextNode(content)
         subitem.appendChild(text)
       item.appendChild(subitem)
-        
+
     #and now our namespaced fields
     namespaced_fields = [
-      ('id',),
+      ('id', 'item_id'),
       # groupid is a stable ID for the dedup'd set of results, 
       #   including same listing but different time/location 
       ('groupid', 'merge_key'),
