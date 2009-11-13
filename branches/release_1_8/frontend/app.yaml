@@ -2,7 +2,7 @@ application: servicefootprint
 #application: footprint2009dev
 #application: footprint2009qa
 
-version: release-1-8-r267
+version: release-1-8-r273
 runtime: python
 api_version: 1
 
