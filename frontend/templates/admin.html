@@ -44,6 +44,27 @@ width=80 height=15 border=0 alt='server monitor'
 src="http://ext.host-tracker.com/uptime-img/?s=15&amp;t=2481561&amp;m=00.05&amp;p=Total&amp;src=lvuc"></a><noscript><a href='http://host-tracker.com/' >site uptime</a></noscript></li>
   <li><a href='{{ logout_link }}'>Logout</a></li>
   </ul>
+
+  <br>
+  <h2>Memcache Stats:</h2>
+  <ul>
+  <li>{{ memcache_stats.hit_percent }} hit rate</li>
+  <li>{{ memcache_stats.size }} {{ memcache_stats.size_unit }} in cache</li>
+  <li>{{ memcache_stats.items }} key/value pairs in the cache</li>
+  <li>{{ memcache_stats.oldest_item_age }} seconds since oldest item accessed</li>
+  <li>{{ memcache_stats.hits }} total cache get requests resulting in a cache hit</li>
+  <li>{{ memcache_stats.misses }} total cache get requests resulting in a cache miss</li>
+  <li>{{ memcache_stats.byte_hits }} total bytes transferred (rolls over to zero on overflow)</li>
+  </ul>
+
+  <br>
+  <h2>Private Keys:</h2>
+  <ul>
+  <li>DEFAULT_FACEBOOK_SECRET: {{ private_keys.DEFAULT_FACEBOOK_SECRET }}</li>
+  <li>FACEBOOK_SECRETS: {{ private_keys.FACEBOOK_SECRETS }}</li>
+  <li>DEFAULT_BACKEND_URL_SOLR: {{ private_keys.DEFAULT_BACKEND_URL_SOLR }}</li>
+  <li>AFG_GOOGLE_DOCS_LOGIN: {{ private_keys.AFG_GOOGLE_DOCS_LOGIN }}</li>
+  </ul>
 <p/>
 </div>
 

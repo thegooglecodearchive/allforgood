@@ -635,7 +635,24 @@ class admin_view(webapp.RequestHandler):
       'action': '',
       'usig': usig,
       'version' : os.getenv('CURRENT_VERSION_ID'),
+      'private_keys': private_keys,
     }
+
+    # Get memcache stats and calculate some useful percentages
+    memcache_stats = memcache.get_stats()
+    try:
+      hits = memcache_stats['hits']
+      misses = memcache_stats['misses']
+      memcache_stats['hit_percent'] = '%4.1f%%' % ((100.0 * hits) / (hits + misses))
+    except ZeroDivisionError:
+      # Don't think we'll ever hit this but just in case...
+      memcache_stats['hit_percent'] = 100.0
+    memcache_stats['size'] = memcache_stats['bytes'] / (1024*1024)
+    memcache_stats['size_unit'] = 'MB'
+    if memcache_stats['size'] < 1:
+      memcache_stats['size'] = memcache_stats['bytes'] / 1024
+      memcache_stats['size_unit'] = 'KB'
+    template_values['memcache_stats'] = memcache_stats
 
     action = self.request.get('action')
     if not action:
