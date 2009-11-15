@@ -79,6 +79,7 @@ class SearchResult(object):
     self.location = location
     self.item_id = item_id
     self.base_url = base_url
+    self.all_categories = categories if categories else []
     self.categories = categories if categories else []
     self.categories = [cat for cat in self.categories if cat in UI_CATEGORIES]
     self.categories_str = self.categories_to_str(self.categories)
