@@ -52,7 +52,7 @@ def score_results_set(result_set, args):
       score_notes += "  backend multiplier=%.3f (rank=%d)\n" % (rank_mult, i+1)
 
     # boost vetted listings
-    if 'Vetted' not in res.all_categories:
+    if 'Vetted' in res.all_categories:
       vetted_mult = 10.0
       score *= vetted_mult
       score_notes += "  vetted listing: mult=%.3f\n" % (vetted_mult)
