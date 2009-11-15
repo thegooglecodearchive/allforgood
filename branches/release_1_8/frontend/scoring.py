@@ -51,19 +51,25 @@ def score_results_set(result_set, args):
       score *= rank_mult
       score_notes += "  backend multiplier=%.3f (rank=%d)\n" % (rank_mult, i+1)
 
+    # boost vetted listings
+    if 'Vetted' in res.all_categories:
+      vetted_mult = 10.0
+      score *= vetted_mult
+      score_notes += "  vetted listing: mult=%.3f\n" % (vetted_mult)
+
     # TODO: match on start time, etc.
 
     ONEDAY = 24.0 * 3600.0
     MAXTIME = 500.0 * ONEDAY
     start_delta = res.startdate - datetime.now()
     start_delta_secs = start_delta.days*ONEDAY + start_delta.seconds
-    start_delta_secs = min(max(start_delta_secs, 0), MAXTIME)
+    start_delta_secs = min(abs(start_delta_secs), MAXTIME)
     end_delta = res.enddate - datetime.now()
     end_delta_secs = end_delta.days*ONEDAY + end_delta.seconds
     end_delta_secs = min(max(end_delta_secs, start_delta_secs), MAXTIME)
     date_dist_multiplier = 1
     if end_delta_secs <= 0:
-      date_dist_multiplier = .0001
+      date_dist_multiplier = .000001
     if start_delta_secs > 0:
       # further out start date = lower rank (roughly 1/numdays)
       date_dist_multiplier = 1.0/(start_delta_secs/ONEDAY)
