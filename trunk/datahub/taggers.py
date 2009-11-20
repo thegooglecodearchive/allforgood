@@ -197,6 +197,14 @@ def get_taggers():
   # 'environmental':1.0, 'outdoors':1.0, 'gardening':1.0, 'garden':1.0,
   # 'park':1.0, 'wetlands':1.0,'forest':1.0, 'trees':1.0})
 
+  hunger_tagger = WSVKeywordTagger('Hunger', 'anti-hunger' +
+    ' breakfast childhood+hunger dinner feeding+america food food+bank' +
+    ' food+pantry food+programs free+lunch healthy+meals hunger hungry' +
+    ' hungry+children impoverished lunch meal+programs meals meals+on+wheels' +
+    ' nutritious reduced+lunch school+lunches share+our+strength starvation' +
+    ' starving underfed underprivileged thanksgiving soup+kitchen poverty' +
+    ' poor nutrition frac malnourished foodbank dinner')
+
   nature_tagger = WSVKeywordTagger('Nature', 'environment nature ' +
     'environmental outdoors gardening garden park wetlands forest forests ' +
     'tree trees green trail trails sierra+club ')
@@ -219,7 +227,7 @@ def get_taggers():
     'computers technology web video graphic design internet')
 
   hph_tagger = WSVKeywordTagger('Poverty', 'habitat ' +
-    'homeless hunger food housing poverty house poor')
+    'homeless housing poverty house poor')
 
   tutoring_tagger = WSVKeywordTagger('Tutoring', 'mentoring ' +
     'tutoring mentor counseling')
@@ -311,6 +319,7 @@ def get_taggers():
     # vetted/UGC
     vetted_tagger,
     # topics
+    hunger_tagger,
     nature_tagger, education_tagger, animals_tagger, health_tagger,
     seniors_tagger, technology_tagger, hph_tagger, tutoring_tagger,
     gardening_tagger,
