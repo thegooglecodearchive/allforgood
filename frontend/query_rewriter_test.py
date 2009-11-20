@@ -16,7 +16,6 @@
 Test for query rewriter
 """
 
-import re
 import unittest
 import query_rewriter
 
@@ -112,7 +111,7 @@ class TestQueryRewriter(unittest.TestCase):
     assert new.find(original) != -1
     # If changed,should include 'OR'
     if new != original:
-      assert new.find("OR", re.I) != -1
+      assert new.find("OR") != -1
     return new != original
 
 

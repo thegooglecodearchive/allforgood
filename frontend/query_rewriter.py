@@ -81,6 +81,14 @@ class KeywordRewriter(QueryRewriter):
 def get_rewriters():
   """returns the current rewriterer instances we're using"""
   # Topics
+  hunger_rewriter = KeywordRewriter('anti-hunger' +
+    ' breakfast childhood+hunger dinner feeding+america food food+bank' +
+    ' food+pantry food+programs free+lunch healthy+meals hunger hungry' +
+    ' hungry+children impoverished lunch meal+programs meals meals+on+wheels' +
+    ' nutritious reduced+lunch school+lunches share+our+strength starvation' +
+    ' starving underfed underprivileged thanksgiving soup+kitchen poverty' +
+    ' poor nutrition frac malnourished foodbank', 'category:Hunger')
+
   nature_rewriter = KeywordRewriter('environment nature ' +
     'environmental outdoors gardening garden park wetlands forest forests ' +
     'tree trees green trail trails sierra+club', 'category:nature')
@@ -105,7 +113,7 @@ def get_rewriters():
     'category:technology')
 
   hph_rewriter = KeywordRewriter('habitat ' +
-    'homeless hunger food housing poverty house poor', 'category:poverty')
+    'homeless housing poverty house poor', 'category:poverty')
 
   tutoring_rewriter = KeywordRewriter('mentoring ' +
     'tutoring mentor counseling', 'category:tutoring')
@@ -162,6 +170,7 @@ def get_rewriters():
   rewriters = QueryRewriter()
   rewriters.add_rewriters([
       # topics
+      hunger_rewriter,
       nature_rewriter,
       education_rewriter,
       animals_rewriter,

@@ -113,6 +113,8 @@ class VMCompareHandler(webapp.RequestHandler):
           vmcat = '&categories=12'   # Seniors
         elif afgcat.find('technology') >= 0:
           vmcat = '&categories=37'   # Computers & Technology
+        elif afgcat.find('hunger') >= 0:
+          vmcat = '&categories=39'   # Hunger
         elif afgcat.find('tutoring') >= 0:
           # no VM equivalent, just search on tutoring
           query += " tutoring"
