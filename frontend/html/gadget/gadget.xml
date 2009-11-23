@@ -42,7 +42,6 @@
     <EnumValue value="Education" display_value="__MSG_education__"/>
     <EnumValue value="Health" display_value="__MSG_health__"/>
     <EnumValue value="Nature" display_value="__MSG_nature__"/>
-    <EnumValue value="Hunger" display_value="__MSG_hunger"/>
     <EnumValue value="Seniors" display_value="__MSG_seniors__"/>
     <EnumValue value="September11" display_value="__MSG_september_11__"/>
     <EnumValue value="Technology" display_value="__MSG_technology__"/>
