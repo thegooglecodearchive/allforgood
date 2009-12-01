@@ -96,6 +96,11 @@ handlers:
   static_files: fpxml_parse.py
   upload: fpxml_parse.py
 
+# making display URL in ads real
+- url: /[H,h]ands[O,o]n
+  static_files: html/gadget/cs3/handson.html
+  upload: html/gadget/cs3/handson.html
+
 # Keep this last
 - url: /.*
   script: main.py
