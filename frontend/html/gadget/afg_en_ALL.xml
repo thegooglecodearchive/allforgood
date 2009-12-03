@@ -36,6 +36,7 @@
   <msg name="education" desc="Label for education.">Education</msg>
   <msg name="health" desc="Label for health.">Health</msg>
   <msg name="hunger" desc="Label for hunger.">Hunger</msg>
+  <msg name="mlk" desc="Label for mlk.">MLK</msg>
   <msg name="nature" desc="Label for nature.">Nature</msg>
   <msg name="hunger" desc="Label for hunger.">Hunger</msg>
   <msg name="animals" desc="Label for animals.">Animals</msg>
