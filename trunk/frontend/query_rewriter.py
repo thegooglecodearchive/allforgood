@@ -81,6 +81,11 @@ class KeywordRewriter(QueryRewriter):
 def get_rewriters():
   """returns the current rewriterer instances we're using"""
   # Topics
+  mlk_rewriter = KeywordRewriter('mlk mlk+day day+of+service' +
+    ' mlk+day+of+service martin+luther+king+jr+day' +
+    ' martin+luther+king+jr+day+of+service' +
+    ' a+day+on+not+a+day+off', 'category:MLK')
+
   hunger_rewriter = KeywordRewriter('anti-hunger' +
     ' breakfast childhood+hunger dinner feeding+america food food+bank' +
     ' food+pantry food+programs free+lunch healthy+meals hunger hungry' +

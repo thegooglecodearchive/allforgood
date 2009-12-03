@@ -197,6 +197,11 @@ def get_taggers():
   # 'environmental':1.0, 'outdoors':1.0, 'gardening':1.0, 'garden':1.0,
   # 'park':1.0, 'wetlands':1.0,'forest':1.0, 'trees':1.0})
 
+  mlk_tagger = WSVKeywordTagger('MLK', 'mlk mlk+day day+of+service' +
+    ' mlk+day+of+service martin+luther+king+jr+day' +
+    ' martin+luther+king+jr+day+of+service' +
+    ' a+day+on+not+a+day+off')
+
   hunger_tagger = WSVKeywordTagger('Hunger', 'anti-hunger' +
     ' breakfast childhood+hunger dinner feeding+america food food+bank' +
     ' food+pantry food+programs free+lunch healthy+meals hunger hungry' +
@@ -319,6 +324,7 @@ def get_taggers():
     # vetted/UGC
     vetted_tagger,
     # topics
+    mlk_tagger,
     hunger_tagger,
     nature_tagger, education_tagger, animals_tagger, health_tagger,
     seniors_tagger, technology_tagger, hph_tagger, tutoring_tagger,

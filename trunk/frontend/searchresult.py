@@ -30,9 +30,9 @@ import models
 import modelutils
 import utils
 
-# only display certain categories-- this alows us to use the tagging
+# only display certain categories-- this allows us to use the tagging
 # system for tags that aren't displayed to end users.
-UI_CATEGORIES = ['Nature', 'Education', 'Animals', 'Health', 'Seniors',
+UI_CATEGORIES = ['Hunger', 'MLK', 'Education', 'Animals', 'Health', 'Seniors',
                  'Technology', 'Poverty', 'Tutoring']
 
 def get_rfc2822_datetime(when = None):
