@@ -94,7 +94,7 @@ def verify_dig_sig(request, caller):
   digsig = utils.get_last_arg(request, "digsig", "")
   # check the passed &digsig with QT...
   # and work it if they match
-  if hashlib.sha512(digsig).hexdigest() != hashlib.sha512(QT).hexdigest():
+  if hashlib.sha512(digsig).hexdigest() != QT:
     pagecount.IncrPageCount("export.%s.noDigSig" % caller, 1)
     raise Fail("no &digsig")
 
@@ -239,7 +239,7 @@ def export_table_as_tsv(table, min_key, limit):
       query = table.gql(queryString,startKey)
     except:
       query = None
-      return "query error!
+      return "query error"
     cnt = 0
     if query:
       rsp = query.fetch(limit)
