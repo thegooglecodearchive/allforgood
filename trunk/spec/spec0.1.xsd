@@ -19,7 +19,7 @@
          The major difference is that volunteer organizations and hubs are stand-alone objects to which opportunities refer, thus saving space in the XML document.
          For instance, if Habitat for Humanity posts 100 opportunities on Idealist, Idealist would create a feed with one Habitat Organization
          object and 100 <code>VolunteerOpportunity</code> objects, rather than 100 of each. Another difference is the use of the iCal
-         <a href="http://www.kanzaki.com/docs/ical/rrule.html">Recurrence Rule</a> format so that repeating opportunities need use multiple
+         <a href="http://www.kanzaki.com/docs/ical/recur.html">Recurrence Rule</a> format so that repeating opportunities need use multiple
          <code>dateTimeRecurrance</code> sub-objects to represent one opportunity.<p>
         Quick access to objects:<p>
         <pcode>FeedInfo</pcode> <a href="#FeedInfo">elements</a><br>
@@ -1167,7 +1167,7 @@
         <xs:annotation>
           <xs:documentation>
            <![CDATA[
-             String from <a href="http://www.kanzaki.com/docs/ical/rrule.html">iCal format</a> specifying the frequency of the opportunity. Optional. Default is the empty string, representing no recurrence.
+             String from <a href="http://www.kanzaki.com/docs/ical/recur.html">iCal format</a> specifying the frequency of the opportunity. Optional. Default is the empty string, representing no recurrence.
              String does not include "RRULE:" and should start with "FREQ=".<p>
              Example for a biweekly meeting:<br><pcode>
              &nbsp;&nbsp;&lt;iCalRecurrence&gt;FREQ=WEEKLY;INTERVAL=2;&lt;/iCalRecurrence&gt;<br></pcode>
