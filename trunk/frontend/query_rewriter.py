@@ -84,7 +84,7 @@ def get_rewriters():
   mlk_rewriter = KeywordRewriter('mlk mlk+day day+of+service' +
     ' mlk+day+of+service martin+luther+king+jr+day' +
     ' martin+luther+king+jr+day+of+service' +
-    ' a+day+on+not+a+day+off', 'category:MLK')
+    ' a+day+on+not+a+day+off mlktech', 'category:MLK')
 
   hunger_rewriter = KeywordRewriter('anti-hunger' +
     ' breakfast childhood+hunger dinner feeding+america food food+bank' +

@@ -200,7 +200,7 @@ def get_taggers():
   mlk_tagger = WSVKeywordTagger('MLK', 'mlk mlk+day day+of+service' +
     ' mlk+day+of+service martin+luther+king+jr+day' +
     ' martin+luther+king+jr+day+of+service' +
-    ' a+day+on+not+a+day+off')
+    ' a+day+on+not+a+day+off mlktech')
 
   hunger_tagger = WSVKeywordTagger('Hunger', 'anti-hunger' +
     ' breakfast childhood+hunger dinner feeding+america food food+bank' +
