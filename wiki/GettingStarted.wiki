@@ -1,0 +1,56 @@
+#summary Setting up your dev environment for working with the AfG codebase.
+#labels Phase-Implementation
+
+= Introduction =
+
+There are three major components to the dev environment:
+
+  * The frontend, which includes the allforgood.org website and API data feeds.
+  * The backend data loader, which converts volunteer opportunities in various formats into AfG's internal representation.
+  * The backend SOLR server, which indexes and stores the opportunities for retrieval by the frontend.
+
+Setting up each component will be discussed below.
+
+=Getting Started with Frontend Development=
+
+The frontend is a [http://code.google.com/appengine/ Google App Engine] project, written in Python.  Google App Engine applications can be worked on using the Google App Engine SDK, which is available for all major platforms.  
+
+==Setting up the Google App Engine SDK==
+
+_Link to setup tutorials here._
+
+==Downloading the code==
+
+_Grabbing the code from SVN._
+
+==Requirements for running the code.==
+
+_explain privatekeys.py_
+
+==The Frontend code structure==
+
+_Directory Layout_
+
+===Views===
+
+_Explain Django views_
+
+===The API===
+
+_Explain the API._
+
+===Searching Volunteer Opportunities ===
+
+_Explain search code._
+
+=Getting started with Backend/Search Engine Development=
+
+==Data loading code structure==
+
+_Link to datahub/README_
+
+_Explain that this is running on some box somewhere..._
+
+==SOLR Search Engine structure==
+
+_Link to SOLR, explain that it's somewhere._
