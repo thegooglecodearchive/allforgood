@@ -11,17 +11,31 @@ There are three major components to the dev environment:
 
 Setting up each component will be discussed below.
 
+==Downloading the code==
+
+All of the code is hosted on Google Code, and is available via SVN.
+
+{{{
+svn checkout http://allforgood.googlecode.com/svn/trunk/ allforgood
+}}}
+
+The code is broken into a several directories:
+
+  * datahub - The backend data loading code.  See Backend Development below for more details.
+  * etc - contains some extraneous SVN setup scripts.
+  * frontend - contains the Google App Engine project for the frontend (website and API).  See Frontend Development below for more details.
+  * site_down - An alternative App Engine project for when AfG is in maintenance mode.
+  * SOLR - the configuration files for the the SOLR Search Engine instance used by the backend.  See Backend Development below for more details.
+  * spec - the specification for the Footprint XML format used to load volunteer opprotunities into All For Good.
+  * tools - some tools for testing AfG quality.
+
 =Getting Started with Frontend Development=
 
 The frontend is a [http://code.google.com/appengine/ Google App Engine] project, written in Python.  Google App Engine applications can be worked on using the Google App Engine SDK, which is available for all major platforms.  
 
 ==Setting up the Google App Engine SDK==
 
-_Link to setup tutorials here._
-
-==Downloading the code==
-
-_Grabbing the code from SVN._
+Follow the Getting Started guide for the Google App Engine SDK, and [http://code.google.com/appengine/downloads.html Download] the SDK for Python for your OS.
 
 ==Requirements for running the code.==
 
@@ -54,3 +68,9 @@ _Explain that this is running on some box somewhere..._
 ==SOLR Search Engine structure==
 
 _Link to SOLR, explain that it's somewhere._
+
+=Committing Code changes=
+
+==Getting commit access==
+
+==The code review process==
