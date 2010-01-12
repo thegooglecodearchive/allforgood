@@ -1,5 +1,5 @@
 #summary High Level View of AfG Architecture
 = Big Picture =
 
-http://code.google.com/p/allforgood/source/browse/trunk/documentation/images/HighLevelArch.png
+http://allforgood.googlecode.com/svn/trunk/documentation/images/HighLevelArch.png
 
