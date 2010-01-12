@@ -24,3 +24,39 @@ Issue: SVN is being used as a simple CMS system in that static content is actual
 Solution: Using SVN as a CMS works well enough, but we should probably use a branch instead of trunk.  We will need to document merging the static content into the branch as part of the release process.  $ENV_keys.yaml should probably include what branch to pull content from.
 
 Requirements: Determine branch structure, document merge as part of release process.
+
+===Frontend directory is very flat.===
+
+Issue: frontend has almost 20 subdirectories and 30+ files in it, and they are a mix of 1st party code, static content, and 3rd party projects.  This makes it really hard to explain/document the code.
+
+Solution: Devise a new structured layout for the code, something like (just a quick first pass):
+
+{{{
+/frontend/
+   /views/
+      /static/
+          /css/
+          /html/
+          /images/
+          /js/
+       /templates/
+       /template_tags/
+       /facebookapp/
+       #break views.py into logical partitions, something like
+       static_views.py
+       admin.py
+       redirects.py
+       view_helpers.py
+   /api/
+      __init__.py (replaces api.py)
+      /search/
+      api_helpers.py
+     views.py #contains API specific view handlers
+   /util/
+      /versioned_memcache/
+   /thirdparty/
+      /gdata/
+      /recaptcha/
+      /facebook/
+      #all other 3rd party code we might want to use SVN links for
+}}}
