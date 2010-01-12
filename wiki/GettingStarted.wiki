@@ -122,7 +122,19 @@ The code flow for an API request is:
 
 ===Searching Volunteer Opportunities ===
 
-_Explain search code._
+At a high level, the search functionality of AfG looks like this:
+
+  * Volunteer Opportunities are uploaded to SOLR via an offline process.
+  * Search queries come in via the API or consumer site.
+  * search.search() is called.
+  * if the result is already in memcache it is returned.
+  * otherwise SOLR is queried via solr_search.search()
+    * this builds a SOLR query via solr_search.form_solr_query()
+    * the query URL is access on the SOLR backend.
+    * a result set is returned as JSON.
+    * this is converted to a searchresult.SearchResultSet object in solr_search.query()
+  * the SearchResultSet is scored (ranked/sorted) via scoring.score_result_set().
+  * duplicate results are removed via SearchResultSet.dedup()
 
 =Getting started with Backend/Search Engine Development=
 
