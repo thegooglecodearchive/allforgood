@@ -74,7 +74,24 @@ The above list should help get you pointed to the right spot.
 
 ===Views===
 
-_Explain Webapp views_
+The Views in AfG are a combination of:
+
+- webapp [http://code.google.com/appengine/docs/python/tools/webapp/requesthandlers.html RequestHandler] classes.
+- url mappings in app.yaml and main.py
+- Django templates.
+
+The quick and dirty guide to how most URLs in AfG are handled:
+
+  # Incoming URL is matched in app.yaml (e.g. www.allforgood.org/search -> main.py at the very bottom of app.yaml (the default handler)).
+  # the appropriate python file is ran (in this case main.py).
+  # in the case of main.py, a list of urls from urls.py is mapped to a handler (e.g. (urls.URL_CONSUMER_UI_SEARCH, views.consumer_ui_search_view)).
+  # the get() method is called on the mapped request class (e.g. consumer_ui_search_view).
+  # In most cases, a template is rendered using template_helpers.render_template().
+    * render_template() is passed in a template file path and an dictionary.
+    * The templates are written in [http://code.google.com/appengine/docs/python/gettingstarted/templates.html Django] and can refer to values in the passed in dictionary.
+  # the rendered template is written to the response.
+
+
 
 ===The API===
 
