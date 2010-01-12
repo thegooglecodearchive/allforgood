@@ -39,15 +39,42 @@ Follow the Getting Started guide for the Google App Engine SDK, and [http://code
 
 ==Requirements for running the code.==
 
-_explain privatekeys.py_
+Before you can run the frontend, you'll need to get a copy of private_keys.py from an approved developer.  This file contains private information, and should not be checked into SVN.
+
+If you just want to checkout the frontend (e.g. page layout) and are not interested in actually running queries, you can use the following as a skeleton private_keys.py:
+
+{{{
+DEFAULT_BACKEND_URL_SOLR = 'http://localhost:8983/solr/select/'
+FACEBOOK_SECRETS = {}
+AFG_GOOGLE_DOCS_LOGIN  = {
+    'username' : 'username_here',
+    'password' : 'password_here'
+}
+}}}
+
+Save the above to frontend/private_keys.py.  Some parts of the site should 'work', but the following functionality will not:
+
+  * Facebook integration.
+  * Search (unless you are running a SOLR server on localhost).
 
 ==The Frontend code structure==
 
-_Directory Layout_
+The frontend code is laid out as follows:
+
+  * app.yaml/main.py/urls.py - Maps most incoming URLs to view handlers (see Views below).
+  * views.py - This is where the meat of the frontend code lives (see Views below).
+  * html/css/js/images - static content (actually served from SVN, see CommonGotchas).
+  * templates - contains the Django templates (see Views below).
+  * search.py/solr_search.py - interacts with SOLR backend.
+  * scoring.py - sorts the SOLR results.
+  * api.py - Logic for API output.
+  * everything else - there's a lot more code, too much to go into in this guide.
+
+The above list should help get you pointed to the right spot.
 
 ===Views===
 
-_Explain Django views_
+_Explain Webapp views_
 
 ===The API===
 
