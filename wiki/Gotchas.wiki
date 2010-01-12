@@ -1,0 +1,26 @@
+#summary List of common sticking points and proposed solutions.
+#labels Phase-Design,Phase-Implementation
+
+===need private_keys.py===
+
+Issue: You can't run the front end at all without getting a copy of private_keys.py from an existing developer.
+
+Solution:  Do some trickery to support local dev.  For example, have private_keys.py actually checked in, and in local dev it would point to a test SOLR instance.  In production (e.g. on app engine) it would pull the keys from a $ENV_keys.yaml file.
+
+Requirements:  We need a 'publicly' addressable SOLR instance or proxy that we can reference in SVN.  We need to codify the environments (prod, qa, etc.) and bake a quick yaml format for the key files.
+
+===Google Maps API keys hardcoded===
+
+Issue: The Google Maps API keys are hardcoded, and only work on production.
+
+Solution: Pull the keys from $ENV_keys.yaml file.
+
+Requirements: Need to codify the environments and yaml format as above.
+
+===Static HTML served from SVN trunk===
+
+Issue: SVN is being used as a simple CMS system in that static content is actually pulled from SVN trunk over HTTP (see [http://code.google.com/p/allforgood/source/browse/trunk/frontend/views.py#1039 static_content]).  This prevents us from checking anything into trunk until it's been approved to go live, which causes issue with the standard workflow.
+
+Solution: Using SVN as a CMS works well enough, but we should probably use a branch instead of trunk.  We will need to document merging the static content into the branch as part of the release process.  $ENV_keys.yaml should probably include what branch to pull content from.
+
+Requirements: Determine branch structure, document merge as part of release process.
