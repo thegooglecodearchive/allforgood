@@ -1,0 +1,11 @@
+#summary Description of data structures and algorithms used during Data Load
+= Data Load _data structures and algorithms_ =
+
+== High Level Data Path ==
+  # Convert XML to TSV file
+  # Convert TSV file to csv
+  # Transform csv file to another csv file with minimal fields
+  # Upload re-transformed csv file to SOLR
+  # Left with flat data structure of opportunities, most of the FPXML data strucuture stripped out
+  # Primary search field is aggregation of: description, organization name, title, and categories
+ 
