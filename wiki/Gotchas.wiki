@@ -5,7 +5,7 @@
 
 Issue: You can't run the front end at all without getting a copy of private_keys.py from an existing developer.
 
-Solution:  Do some trickery to support local dev.  For example, have private_keys.py actually checked in, and in local dev it would point to a test SOLR instance.  In production (e.g. on app engine) it would pull the keys from a $ENV_keys.yaml file.
+Solution:  Do some trickery to support local dev.  For example, have private_keys.py actually checked in, and in local dev it would point to a test SOLR instance.  In production (e.g. on app engine) it would pull the keys from a $ENV_keys.yaml file, where $ENV is determined using a combination of the CGI variables discussed [http://code.google.com/appengine/docs/python/runtime.html#The_Environment here].
 
 Requirements:  We need a 'publicly' addressable SOLR instance or proxy that we can reference in SVN.  We need to codify the environments (prod, qa, etc.) and bake a quick yaml format for the key files.
 
