@@ -1,16 +1,16 @@
 #summary High Level view of the Data Load Process
-= ETL Pieces for loading data from partners
+= ETL Pieces for loading data from partners =
 
-== Exchange Ð listing partner data enters the system ==
+== Exchange _listing partner data enters the system_ ==
   * Receive FPXML post
   * Get from external API
   * Manually updated Spreadsheet
   * Crawl site
 
-== Transform Ð Convert to FPXML if not in that form ==
+== Transform _Convert to FPXML if not in that form_ ==
   * Partner specific parsers
   * Field/Category/Organization mappers
   * Spreadsheet reader
 
-== Load Ð Insert FPXML strucutred data into Data Store ==
+== Load _Insert FPXML strucutred data into Data Store_ ==
   * Insert opportunities into SOLR/GoogleBase instance 
