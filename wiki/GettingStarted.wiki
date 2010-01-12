@@ -91,11 +91,34 @@ The quick and dirty guide to how most URLs in AfG are handled:
     * The templates are written in [http://code.google.com/appengine/docs/python/gettingstarted/templates.html Django] and can refer to values in the passed in dictionary.
   # the rendered template is written to the response.
 
+====Static Content====
 
+In addition to the dynamic views, there are also a fair number of static urls (see urls.py : STATIC_CONTENT_FILES).  These URLs are handled in a somewhat quirky way (as explained in CommonGotchas):  the handler (views.static_content) actually retrieves the content directly from code.google.com (or a memcached copy) rather than the local appengine copy.  This acts as a simple CMS, in that changes can be made in SVN rather than requiring a code push to appengine.  If you are testing local changes to static files, you can use the "local" argument to use the appengine copy, e.g.:
+
+{{{http://www.allforgood.org/about?local=1}}}
+
+This tells static_content to load the file directly rather than using SVN/memcache.
 
 ===The API===
 
-_Explain the API._
+In addition to the end-user site, the primary goal of AfG is to expose an API for others to use to build volunteering applications upon.  
+
+The API is available at:
+
+{{{http://www.allforgood.org/api/volopps}}}
+
+The API supports the following formats:
+
+  * [http://en.wikipedia.org/wiki/Atom_(standard) Atom]-formatted XML
+  * JSON
+
+The code flow for an API request is:
+
+  # Request comes in to /api
+  # Request is routed to views.search_view by main.py/urls.py
+  # result_set is created via search.search()
+  # search_view.get() setups up arguments and instantiates an api_writer object.
+  # api_writer is used to output the result_set in the correct format.
 
 ===Searching Volunteer Opportunities ===
 
