@@ -1,0 +1,9 @@
+#summary High level view of the Search Architecture
+= Search Architecture =
+
+== Data Flow ==
+  # Create url for for Get against the SOLR instance
+  # Execute Get
+  # Parse response and create searchResultSet
+  # Score the opportunities for return order
+  # Remove duplicate opportunities
