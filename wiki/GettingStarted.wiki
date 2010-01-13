@@ -140,13 +140,19 @@ At a high level, the search functionality of AfG looks like this:
 
 ==Data loading code structure==
 
-_Link to datahub/README_
+The backend loading code is all in datahub, there's a [http://code.google.com/p/allforgood/source/browse/trunk/datahub/README README] that explains what's going on at a high level.
 
-_Explain that this is running on some box somewhere..._
+The short version is that there's a demon process running on a box somewhere that sucks in feeds from our providers and converts it to our FootPrint XML format.  Then that data is uploaded into SOLR.
 
 ==SOLR Search Engine structure==
 
-_Link to SOLR, explain that it's somewhere._
+The SOLR configuration files are stored in the [http://code.google.com/p/allforgood/source/browse/trunk/#trunk/SOLR/conf SOLR/conf] folder.  
+
+In general, SOLR modifications are outside the scope of this document.  If you want to get a basic understanding of SOLR, check out the [http://lucene.apache.org/solr/tutorial.html tutorial].
+
+  * solrconfig.xml - basic configuration (cache sizes, etc.)
+  * schema.xml - our SOLR schema.  Not quite the same as Footprint.
+
 
 =Committing Code changes=
 
