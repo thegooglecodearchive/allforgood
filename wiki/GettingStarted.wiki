@@ -158,4 +158,18 @@ In general, SOLR modifications are outside the scope of this document.  If you w
 
 ==Getting commit access==
 
+Here is the process to obtain commit access:
+1. get trained: with the help of a mentor, pick a simple, suitable starter project.
+2. check out the code in read-only mode and start up a server.  If you don't have an internet connection that supports inbound services, then upload your example server to appengine (yourappname.appspot.com)
+3. implement your change.
+4. get it reviewed.  Expect several rounds of pedantic reviews.
+5. once reviewed, you'll be granted commit access.
+
 ==The code review process==
+
+(from the toplevel source directory)
+   ./codereview_upload.py username@gmail.com
+where username is the reviewer.  Everything else is handled automatically-- for more info, see codereview_upload.py, function main().
+
+Note that you will need to install the pylint tool: http://pypi.python.org/pypi/pylint
+and that we insist on a pylint score of 9.0 per file, rather than rely on fallible human reviewers.
