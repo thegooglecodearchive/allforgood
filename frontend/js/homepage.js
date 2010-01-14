@@ -71,7 +71,8 @@ function renderHomepage() {
   }
   setTextContent(el('location_text'), defaultLocation);
 
-  el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/8kfEm7K9fdA&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/8kfEm7K9fdA&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
+  //el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/8kfEm7K9fdA&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/8kfEm7K9fdA&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
+  el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/PZf8MRYasss&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/PZf8MRYasss&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
 }
 
 function doHomepageChangeLocationClick() {

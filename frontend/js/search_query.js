@@ -33,9 +33,14 @@ function createExampleSearchText() {
     } else {
       var pop_str = popularSearches[i] + '</a>'
     }
-    links.push('<a onclick="setKeywordAndExecute(\'category:' + 
+    if (popularSearches[i] && popularSearches[i].indexOf('Haiti') >= 0) {
+      links.push('<a onclick="setKeywordAndExecute(\'Haiti\');return false;"' +
+        'href="javascript:void(0);">' + pop_str);
+    } else {
+      links.push('<a onclick="setKeywordAndExecute(\'category:' + 
                 popularSearches[i].replace(" ", "") + '\');return false;"' +
         'href="javascript:void(0);">' + pop_str);
+    }
   }
   el('example_searches').innerHTML = html + links.join(', ');
 }
