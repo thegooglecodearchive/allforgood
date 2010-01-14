@@ -112,6 +112,8 @@ class SearchResult(object):
     self.score = 0.0
     self.score_notes = ""
     self.score_str = ""
+    self.is_backfill = False
+    self.backfill_reason = ""
 
   def set_score(self, score, notes):
     """assign score value-- TODO: consider moving scoring code to this class."""
@@ -182,13 +184,19 @@ class SearchResultSet(object):
     self.pubdate = get_rfc2822_datetime()
     self.last_build_date = self.pubdate
 
-  def append_results(self, results):
+  def append_results(self, results, reason):
     """append a results arry to this results set and rerun dedup()"""
     self.num_results = len(self.results) + len(results.results)
-    self.results.extend(results.results)
+    #self.results.extend(results.results)
+    for res in enumerate(self.results):
+      res.is_backfill = True
+      res.backfill_reason = reason
+      self.results.append(res)
+
     self.merged_results = []
     self.clipped_results = []
     self.dedup()
+
 
   def clip_set(self, start, num, result_set):
     """Extract just the slice of merged results from start to start+num.
