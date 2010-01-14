@@ -47,6 +47,10 @@ DATE_FORMAT_PATTERN = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
 # max number of results to ask from SOLR (for latency-- and correctness?)
 MAX_RESULTS = 1000
 
+BACKFILL_DIST = "dist"
+
+MILES_PER_DEG = 69
+
 def build_function_query(base_lat, base_long, max_dist, get_random_results):
   """Builds a function query for Solr scoring and ranking.
   
@@ -406,7 +410,32 @@ def query(query_url, args, cache):
     latstr = entry["latitude"]
     longstr = entry["longitude"]
     if latstr and longstr and latstr != "" and longstr != "":
+      if api.PARAM_VOL_DIST in args and args[api.PARAM_VOL_DIST] != "":
+        # beyond distance from requested?
+        try:
+          max_vol_dist = float(args[api.PARAM_VOL_DIST])
+          vol_lat = float(args["lat"])
+          vol_lng = float(args["long"])
+          result_lat = float(latstr)
+          result_lng = float(longstr)
+          miles_to_opp = (MILES_PER_DEG * pow(pow(vol_lat - result_lat, 2) 
+                          + pow(vol_lng - result_lng, 2), 0.5))
+          if miles_to_opp > max_vol_dist:
+            if api.PARAM_BACKFILL in args and args[api.PARAM_BACKFILL] == "1":
+              res.is_backfill = True
+              res.backfill_reason = BACKFILL_DIST
+              logging.warning("backfilled with SOLR record %d" % i)
+            else:
+              logging.warning("skipping SOLR record %d: too far (%d > %d)" % 
+                (i, miles_to_opp, max_vol_dist))
+              continue
+        except:
+          logging.warning("could not calc %s max distance [%s,%s] to [%s,%s]" %
+            (args[api.PARAM_VOL_DIST], args["lat"], args["lng"], 
+              latstr, longstr))
+
       res.latlong = str(latstr) + "," + str(longstr)
+
     # TODO: remove-- working around a DB bug where all latlongs are the same
     if "geocode_responses" in args:
       res.latlong = geocode.geocode(location,

@@ -2,7 +2,7 @@
 <body>
 
 <pre>
-This is debug output for developers only.  If you are an end user here by accident, please visit:
+This is debug output for developers only!  If you are an end user here by accident, please visit:
 <a href="http://www.allforgood.org/help/">http://www.allforgood.org/help/</a>.
 If you are a developer, please use the RSS format to build your applications by appending &amp;output=rss to your queries.
 See the <a href="http://www.allforgood.org/help/reference.html">All for Good API Reference Guide</a> for additional details.
@@ -20,6 +20,7 @@ results: backend-estimated={{result_set.estimated_results|escape}}  merged-estim
 <span style='font-size:12px'>{{result.idx|escape}}.   <a href="{{result.url}}">{{result.title|escape}}</a></span>
 loc: {% ifequal result.latlong "0.0,0.0" %}**LOCATIONLESS**{% else %}{{result.location|escape}} ({{result.latlong|escape}}){% endifequal %}
 id: {{result.item_id|escape}}     provider: {{result.provider|escape}}
+backfill: {% if result.is_backfill %}{{result.backfill_reason|escape}}{% else %}no{% endif %}
 desc: {{result.snippet|escape}}
 score: {{result.score_str|escape}} (orig result #{{result.orig_idx|escape}}){{result.score_notes|escape}}
 stats: {{result.merged_impressions|escape}} views, {{result.merged_clicks|escape}} clicks  ({{result.merged_ctr|escape}}% CTR)
