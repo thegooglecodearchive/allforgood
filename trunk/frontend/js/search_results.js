@@ -187,6 +187,11 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('who_filter');
   getNamedFilterFromUrl('activity_filter');
 
+  // mt: add new params here
+  getNamedFilterFromUrl('bf');
+  getNamedFilterFromUrl('vol_startdate');
+  getNamedFilterFromUrl('vol_enddate');
+
   var use_cache = Number(getHashParam('cache', '1'));
 
   return new Query(keywords, location, pageNum, use_cache, timePeriod, filters);
