@@ -61,7 +61,7 @@ import utils
 import view_helper
 import searchresult
 import apiwriter
-from template_helpers import get_default_template_values, render_template
+from template_helpers import get_default_template_values, render_template, load_userinfo_into_dict
 
 HOMEPAGE_TEMPLATE = 'homepage.html'
 TEST_PAGEVIEWS_TEMPLATE = 'test_pageviews.html'
@@ -571,6 +571,8 @@ class post_view(webapp.RequestHandler):
     template_values = {
       'current_page' : 'POST',
       'geturl' : geturl,
+      'version' : os.getenv('CURRENT_VERSION_ID'),
+      'private_keys': private_keys,
       }
     load_userinfo_into_dict(user_info, template_values)
 
