@@ -189,6 +189,8 @@ function createQueryFromUrlParams() {
 
   // mt: add new params here
   getNamedFilterFromUrl('bf');
+  getNamedFilterFromUrl('bft');
+  getNamedFilterFromUrl('vol_dist');
   getNamedFilterFromUrl('vol_startdate');
   getNamedFilterFromUrl('vol_enddate');
 
