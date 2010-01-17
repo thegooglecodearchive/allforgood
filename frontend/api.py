@@ -84,3 +84,6 @@ PARAM_VOL_STARTDAYOFWEEK = 'vol_startdayofweek'
 
 PARAM_BACKFILL = 'bf'
 PARAM_BACKFILL_TITLES = 'bft'
+
+PARAM_LAT = 'lat'
+PARAM_LNG = 'long'

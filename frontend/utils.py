@@ -118,3 +118,18 @@ def get_verified_arg(pattern, request, argname, default=None, last=True):
     raise InvalidValue
 
   return value
+
+def safe_str(instr):
+  """helper function for making dedup() keys"""
+  return_val = ""
+  try:
+    return_val = str(instr)
+  except ValueError:
+    for inchar in instr:
+      try:
+        safe_char = str(inchar)
+        return_val += safe_char
+      except ValueError:
+        continue # discard
+  return return_val
+
