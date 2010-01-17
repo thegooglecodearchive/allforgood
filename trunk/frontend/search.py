@@ -23,6 +23,7 @@ import logging
 import copy
 
 from versioned_memcache import memcache
+from utils import safe_str
 
 import api
 import base_search
@@ -228,33 +229,31 @@ def normalize_query_values(args):
       elif zoom == 2: # region
         # state/region is very wide-- start with 50 mile radius,
         # and we'll fallback to larger.
-        args[api.PARAM_VOL_DIST] = 50
+        args[api.PARAM_VOL_DIST] = 200
       elif zoom == 3: # county
         # county radius should be pretty rare-- start with 10 mile radius,
         # and we'll fallback to larger.
-        args[api.PARAM_VOL_DIST] = 10
+        args[api.PARAM_VOL_DIST] = 40
       elif zoom == 4 or zoom == 0:
         # city is the common case-- start with 5 mile search radius,
         # and we'll fallback to larger.  This avoids accidentally
         # prioritizing listings from neighboring cities.
-        args[api.PARAM_VOL_DIST] = 2
+        args[api.PARAM_VOL_DIST] = 35
       elif zoom == 5:
         # postal codes are also a common case-- start with a narrower
         # radius than the city, and we'll fallback to larger.
-        args[api.PARAM_VOL_DIST] = 1
+        args[api.PARAM_VOL_DIST] = 15
       elif zoom > 5:
         # street address or GPS coordinates-- start with a very narrow
         # search suitable for walking.
-        args[api.PARAM_VOL_DIST] = 1
+        args[api.PARAM_VOL_DIST] = 3
+
   else:
-    args[api.PARAM_VOL_LOC] = ""
-    args[api.PARAM_VOL_DIST] = 0
+    args[api.PARAM_VOL_LOC] = args[api.PARAM_VOL_DIST] = ""
   dbgargs(api.PARAM_VOL_LOC)
 
 def fetch_and_dedup(args):
   """fetch, score and dedup."""
-  # TODO: Update this when SOLR becomes the new default
-  # Backend defaults to base for now
   if api.PARAM_BACKEND_TYPE not in args:
     args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_SOLR
 
@@ -272,15 +271,103 @@ def fetch_and_dedup(args):
 
   scoring.score_results_set(result_set, args)
   result_set.dedup()
+
   return result_set
+
+class BackfillQuery(object):
+  def __init__(self, args, bf_args, title = ''):
+    self.args = args
+    self.title = title
+   
+    logging.debug("BackfillQuery: title '%s'" % (title))
+    args_list = bf_args.split('|')
+    for arg in args_list:
+      # we are given "param[value]" and we need to make it "param", "value"
+      matchobj = re.match('(.+?)\[(.+?)\]', arg) 
+      if matchobj: 
+        param_name = matchobj.group(0) 
+        param_value = matchobj.group(1) 
+      else: 
+        param_name = arg
+        param_value = "" 
+
+      self.args[param_name] = param_value
+      logging.debug("BackfillQuery: set %s to %s" % (param_name, param_value))
+
 
 def fetch_result_set(args):
   """Validate the search parameters, and perform the search."""
   result_set = fetch_and_dedup(args)
 
+  n_req = -1
+  try:
+    n_req = int(args[api.PARAM_NUM])
+  except:
+    logging.warning("%s = %s" % (api.PARAM_NUM, args[api.PARAM_NUM]))
+
+  if len(result_set.merged_results) < n_req:
+    def parse_backfill_args(args):
+      """
+      we are going to implement a list of backfill queries
+      from http://docs.google.com/View?id=df2jk6qb_1pdtbhdhn
+      """
+      backfill_query_list = []
+
+      backfills_list = []
+      if api.PARAM_BACKFILL in args and args[api.PARAM_BACKFILL] != "":
+        backfills_list = args[api.PARAM_BACKFILL].split(':')
+  
+      backfill_titles_list = []
+      if (api.PARAM_BACKFILL_TITLES in args and 
+          args[api.PARAM_BACKFILL_TITLES] != ""):
+        backfill_titles_list = args[api.PARAM_BACKFILL_TITLES].split(':')
+
+      for idx, bfq_args in enumerate(backfills_list):
+        bf_title = ""
+        if (idx < len(backfill_titles_list) and 
+            len(backfill_titles_list[idx]) > 0):
+          bf_title = backfill_titles_list[idx]
+  
+        bfq = BackfillQuery(args, bfq_args, bf_title)
+        # we dont want to recurse ad infinitum
+        bfq.args['bf'] = ''
+        bfq.args['bft'] = ''
+        backfill_query_list.append(bfq)
+
+      return backfill_query_list
+
+    bfq_list = parse_backfill_args(args)
+    for i, bfq in enumerate(bfq_list):
+      logging.debug("BackfillQuery: '%s' => %s" % (bfq.title, bfq.args))
+      bf_res = fetch_and_dedup(bfq.args)
+      
+      last_id = 0
+      key_list = []
+      for res in result_set.merged_results:
+        key = 'M' + hashlib.md5(safe_str(res.title) +
+                                safe_str(res.snippet) +
+                                safe_str(res.location)).hexdigest()
+        key_list.append(key)
+        last_id = res.idx
+      
+      for res in bf_res.merged_results:
+        # dedup them against what we already have
+        key = 'M' + hashlib.md5(safe_str(res.title) +
+                                safe_str(res.snippet) +
+                                safe_str(res.location)).hexdigest()
+        if not key in key_list:
+          res.backfill_title = bfq.title
+          res.idx += last_id
+          res.backfill_number = i + 1
+          logging.info("BackfillQuery %s with %s" % (bfq.title, res.title))
+          result_set.merged_results.append(res)
+
+      if len(bfq.title) < 1:
+        scoring.score_results_set(result_set, args)
+
   def can_use_backfill(args, result_set):
-    if (not result_set.has_more_results 
-        and result_set.estimated_merged_results < 
+    if (not result_set.has_more_results
+        and result_set.estimated_merged_results <
         int(args[api.PARAM_NUM]) + int(args[api.PARAM_START])):
       return True
     return False
@@ -316,7 +403,8 @@ def fetch_result_set(args):
       logging.debug("backfilling with locationless listings...")
       locationless_result_set = fetch_and_dedup(newargs)
       logging.debug("len(result_set.results)=%d" % len(result_set.results))
-      logging.debug("len(locationless)=%d" % len(locationless_result_set.results))
+      logging.debug("len(locationless)=%d" % 
+        len(locationless_result_set.results))
       result_set.append_results(locationless_result_set)
       logging.debug("new len=%d" % len(result_set.results))
 

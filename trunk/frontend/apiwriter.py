@@ -108,6 +108,8 @@ class JsonApiWriter(ApiWriter):
     ('title',),
     ('description', 'snippet'),
     ('pubDate',), 
+    ('backfill_number',),
+    ('backfill_title',),
     # groupid is a stable ID for the dedup'd set of results, 
     #   including same listing but different time/location 
     ('groupid', 'merge_key'),
@@ -326,6 +328,8 @@ class RssApiWriter(ApiWriter):
     #and now our namespaced fields
     namespaced_fields = [
       ('id', 'item_id'),
+      ('backfill_number',),
+      ('backfill_title',),
       # groupid is a stable ID for the dedup'd set of results, 
       #   including same listing but different time/location 
       ('groupid', 'merge_key'),

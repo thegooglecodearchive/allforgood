@@ -29,6 +29,7 @@ from fastpageviews import pagecount
 import models
 import modelutils
 import utils
+from utils import safe_str
 
 # only display certain categories-- this allows us to use the tagging
 # system for tags that aren't displayed to end users.
@@ -112,9 +113,9 @@ class SearchResult(object):
     self.score = 0.0
     self.score_notes = ""
     self.score_str = ""
-    self.is_backfill = False
-    self.backfill_reason = ""
-
+    self.backfill_number = 0
+    self.backfill_title = ""
+ 
   def set_score(self, score, notes):
     """assign score value-- TODO: consider moving scoring code to this class."""
     self.score = score
@@ -184,15 +185,10 @@ class SearchResultSet(object):
     self.pubdate = get_rfc2822_datetime()
     self.last_build_date = self.pubdate
 
-  def append_results(self, results, reason):
+  def append_results(self, results):
     """append a results arry to this results set and rerun dedup()"""
     self.num_results = len(self.results) + len(results.results)
-    #self.results.extend(results.results)
-    for res in enumerate(self.results):
-      res.is_backfill = True
-      res.backfill_reason = reason
-      self.results.append(res)
-
+    self.results.extend(results.results)
     self.merged_results = []
     self.clipped_results = []
     self.dedup()
@@ -235,20 +231,6 @@ class SearchResultSet(object):
 
   def dedup(self):
     """modify in place, merged by title and snippet."""
-
-    def safe_str(instr):
-      """private helper function for dedup()"""
-      return_val = ""
-      try:
-        return_val = str(instr)
-      except ValueError:
-        for inchar in instr:
-          try:
-            safe_char = str(inchar)
-            return_val += safe_char
-          except ValueError:
-            continue # discard
-      return return_val
 
     def assign_merge_keys():
       """private helper function for dedup()"""
