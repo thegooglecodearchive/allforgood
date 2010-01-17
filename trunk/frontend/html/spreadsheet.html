@@ -20,11 +20,17 @@
 /* randomize order of partners */
 /* from http://javascript.about.com/library/blsort2.htm */
 function randOrd(){return (Math.round(Math.random())-0.5);} 
-providers = new Array('http://www.craigslist.org','http://www.idealist.org','http://www.meetup.com','http://www.volunteermatch.org','http://www.volunteersolutions.org');
+var providers = new Array('http://post.craigslist.org/','http://www.idealist.org/if/idealist/en/Post/Simplified/1-default','http://www.meetup.com/create/','http://www.servicenation.org/page/user/login?successurl=L3BhZ2UvZGFzaGJvYXJkL3ByaXZhdGU=&_h=enWNI0wzy4VRWkmZ1FMuX1-1png','http://www.volunteermatch.org/post/register/np/overview.jsp');
+/* when we have direct links, offer these options...
+   'http://www.volunteersolutions.org/'
+*/
 providers.sort(randOrd);
 var list = document.getElementById('providers');
 for(var i=0;i<providers.length;i++){
-  var value = providers[i].replace(/^http:\/\//, '').replace(/www[.]/,'');
+  var value = providers[i].replace(/^http:\/\//, '');
+  value = value.replace(/(www|post)[.]/,'');
+  // remove trailing URL
+  value = value.replace(/\/.*$/, '');
   var li = document.createElement('li');
   li.innerHTML = "<a href='"+providers[i]+"'>"+value+"</a>";
   list.appendChild(li);
