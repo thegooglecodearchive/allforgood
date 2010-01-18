@@ -519,9 +519,10 @@ function renderPaginator(div, totalNum, forceShowNextLink) {
 
   var currentPageNum = lastSearchQuery.getPageNum();
   if (currentPageNum > 0) {
-    renderLink(currentPageNum - 1, 'Previous');
+    renderLink(currentPageNum - 1, '&laquo; Previous Page');
   }
 
+  /* TODO: re-add once pagination is reasonably accurate
   if (numPages > 1) {
     for (var i = 0; i < numPages; i++) {
       if (i == currentPageNum) {
@@ -531,9 +532,11 @@ function renderPaginator(div, totalNum, forceShowNextLink) {
       }
     }
   }
+  */
 
   if (currentPageNum != numPages - 1 || forceShowNextLink) {
-    renderLink(currentPageNum + 1, 'Next');
+    html.push('&nbsp;&nbsp;&nbsp;');
+    renderLink(currentPageNum + 1, 'Next Page &raquo;');
   }
 
   div.innerHTML = html.join('');

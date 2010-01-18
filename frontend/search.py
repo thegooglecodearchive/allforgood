@@ -31,8 +31,21 @@ import geocode
 from fastpageviews import pagecount
 import scoring
 import solr_search
+import re
+
+from query_rewriter import get_rewriters
 
 CACHE_TIME = 24*60*60  # seconds
+
+# bf=arg1[val1]:arg2[val2]:arg3[val3]|arg1[val1]:arg2[val2]:arg3[val3]|...
+# qhere args are like 'q' for the query string
+BACKFILL_QUERY_SEP = '|'
+BACKFILL_ARG_SEP = ':'
+
+def run_query_rewriters(query):
+  rewriters = get_rewriters()
+  query = rewriters.rewrite_query(query)
+  return query
 
 # args is expected to be a list of args
 # and any path info is supposed to be homogenized into this,
@@ -200,6 +213,19 @@ def normalize_query_values(args):
     # http://www.allforgood.org/search#q=nature&vol_loc=nature%2C%20USA
     args[api.PARAM_VOL_LOC] = args[api.PARAM_Q] + " USA"
 
+  # First run query_rewriter classes
+  args[api.PARAM_Q] = run_query_rewriters(args[api.PARAM_Q])
+  # TODO: special hack for MLK day-- backfill with keywordless query
+  # across the week
+  logging.debug("q="+args[api.PARAM_Q]+" after reqrites")
+  if args[api.PARAM_Q].find("category:MLK") >= 0:
+    args[api.PARAM_BACKFILL] = api.PARAM_Q + "[]" + \
+        ":"+api.PARAM_VOL_DIST + "[10]" + \
+        ":"+api.PARAM_VOL_STARTDATE + "[2010-01-16]" + \
+        ":"+api.PARAM_VOL_ENDDATE + "[2010-01-24]"
+    logging.debug("found MLK query-- backfilling with keywordless 1/16-1/24: "+
+                  args[api.PARAM_BACKFILL])
+
   args["lat"] = args["long"] = ""
   if api.PARAM_VOL_LOC in args:
     zoom = 5
@@ -276,136 +302,92 @@ def fetch_and_dedup(args):
 
 class BackfillQuery(object):
   def __init__(self, args, bf_args, title = ''):
+    # take the base query args as our defaults
     self.args = args
     self.title = title
    
     logging.debug("BackfillQuery: title '%s'" % (title))
-    args_list = bf_args.split('|')
+    args_list = bf_args.split(BACKFILL_ARG_SEP)
     for arg in args_list:
       # we are given "param[value]" and we need to make it "param", "value"
-      matchobj = re.match('(.+?)\[(.+?)\]', arg) 
-      if matchobj: 
-        param_name = matchobj.group(0) 
-        param_value = matchobj.group(1) 
+      matchobj = re.match('(.+?)\[(.*?)\]', arg) 
+      if matchobj:
+        param_name = matchobj.group(1) 
+        param_value = matchobj.group(2) 
       else: 
         param_name = arg
         param_value = "" 
-
       self.args[param_name] = param_value
-      logging.debug("BackfillQuery: set %s to %s" % (param_name, param_value))
+      logging.debug("BackfillQuery: &%s=%s" % (param_name, param_value))
 
 
 def fetch_result_set(args):
   """Validate the search parameters, and perform the search."""
+  # TODO: terrible hack-- want to rewrite MLK queries
+
+  def can_use_backfill(args, result_set):
+    logging.debug("can_use_backfill: result_set.has_more_results="+
+                  str(result_set.has_more_results)+
+                  "  result_set.num_merged_results="+
+                  str(result_set.num_merged_results))
+    if (not result_set.has_more_results
+        and result_set.num_merged_results <
+        int(args[api.PARAM_NUM]) + int(args[api.PARAM_START])):
+      return True
+    return False
+
   result_set = fetch_and_dedup(args)
 
-  n_req = -1
-  try:
-    n_req = int(args[api.PARAM_NUM])
-  except:
-    logging.warning("%s = %s" % (api.PARAM_NUM, args[api.PARAM_NUM]))
-
-  if len(result_set.merged_results) < n_req:
-    def parse_backfill_args(args):
-      """
-      we are going to implement a list of backfill queries
-      from http://docs.google.com/View?id=df2jk6qb_1pdtbhdhn
-      """
-      backfill_query_list = []
-
-      backfills_list = []
-      if api.PARAM_BACKFILL in args and args[api.PARAM_BACKFILL] != "":
-        backfills_list = args[api.PARAM_BACKFILL].split(':')
-  
+  if can_use_backfill(args, result_set):
+    backfill_num = 0
+    if api.PARAM_BACKFILL in args and args[api.PARAM_BACKFILL] != "":
+      logging.debug("parsing backfill query args: &bfq="+
+                    args[api.PARAM_BACKFILL])
+      # parse backfill args-- &bf (queries) and &bft (titles)
+      bfq_list = []
+      backfills_list = args[api.PARAM_BACKFILL].split(BACKFILL_QUERY_SEP)
       backfill_titles_list = []
       if (api.PARAM_BACKFILL_TITLES in args and 
           args[api.PARAM_BACKFILL_TITLES] != ""):
-        backfill_titles_list = args[api.PARAM_BACKFILL_TITLES].split(':')
-
+        backfill_titles_list = args[api.PARAM_BACKFILL_TITLES].split(
+          BACKFILL_QUERY_SEP)
+  
       for idx, bfq_args in enumerate(backfills_list):
         bf_title = ""
         if (idx < len(backfill_titles_list) and 
             len(backfill_titles_list[idx]) > 0):
           bf_title = backfill_titles_list[idx]
-  
         bfq = BackfillQuery(args, bfq_args, bf_title)
         # we dont want to recurse ad infinitum
-        bfq.args['bf'] = ''
-        bfq.args['bft'] = ''
-        backfill_query_list.append(bfq)
+        bfq.args['bf'] = bfq.args['bft'] = ''
+        bfq_list.append(bfq)
 
-      return backfill_query_list
-
-    bfq_list = parse_backfill_args(args)
-    for i, bfq in enumerate(bfq_list):
-      logging.debug("BackfillQuery: '%s' => %s" % (bfq.title, bfq.args))
-      bf_res = fetch_and_dedup(bfq.args)
-      
-      last_id = 0
-      key_list = []
-      for res in result_set.merged_results:
-        key = 'M' + hashlib.md5(safe_str(res.title) +
-                                safe_str(res.snippet) +
-                                safe_str(res.location)).hexdigest()
-        key_list.append(key)
-        last_id = res.idx
-      
-      for res in bf_res.merged_results:
-        # dedup them against what we already have
-        key = 'M' + hashlib.md5(safe_str(res.title) +
-                                safe_str(res.snippet) +
-                                safe_str(res.location)).hexdigest()
-        if not key in key_list:
+      for bfq in bfq_list:
+        backfill_num += 1
+        #logging.debug("BackfillQuery: i=%d  '%s' => %s" %
+        #              (backfill_num, bfq.title, bfq.args))
+        bf_res = fetch_and_dedup(bfq.args)
+        for res in bf_res.merged_results:
           res.backfill_title = bfq.title
-          res.idx += last_id
-          res.backfill_number = i + 1
-          logging.info("BackfillQuery %s with %s" % (bfq.title, res.title))
-          result_set.merged_results.append(res)
-
-      if len(bfq.title) < 1:
-        scoring.score_results_set(result_set, args)
-
-  def can_use_backfill(args, result_set):
-    if (not result_set.has_more_results
-        and result_set.estimated_merged_results <
-        int(args[api.PARAM_NUM]) + int(args[api.PARAM_START])):
-      return True
-    return False
-
-  if (args["lat"] != "0.0" or args["long"] != "0.0"):
-    if can_use_backfill(args, result_set):
-      newargs = copy.copy(args)
-      # 4x zoomout is chosen for no particular reason-- seemed to work well
-      newargs[api.PARAM_VOL_DIST] = newargs[api.PARAM_VOL_DIST] * 4
-      logging.debug("backfilling with further listings at dist=%d" %
-                    newargs[api.PARAM_VOL_DIST])
-      logging.debug("len(result_set.results)=%d" % len(result_set.results))
-      new_result_set = fetch_and_dedup(newargs)
-      logging.debug("len(further)=%d" % len(new_result_set.results))
-      result_set.append_results(new_result_set)
-  
-      if (can_use_backfill(args, result_set)):
-        newargs = copy.copy(args)
-        # 16x zoomout is chosen for no particular reason either
-        newargs[api.PARAM_VOL_DIST] = newargs[api.PARAM_VOL_DIST] * 4 * 4
-        logging.debug("backfilling with even further listings at dist=%d" %
-                      newargs[api.PARAM_VOL_DIST])
-        new_result_set = fetch_and_dedup(newargs)
-        logging.debug("len(even further)=%d" % len(new_result_set.results))
-        result_set.append_results(new_result_set)
-        logging.debug("len(combined)=%d" % len(result_set.results))
+          res.backfill_number = backfill_num
+          #logging.info("BackfillQuery %d: %s with %s" % 
+          #             (res.backfill_number, bfq.title, res.title))
+        result_set.append_results(bf_res)
 
     # backfill with locationless listings
-    if can_use_backfill(args, result_set):
+    if (args["lat"] != "0.0" or args["long"] != "0.0"):
+      backfill_num += 1
       newargs = copy.copy(args)
       newargs["lat"] = newargs["long"] = "0.0"
       newargs[api.PARAM_VOL_DIST] = 50
       logging.debug("backfilling with locationless listings...")
       locationless_result_set = fetch_and_dedup(newargs)
-      logging.debug("len(result_set.results)=%d" % len(result_set.results))
-      logging.debug("len(locationless)=%d" % 
-        len(locationless_result_set.results))
+      for res in locationless_result_set.merged_results:
+        res.backfill_title = "locationless (virtual) listings"
+        res.backfill_number = backfill_num
+      old_len = len(result_set.results)
       result_set.append_results(locationless_result_set)
-      logging.debug("new len=%d" % len(result_set.results))
-
+      logging.debug("#results=%d  #locationless=%d = new #results=%d" %
+                    (old_len, len(locationless_result_set.results),
+                    len(result_set.results)))
   return result_set

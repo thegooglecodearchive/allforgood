@@ -37,8 +37,6 @@ import posting
 import private_keys
 import searchresult
 
-from query_rewriter import get_rewriters
-
 RESULT_CACHE_TIME = 900 # seconds
 RESULT_CACHE_KEY = 'searchresult:'
 
@@ -47,8 +45,6 @@ DATE_FORMAT_PATTERN = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
 
 # max number of results to ask from SOLR (for latency-- and correctness?)
 MAX_RESULTS = 1000
-
-BACKFILL_DIST = "dist"
 
 MILES_PER_DEG = 69
 
@@ -131,13 +127,10 @@ def add_range_filter(field, min_val, max_val):
 def rewrite_query(query_str):
   """ Rewrites the query string from an easy to type and understand format
   into a Solr-readable format"""
-  # First run query_rewriter classes
-  rewritten_query = run_query_rewriters(query_str)
-
   # Lower-case everything and make boolean operators upper-case, so they
   # are recognized by SOLR.
   # TODO: Don't lowercase field names.
-  rewritten_query = rewritten_query.lower()
+  rewritten_query = query_str.lower()
   rewritten_query = rewritten_query.replace(' or ', ' OR ')
   rewritten_query = rewritten_query.replace(' and ', ' AND ')
 
@@ -149,6 +142,7 @@ def rewrite_query(query_str):
 def form_solr_query(args):
   """ensure args[] has all correct and well-formed members and
   return a solr query string."""
+
   logging.debug("form_solr_query: "+str(args))
   solr_query = ""
   query_is_empty = False
@@ -420,8 +414,6 @@ def query(query_url, args, cache):
       continue
     res.orig_idx = i+1
     res.latlong = ""
-    res.backfill_number = 0
-    res.backfill_reason = ""
     latstr = entry["latitude"]
     longstr = entry["longitude"]
     if latstr and longstr and latstr != "" and longstr != "":
@@ -602,7 +594,3 @@ def get_from_ids(ids):
   return result_set
 
 
-def run_query_rewriters(query):
-  rewriters = get_rewriters()
-  query = rewriters.rewrite_query(query)
-  return query
