@@ -74,6 +74,7 @@ class DjangoTemplateApiWriter(ApiWriter):
         'latlong': result_set.args["latlong"],
         'keywords': result_set.args[api.PARAM_Q],
         'location': result_set.args[api.PARAM_VOL_LOC],
+        'backfill': result_set.args[api.PARAM_BACKFILL],
         'max_distance': result_set.args[api.PARAM_VOL_DIST],
       })
   
@@ -159,6 +160,8 @@ class JsonApiWriter(ApiWriter):
   
   def __init__(self, content_type):
     """No special initialization."""
+    self.items = None
+    self.json = None
     ApiWriter.__init__(self, content_type)
     
   def setup(self, request, result_set):
@@ -215,6 +218,9 @@ class RssApiWriter(ApiWriter):
 
   def __init__(self, content_type):
     """No special initialization."""
+    self.doc = None
+    self.rss = None
+    self.channel = None
     ApiWriter.__init__(self, content_type)
     
   def setup(self, request, result_set):

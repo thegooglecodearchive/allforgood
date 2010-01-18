@@ -14,6 +14,8 @@
 
 """
 Routines for modifying search queries for overrides and the like.
+
+note that this is SOLR-specific.
 """
 
 import re
@@ -52,7 +54,7 @@ class RegexRewriter(QueryRewriter):
 
     search_match =  re.search(self.regex, query, re.I)
     if search_match:
-      updated_query = self.param + " OR " + query
+      updated_query = "(" + self.param + " OR " + query + ")"
     return updated_query
 
 
@@ -73,7 +75,7 @@ class KeywordRewriter(QueryRewriter):
                    query, re.I):
         matches = True
     if matches:
-      updated_query = self.param + " OR " + query
+      updated_query = "(" + self.param + " OR " + query + ")"
     return updated_query
 
 
@@ -81,8 +83,6 @@ class KeywordRewriter(QueryRewriter):
 def get_rewriters():
   """returns the current rewriterer instances we're using"""
   # Topics
-  mlk_rewriter = KeywordRewriter('mlk martin+luther', 'category:MLK')
-
   hunger_rewriter = KeywordRewriter('anti-hunger' +
     ' breakfast childhood+hunger dinner feeding+america food food+bank' +
     ' food+pantry food+programs free+lunch healthy+meals hunger hungry' +
@@ -166,6 +166,7 @@ def get_rewriters():
   september11_rewriter = RegexRewriter(
     '(9[\/\.]11|sep(t(\.|ember)?)?[ -]?(11|eleven)(th)?|' +
     'National Day of Service (and|&) Rememb(e)?rance)', 'category:September11')
+  mlk_rewriter = RegexRewriter('mlk|martin luther', 'category:MLK')
 
   # Vetted?
 
@@ -193,6 +194,7 @@ def get_rewriters():
       spanish_rewriter,
       # special events
       #september11_rewriter
+      mlk_rewriter,
       ])
 
   return rewriters

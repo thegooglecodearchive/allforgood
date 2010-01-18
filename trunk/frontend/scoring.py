@@ -71,28 +71,47 @@ def score_results_set(result_set, args):
     ONEDAY = 24.0 * 3600.0
     MAXTIME = 500.0 * ONEDAY
     start_delta = res.startdate - datetime.now()
-    start_delta_secs = start_delta.days*ONEDAY + start_delta.seconds
-    start_delta_secs = min(abs(start_delta_secs), MAXTIME)
-    end_delta = res.enddate - datetime.now()
-    end_delta_secs = end_delta.days*ONEDAY + end_delta.seconds
-    end_delta_secs = min(max(end_delta_secs, start_delta_secs), MAXTIME)
-    date_dist_multiplier = 1
-    if end_delta_secs <= 0:
-      date_dist_multiplier = .000001
-    if start_delta_secs > 0:
-      # further out start date = lower rank (roughly 1/numdays)
-      date_dist_multiplier = 1.0/(start_delta_secs/ONEDAY)
+    start_delta_days = start_delta.days + (start_delta.seconds / 86400.0)
+    if start_delta_days > 60.0:
+      if start_delta_days > 359.0:
+        start_delta_days = 359.0
+      # big penalty for events starting in the far future
+      start_delta_days_mult = 0.5 * (360.0 - start_delta_days) / 360.0
+    elif start_delta_days > 0.0:
+      # big boost for events starting in the near future
+      start_delta_days_mult = (360.0 - start_delta_days) / 360.0
+    elif start_delta_days > -30:
+      # slight penalty for events started recently
+      start_delta_days_mult = 0.9 * (360.0 + start_delta_days) / 360.0
+    else:
+      if start_delta_days < -359.0:
+        start_delta_days = -359.0
+      # modest penalty for events started long ago
+      start_delta_days_mult = 0.7 * (360.0 + start_delta_days) / 360.0
+    score *= start_delta_days_mult
+    score_notes += "  start_mult=" + str(start_delta_days_mult)
+    score_notes += " (%s  %g days)" % (str(res.startdate), start_delta_days)
 
-    score *= date_dist_multiplier
-    score_notes += "  date_mult=" + str(date_dist_multiplier)
-    score_notes += "  start=%s (%+g days)" % (
-      res.startdate, start_delta_secs / ONEDAY)
-    score_notes += "  end=%s (%+g days)" % (
-      res.enddate, end_delta_secs / ONEDAY)
+    end_delta = res.enddate - datetime.now()
+    end_delta_days = end_delta.days + (end_delta.seconds / 86400.0)
+    if end_delta_days > 60:
+      if end_delta_days > 359:
+        end_delta_days = 359
+      # modest penalty for events ending in the far future
+      end_delta_days_mult = 0.9 * (360 - end_delta_days) / 360
+    elif end_delta_days > 0:
+      # big boost for events ending in the near future
+      end_delta_days_mult = (360 - end_delta_days) / 360
+    else:
+      # shouldn't happen
+      end_delta_days_mult = 0.0
+    score *= end_delta_days_mult
+    score_notes += "  end_mult=" + str(end_delta_days_mult)
+    score_notes += " (%s  %g days)" % (str(res.enddate), end_delta_days)
     score_notes += "\n"
 
     # boost short events
-    delta_secs = end_delta_secs - start_delta_secs
+    delta_secs = (end_delta_days - start_delta_days) * 86400.0
     if delta_secs > 0:
       # up to 14 days gets a boost
       ddays = 10*max(14 - delta_secs/ONEDAY, 1.0)
@@ -118,13 +137,12 @@ def score_results_set(result_set, args):
                    (args["lat"], args["long"], float(lat), float(lng),
                     latdist, lngdist, delta_dist))
       # reasonably local
-      if delta_dist > 0.025:
-        delta_dist = 0.9 + delta_dist
+      if delta_dist <= 0.025:
+        geo_dist_multiplier = 1.0 - delta_dist
       else:
-        delta_dist = delta_dist / (0.025 / 0.9)
-      if delta_dist > 0.999:
-        delta_dist = 0.999
-      geo_dist_multiplier = 1.0 - delta_dist
+        geo_dist_multiplier = 0.5 - delta_dist*delta_dist
+      if geo_dist_multiplier < 0.01:
+        geo_dist_multiplier = 0.01
 
     interest = -1
     if res.item_id in others_interests:

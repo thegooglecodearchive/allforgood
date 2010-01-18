@@ -114,6 +114,9 @@ class SearchResult(object):
     self.score_notes = ""
     self.score_str = ""
     self.backfill_number = 0
+    # TODO: save memcache space by moving the backfill titles to being
+    # a property of the search results set-- requires changes in the
+    # output functions e.g. the API.
     self.backfill_title = ""
  
   def set_score(self, score, notes):
@@ -186,7 +189,7 @@ class SearchResultSet(object):
     self.last_build_date = self.pubdate
 
   def append_results(self, results):
-    """append a results arry to this results set and rerun dedup()"""
+    """append a results array to this results set and rerun dedup()"""
     self.num_results = len(self.results) + len(results.results)
     self.results.extend(results.results)
     self.merged_results = []

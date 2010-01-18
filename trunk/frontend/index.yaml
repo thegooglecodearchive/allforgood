@@ -45,16 +45,13 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Unused in query history -- copied from input.
 - kind: Posting
   properties:
   - name: status
   - name: quality_score
     direction: desc
 
-# Unused in query history -- copied from input.
 - kind: UserInfo
   properties:
   - name: moderator
   - name: moderator_request_email
-
