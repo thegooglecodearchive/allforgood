@@ -44,6 +44,7 @@ Before you can run the frontend, you'll need to get a copy of private_keys.py fr
 If you just want to checkout the frontend (e.g. page layout) and are not interested in actually running queries, you can use the following as a skeleton private_keys.py:
 
 {{{
+DEFAULT_FACEBOOK_SECRET = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 DEFAULT_BACKEND_URL_SOLR = 'http://localhost:8983/solr/select/'
 FACEBOOK_SECRETS = {}
 AFG_GOOGLE_DOCS_LOGIN  = {
