@@ -4,7 +4,9 @@
 
 Below is the proposed workflow for getting code from the deveopers, to QA, and eventually production.  
 
-http://allforgood.googlecode.com/svn/wiki/DevProcess.png
+http://create.ly/g4r2hsk02&fake_param=devprocess.png
+
+(Created with create.ly, click here to edit: http://creately.com/app?diagID=g4r2hsk02)
 
   # Design Accepted - The basic requirements for the feature or bug have been discussed and understood by both the developer and 'owner'.  More details on this below.
   # Code Locally - The developer uses the GettingStarted guide to setup a local all For Good development environment, and makes the changes to his or her local instance.
