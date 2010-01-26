@@ -1,4 +1,4 @@
-#summary Architecture of the API.
+#summary High-Level view of the how incoming API requests are handled.
 
   * Request comes into API url: /api/volopps
   * Request is routed to views.search_view.
