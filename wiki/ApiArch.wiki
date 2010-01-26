@@ -1,0 +1,11 @@
+#summary Architecture of the API.
+
+  * Request comes into API url: /api/volopps
+  * Request is routed to views.search_view.
+  * search_view parses the arguments.
+  * search_view calls search.search(unique_args).
+  * search_view adds the interests information ('like' counts) to the search results.
+  * search_view instantiates an apiwriter of the correct output type via apiwriter.get_writer().
+  * writer.setup() is called once to inititalize the writer.
+  * writer.add_result() is called for each of the clipped results.
+  * writer.finalize() is called and the output is written to the response stream.
