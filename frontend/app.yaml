@@ -1,7 +1,6 @@
 #application: servicefootprint
 #application: footprint2009dev-ehysen
-application: footprint-backup
-#application: footprint2009qa
+application: footprint2009dev
 #application: footprint-loadtest
 
 version: 1
