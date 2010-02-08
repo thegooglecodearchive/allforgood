@@ -206,7 +206,7 @@ def form_solr_query(args):
     max_dist = float(args[api.PARAM_VOL_DIST]) / 60
 
     # TODO: Re-add locationless listings as a query param.
-    #lat, lng = float(args["lat"]), float(args["long"])
+    #lat, lng = float(args[api.PARAM_LAT]), float(args[api.PARAM_LNG])
     #if (lat < 0.5 and lng < 0.5):
     #  solr_query += add_range_filter("latitude", '*', '0.5')
     #  solr_query += add_range_filter("longitude", '*', '0.5')
@@ -294,8 +294,10 @@ def search(args):
       if param in args and args[param]:
         if param == api.PARAM_VOL_LOC:
           # vol_loc must render a lat, long pair
-          if (not args["lat"] or parseLatLng(args["lat"]) == 0 or 
-              not args["long"] or parseLatLng(args["long"]) == 0):
+          if (not args[api.PARAM_LAT] or 
+              parseLatLng(args[api.PARAM_LAT]) == 0 or 
+              not args[api.PARAM_LNG] or 
+              parseLatLng(args[api.PARAM_LNG]) == 0):
             continue
         valid_query = True
         break
@@ -382,7 +384,8 @@ def query(query_url, args, cache):
       latstr = entry["latitude"]
       longstr = entry["longitude"]
       if latstr and longstr and latstr != "" and longstr != "":
-        entry["detailurl"] = "http://maps.google.com/maps?q=" + str(latstr) + "," + str(longstr)
+        entry["detailurl"] = \
+          "http://maps.google.com/maps?q=" + str(latstr) + "," + str(longstr)
       else:
         logging.warning("skipping SOLR record %d: detailurl is missing..." % i)
         continue
@@ -421,8 +424,8 @@ def query(query_url, args, cache):
         # beyond distance from requested?
         try:
           max_vol_dist = float(args[api.PARAM_VOL_DIST])
-          vol_lat = float(args["lat"])
-          vol_lng = float(args["long"])
+          vol_lat = float(args[api.PARAM_LAT])
+          vol_lng = float(args[api.PARAM_LNG])
           result_lat = float(latstr)
           result_lng = float(longstr)
           miles_to_opp = (MILES_PER_DEG * pow(pow(vol_lat - result_lat, 2) 
@@ -433,7 +436,7 @@ def query(query_url, args, cache):
             continue
         except:
           logging.warning("could not calc %s max distance [%s,%s] to [%s,%s]" %
-            (args[api.PARAM_VOL_DIST], args["lat"], args["long"], 
+            (args[api.PARAM_VOL_DIST], args[api.PARAM_LAT], args[api.PARAM_LNG], 
               latstr, longstr))
 
       res.latlong = str(latstr) + "," + str(longstr)
