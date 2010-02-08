@@ -420,7 +420,10 @@ def query(query_url, args, cache):
     latstr = entry["latitude"]
     longstr = entry["longitude"]
     if latstr and longstr and latstr != "" and longstr != "":
-      if api.PARAM_VOL_DIST in args and args[api.PARAM_VOL_DIST] != "":
+      if ( api.PARAM_VOL_DIST in args and args[api.PARAM_VOL_DIST] != "" and
+           api.PARAM_LAT in args and args[api.PARAM_LAT] != "" and
+           api.PARAM_LNG in args and args[api.PARAM_LNG] != ""
+         ):
         # beyond distance from requested?
         try:
           max_vol_dist = float(args[api.PARAM_VOL_DIST])
@@ -431,11 +434,11 @@ def query(query_url, args, cache):
           miles_to_opp = (MILES_PER_DEG * pow(pow(vol_lat - result_lat, 2) 
                           + pow(vol_lng - result_lng, 2), 0.5))
           if miles_to_opp > max_vol_dist:
-            logging.warning("skipping SOLR record %d: too far (%d > %d)" % 
+            logging.debug("skipping SOLR record %d: too far (%d > %d)" % 
               (i, miles_to_opp, max_vol_dist))
             continue
         except:
-          logging.warning("could not calc %s max distance [%s,%s] to [%s,%s]" %
+          logging.debug("could not calc %s max distance [%s,%s] to [%s,%s]" %
             (args[api.PARAM_VOL_DIST], args[api.PARAM_LAT], args[api.PARAM_LNG], 
               latstr, longstr))
 
