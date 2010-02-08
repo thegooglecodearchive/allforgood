@@ -382,12 +382,12 @@ class search_view(webapp.RequestHandler):
         unique_args["geocode_responses"] = 1
     
     latlng_string = ""
-    if "lat" in result_set.args and "long" in result_set.args:
-      latlng_string = "%s,%s" % (result_set.args["lat"],
-                                 result_set.args["long"])
+    if api.PARAM_LAT in result_set.args and api.PARAM_LNG in result_set.args:
+      latlng_string = "%s,%s" % (result_set.args[api.PARAM_LAT],
+                                 result_set.args[api.PARAM_LNG])
       result_set.args["latlong"] = latlng_string
     logging.debug("geocode("+result_set.args[api.PARAM_VOL_LOC]+") = "+
-                  result_set.args["lat"]+","+result_set.args["long"])
+                  result_set.args[api.PARAM_LAT]+","+result_set.args[api.PARAM_LNG])
 
     writer = apiwriter.get_writer(output)
     writer.setup(self.request, result_set)

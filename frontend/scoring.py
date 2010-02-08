@@ -122,20 +122,20 @@ def score_results_set(result_set, args):
     score_notes += "  date_delta_mult=%.3f (%g days)\n" % (
       date_delta_multiplier, delta_secs / float(ONEDAY))
 
-    if (("lat" not in args) or args["lat"] == "" or
-        ("long" not in args) or args["long"] == "" or
+    if ((api.PARAM_LAT not in args) or args[api.PARAM_LAT] == "" or
+        (api.PARAM_LNG not in args) or args[api.PARAM_LNG] == "" or
          res.latlong == ""):
       geo_dist_multiplier = 0.5
     else:
       # TODO: error in the DB, we're getting same geocodes for everything
       lat, lng = res.latlong.split(",")
-      latdist = float(lat) - float(args["lat"])
-      lngdist = float(lng) - float(args["long"])
+      latdist = float(lat) - float(args[api.PARAM_LAT])
+      lngdist = float(lng) - float(args[api.PARAM_LNG])
       # keep one value to right of decimal
       delta_dist = latdist*latdist + lngdist*lngdist
       logging.debug("qloc=%s,%s - listing=%g,%g - dist=%g,%g - delta = %g" %
-                   (args["lat"], args["long"], float(lat), float(lng),
-                    latdist, lngdist, delta_dist))
+             (args[api.PARAM_LAT], args[api.PARAM_LNG], float(lat), float(lng),
+              latdist, lngdist, delta_dist))
       # reasonably local
       if delta_dist <= 0.025:
         geo_dist_multiplier = 1.0 - delta_dist

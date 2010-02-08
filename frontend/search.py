@@ -137,7 +137,7 @@ def normalize_query_values(args):
   # RESERVED: type
 
   def dbgargs(arg):
-    logging.warn("args[%s]=%s" % (arg, args[arg]))
+    logging.debug("args[%s]=%s" % (arg, args[arg]))
 
   num = int(args.get(api.PARAM_NUM, 10)) 
   args[api.PARAM_NUM] = min_max(num, api.CONST_MIN_NUM, api.CONST_MAX_NUM)
@@ -213,6 +213,7 @@ def normalize_query_values(args):
     # http://www.allforgood.org/search#q=nature&vol_loc=nature%2C%20USA
     args[api.PARAM_VOL_LOC] = args[api.PARAM_Q] + " USA"
 
+  args[api.PARAM_BACKFILL] = ""
   # First run query_rewriter classes
   args[api.PARAM_Q] = run_query_rewriters(args[api.PARAM_Q])
   # TODO: special hack for MLK day-- backfill with keywordless query
@@ -226,24 +227,26 @@ def normalize_query_values(args):
     logging.debug("found MLK query-- backfilling with keywordless 1/16-1/24: "+
                   args[api.PARAM_BACKFILL])
 
-  args["lat"] = args["long"] = ""
+  args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
   if api.PARAM_VOL_LOC in args:
     zoom = 5
     if geocode.is_latlong(args[api.PARAM_VOL_LOC]):
-      args["lat"], args["long"] = args[api.PARAM_VOL_LOC].split(",")
+      args[api.PARAM_LAT], args[api.PARAM_LNG] = \
+                             args[api.PARAM_VOL_LOC].split(",")
     elif geocode.is_latlongzoom(args[api.PARAM_VOL_LOC]):
-      args["lat"], args["long"], zoom = args[api.PARAM_VOL_LOC].split(",")
+      args[api.PARAM_LAT], args[api.PARAM_LNG], zoom = \
+                             args[api.PARAM_VOL_LOC].split(",")
     elif args[api.PARAM_VOL_LOC] == "virtual":
-      args["lat"] = args["long"] = "0.0"
+      args[api.PARAM_LAT] = args[api.PARAM_LNG] = "0.0"
       zoom = 6
     elif args[api.PARAM_VOL_LOC] == "anywhere":
-      args["lat"] = args["long"] = ""
+      args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
     else:
       res = geocode.geocode(args[api.PARAM_VOL_LOC])
       if res != "":
-        args["lat"], args["long"], zoom = res.split(",")
-    args["lat"] = args["lat"].strip()
-    args["long"] = args["long"].strip()
+        args[api.PARAM_LAT], args[api.PARAM_LNG], zoom = res.split(",")
+    args[api.PARAM_LAT] = args[api.PARAM_LAT].strip()
+    args[api.PARAM_LNG] = args[api.PARAM_LNG].strip()
     if api.PARAM_VOL_DIST in args:
       args[api.PARAM_VOL_DIST] = int(args[api.PARAM_VOL_DIST])
     else:
@@ -375,10 +378,10 @@ def fetch_result_set(args):
         result_set.append_results(bf_res)
 
     # backfill with locationless listings
-    if (args["lat"] != "0.0" or args["long"] != "0.0"):
+    if (args[api.PARAM_LAT] != "0.0" or args[api.PARAM_LNG] != "0.0"):
       backfill_num += 1
       newargs = copy.copy(args)
-      newargs["lat"] = newargs["long"] = "0.0"
+      newargs[api.PARAM_LAT] = newargs[api.PARAM_LNG] = "0.0"
       newargs[api.PARAM_VOL_DIST] = 50
       logging.debug("backfilling with locationless listings...")
       locationless_result_set = fetch_and_dedup(newargs)
