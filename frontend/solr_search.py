@@ -153,7 +153,8 @@ def form_solr_query(args):
     solr_query += "*:*"
     query_is_empty = True
 
-  logging.info("solr_query: %s" % solr_query)
+  #mt1955@gmail.com:please keep as info for a while, then change to debug later
+  logging.info('solr_search.form_solr_query solr_query=%s' % solr_query)
 
   if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "":
     start_date = datetime.datetime.today()
@@ -161,14 +162,16 @@ def form_solr_query(args):
       start_date = datetime.datetime.strptime(
                      args[api.PARAM_VOL_STARTDATE].strip(), "%Y-%m-%d")
     except:
-      logging.error("malformed start date: %s" % args[api.PARAM_VOL_STARTDATE])
+      logging.debug('solr_search.form_solr_query malformed start date: %s' % 
+                    args[api.PARAM_VOL_STARTDATE])
     end_date = None
     if api.PARAM_VOL_ENDDATE in args and args[api.PARAM_VOL_ENDDATE] != "":
       try:
         end_date = datetime.datetime.strptime(
                        args[api.PARAM_VOL_ENDDATE].strip(), "%Y-%m-%d")
       except:
-        logging.error("malformed end date: %s" % args[api.PARAM_VOL_ENDDATE])
+        logging.debug('solr_search.form_solr_query malformed end date: %s' % 
+                       args[api.PARAM_VOL_ENDDATE])
     if not end_date:
       end_date = start_date
     start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
@@ -188,7 +191,8 @@ def form_solr_query(args):
     else:
       # illegal providername
       # TODO: throw 500
-      logging.error("illegal providername: " + args[api.PARAM_VOL_PROVIDER])
+      logging.error('solr_search.form_solr_query illegal providername: %s' % 
+                    args[api.PARAM_VOL_PROVIDER])
   # TODO: injection attack on sort
   if api.PARAM_SORT not in args:
     args[api.PARAM_SORT] = "r"
@@ -254,7 +258,7 @@ def form_solr_query(args):
     except:
       raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- "+
                      "please install correct private_keys.py file")
-  logging.info("backend="+args[api.PARAM_BACKEND_URL])
+  logging.debug("backend=" + args[api.PARAM_BACKEND_URL])
 
   if api.PARAM_START not in args:
     args[api.PARAM_START] = 1
@@ -353,7 +357,7 @@ def search(args):
 
 def query(query_url, args, cache):
   """run the actual SOLR query (no filtering or sorting)."""
-  #logging.info("Query URL: " + query_url + '&debugQuery=on')
+  logging.debug("Query URL: " + query_url + '&debugQuery=on')
   result_set = searchresult.SearchResultSet(urllib.unquote(query_url),
                                             query_url,
                                             [])
@@ -387,7 +391,8 @@ def query(query_url, args, cache):
         entry["detailurl"] = \
           "http://maps.google.com/maps?q=" + str(latstr) + "," + str(longstr)
       else:
-        logging.warning("skipping SOLR record %d: detailurl is missing..." % i)
+        logging.debug('solr_search.query skipping SOLR record' +
+                      ' %d: detailurl is missing...' % i)
         continue
 
     url = entry["detailurl"]
@@ -402,7 +407,7 @@ def query(query_url, args, cache):
     categories = entry.get('categories', '').split(',')
     org_name = entry.get('org_name', '')
     if re.search(r'[^a-z]acorn[^a-z]', " "+org_name+" ", re.IGNORECASE):
-      logging.warning("skipping: ACORN in org_name..")
+      logging.debug('solr_search.query skipping: ACORN in org_name')
       continue
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
                                     base_url, categories, org_name)
@@ -413,7 +418,7 @@ def query(query_url, args, cache):
     if (res.provider == "myproj_servegov" and
         re.search(r'[^a-z]acorn[^a-z]', " "+result_content+" ", re.IGNORECASE)):
       # per-provider rule because case-insensitivity
-      logging.warning("skipping: ACORN anywhere for myproj_servegov.")
+      logging.debug('solr_search.query skipping: ACORN in for myproj_servegov')
       continue
     res.orig_idx = i+1
     res.latlong = ""
@@ -458,7 +463,8 @@ def query(query_url, args, cache):
     if res.event_date_range:
       match = DATE_FORMAT_PATTERN.findall(res.event_date_range)
       if not match:
-        logging.warning('skipping Base record %d: bad date range: %s for %s' %
+        logging.debug('solr_search.query skipping record' +
+                        ' %d: bad date range: %s for %s' % 
                         (i, res.event_date_range, url))
         continue
       else:
@@ -540,8 +546,8 @@ def get_from_ids(ids):
     if not item_id in datastore_results:
       datastore_missing_ids.append(item_id)
   if datastore_missing_ids:
-    logging.warning('Could not find entry in datastore for ids: %s' %
-                    datastore_missing_ids)
+    logging.warning('solr_search.get_from_ids Could not find entry in' +
+                    ' datastore for ids: %s' % datastore_missing_ids)
 
   # Bogus args for search. TODO: Remove these, why are they needed above?
   args = {}
@@ -554,15 +560,16 @@ def get_from_ids(ids):
   # TODO(mblain): Figure out how to pull in multiple base entries in one call.
   for (item_id, volunteer_opportunity_entity) in datastore_results.iteritems():
     if not volunteer_opportunity_entity.base_url:
-      logging.warning('no base_url in datastore for id: %s' % item_id)
+      logging.warning('solr_search.get_from_ids no base_url in datastore ' +
+                      'for id: %s' % item_id)
       continue
-    logging.info("Datastore Entry: " + volunteer_opportunity_entity.base_url) ##
+    logging.debug("Datastore Entry: " + volunteer_opportunity_entity.base_url) ##
     try:
       query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + \
           '?wt=json&q=id:' + volunteer_opportunity_entity.base_url
     except:
       raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- "+
-                     "please install correct private_keys.py file")
+                      "please install correct private_keys.py file")
     temp_results = query(query_url, args, True)
     if not temp_results.results:
       # The base URL may have changed from under us. Oh well.
@@ -577,8 +584,8 @@ def get_from_ids(ids):
       volunteer_opportunity_entity.put()
       continue
     if temp_results.results[0].item_id != item_id:
-      logging.error('First result is not expected result. '
-                    'Expected: %s Found: %s. len(results): %s' %
+      logging.error('solr_search.get_from_ids First result not expected result.'
+                    ' Expected: %s Found: %s. len(results): %s' %
                     (item_id, temp_results.results[0].item_id, len(results)))
       # Not sure if we should touch the VolunteerOpportunity or not.
       continue

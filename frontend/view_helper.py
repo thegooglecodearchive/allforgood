@@ -61,11 +61,17 @@ def get_interest_for_opportunities(opp_ids):
     Dictionary of volunteer opportunity id: aggregated interest values.
   """
   others_interests = {}
+  try:
+    # this can time out
+    interests = modelutils.get_by_ids(models.VolunteerOpportunityStats, opp_ids)
+    for (item_id, interest) in interests.iteritems():
+      if interest:
+        others_interests[item_id] = getattr(interest, 
+                                     models.USER_INTEREST_LIKED)
+  except:
+    e, v = sys.exc_info()[:2]
+    logging.error("view_helper.get_interest_for_opportunities %s %s" % (e, v))
 
-  interests = modelutils.get_by_ids(models.VolunteerOpportunityStats, opp_ids)
-  for (item_id, interest) in interests.iteritems():
-    if interest:
-      others_interests[item_id] = getattr(interest, models.USER_INTEREST_LIKED)
   return others_interests
 
 

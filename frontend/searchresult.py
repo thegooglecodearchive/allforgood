@@ -332,7 +332,7 @@ class SearchResultSet(object):
 
       for result in self.results:
         if re.search('ACORN', result.title + result.snippet):
-          logging.info("blacklisting ACORN listing.")
+          logging.debug("blacklisting ACORN listing.")
           continue
         if result.merge_key not in opp_stats:
           unknown_keys.add(result.merge_key)

@@ -136,7 +136,7 @@ def require_moderator(handler_method):
         not self.user.get_user_info().moderator):
       self.error(403)
       self.response.out.write('<html><body>Permission denied.</body></html>')
-      logging.warning('Non-moderator blacklist attempt.')
+      logging.warning('views.require_moderator non-moderator blacklist attempt')
       return
     return handler_method(self)
   return decorate
@@ -151,7 +151,7 @@ def require_usig(handler_method):
     self.usig = userinfo.get_usig(self.user)
     if self.usig != self.request.get('usig'):
       self.error(403)
-      logging.warning('XSRF attempt. %s!=%s',
+      logging.warning('views.require_usig XSRF attempt %s!=%s',
                       self.usig, self.request.get('usig'))
       return
     return handler_method(self)
@@ -274,7 +274,7 @@ class consumer_ui_search_view(webapp.RequestHandler):
     campaign_id = template_values.get('campaign_id', None)
     if campaign_id:
       try:
-        logging.warn('Campaign ID is %s' % campaign_id)
+        logging.debug('Campaign ID is %s' % campaign_id)
         template_values['campaign_id'] = campaign_id
         import gdata
         import gdata.service
@@ -325,7 +325,7 @@ class consumer_ui_search_view(webapp.RequestHandler):
         # log the exception, but continue normally
         import traceback
         tb = traceback.format_exc()
-        logging.error('Error Handling Campaign: ' + str(tb) )
+        logging.error('views.handle_sponsored campaign: ' + str(tb))
     if template_values.has_key('campaign_id'):
       del template_values['campaign_id']
     return False
@@ -391,7 +391,9 @@ class search_view(webapp.RequestHandler):
 
     writer = apiwriter.get_writer(output)
     writer.setup(self.request, result_set)
-    logging.info("Clipped results: %d" % len(result_set.clipped_results))
+    #mt1955@gmail.com please keep as as info for a while
+    logging.info('views.search_view clipped %d' % 
+                  len(result_set.clipped_results))
     for result in result_set.clipped_results:
       writer.add_result(result)
 
@@ -611,8 +613,8 @@ class post_view(webapp.RequestHandler):
       if keystr in template_values:
         # should never happen-- throwing a 500 avoids silent failures
         self.response.set_status(500)
-        self.response.out.write("internal error: duplicate template key")
-        logging.error("internal error: duplicate template key: "+keystr)
+        self.response.out.write("internal viewserror: duplicate template key")
+        logging.error('views.post_view duplicate template key: %s' % keystr)
         return
       template_values[keystr] = str(vals[key])
     self.response.out.write(render_template(POST_RESULT_TEMPLATE,
@@ -730,7 +732,8 @@ class admin_view(webapp.RequestHandler):
                            userinfo.get_cookie('dev_appserver_login'))
     if self.request.get('usig') != usig:
       self.error(400)
-      logging.warning('XSRF attempt. %s!=%s', usig, self.request.get('usig'))
+      logging.warning('views.admin.post XSRF attempt. %s!=%s', 
+              usig, self.request.get('usig'))
       return
 
     keys_to_enable = self.request.POST.getall('enable')
@@ -979,12 +982,12 @@ class action_view(webapp.RequestHandler):
     new_value = self.request.get('i')
 
     if not user:
-      logging.warning('No user.')
+      logging.warning('views.action_view No user.')
       self.error(401)  # Unauthorized
       return
 
     if not opp_id or not base_url or not new_value:
-      logging.warning('bad param')
+      logging.warning('views.action_view bad param')
       self.error(400)  # Bad request
       return
 
@@ -1001,7 +1004,7 @@ class action_view(webapp.RequestHandler):
 
     if not xsrf_header_found:
       self.error(400)
-      logging.warning('Attempted XSRF.')
+      logging.warning('views.action_view Attempted XSRF.')
       return
 
     user_entity = user.get_user_info()
@@ -1063,10 +1066,10 @@ class static_content(webapp.RequestHandler):
     if debug == '1':
       path = os.path.join(os.path.dirname(__file__), 'html/'+
                           urls.STATIC_CONTENT_FILES[self.request.path])
-      logging.info("debug: reading html from "+path)
+      logging.debug("debug: reading html from "+path)
       fh = open(path, 'r')
       text = fh.read()
-      logging.info("read %d bytes." % len(text))
+      logging.debug("read %d bytes." % len(text))
 
     if not text:
       text = memcache.get(self.STATIC_CONTENT_MEMCACHE_KEY + remote_url)
