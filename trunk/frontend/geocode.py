@@ -78,13 +78,12 @@ def geocode(addr, usecache=True, retries=4):
     # pylint: disable-msg=W0612
     respcode, zoom, lat, lng = res.split(",")
   except:
-    logging.error(str(datetime.now())+
-                  ": unparseable geocoder response: "+res[0:80])
+    logging.warning('geocode.geocode unparseable response: ' + res[0:80])
     respcode, zoom, lat, lng = 999, 0, 0, 0
 
   respcode = int(respcode)
   if respcode == 500 or respcode == 620:
-    logging.warn(str(datetime.now())+"geocoder quota exceeded-- sleeping...")
+    logging.warning('geocode.geocode geocoder quota exceeded-- sleeping...')
     time.sleep(1)
     return geocode(addr, usecache, retries-1)
 

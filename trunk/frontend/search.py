@@ -293,8 +293,9 @@ def fetch_and_dedup(args):
     logging.debug("Searching using SOLR backend")
     result_set = solr_search.search(args)
   else:
-    logging.error("Unknown backend type: " + args[api.PARAM_BACKEND_TYPE] +
-                  "Defaulting to Base search")
+    logging.error('search.fetch_and_dedup Unknown backend type: ' + 
+                  args[api.PARAM_BACKEND_TYPE] +
+                  ' defaulting to Base search')
     args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_BASE
     result_set = base_search.search(args)
 

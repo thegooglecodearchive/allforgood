@@ -50,7 +50,7 @@ class RegexRewriter(QueryRewriter):
   def rewrite_using_regexp(self, query):
     """if part of query matches the regexp, add param to query"""
     updated_query = query
-    logging.info("Regexp rewrite query: " + query)
+    logging.debug("Regexp rewrite query: " + query)
 
     search_match =  re.search(self.regex, query, re.I)
     if search_match:
