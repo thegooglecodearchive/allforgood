@@ -133,3 +133,13 @@ def safe_str(instr):
         continue # discard
   return return_val
 
+
+def safe_int(given, default_value = 0):
+  """helper function for getting int values """
+  return_val = default_value
+  try:
+    return_val = int(given)
+  except:
+    pass
+
+  return return_val

@@ -20,6 +20,7 @@ typos become compile-time errors.
 PARAM_NUM = 'num'
 CONST_MIN_NUM = 1
 CONST_MAX_NUM = 999
+CONST_DFLT_NUM = 10
 
 PARAM_START = 'start'
 CONST_MIN_START = 1

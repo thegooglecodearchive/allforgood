@@ -23,7 +23,7 @@ import logging
 import copy
 
 from versioned_memcache import memcache
-from utils import safe_str
+from utils import safe_str, safe_int
 
 import api
 import base_search
@@ -83,8 +83,8 @@ def search(args):
 
   # note: key cannot exceed 250 bytes
   memcache_key = hashlib.md5('search:' + normalized_query_string).hexdigest()
-  start = int(args[api.PARAM_START])
-  num = int(args[api.PARAM_NUM])
+  start = safe_int(args[api.PARAM_START], api.CONST_MIN_START)
+  num = safe_int(args[api.PARAM_NUM], api.CONST_DFLT_NUM)
 
   result_set = None
   if use_cache:
@@ -139,11 +139,11 @@ def normalize_query_values(args):
   def dbgargs(arg):
     logging.debug("args[%s]=%s" % (arg, args[arg]))
 
-  num = int(args.get(api.PARAM_NUM, 10)) 
+  num = safe_int(args[api.PARAM_NUM], api.CONST_DFLT_NUM) 
   args[api.PARAM_NUM] = min_max(num, api.CONST_MIN_NUM, api.CONST_MAX_NUM)
   dbgargs(api.PARAM_NUM)
 
-  start_index = int(args.get(api.PARAM_START, 1)) 
+  start_index = safe_int(args[api.PARAM_START], api.CONST_MIN_START) 
   args[api.PARAM_START] = min_max(
     start_index, api.CONST_MIN_START, api.CONST_MAX_START-num)
   dbgargs(api.PARAM_START)
@@ -248,9 +248,9 @@ def normalize_query_values(args):
     args[api.PARAM_LAT] = args[api.PARAM_LAT].strip()
     args[api.PARAM_LNG] = args[api.PARAM_LNG].strip()
     if api.PARAM_VOL_DIST in args:
-      args[api.PARAM_VOL_DIST] = int(args[api.PARAM_VOL_DIST])
+      args[api.PARAM_VOL_DIST] = safe_int(args[api.PARAM_VOL_DIST])
     else:
-      zoom = int(zoom)
+      zoom = safe_int(zoom, 1)
       if zoom == 1:
         # country zoomlevel is kinda bogus--
         # 500 mile search radius (avoids 0.0,0.0 in the atlantic ocean)
@@ -336,7 +336,8 @@ def fetch_result_set(args):
                   str(result_set.num_merged_results))
     if (not result_set.has_more_results
         and result_set.num_merged_results <
-        int(args[api.PARAM_NUM]) + int(args[api.PARAM_START])):
+        (safe_int(args[api.PARAM_NUM], api.CONST_DFLT_NUM) + 
+         safe_int(args[api.PARAM_START], api.CONST_MIN_START))):
       return True
     return False
 
