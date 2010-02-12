@@ -139,13 +139,21 @@ def normalize_query_values(args):
   def dbgargs(arg):
     logging.debug("args[%s]=%s" % (arg, args[arg]))
 
+  if not api.PARAM_NUM in args:
+    args[api.PARAM_NUM] = api.CONST_DFLT_NUM
+
   num = safe_int(args[api.PARAM_NUM], api.CONST_DFLT_NUM) 
   args[api.PARAM_NUM] = min_max(num, api.CONST_MIN_NUM, api.CONST_MAX_NUM)
+
   dbgargs(api.PARAM_NUM)
 
-  start_index = safe_int(args[api.PARAM_START], api.CONST_MIN_START) 
-  args[api.PARAM_START] = min_max(
-    start_index, api.CONST_MIN_START, api.CONST_MAX_START-num)
+  if not api.PARAM_START in args:
+    args[api.PARAM_START] = api.CONST_MIN_START
+  else:
+    args[api.PARAM_START] = min_max(
+                safe_int(args[api.PARAM_START], api.CONST_MIN_START), 
+                api.CONST_MIN_START, api.CONST_MAX_START - num)
+
   dbgargs(api.PARAM_START)
   
   if api.PARAM_OVERFETCH_RATIO in args:
