@@ -33,7 +33,10 @@ function createExampleSearchText() {
     } else {
       var pop_str = popularSearches[i] + '</a>'
     }
-    if (popularSearches[i] && popularSearches[i].indexOf('Haiti') >= 0) {
+    if (popularSearches[i] && popularSearches[i].indexOf('Chile') >= 0) {
+      links.push('<a onclick="setKeywordAndExecute(\'Chile\');return false;"' +
+        'href="javascript:void(0);">' + pop_str);
+    } else if (popularSearches[i] && popularSearches[i].indexOf('Haiti') >= 0) {
       links.push('<a onclick="setKeywordAndExecute(\'Haiti\');return false;"' +
         'href="javascript:void(0);">' + pop_str);
     } else {
