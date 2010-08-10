@@ -83,6 +83,8 @@ PARAM_VOL_TZ = 'vol_tz'
 PARAM_VOL_PROVIDER = 'vol_provider'
 PARAM_VOL_STARTDAYOFWEEK = 'vol_startdayofweek'
 
+PARAM_VIRTUAL = 'virtual'
+
 PARAM_BACKFILL = 'bf'
 PARAM_BACKFILL_TITLES = 'bft'
 

@@ -35,6 +35,8 @@ URL_ACTION = '/action'  # User actions like starring
 URL_PSA = '/psa' # Redirect to home page for tracking adsense psas
 URL_SPEC = '/spec'
 URL_SHORT_NAMES = '/s/.*'
+URL_APPS = '/apps'
+URL_COS = '/golocal'
 
 STATIC_CONTENT_LOCATION = 'http://allforgood.googlecode.com/svn/trunk/frontend/html/'
 
@@ -52,7 +54,7 @@ STATIC_CONTENT_FILES = {
   '/faq' : 'faq.html',
   '/tos' : 'tos.html',
   '/api_tos' : 'api_tos.html',
-  '/apps' : 'apps.html',
+  #'/apps' : 'apps.html',
   '/dmca' : 'dmca.html',
   '/docs/api.html' : 'api.html',
   '/partner_terms' : 'partner_terms.html',

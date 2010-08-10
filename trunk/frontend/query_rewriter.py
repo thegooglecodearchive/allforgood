@@ -91,6 +91,10 @@ def get_rewriters():
     ' starving underfed underprivileged thanksgiving soup+kitchen poverty' +
     ' poor nutrition frac malnourished foodbank', 'category:Hunger')
 
+  earthday_rewriter = KeywordRewriter('environment nature ' +
+    'environmental outdoors gardening garden park wetlands forest forests ' +
+    'tree trees green trail trails sierra+club', 'category:earthday')
+
   nature_rewriter = KeywordRewriter('environment nature ' +
     'environmental outdoors gardening garden park wetlands forest forests ' +
     'tree trees green trail trails sierra+club', 'category:nature')
@@ -174,6 +178,7 @@ def get_rewriters():
   rewriters.add_rewriters([
       # topics
       hunger_rewriter,
+      earthday_rewriter,
       nature_rewriter,
       education_rewriter,
       animals_rewriter,
@@ -193,8 +198,8 @@ def get_rewriters():
       graphicdesigner_rewriter,
       spanish_rewriter,
       # special events
+      mlk_rewriter
       #september11_rewriter
-      mlk_rewriter,
       ])
 
   return rewriters

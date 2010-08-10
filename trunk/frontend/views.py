@@ -80,6 +80,8 @@ MODERATE_TEMPLATE = 'moderate.html'
 STATIC_CONTENT_TEMPLATE = 'static_content.html'
 NOT_FOUND_TEMPLATE = 'not_found.html'
 SPEC_TEMPLATE = 'spec.html'
+COS_TEMPLATE = 'cos.html'
+APPS_TEMPLATE = 'apps.html'
 
 DASHBOARD_BASE_URL = "http://google1.osuosl.org/~footprint/datahub/dashboard/"
 DATAHUB_LOG = DASHBOARD_BASE_URL + "load_gbase.log.bz2"
@@ -280,6 +282,27 @@ class not_found_handler(webapp.RequestHandler):
                                             template_values))
     except DeadlineExceededError:
       deadline_exceeded(self, "not_found_handler")
+
+
+class apps_view(webapp.RequestHandler):
+  @expires(0)
+  def get(self):
+    try:
+      template_values = get_default_template_values(self.request, 'APPS')
+      self.response.out.write(render_template(APPS_TEMPLATE,
+                                            template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "apps_handler")
+
+class cos_view(webapp.RequestHandler):
+  @expires(0)
+  def get(self):
+    try:
+      template_values = get_default_template_values(self.request, 'COS')
+      self.response.out.write(render_template(COS_TEMPLATE,
+                                            template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "cos_handler")
 
 		
 class consumer_ui_search_redir_view(webapp.RequestHandler):
@@ -1120,7 +1143,11 @@ class static_content(webapp.RequestHandler):
   def get(self):
     """HTTP get method."""
     try:
-      remote_url = (urls.STATIC_CONTENT_LOCATION +
+      if urls.STATIC_CONTENT_FILES[self.request.path] == "app.html":
+      	remote_url = ("http://www.allforgood.org/" +
+          urls.STATIC_CONTENT_FILES[self.request.path])
+      else:
+      	remote_url = (urls.STATIC_CONTENT_LOCATION +
           urls.STATIC_CONTENT_FILES[self.request.path])
 
       # &debug=1 reads from local files rather than the repository for debugging

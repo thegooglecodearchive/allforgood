@@ -45,7 +45,9 @@ APPLICATION = webapp.WSGIApplication(
      (urls.URL_MODERATE_BLACKLIST, views.moderate_blacklist_view),
      (urls.URL_DATAHUB_DASHBOARD, views.datahub_dashboard_view),
      (urls.URL_SPEC, views.spec_view),
-     (urls.URL_SHORT_NAMES, views.short_name_view)
+     (urls.URL_SHORT_NAMES, views.short_name_view),
+     (urls.URL_APPS, views.apps_view),
+     (urls.URL_COS, views.cos_view)
     ] +
     [ (url, views.static_content) for url in
          urls.STATIC_CONTENT_FILES.iterkeys() ] + 
@@ -58,7 +60,7 @@ def main():
     logging.info("deploy.is_local_development()==True")
   else:
     # we have lots of debug and info's
-    logging.getLogger().setLevel(logging.WARNING)
+    logging.getLogger().setLevel(logging.INFO)
   run_wsgi_app(APPLICATION)
 
 if __name__ == "__main__":
