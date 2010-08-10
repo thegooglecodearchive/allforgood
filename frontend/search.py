@@ -335,7 +335,10 @@ class BackfillQuery(object):
 
 def fetch_result_set(args):
   """Validate the search parameters, and perform the search."""
-  # TODO: terrible hack-- want to rewrite MLK queries
+
+  allow_virtual = False
+  if api.PARAM_VIRTUAL in args and args[api.PARAM_VIRTUAL] == "1":
+    allow_virtual = True
 
   def can_use_backfill(args, result_set):
     logging.debug("can_use_backfill: result_set.has_more_results="+
@@ -388,7 +391,7 @@ def fetch_result_set(args):
         result_set.append_results(bf_res)
 
     # backfill with locationless listings
-    if (args[api.PARAM_LAT] != "0.0" or args[api.PARAM_LNG] != "0.0"):
+    if allow_virtual and (args[api.PARAM_LAT] != "0.0" or args[api.PARAM_LNG] != "0.0"):
       backfill_num += 1
       newargs = copy.copy(args)
       newargs[api.PARAM_LAT] = newargs[api.PARAM_LNG] = "0.0"

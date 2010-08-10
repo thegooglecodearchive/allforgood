@@ -355,7 +355,9 @@ class SearchResultSet(object):
     remove_blacklisted_results()
     for res in self.results:
       merge_result(res)
-    compute_more_less()
+    #compute_more_less()
+    if len(self.results) != len(self.merged_results):
+      logging.info("dedup: merged %d to %d results" % (len(self.results), len(self.merged_results)))
 
     self.num_merged_results = len(self.merged_results)
     if len(self.results) == 0:

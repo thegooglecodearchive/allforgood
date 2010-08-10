@@ -25,7 +25,13 @@
 
 {% block prefooter %}
 {% if optimize_page %}
+  <script type='text/javascript' src='/zx{{version}}/js/snippets_list.js'></script>
+  <script type='text/javascript' src='/zx{{version}}/js/map.js'></script>
+  <script type='text/javascript' src='/zx{{version}}/js/search_results.js'></script>
+  <script type='text/javascript' src='/zx{{version}}/js/calendar_widget.js'></script>
+<!--
   <script type='text/javascript' src='http://open.gmodules.com/ig/proxy?url=http%3A%2F%2Fsuprfetch.appspot.com%2F%3Furl%3D{{host}}%2Fzx{{version}}%2Fjs%2Fsnippets_list.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fmap.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fsearch_results.js%26url%3D{{host}}%2Fzx{{version}}%2Fjs%2Fcalendar_widget.js%26jsmin%3Dtrue'></script>
+-->
 {% else %}
   <script type='text/javascript' src='/zx{{version}}/js/snippets_list.js'></script>
   <script type='text/javascript' src='/zx{{version}}/js/map.js'></script>

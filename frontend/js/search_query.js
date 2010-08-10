@@ -18,6 +18,9 @@ function ensureSubmitForm() {
 }
 
 function setKeywordAndExecute(keywords) {
+  if (keywords == 'OilSpill') {
+    keywords = '"Oil Spill"';
+  }
   setInputFieldValue(el('keywords'), keywords);
   submitForm('keywords');
 }
@@ -28,12 +31,21 @@ function createExampleSearchText() {
   var html = 'Categories: ';
   var links = [];
   for (var i = 0; i < popularSearches.length; i++) {
+    var pop_str = popularSearches[i] + '</a>'
+    /*
     if (new_popular.indexOf(popularSearches[i]) != -1){
       var pop_str = popularSearches[i] + "</a><span class='new_pop'>New!</span>"
     } else {
       var pop_str = popularSearches[i] + '</a>'
     }
-    if (popularSearches[i] && popularSearches[i].indexOf('Chile') >= 0) {
+    */
+    if (popularSearches[i] && popularSearches[i].indexOf('OilSpill') >= 0) {
+      links.push('<a onclick="setKeywordAndExecute(\'OilSpill\');return false;"' +
+        'href="javascript:void(0);">' + pop_str);
+    } else if (popularSearches[i] && popularSearches[i].indexOf('EarthDay') >= 0) {
+      links.push('<a onclick="setKeywordAndExecute(\'Nature\');return false;"' +
+        'href="javascript:void(0);">' + pop_str);
+    } else if (popularSearches[i] && popularSearches[i].indexOf('Chile') >= 0) {
       links.push('<a onclick="setKeywordAndExecute(\'Chile\');return false;"' +
         'href="javascript:void(0);">' + pop_str);
     } else if (popularSearches[i] && popularSearches[i].indexOf('Haiti') >= 0) {
