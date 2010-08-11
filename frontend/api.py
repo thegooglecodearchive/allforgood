@@ -84,6 +84,7 @@ PARAM_VOL_PROVIDER = 'vol_provider'
 PARAM_VOL_STARTDAYOFWEEK = 'vol_startdayofweek'
 
 PARAM_VIRTUAL = 'virtual'
+PARAM_MERGE = 'merge'
 
 PARAM_BACKFILL = 'bf'
 PARAM_BACKFILL_TITLES = 'bft'
