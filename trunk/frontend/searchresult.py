@@ -207,6 +207,7 @@ class SearchResultSet(object):
     if self.estimated_merged_results > num:
       self.has_more_results = True
 
+
   def clip_merged_results(self, start, num):
     """clip to start/num using the merged results."""
     logging.debug("clip_merged_results: start=%d  num=%d  has_more=%s "
@@ -215,9 +216,11 @@ class SearchResultSet(object):
                    len(self.merged_results)))
     return self.clip_set(start, num, self.merged_results)
 
+
   def clip_results(self, start, num):
     """clip to start/num using the unmerged (original) results."""
     return self.clip_set(start, num, self.results)
+
 
   def track_views(self, num_to_incr=1):
     """increment impression counts for items in the set."""
@@ -232,7 +235,7 @@ class SearchResultSet(object):
       #  res.impressions = pagecount.IncrPageCount(res.item_id, 1)
     logging.debug(str(datetime.datetime.now())+" track_views: end")
 
-  def dedup(self):
+  def dedup(self, merge_by_date_and_location):
     """modify in place, merged by title and snippet."""
 
     def assign_merge_keys():
@@ -254,7 +257,7 @@ class SearchResultSet(object):
         res.merged_list = []
         res.merged_debug = []
 
-    def merge_result(res):
+    def merge_result(res, merge_by_date_and_location):
       """private helper function for dedup()"""
       merged = False
       for i, primary_result in enumerate(self.merged_results):
@@ -271,7 +274,10 @@ class SearchResultSet(object):
             self.merged_results[i].merged_list.append(res)
             self.merged_results[i].merged_debug.append(res.location + ":" +
                 res.startdate.strftime("%Y-%m-%d"))
-          merged = True
+          if not merge_by_date_and_location:
+            merged = False
+          else:
+            merged = True
           break
       if not merged:
         self.merged_results.append(res)
@@ -354,8 +360,8 @@ class SearchResultSet(object):
     assign_merge_keys()
     remove_blacklisted_results()
     for res in self.results:
-      merge_result(res)
-    #compute_more_less()
+      merge_result(res, merge_by_date_and_location)
+    compute_more_less()
     if len(self.results) != len(self.merged_results):
       logging.info("dedup: merged %d to %d results" % (len(self.results), len(self.merged_results)))
 
