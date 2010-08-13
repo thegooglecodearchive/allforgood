@@ -394,7 +394,7 @@ def fetch_result_set(args):
           res.backfill_number = backfill_num
           #logging.info("BackfillQuery %d: %s with %s" % 
           #             (res.backfill_number, bfq.title, res.title))
-        result_set.append_results(bf_res)
+        result_set.append_results(bf_res, True)
 
     # backfill with locationless listings
     if allow_virtual and (args[api.PARAM_LAT] != "0.0" or args[api.PARAM_LNG] != "0.0"):
@@ -408,7 +408,7 @@ def fetch_result_set(args):
         res.backfill_title = "locationless (virtual) listings"
         res.backfill_number = backfill_num
       old_len = len(result_set.results)
-      result_set.append_results(locationless_result_set)
+      result_set.append_results(locationless_result_set, True)
       logging.debug("#results=%d  #locationless=%d = new #results=%d" %
                     (old_len, len(locationless_result_set.results),
                     len(result_set.results)))

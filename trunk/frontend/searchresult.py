@@ -188,13 +188,13 @@ class SearchResultSet(object):
     self.pubdate = get_rfc2822_datetime()
     self.last_build_date = self.pubdate
 
-  def append_results(self, results):
+  def append_results(self, results, merge_by_date_and_location = False):
     """append a results array to this results set and rerun dedup()"""
     self.num_results = len(self.results) + len(results.results)
     self.results.extend(results.results)
     self.merged_results = []
     self.clipped_results = []
-    self.dedup()
+    self.dedup(merge_by_date_and_location)
 
 
   def clip_set(self, start, num, result_set):
@@ -304,6 +304,7 @@ class SearchResultSet(object):
           for merged_result in res.merged_list:
             def make_linkable(text, merged_result, res):
               """generate HTML hyperlink for text if merged_result != res."""
+              #TODO: find out if we still need to do this
               if merged_result.url != res.url:
                 return '<a href="' + merged_result.url + '">' + text + '</a>'
               else:

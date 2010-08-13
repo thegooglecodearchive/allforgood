@@ -58,12 +58,11 @@ def geocode(addr, usecache=True, retrying = False):
   if is_latlong(loc):
     # regexp allow missing comma
     # TODO: pick a smart default zoom, depending on population density.
-    return loc+",4"
+    return loc + ",4"
 
   loc = re.sub(r'^[^0-9a-z]+', r'', loc)
   loc = re.sub(r'[^0-9a-z]+$', r'', loc)
   loc = re.sub(r'\s\s+', r' ', loc)
-  logging.debug("geocode: loc=" + loc)
 
   memcache_key = "geocode:" + loc
   val = memcache.get(memcache_key)
@@ -76,7 +75,6 @@ def geocode(addr, usecache=True, retrying = False):
       {'q':loc.lower(), 'output':'csv', 'oe':'utf8', 'sensor':'false', 'gl':'us',
        'key':'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxQuOQhskTx7t90ovP5xOuY'+\
        '_YrlyqBQajVan2ia99rD9JgAcFrdQnTD4JQ'})
-
     fetchurl = "http://maps.google.com/maps/geo?%s" % params
     logging.info("geocode: cache miss, trying " + fetchurl)
     fetch_result = urlfetch.fetch(fetchurl, deadline = api.CONST_MAX_FETCH_DEADLINE)
@@ -88,17 +86,10 @@ def geocode(addr, usecache=True, retrying = False):
     logging.info("geocode: maps responded %s" % res)
     respcode, zoom, lat, lng = parse_geo_response(res)
     if respcode == '200':
-      # save to datastore
-      params = urllib.urlencode(
-        {'q':'set',
-         'loc':loc.lower(), 
-         'rsp':res,
-      })
-      fetchurl = "http://pipes.appspot.com/geo?%s" % params
-      try:
-        urlfetch.fetch(fetchurl, headers={'User-Agent' : '/geo setter'})
-      except:
-        pass
+      logging.info("geocode: success " + loc)
+      val = lat+","+lng+","+zoom
+      memcache.set(memcache_key, val)
+      return val
 
   if retrying or respcode == '620':
     params = urllib.urlencode(
@@ -109,19 +100,13 @@ def geocode(addr, usecache=True, retrying = False):
     res = fetch_result.content
     logging.info("geocode: datastore responded %s" % res)
     respcode, zoom, lat, lng = parse_geo_response(res)
-    if respcode == '620':
-      if not retrying:
-        logging.info("geocode: retrying " + loc)
-        return geocode(addr, usecache, True)
-      else:
-        return ""
+    if respcode == '200':
+      val = lat+","+lng+","+zoom
+      memcache.set(memcache_key, val)
+      return val
+    if respcode == '620' and not retrying:
+      logging.info("geocode: retrying " + loc)
+      return geocode(addr, usecache, True)
 
-  if respcode == '200':
-    logging.info("geocode: success " + loc)
-    val = lat+","+lng+","+zoom
-    memcache.set(memcache_key, val)
-    return val
-  else:
-    logging.info("geocode: failed " + loc)
-    return ""
-
+  logging.info("geocode: failed " + loc)
+  return ""
