@@ -21,7 +21,7 @@
 from xml.dom import minidom
 import sys
 import os
-import urllib
+import urllib2
 import re
 import thread
 import time
@@ -53,7 +53,7 @@ def read_metros():
 def crawl_metros():
   #<geo dataType="RawString" fieldName="geo" href="http://waterloo.craigslist.org/" originalElement="a" type="field">waterloo / cedar falls</geo>
   print "getting toplevel geos..."
-  fh = urllib.urlopen("http://www.dapper.net/RunDapp?dappName=craigslistmetros&v=1&applyToUrl=http%3A%2F%2Fgeo.craigslist.org%2Fiso%2Fus")
+  fh = urllib2.urlopen("http://www.dapper.net/RunDapp?dappName=craigslistmetros&v=1&applyToUrl=http%3A%2F%2Fgeo.craigslist.org%2Fiso%2Fus")
   geostr = fh.read()
   fh.close()
   dom = minidom.parseString(geostr)
@@ -64,7 +64,7 @@ def crawl_metros():
   for node in nodes:
     domain = node.getAttribute("href")
     #print "finding submetros within", domain
-    fh1 = urllib.urlopen(domain)
+    fh1 = urllib2.urlopen(domain)
     domain_homepage = fh1.read()  
     fh1.close()  
   
@@ -102,14 +102,14 @@ def crawl(url, ignore):
   crawlers = crawlers + 1
   crawlers_lock.release()
 
-  #proxied_url = "http://suprfetch.appspot.com/?url="+urllib.quote(url+"?for_google_and_craigslist.org_project_footprint_please_dont_block")
-  proxied_url = "http://suprfetch.appspot.com/?url="+urllib.quote(url)
+  #proxied_url = "http://suprfetch.appspot.com/?url="+urllib2.quote(url+"?for_google_and_craigslist.org_project_footprint_please_dont_block")
+  proxied_url = "http://suprfetch.appspot.com/?url="+urllib2.quote(url)
 
   page = ""
   attempts = 0
   while attempts < 3 and page == "":
     try:
-      fh = urllib.urlopen(proxied_url)
+      fh = urllib2.urlopen(proxied_url)
       page = fh.read()
       fh.close()
     except:

@@ -19,6 +19,7 @@ Geocoder and address functions for backend, using Google Maps API.
 import re
 import time
 import urllib
+import urllib2
 import xml_helpers as xmlh
 from datetime import datetime
 
@@ -127,7 +128,7 @@ def geocode_call(query, retries=4):
      'key':'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxQuOQhskTx7t90ovP5xOuY' + \
        '_YrlyqBQajVan2ia99rD9JgAcFrdQnTD4JQ'})
   try:
-    maps_fh = urllib.urlopen("http://maps.google.com/maps/geo?%s" % params)
+    maps_fh = urllib2.urlopen("http://maps.google.com/maps/geo?%s" % params)
     res = maps_fh.read()
     maps_fh.close()
   except IOError, err:
@@ -149,6 +150,8 @@ def geocode_call(query, retries=4):
     return None
   if respcode in (403, 500, 620):  # problem with the server
     print_debug("Connection problem or quota exceeded.  Sleeping...")
+    if retries == 4:
+      xmlh.print_progress("geocoder: %d" % respcode, "", SHOW_PROGRESS)
     time.sleep(1)
     return geocode_call(query, retries - 1)
   if respcode != 200:
