@@ -33,7 +33,7 @@ expects the caller to pass in the providerID and providerName)
 
 import xml_helpers as xmlh
 import re
-import urllib
+import urllib2
 from datetime import datetime
 
 MAX_BLANKROWS = 2
@@ -88,7 +88,7 @@ def record_to_fpxml(record):
   fpxml += '<dateTimeDurations>'
   fpxml += '<dateTimeDuration>'
   if ('StartDate' in record and
-      recordval(record,'StartDate').find("ongoing") >= 0):
+      recordval(record,'StartDate').lower().find("ongoing") >= 0):
     fpxml += xmlh.output_val('openEnded', 'Yes')
   else:
     fpxml += xmlh.output_val('openEnded', 'No')
@@ -140,7 +140,15 @@ def record_to_fpxml(record):
   fpxml += '</location>'
   fpxml += '</locations>'
   fpxml += xmlh.output_val('paid', recordval(record,'Paid'))
-  fpxml += xmlh.output_val('minimumAge', recordval(record,'MinimumAge'))
+  
+  v = recordval(record,'MinimumAge')
+  if v:
+    try:
+      v = int(v)
+    except:
+      v = ''
+  fpxml += xmlh.output_val('minimumAge', str(v))
+ 
   # TODO: seniors only, kidfriendly
   fpxml += xmlh.output_val('sexRestrictedTo',
                            recordval(record,'SexRestrictedTo'))
@@ -199,7 +207,7 @@ def parse_gspreadsheet(instr, data, updated, progress):
 
 def read_gspreadsheet(url, data, updated, progress):
   """read the spreadsheet into a big string."""
-  infh = urllib.urlopen(url)
+  infh = urllib2.urlopen(url)
   instr = infh.read()
   infh.close()
   return parse_gspreadsheet(instr, data, updated, progress)
@@ -314,10 +322,12 @@ def parse(instr, maxrecs, progress):
   header_desc = cellval(data, header_row+1, header_startcol)
   if not header_desc:
     parser_error("blank row not allowed below header row")
-  header_desc = header_desc.lower()
-  data_startrow = header_row + 1
-  if header_desc.find("up to") >= 0:
-    data_startrow += 1
+    data_startrow = 3
+  else:
+    header_desc = header_desc.lower()
+    data_startrow = header_row + 1
+    if header_desc.find("up to") >= 0:
+      data_startrow += 1
 
   # find the data
   global CURRENT_ROW

@@ -14,9 +14,13 @@
 # limitations under the License.
 
 """Contains Tagger classes used in footprint_lib.py to tag listings"""
+from datetime import datetime, date, time
+
 
 import xml_helpers as xmlh
 import re
+
+
 
 # Different Record classes are used to represent volunteer listings that are
 # being run through the taggers in different formats.  Each class must have
@@ -69,7 +73,7 @@ class Tagger(object):
     # from multiple types of Taggers.
     self.tagging_functions = []
 
-  def do_tagging(self, rec, feedinfo):
+  def do_tagging(self, rec, feedinfo, tag_count_dict):
     """takes a record to be tagged, runs tagging functions"""
     scores = [f(rec, feedinfo) for f in self.tagging_functions]
 
@@ -82,8 +86,13 @@ class Tagger(object):
     # add tag if the score, after all tagging functions, exceeds the threshold
     if score > self.score_threshold:
       rec.add_tag(self.tag_name)
+      # and ppl asks us, "how many records were tagged X?"
+      if not self.tag_name in tag_count_dict.keys():
+        tag_count_dict.setdefault(self.tag_name, 1)
+      else:
+        tag_count_dict[self.tag_name] += 1
 
-    return rec
+    return rec, tag_count_dict
 
 class RegexTagger(Tagger):
   """RegexTagger is  a class for applying tagging based on matching a
@@ -109,6 +118,53 @@ class RegexTagger(Tagger):
           score += self.regex_dict[regex]
     score /= len(self.regex_dict)
     return score
+
+class DateRangeTagger(Tagger):
+  """class for applying tagging based on date range"""
+  def __init__(self, tag_name, month1, day1, month2, day2):
+    """Create relevant variables for the RegexTagger."""
+    Tagger.__init__(self, tag_name)
+    now = datetime.now()
+    year1 = now.year
+    if month2 < month1:
+      year2 = year1 + 1
+    else:
+      year2 = year1
+   
+    year1 = now.year
+    self.date_range_start = datetime(year1 , month1, day1)
+    self.date_range_end = datetime(year2 , month2, day2)
+    self.score_threshold = 0.0
+    self.tagging_functions.append(self.tag_by_date_range)
+
+  def tag_by_date_range(self, rec, feedinfo):
+    rtn = 0.0
+    str_start_date = rec.get_val("startDate")
+    if len(str_start_date) > 0:
+      try:
+        start_date = datetime.strptime(str_start_date, "%m/%d/%Y")
+      except:
+        try:
+          start_date = datetime.strptime(str_start_date, "%Y-%m-%d")
+        except:
+          start_date = None
+      if start_date is not None and start_date >= self.date_range_start and start_date <= self.date_range_end:
+        rtn = 1.0
+
+    str_end_date = rec.get_val("endDate")
+    if rtn < 1.0 and len(str_end_date) > 0:
+      try:
+        end_date = datetime.strptime(str_end_date, "%m/%d/%Y")
+      except:
+        try:
+          end_date = datetime.strptime(end_date, "%Y-%m-%d")
+        except:
+          end_date = None
+      if end_date is not None and end_date >= self.date_range_start and end_date <= self.date_range_end:
+        rtn = 1.0
+
+    return rtn
+
 
 class FeedProviderIDTagger(Tagger):
   """class for applying tagging based on matching a
@@ -196,11 +252,21 @@ def get_taggers():
   # nature_tagger = KeywordTagger('Nature', {'environment':1.0, 'nature':1.0,
   # 'environmental':1.0, 'outdoors':1.0, 'gardening':1.0, 'garden':1.0,
   # 'park':1.0, 'wetlands':1.0,'forest':1.0, 'trees':1.0})
+  mlk_date_tagger = DateRangeTagger('MLK', 1, 15, 1, 20)
+  mlk_tagger = WSVKeywordTagger('MLK', 'mlk' +
+    ' martin+luther mlktech king+day donate+blood blood+drive' +
+    ' day+on+not+a+day+off day+of+service')
 
-  mlk_tagger = WSVKeywordTagger('MLK', 'mlk mlk+day day+of+service' +
-    ' mlk+day+of+service martin+luther+king+jr+day' +
-    ' martin+luther+king+jr+day+of+service' +
-    ' a+day+on+not+a+day+off mlktech')
+  oilspill_tagger = WSVKeywordTagger('OilSpill', 'oil+spill' +
+    ' bp gulf+cleanup oil+cleanup spill+cleanup')
+
+  earthday_tagger = WSVKeywordTagger('EarthDay', 'environment ' +
+    ' nature environmental outdoors gardening garden park' +
+    ' wetlands forest forests tree trees green trail trails' +
+    ' sierra+club')
+
+  mom_tagger = WSVKeywordTagger('Moms', 'mom' +
+    ' mother family families kids children')
 
   hunger_tagger = WSVKeywordTagger('Hunger', 'anti-hunger' +
     ' breakfast childhood+hunger dinner feeding+america food food+bank' +
@@ -300,6 +366,9 @@ def get_taggers():
       '129', # washoecounty
       '130', # universalgiving
       #UGC '131', 911dayofservice
+      #'132', newyorkcares
+      #'133', servicenation
+      '134', #samaritan
       '1002', # girl scouts
       '1003', # united jewish communities
       '1004', # sierra club
@@ -313,8 +382,8 @@ def get_taggers():
       '1055', # Jewish Big Brothers Big Sisters
       '1056', # American Red Cross
       '1063', # great non-profits
+      '1143',  # cns.gov /dc
       #vetted but not live         Tech Mission
-      #vetted but not live         American Red Cross (via VM)
       ])
 
   # taggers is the list of Tagger subclass instances to run each row through
@@ -324,7 +393,9 @@ def get_taggers():
     # vetted/UGC
     vetted_tagger,
     # topics
-    mlk_tagger,
+    earthday_tagger,
+    mlk_tagger, #mlk_date_tagger,
+    mom_tagger,
     hunger_tagger,
     nature_tagger, education_tagger, animals_tagger, health_tagger,
     seniors_tagger, technology_tagger, hph_tagger, tutoring_tagger,
@@ -332,6 +403,7 @@ def get_taggers():
     # skills
     artist_tagger, lawyer_tagger, doctor_tagger, programmer_tagger,
     repairman_tagger, videographer_tagger, graphicdesigner_tagger,
+    oilspill_tagger,
     spanish_tagger,
     # special events
     #september11_tagger
