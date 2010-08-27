@@ -210,7 +210,7 @@ class SearchResultSet(object):
 
   def clip_merged_results(self, start, num):
     """clip to start/num using the merged results."""
-    logging.debug("clip_merged_results: start=%d  num=%d  has_more=%s "
+    logging.info("clip_merged_results: start=%d  num=%d  has_more=%s "
                   "(merged len = %d)" %
                   (start, num, str(self.has_more_results),
                    len(self.merged_results)))

@@ -51,7 +51,8 @@ def run_query_rewriters(query):
 # and any path info is supposed to be homogenized into this,
 # e.g. /listing/56_foo should be resolved into [('id',56)]
 # by convention, repeated args are ignored, LAST ONE wins.
-def search(args):
+def search(args, dumping = False):
+  logging.info("search.search enter")
   """run a search against the backend specified by the 'backend' arg.
   Returns a result set that's been (a) de-dup'd ("merged") and (b) truncated
   to the appropriate number of results ("clipped").  Impression tracking
@@ -98,10 +99,12 @@ def search(args):
       logging.debug('not in cache: "' + normalized_query_string + '"')
 
   if not result_set:
-    result_set = fetch_result_set(args)
+    result_set = fetch_result_set(args, dumping)
     memcache.set(memcache_key, result_set, time=CACHE_TIME)
 
   result_set.clip_merged_results(start, num)
+  logging.info("search.search clip_merged_results completed")
+
   # TODO: for better results, we should segment CTR computation by
   # homepage vs. search views, etc. -- but IMHO it's better to give
   # up and outsource stats to a web-hosted service.
@@ -110,7 +113,12 @@ def search(args):
     # needed to populate stats
     result_set.track_views(num_to_incr=0)
   else:
-    result_set.track_views(num_to_incr=1)
+    if not dumping:
+      result_set.track_views(num_to_incr=1)
+    else:
+      result_set.merged_impressions = 0
+
+  logging.info("search.search completed")
   return result_set
 
 def min_max(val, minval, maxval):
@@ -219,7 +227,9 @@ def normalize_query_values(args):
     # note that this implementation also makes q=nature match
     # a town near santa ana, CA
     # http://www.allforgood.org/search#q=nature&vol_loc=nature%2C%20USA
-    args[api.PARAM_VOL_LOC] = args[api.PARAM_Q] + " USA"
+    # args[api.PARAM_VOL_LOC] = args[api.PARAM_Q] + " USA"
+    # MT: 8/26/2010 - in practice that causes a lot of 602 results in geocode, eg "Laywers, USA"
+    args[api.PARAM_VOL_LOC] = "USA"
 
   args[api.PARAM_BACKFILL] = ""
   # First run query_rewriter classes
@@ -289,8 +299,9 @@ def normalize_query_values(args):
     args[api.PARAM_VOL_LOC] = args[api.PARAM_VOL_DIST] = ""
   dbgargs(api.PARAM_VOL_LOC)
 
-def fetch_and_dedup(args):
+def fetch_and_dedup(args, dumping = False):
   """fetch, score and dedup."""
+  logging.info("search.fetch_and_dedup enter")
   if api.PARAM_BACKEND_TYPE not in args:
     args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_SOLR
 
@@ -299,7 +310,7 @@ def fetch_and_dedup(args):
     result_set = base_search.search(args)
   elif args[api.PARAM_BACKEND_TYPE] == api.BACKEND_TYPE_SOLR:
     logging.debug("Searching using SOLR backend")
-    result_set = solr_search.search(args)
+    result_set = solr_search.search(args, dumping)
   else:
     logging.error('search.fetch_and_dedup Unknown backend type: ' + 
                   args[api.PARAM_BACKEND_TYPE] +
@@ -307,14 +318,21 @@ def fetch_and_dedup(args):
     args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_BASE
     result_set = base_search.search(args)
 
-  scoring.score_results_set(result_set, args)
-
-  merge_by_date_and_location = True
-  if "key" in args:
-    merge_by_date_and_location = False
-    if api.PARAM_MERGE in args and args[api.PARAM_MERGE] == "1":
-      merge_by_date_and_location = True
-  result_set.dedup(merge_by_date_and_location)
+  if dumping:
+    result_set.merged_results = result_set.results
+    for idx, result in enumerate(result_set.merged_results):
+      result_set.merged_results[idx].merge_key = ''
+      result_set.merged_results[idx].merged_list = []
+      result_set.merged_results[idx].merged_debug = []
+      result_set.merged_results[idx].merged_impressions = 0
+  else:
+    scoring.score_results_set(result_set, args)
+    merge_by_date_and_location = True
+    if "key" in args:
+      merge_by_date_and_location = False
+      if api.PARAM_MERGE in args and args[api.PARAM_MERGE] == "1":
+        merge_by_date_and_location = True
+    result_set.dedup(merge_by_date_and_location)
 
   return result_set
 
@@ -339,8 +357,9 @@ class BackfillQuery(object):
       logging.debug("BackfillQuery: &%s=%s" % (param_name, param_value))
 
 
-def fetch_result_set(args):
+def fetch_result_set(args, dumping = False):
   """Validate the search parameters, and perform the search."""
+  logging.info("search.fetch_result_set enter")
 
   allow_virtual = False
   if api.PARAM_VIRTUAL in args and args[api.PARAM_VIRTUAL] == "1":
@@ -358,7 +377,7 @@ def fetch_result_set(args):
       return True
     return False
 
-  result_set = fetch_and_dedup(args)
+  result_set = fetch_and_dedup(args, dumping)
 
   if can_use_backfill(args, result_set):
     backfill_num = 0
@@ -388,7 +407,7 @@ def fetch_result_set(args):
         backfill_num += 1
         #logging.debug("BackfillQuery: i=%d  '%s' => %s" %
         #              (backfill_num, bfq.title, bfq.args))
-        bf_res = fetch_and_dedup(bfq.args)
+        bf_res = fetch_and_dedup(bfq.args, dumping)
         for res in bf_res.merged_results:
           res.backfill_title = bfq.title
           res.backfill_number = backfill_num
@@ -403,7 +422,7 @@ def fetch_result_set(args):
       newargs[api.PARAM_LAT] = newargs[api.PARAM_LNG] = "0.0"
       newargs[api.PARAM_VOL_DIST] = 50
       logging.debug("backfilling with locationless listings...")
-      locationless_result_set = fetch_and_dedup(newargs)
+      locationless_result_set = fetch_and_dedup(newargs, dumping)
       for res in locationless_result_set.merged_results:
         res.backfill_title = "locationless (virtual) listings"
         res.backfill_number = backfill_num
