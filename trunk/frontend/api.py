@@ -85,6 +85,7 @@ PARAM_VOL_STARTDAYOFWEEK = 'vol_startdayofweek'
 
 PARAM_VIRTUAL = 'virtual'
 PARAM_MERGE = 'merge'
+PARAM_DUMP = 'dump'
 
 PARAM_BACKFILL = 'bf'
 PARAM_BACKFILL_TITLES = 'bft'

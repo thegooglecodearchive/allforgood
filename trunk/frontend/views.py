@@ -426,7 +426,13 @@ class search_view(webapp.RequestHandler):
         return
 
       pagecount.IncrPageCount("key.%s.searches" % unique_args["key"], 1)
-      result_set = search.search(unique_args)
+
+      dumping = False
+      if api.PARAM_DUMP in unique_args and unique_args[api.PARAM_DUMP] == '1':
+        dumping = True
+        logging.info("dumping request");
+
+      result_set = search.search(unique_args, dumping)
   
       # insert the interest data-- API searches are anonymous, so set the user
       # interests to 'None'.  Note: left here to avoid polluting searchresults.py
@@ -435,12 +441,15 @@ class search_view(webapp.RequestHandler):
       # perf: only get interest counts for opps actually in the clipped results
       for primary_res in result_set.clipped_results:
         opp_ids += [result.item_id for result in primary_res.merged_list]
-      others_interests = view_helper.get_interest_for_opportunities(opp_ids)
-      view_helper.annotate_results(None, others_interests, result_set)
-      # add-up the interests from the children
-      for primary_res in result_set.clipped_results:
-        for result in primary_res.merged_list:
-          primary_res.interest_count += result.interest_count
+
+      if not dumping:
+        others_interests = view_helper.get_interest_for_opportunities(opp_ids)
+        view_helper.annotate_results(None, others_interests, result_set)
+
+        # add-up the interests from the children
+        for primary_res in result_set.clipped_results:
+          for result in primary_res.merged_list:
+            primary_res.interest_count += result.interest_count
 
       result_set.request_url = self.request.url
 
@@ -465,14 +474,17 @@ class search_view(webapp.RequestHandler):
 
       writer = apiwriter.get_writer(output)
       writer.setup(self.request, result_set)
-      #mt1955@gmail.com please keep as as info for a while
-      logging.info('views.search_view clipped %d' % 
+      logging.info('views.search_view clipped %d, beginning apiwriter' % 
                   len(result_set.clipped_results))
+
       for result in result_set.clipped_results:
         writer.add_result(result)
+      logging.info('views.search_view completed apiwriter')
 
       self.response.headers["Content-Type"] = writer.content_type
       self.response.out.write(writer.finalize())
+      logging.info('views.search_view completed %d' % 
+                  len(result_set.clipped_results))
     except DeadlineExceededError:
       deadline_exceeded(self, "search_view")
 
@@ -510,7 +522,7 @@ class ui_snippets_view(webapp.RequestHandler):
       else:
         template_values['query_param_loc'] = None
 
-      hp_num = min(6,len(result_set.clipped_results))
+      hp_num = min(6, len(result_set.clipped_results))
       template_values.update({
           'result_set': result_set,
           'has_results' : (result_set.num_merged_results > 0),  # For django.
@@ -607,6 +619,7 @@ class ui_my_snippets_view(webapp.RequestHandler):
         template_values.update({ 'has_results' : False, })
 
       template_values['query_param_q'] = unique_args.get(api.PARAM_Q, None)
+
       loc = unique_args.get(api.PARAM_VOL_LOC, None)
       if not geocode.is_latlong(loc) and not geocode.is_latlongzoom(loc):
         template_values['query_param_loc'] = loc
