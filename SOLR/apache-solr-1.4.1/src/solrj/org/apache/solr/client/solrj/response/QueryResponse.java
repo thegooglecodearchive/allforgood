@@ -17,17 +17,12 @@
 
 package org.apache.solr.client.solrj.response;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.util.NamedList;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.beans.DocumentObjectBinder;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.util.NamedList;
+
+import java.util.*;
 
 /**
  * 
@@ -46,6 +41,7 @@ public class QueryResponse extends SolrResponseBase
   private NamedList<Object> _highlightingInfo = null;
   private NamedList<Object> _spellInfo = null;
   private NamedList<Object> _statsInfo = null;
+  private NamedList<Object> _collapseInfo = null;
 
   // Facet stuff
   private Map<String,Integer> _facetQuery = null;
@@ -58,6 +54,9 @@ public class QueryResponse extends SolrResponseBase
 
   // SpellCheck Response
   private SpellCheckResponse _spellResponse = null;
+
+  // Field collapse response
+  private FieldCollapseResponse _fieldCollapseResponse = null; 
 
   // Field stats Response
   private Map<String,FieldStatsInfo> _fieldStatsInfo = null;
@@ -118,8 +117,16 @@ public class QueryResponse extends SolrResponseBase
         _statsInfo = (NamedList<Object>) res.getVal( i );
         extractStatsInfo( _statsInfo );
       }
+      else if ("collapse_counts".equals(n)) {
+        _collapseInfo = (NamedList<Object>) res.getVal(i);
+        extractFieldCollapseInfo(_collapseInfo);
+      }  
     }
   }
+
+  private void extractFieldCollapseInfo(NamedList<Object> collapseInfo) {
+    _fieldCollapseResponse = new FieldCollapseResponse(collapseInfo);
+  }  
 
   private void extractSpellCheckInfo(NamedList<Object> spellInfo) {
     _spellResponse = new SpellCheckResponse(spellInfo);
@@ -308,7 +315,11 @@ public class QueryResponse extends SolrResponseBase
         return f;
     return null;
   }
-  
+
+  public FieldCollapseResponse getFieldCollapseResponse() {
+    return _fieldCollapseResponse;
+  }
+
   /**
    * @return a list of FacetFields where the count is less then
    * then #getResults() {@link SolrDocumentList#getNumFound()}

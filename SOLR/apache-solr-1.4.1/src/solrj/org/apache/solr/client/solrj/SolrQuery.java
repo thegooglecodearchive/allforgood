@@ -17,11 +17,7 @@
 
 package org.apache.solr.client.solrj;
 
-import org.apache.solr.common.params.CommonParams;
-import org.apache.solr.common.params.FacetParams;
-import org.apache.solr.common.params.HighlightParams;
-import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.StatsParams;
+import org.apache.solr.common.params.*;
 
 
 /**
@@ -515,7 +511,7 @@ public class SolrQuery extends ModifiableSolrParams
   }
 
   /**
-   * @see ModifiableSolrParams#set(String,String[])
+   * @see ModifiableSolrParams#set(String, String...)
    * @param name
    * @param values
    *  
@@ -569,6 +565,60 @@ public class SolrQuery extends ModifiableSolrParams
   */
   public Integer getTimeAllowed() {
     return this.getInt(CommonParams.TIME_ALLOWED);
+  }
+
+  /**
+   * Enables field collapsing for the current query with the specified field.
+   *
+   * @param field The field to collapse on
+   * @return the updated SolrQuery
+   */
+  public SolrQuery enableFieldCollapsing(String field) {
+    add(CollapseParams.COLLAPSE_FIELD, field);
+    return this;
+  }
+
+  /**
+   * Enables the inclusion of collapsed documents in the response. The fields parameter specify what fields are returned
+   * from the collasped documents. The fewer fields to return the better the performance is. When the argument specified
+   * is <code>null</code> or empty all fields will be returned. 
+   *
+   * @param fields The fields to return for collapsed documents. If <code>null</code> or empty all fields are returned.
+   * @return the updated SolrQuery
+   */
+  public SolrQuery includeCollapsedDocuments(String... fields) {
+    if (fields == null || fields.length < 1) {
+      add(CollapseParams.COLLAPSE_INCLUDE_COLLAPSED_DOCS_FIELDS, "*");
+      return this;
+    }
+
+    StringBuilder fl = new StringBuilder();
+    for (int i = 0; i < fields.length; i++) {
+      fl.append(fields[i]);
+      if (i + 1 < fields.length) {
+        fl.append(',');
+      }
+    }
+    add(CollapseParams.COLLAPSE_INCLUDE_COLLAPSED_DOCS_FIELDS, fl.toString());
+    return this;
+  }
+
+  /**
+   * Enabled the execution of aggregate functions on the collapsed documents.
+   *
+   * @param functions The functions to execute
+   * @return the updated SolrQuery
+   */
+  public SolrQuery aggregateFunctions(String... functions) {
+    StringBuilder fl = new StringBuilder();
+    for (int i = 0; i < functions.length; i++) {
+      fl.append(functions[i]);
+      if (i + 1 < functions.length) {
+        fl.append(',');
+      }
+    }
+    add(CollapseParams.COLLAPSE_AGGREGATE, fl.toString());
+    return this;
   }
 
   ///////////////////////

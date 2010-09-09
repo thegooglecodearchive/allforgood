@@ -17,21 +17,20 @@
 
 package org.apache.solr.client.solrj.embedded;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import org.apache.solr.servlet.SolrDispatchFilter;
+import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Handler;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.FilterHolder;
+import org.mortbay.log.Logger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.solr.servlet.SolrDispatchFilter;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.FilterHolder;
-import org.mortbay.log.Logger;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Run solr using jetty
@@ -54,6 +53,13 @@ public class JettySolrRunner
   {
     this.init( context, port );
     dispatchFilter.setInitParameter("solrconfig-filename", solrConfigFilename);
+  }
+
+  public JettySolrRunner( String context, int port, String solrConfigFilename, String indexSchemaFilename)
+  {
+    this.init( context, port );
+    dispatchFilter.setInitParameter("solrconfig-filename", solrConfigFilename);
+    dispatchFilter.setInitParameter("schema-filename", indexSchemaFilename);
   }
   
 //  public JettySolrRunner( String context, String home, String dataDir, int port, boolean log )
