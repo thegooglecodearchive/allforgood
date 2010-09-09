@@ -17,39 +17,30 @@
 
 package org.apache.solr.core;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.io.InputStream;
-import java.nio.channels.FileChannel;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.text.SimpleDateFormat;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpressionException;
-
+import org.apache.commons.io.IOUtils;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.params.CoreAdminParams;
 import org.apache.solr.common.util.DOMUtil;
-import org.apache.solr.common.util.XML;
-import org.apache.solr.common.util.StrUtils;
 import org.apache.solr.common.util.FileUtils;
+import org.apache.solr.common.util.StrUtils;
+import org.apache.solr.common.util.XML;
 import org.apache.solr.handler.admin.CoreAdminHandler;
 import org.apache.solr.schema.IndexSchema;
-import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.*;
+import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -87,6 +78,7 @@ public class CoreContainer
   // Helper class to initialize the CoreContainer
   public static class Initializer {
     protected String solrConfigFilename = null;
+    protected String indexSchemaFilename = null;
     protected boolean abortOnConfigurationError = true;
 
     public boolean isAbortOnConfigurationError() {
@@ -103,6 +95,10 @@ public class CoreContainer
 
     public void setSolrConfigFilename(String solrConfigFilename) {
       this.solrConfigFilename = solrConfigFilename;
+    }
+
+    public void setIndexSchemaFilename(String indexSchemaFilename) {
+      this.indexSchemaFilename = indexSchemaFilename;
     }
 
     // core container instantiation
@@ -134,7 +130,8 @@ public class CoreContainer
         SolrConfig cfg = solrConfigFilename == null ?
                 new SolrConfig(resourceLoader, SolrConfig.DEFAULT_CONF_FILE,null) :
                 new SolrConfig(resourceLoader, solrConfigFilename,null);
-        SolrCore singlecore = new SolrCore(null, null, cfg, null, dcore);
+        IndexSchema schema = indexSchemaFilename != null ? new IndexSchema(cfg, indexSchemaFilename, null) : null;
+        SolrCore singlecore = new SolrCore(null, null, cfg, schema, dcore);
         abortOnConfigurationError = cfg.getBool(
                 "abortOnConfigurationError", abortOnConfigurationError);
         cores.register("", singlecore, false);

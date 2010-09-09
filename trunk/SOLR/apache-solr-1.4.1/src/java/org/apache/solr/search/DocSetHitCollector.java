@@ -17,11 +17,10 @@
 
 package org.apache.solr.search;
 
-import org.apache.lucene.search.HitCollector;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.util.OpenBitSet;
-import org.apache.lucene.index.IndexReader;
 
 import java.io.IOException;
 
@@ -29,7 +28,7 @@ import java.io.IOException;
  * @version $Id$
  */
 
-class DocSetCollector extends Collector {
+class DocSetCollector extends DocSetAwareCollector {
   int pos=0;
   OpenBitSet bits;
   final int maxDoc;

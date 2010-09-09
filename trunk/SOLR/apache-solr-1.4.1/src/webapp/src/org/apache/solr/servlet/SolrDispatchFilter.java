@@ -79,6 +79,7 @@ public class SolrDispatchFilter implements Filter
       // web.xml configuration
       this.pathPrefix = config.getInitParameter( "path-prefix" );
       init.setSolrConfigFilename(config.getInitParameter("solrconfig-filename"));
+      init.setIndexSchemaFilename(config.getInitParameter("schema-filename"));
 
       this.cores = init.initialize();
       abortOnConfigurationError = init.isAbortOnConfigurationError();

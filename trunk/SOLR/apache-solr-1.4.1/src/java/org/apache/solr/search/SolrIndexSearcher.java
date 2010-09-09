@@ -17,28 +17,31 @@
 
 package org.apache.solr.search;
 
-import org.apache.lucene.document.*;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.FieldSelector;
+import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.OpenBitSet;
 import org.apache.solr.common.util.NamedList;
 import org.apache.solr.common.util.SimpleOrderedMap;
 import org.apache.solr.core.SolrConfig;
 import org.apache.solr.core.SolrCore;
 import org.apache.solr.core.SolrInfoMBean;
+import org.apache.solr.request.UnInvertedField;
 import org.apache.solr.schema.IndexSchema;
 import org.apache.solr.schema.SchemaField;
-import org.apache.solr.request.UnInvertedField;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.solr.util.DocSetScoreCollector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -293,6 +296,9 @@ public class SolrIndexSearcher extends IndexSearcher implements SolrInfoMBean {
       solrConfig.filterCacheConfig.setRegenerator(
               new CacheRegenerator() {
                 public boolean regenerateItem(SolrIndexSearcher newSearcher, SolrCache newCache, SolrCache oldCache, Object oldKey, Object oldVal) throws IOException {
+                  if (oldVal != null && oldVal instanceof DocSet) {
+                    newSearcher.cacheDocSet((Query) oldKey,(DocSet) oldVal, null, false);
+                  }
                   newSearcher.cacheDocSet((Query)oldKey, null, false);
                   return true;
                 }
@@ -521,29 +527,95 @@ public class SolrIndexSearcher extends IndexSearcher implements SolrInfoMBean {
   }
 
   /**
+   * Compute and cache the DocSet that matches a query.
+   * The normal usage is expected to be cacheDocSet(myQuery, null,false)
+   * meaning that Solr will determine if the Query warrants caching, and
+   * if so, will compute the DocSet that matches the Query and cache it.
+   * If the answer to the query is already cached, nothing further will be done.
+   * <p>
+   * If the optionalAnswer DocSet is provided, it should *not* be modified
+   * after this call.
+   *
+   * @param query           the lucene query that will act as the key
+   * @param oldValue        The old value stored under the specified query (key)
+   * @param optionalAnswer   the DocSet to be cached - if null, it will be computed.
+   * @param mustCache        if true, a best effort will be made to cache this entry.
+   *                         if false, heuristics may be used to determine if it should be cached.
+   */
+  public void cacheDocSet(Query query, DocSet oldValue, DocSet optionalAnswer, boolean mustCache) throws IOException {
+    // Even if the cache is null, still compute the DocSet as it may serve to warm the Lucene
+    // or OS disk cache.
+    if (optionalAnswer != null) {
+      if (filterCache!=null) {
+        filterCache.put(query,optionalAnswer);
+      }
+      return;
+    }
+
+    // Throw away the result, relying on the fact that getDocSet
+    // will currently always cache what it found.  If getDocSet() starts
+    // using heuristics about what to cache, and mustCache==true, (or if we
+    // want this method to start using heuristics too) then
+    // this needs to change.
+    if (oldValue instanceof DocSetScoreCollector.DelegateDocSet) {
+      getDocSet(query, new DocSetScoreCollector(maxDoc()));
+    } else {
+      getDocSet(query);
+    }
+  }
+
+  /**
    * Returns the set of document ids matching a query.
    * This method is cache-aware and attempts to retrieve the answer from the cache if possible.
    * If the answer was not cached, it may have been inserted into the cache as a result of this call.
    * This method can handle negative queries.
    * <p>
    * The DocSet returned should <b>not</b> be modified.
+   *
+   * @param query The specified query that must match with the document ids
+   * @return the set of document ids matching all queries. Set may not be modified
+   * @throws IOException If an IO related exception occurs
    */
   public DocSet getDocSet(Query query) throws IOException {
+    return getDocSet(query, (DocSetAwareCollector) null);
+  }
+
+  /**
+   * Returns the set of document ids matching a query.
+   * This method is cache-aware and attempts to retrieve the answer from the cache if possible.
+   * If the answer was not cached, it may have been inserted into the cache as a result of this call.
+   * This method can handle negative queries.
+   * <p>
+   * The DocSet returned should <b>not</b> be modified.
+   *
+   * <p>
+   * This method allows a custom collector the be specified to collect results in a custum way. For example to also
+   * collect the score of a collected document
+   *
+   * @param query The specified query that must match with the document ids
+   * @param collector A docset aware collector that collects the result
+   * @return the set of document ids matching all queries. Set may not be modified
+   * @throws IOException If an IO related exception occurs
+   */
+  public DocSet getDocSet(Query query, DocSetAwareCollector collector) throws IOException {
     // Get the absolute value (positive version) of this query.  If we
     // get back the same reference, we know it's positive.
     Query absQ = QueryUtils.getAbs(query);
-    boolean positive = query==absQ;
+    boolean positive = query == absQ;
 
     if (filterCache != null) {
-      DocSet absAnswer = (DocSet)filterCache.get(absQ);
+      DocSet absAnswer = (DocSet) filterCache.get(absQ);
       if (absAnswer!=null) {
-        if (positive) return absAnswer;
-        else return getPositiveDocSet(matchAllDocsQuery).andNot(absAnswer);
+        if (positive) {
+          return absAnswer;
+        } else {
+          return getPositiveDocSet(matchAllDocsQuery, collector).andNot(absAnswer);
+        }
       }
     }
 
-    DocSet absAnswer = getDocSetNC(absQ, null);
-    DocSet answer = positive ? absAnswer : getPositiveDocSet(matchAllDocsQuery).andNot(absAnswer);
+    DocSet absAnswer = getDocSetNC(absQ, null, collector);
+    DocSet answer = positive ? absAnswer : getPositiveDocSet(matchAllDocsQuery, collector).andNot(absAnswer);
 
     if (filterCache != null) {
       // cache negative queries as positive
@@ -555,16 +627,20 @@ public class SolrIndexSearcher extends IndexSearcher implements SolrInfoMBean {
 
   // only handle positive (non negative) queries
   DocSet getPositiveDocSet(Query q) throws IOException {
+    return getPositiveDocSet(q, null);
+  }
+
+  // only handle positive (non negative) queries
+  DocSet getPositiveDocSet(Query q, DocSetAwareCollector collector) throws IOException {
     DocSet answer;
     if (filterCache != null) {
       answer = (DocSet)filterCache.get(q);
       if (answer!=null) return answer;
     }
-    answer = getDocSetNC(q,null);
+    answer = getDocSetNC(q, null, collector);
     if (filterCache != null) filterCache.put(q,answer);
     return answer;
   }
-
 
   private static Query matchAllDocsQuery = new MatchAllDocsQuery();
 
@@ -575,6 +651,10 @@ public class SolrIndexSearcher extends IndexSearcher implements SolrInfoMBean {
    * This method can handle negative queries.
    * <p>
    * The DocSet returned should <b>not</b> be modified.
+   *
+   * @param queries The specified list of queries that must match with the document ids
+   * @return the set of document ids matching all queries. Set may not be modified
+   * @throws IOException If an IO related exception occurs
    */
   public DocSet getDocSet(List<Query> queries) throws IOException {
     if (queries==null) return null;
@@ -624,10 +704,17 @@ public class SolrIndexSearcher extends IndexSearcher implements SolrInfoMBean {
 
   // query must be positive
   protected DocSet getDocSetNC(Query query, DocSet filter) throws IOException {
-    DocSetCollector collector = new DocSetCollector(maxDoc()>>6, maxDoc());
+    return getDocSetNC(query,  filter, null);
+  }
+
+  // query must be positive
+  protected DocSet getDocSetNC(Query query, DocSet filter, DocSetAwareCollector collector) throws IOException {
+    if (collector == null) {
+      collector = new DocSetCollector(maxDoc()>>6, maxDoc());
+    }
 
     if (filter==null) {
-      if (query instanceof TermQuery) {
+        if (query instanceof TermQuery && !(collector instanceof DocSetScoreCollector)) {
         Term t = ((TermQuery)query).getTerm();
         SolrIndexReader[] readers = reader.getLeafReaders();
         int[] offsets = reader.getLeafOffsets();
@@ -659,7 +746,6 @@ public class SolrIndexSearcher extends IndexSearcher implements SolrInfoMBean {
     }
   }
 
-
   /**
    * Returns the set of document ids matching both the query and the filter.
    * This method is cache-aware and attempts to retrieve the answer from the cache if possible.
@@ -671,24 +757,40 @@ public class SolrIndexSearcher extends IndexSearcher implements SolrInfoMBean {
    * @return DocSet meeting the specified criteria, should <b>not</b> be modified by the caller.
    */
   public DocSet getDocSet(Query query, DocSet filter) throws IOException {
-    if (filter==null) return getDocSet(query);
+    return getDocSet(query, filter, null);
+  }
+
+  /**
+   * Returns the set of document ids matching both the query and the filter.
+   * This method is cache-aware and attempts to retrieve the answer from the cache if possible.
+   * If the answer was not cached, it may have been inserted into the cache as a result of this call.
+   * <p>
+   *
+   * @param query The query
+   * @param filter may be null
+   * @param collector The collector used for collecting documents that match
+   * @return DocSet meeting the specified criteria, should <b>not</b> be modified by the caller.
+   * @throws IOException When an IO related problems occur
+   */
+  public DocSet getDocSet(Query query, DocSet filter, DocSetAwareCollector collector) throws IOException {
+    if (filter == null) return getDocSet(query, collector);
 
     // Negative query if absolute value different from original
     Query absQ = QueryUtils.getAbs(query);
-    boolean positive = absQ==query;
+    boolean positive = absQ == query;
 
     DocSet first;
     if (filterCache != null) {
-      first = (DocSet)filterCache.get(absQ);
-      if (first==null) {
-        first = getDocSetNC(absQ,null);
+      first = (DocSet) filterCache.get(absQ);
+      if (first == null) {
+        first = getDocSetNC(absQ, null, collector);
         filterCache.put(absQ,first);
       }
       return positive ? first.intersection(filter) : filter.andNot(first);
     }
 
     // If there isn't a cache, then do a single filtered query if positive.
-    return positive ? getDocSetNC(absQ,filter) : filter.andNot(getPositiveDocSet(absQ));
+    return positive ? getDocSetNC(absQ, filter, collector) : filter.andNot(getPositiveDocSet(absQ, collector));
   }
 
 
@@ -812,8 +914,7 @@ public class SolrIndexSearcher extends IndexSearcher implements SolrInfoMBean {
               if (cmd.getFilterList()==null) {
                 out.docSet = getDocSet(cmd.getQuery());
               } else {
-                List<Query> newList = new ArrayList<Query>(cmd.getFilterList()
-.size()+1);
+                List<Query> newList = new ArrayList<Query>(cmd.getFilterList().size()+1);
                 newList.add(cmd.getQuery());
                 newList.addAll(cmd.getFilterList());
                 out.docSet = getDocSet(newList);
@@ -1193,6 +1294,43 @@ public class SolrIndexSearcher extends IndexSearcher implements SolrInfoMBean {
     QueryResult qr = new QueryResult();
     search(qr,qc);
     return qr.getDocListAndSet();
+  }
+
+  /**
+   * Returns documents matching both <code>query</code> and the intersection
+   * of <code>filterList</code>, sorted by <code>sort</code>.
+   * Also returns the compete set of documents
+   * matching <code>query</code> and <code>filter</code>
+   * (regardless of <code>offset</code> and <code>len</code>).
+   * <p>
+   * This method is cache aware and may retrieve <code>filter</code> from
+   * the cache or make an insertion into the cache as a result of this call.
+   * <p>
+   * FUTURE: The returned DocList may be retrieved from a cache.
+   * <p>
+   * The DocList and DocSet returned should <b>not</b> be modified.
+   *
+   * @param query       The main query
+   * @param filterList   may be null
+   * @param docSet      filter docSet
+   * @param lsort    criteria by which to sort (if null, query relevance is used)
+   * @param offset   offset into the list of documents to return
+   * @param len      maximum number of documents to return
+   * @param flags    user supplied flags for the result set
+   * @return DocListAndSet meeting the specified criteria, should <b>not</b> be modified by the caller.
+   * @throws IOException If an IO related exception occurs
+   */
+  public DocListAndSet getDocListAndSet(Query query, List<Query> filterList, DocSet docSet, Sort lsort, int offset, int len, int flags) throws IOException {
+    //DocListAndSet ret = new DocListAndSet();
+    //getDocListC(ret,query,filterList,docSet,lsort,offset,len, flags |= GET_DOCSET);
+
+    QueryCommand qc = new QueryCommand();
+    qc.setQuery(query).setFilterList(filterList).setFilter(docSet);
+    qc.setSort(lsort).setOffset(offset).setLen(len).setFlags(flags |= GET_DOCSET);
+    QueryResult result = new QueryResult();
+    getDocListC(result,qc);
+
+    return result.getDocListAndSet();
   }
 
   /**

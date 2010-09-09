@@ -19,14 +19,11 @@ package org.apache.solr.handler.component;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.*;
-import org.apache.lucene.search.FieldCache.DoubleParser;
-import org.apache.lucene.search.FieldCache.LongParser;
-import org.apache.lucene.search.FieldCache.FloatParser;
-import org.apache.lucene.search.FieldCache.IntParser;
-import org.apache.lucene.search.FieldCache.Parser;
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.FieldComparator;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
@@ -38,26 +35,25 @@ import org.apache.solr.common.util.NamedList;
 import org.apache.solr.common.util.StrUtils;
 import org.apache.solr.request.SolrQueryRequest;
 import org.apache.solr.request.SolrQueryResponse;
-import org.apache.solr.schema.SchemaField;
 import org.apache.solr.schema.FieldType;
+import org.apache.solr.schema.SchemaField;
 import org.apache.solr.search.*;
 import org.apache.solr.util.SolrPluginUtils;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-import java.text.Collator;
 
 /**
  * TODO!
- * 
+ *
  * @version $Id: QueryComponent.java 812246 2009-09-07 18:28:16Z yonik $
  * @since solr 1.3
  */
 public class QueryComponent extends SearchComponent
 {
   public static final String COMPONENT_NAME = "query";
-  
+
   @Override
   public void prepare(ResponseBuilder rb) throws IOException
   {
@@ -270,7 +266,7 @@ public class QueryComponent extends SearchComponent
     }
   }
 
-  @Override  
+  @Override
   public int distributedProcess(ResponseBuilder rb) throws IOException {
     if (rb.stage < ResponseBuilder.STAGE_PARSE_QUERY)
       return ResponseBuilder.STAGE_PARSE_QUERY;
@@ -314,7 +310,7 @@ public class QueryComponent extends SearchComponent
         if (iter.next() == null) {
           iter.remove();
           rb._responseDocs.setNumFound(rb._responseDocs.getNumFound()-1);
-        }        
+        }
       }
 
       rb.rsp.add("response", rb._responseDocs);
@@ -362,7 +358,7 @@ public class QueryComponent extends SearchComponent
     if ( (rb.getFieldFlags() & SolrIndexSearcher.GET_SCORES)!=0 || rb.getSortSpec().includesScore()) {
       sreq.params.set(CommonParams.FL, rb.req.getSchema().getUniqueKeyField().getName() + ",score");
     } else {
-      sreq.params.set(CommonParams.FL, rb.req.getSchema().getUniqueKeyField().getName());      
+      sreq.params.set(CommonParams.FL, rb.req.getSchema().getUniqueKeyField().getName());
     }
 
     rb.addRequest(this, sreq);
@@ -381,12 +377,12 @@ public class QueryComponent extends SearchComponent
       else {
         sortFields = new SortField[]{SortField.FIELD_SCORE};
       }
- 
+
       SchemaField uniqueKeyField = rb.req.getSchema().getUniqueKeyField();
 
 
       // id to shard mapping, to eliminate any accidental dups
-      HashMap<Object,String> uniqueDoc = new HashMap<Object,String>();    
+      HashMap<Object,String> uniqueDoc = new HashMap<Object,String>();
 
       // Merge the docs via a priority queue so we don't have to sort *all* of the
       // documents... we only need to order the top (rows+start)
@@ -513,11 +509,14 @@ public class QueryComponent extends SearchComponent
       // we already have the field sort values
       sreq.params.remove(ResponseBuilder.FIELD_SORT_VALUES);
 
+      // disable collapser
+	  sreq.params.remove("collapse.field");
+
       // make sure that the id is returned for correlation
       String fl = sreq.params.get(CommonParams.FL);
       if (fl != null) {
        sreq.params.set(CommonParams.FL, fl+','+uniqueField.getName());
-      }      
+      }
 
       ArrayList<String> ids = new ArrayList<String>(shardDocs.size());
       for (ShardDoc shardDoc : shardDocs) {
@@ -554,7 +553,7 @@ public class QueryComponent extends SearchComponent
           doc.setField("score", sdoc.score);
         }
         rb._responseDocs.set(sdoc.positionInResponse, doc);
-      }      
+      }
     }
   }
 
