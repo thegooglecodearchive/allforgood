@@ -53,7 +53,7 @@ public class DistanceFieldValueSource implements FieldValueSource {
         if (logger.isDebugEnabled()) {
             logger.debug("Retrieved distance {} for doc {}", docDistance, docId);
         }
-
+      if(docDistance == null) return null;
         Fieldable fieldable = new Field(distanceFieldName, docDistance.toString(), Field.Store.YES, Field.Index.NO);
         return new Fieldable[]{fieldable};
     }
