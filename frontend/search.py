@@ -65,7 +65,7 @@ def search(args, dumping = False):
   #     create a normalized string, for the memcache key.
   # pylint: disable-msg=C0321
   
-  normalize_query_values(args)
+  normalize_query_values(args, dumping)
 
   # TODO: query param (& add to spec) for defeating the cache (incl FastNet)
   # I (mblain) suggest using "zx", which is used at Google for most services.
@@ -124,7 +124,7 @@ def search(args, dumping = False):
 def min_max(val, minval, maxval):
   return max(min(maxval, val), minval)
 
-def normalize_query_values(args):
+def normalize_query_values(args, dumping = False):
   """Pre-processes several values related to the search API that might be
   present in the query string."""
 
@@ -155,24 +155,29 @@ def normalize_query_values(args):
 
   dbgargs(api.PARAM_NUM)
 
-  if not api.PARAM_START in args:
-    args[api.PARAM_START] = api.CONST_MIN_START
-  else:
-    args[api.PARAM_START] = min_max(
+  if not dumping:
+    if not api.PARAM_START in args:
+      args[api.PARAM_START] = api.CONST_MIN_START
+    else:
+      args[api.PARAM_START] = min_max(
                 safe_int(args[api.PARAM_START], api.CONST_MIN_START), 
                 api.CONST_MIN_START, api.CONST_MAX_START - num)
 
   dbgargs(api.PARAM_START)
   
-  if api.PARAM_OVERFETCH_RATIO in args:
-    overfetch_ratio = float(args[api.PARAM_OVERFETCH_RATIO])
-  elif args[api.PARAM_START] > 1:
-    # increase the overfetch ratio after the first page--
-    # overfetch is expensive and we don't want to do this
-    # on page one, which is very performance sensitive.
-    overfetch_ratio = api.CONST_MAX_OVERFETCH_RATIO
+  if dumping:
+      overfetch_ratio = 1.0
   else:
-    overfetch_ratio = 2.0
+    if api.PARAM_OVERFETCH_RATIO in args:
+      overfetch_ratio = float(args[api.PARAM_OVERFETCH_RATIO])
+    elif args[api.PARAM_START] > 1:
+      # increase the overfetch ratio after the first page--
+      # overfetch is expensive and we don't want to do this
+      # on page one, which is very performance sensitive.
+      overfetch_ratio = api.CONST_MAX_OVERFETCH_RATIO
+    else:
+      overfetch_ratio = 2.0
+
   args[api.PARAM_OVERFETCH_RATIO] = min_max(
     overfetch_ratio, api.CONST_MIN_OVERFETCH_RATIO,
     api.CONST_MAX_OVERFETCH_RATIO)

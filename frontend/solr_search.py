@@ -372,16 +372,21 @@ def query(query_url, args, cache, dumping = False):
   result_set.parse_time = 0
   
   fetch_start = time.time()
+  status_code = 999
   try:
     fetch_result = urlfetch.fetch(query_url,
                    deadline = api.CONST_MAX_FETCH_DEADLINE)
+    status_code = fetch_result.status_code
   except:
     # can get a response too large error here
-    logging.info('solr_search.query responded %s' % str(fetch_result.status_code))
+    if status_code == 999:
+      logging.info('solr_search.query error')
+    else:
+      logging.info('solr_search.query responded %s' % str(status_code))
 
   fetch_end = time.time()
   result_set.fetch_time = fetch_end - fetch_start
-  if fetch_result.status_code != 200:
+  if status_code != 200:
     return result_set
   result_content = fetch_result.content
 
@@ -413,7 +418,14 @@ def query(query_url, args, cache, dumping = False):
     snippet = entry.get('abstract', '')
     title = entry.get('title', '')
     location = entry.get('location_string', '')
-    categories = entry.get('categories', '').split(',')
+
+    categories = entry.get('categories', '')
+    if type(categories).__name__ != 'list':
+      try:
+        categories = entry.get('categories', '').split(',')
+      except:
+        categories = []
+    
     org_name = entry.get('org_name', '')
     if re.search(r'[^a-z]acorn[^a-z]', " "+org_name+" ", re.IGNORECASE):
       logging.debug('solr_search.query skipping: ACORN in org_name')
