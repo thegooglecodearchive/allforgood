@@ -422,7 +422,7 @@ def query(query_url, args, cache, dumping = False):
     categories = entry.get('categories', '')
     if type(categories).__name__ != 'list':
       try:
-        categories = entry.get('categories', '').split(',')
+        categories = categories.split(',')
       except:
         categories = []
     
