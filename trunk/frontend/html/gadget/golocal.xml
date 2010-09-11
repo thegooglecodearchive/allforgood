@@ -511,6 +511,7 @@ _IG_RegisterOnloadHandler(init);
 <select id="sel_what" onchange="goSelectQ(this);" style="width:110px;">
 <option value="" selected>-- Topic --</option>
 <option value="">Any</option>
+<option value='"September 11"'>September 11</option>
 <option value='"Oil Spill"'>Oil Spill</option>
 <option value="category:Education">Education</option>
 <option value="category:Hunger">Hunger</option>
