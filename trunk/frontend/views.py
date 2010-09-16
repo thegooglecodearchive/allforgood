@@ -1216,6 +1216,16 @@ class datahub_dashboard_view(webapp.RequestHandler):
       template_values['msg'] = \
           "error fetching dashboard data: code %d" % fetch_result.status_code
 
+    unique_args = get_unique_args_from_request(self.request)
+    detail_idx = None
+    show_details = False
+    if 'provider_idx' in unique_args:
+      try:
+        detail_idx = int(unique_args['provider_idx'])
+        show_details = True
+      except:
+        pass
+
     if re.search(r'[.]bz2$', url):
       import bz2
       fetch_result.content = bz2.decompress(fetch_result.content)
@@ -1226,6 +1236,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
     statusrx = re.compile("(\d+-\d+-\d+) (\d+:\d+:\d+)[.]\d+:STATUS:(.+?) "+
                           "done parsing: output (\d+) organizations and "+
                           "(\d+) opportunities .(\d+) bytes.: (\d+) minutes")
+
     def parse_date(datestr, timestr):
       """uses day granularity now that we have a few weeks of data.
       At N=10 providers, 5 values, 12 bytes each, 600B per record.
@@ -1236,6 +1247,8 @@ class datahub_dashboard_view(webapp.RequestHandler):
       return datestr
 
     js_data = ""
+    details_html = ""
+
     known_dates = {}
     date_strings = []
     known_providers = {}
@@ -1247,6 +1260,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
         known_dates[hour] = 0
         known_providers[match.group(3)] = 0
         #js_data += "// hour="+hour+" provider="+match.group(3)+"\n"
+
     template_values['provider_data'] = provider_data = []
     sorted_providers = sorted(known_providers.keys())
     for i, provider in enumerate(sorted_providers):
@@ -1254,6 +1268,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
       provider_data.append([])
       provider_names.append(provider)
       #js_data += "// provider_names["+str(i)+"]="+provider_names[i]+"\n"
+
     sorted_dates = sorted(known_dates.keys())
     for i, hour in enumerate(sorted_dates):
       for j, provider in enumerate(sorted_providers):
@@ -1261,6 +1276,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
       known_dates[hour] = i
       date_strings.append(hour)
     #js_data += "// date_strings["+str(i)+"]="+date_strings[i]+"\n"
+
     def commas(num):
       num = str(num)
       while True:
@@ -1269,6 +1285,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
           break
         num = newnum
       return num
+
     max_date = {}
     for line in lines:
       match = re.search(statusrx, line)
@@ -1284,6 +1301,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
         rec['listings'] = int(match.group(5))
         rec['kbytes'] = int(float(match.group(6))/1024.0)
         rec['loadtimes'] = int(match.group(7))
+
     js_data += "function sv(row,col,val) {data.setValue(row,col,val);}\n"
     js_data += "function ac(typ,key) {data.addColumn(typ,key);}\n"
     js_data += "function acn(key) {data.addColumn('number',key);}\n"
@@ -1295,13 +1313,14 @@ class datahub_dashboard_view(webapp.RequestHandler):
     for provider_idx, provider in enumerate(sorted_providers):
       js_data += "\nacn('"+provider+"');"
       js_data += "sv(0,"+str(provider_idx)+",0);"
+
     js_data += "data.addRows(1);"
     js_data += "\nacn('totals');"
     js_data += "sv(0,"+str(len(sorted_providers))+",0);"
     js_data += "\n"
-    js_data += "var chart = new google.visualization.ImageSparkLine("
+    js_data += "provider_chart = new google.visualization.ImageSparkLine("
     js_data += "  document.getElementById('provider_names'));\n"
-    js_data += "chart.draw(data,{width:160,height:50,showAxisLines:false,"
+    js_data += "provider_chart.draw(data,{width:160,height:50,showAxisLines:false,"
     js_data += "  showValueLabels:false,labelPosition:'right'});\n"
 
     # provider last loaded times are implemented as chart labels, so
@@ -1314,6 +1333,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
       js_data += "sv(0,"+str(provider_idx)+",0);"
       if maxdate < max_date[provider_idx]:
         maxdate = max_date[provider_idx]
+
     js_data += "data.addRows(1);"
     js_data += "\nacn('"+maxdate+"');"
     js_data += "sv(0,"+str(len(sorted_providers))+",0);"
@@ -1323,6 +1343,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
     js_data += "chart.draw(data,{width:150,height:50,showAxisLines:false,"
     js_data += "  showValueLabels:false,labelPosition:'right'});\n"
 
+    history_details = []
     totals = {}
     for key in ['organizations', 'listings', 'kbytes', 'loadtimes']:
       totals[key] = 0
@@ -1337,15 +1358,36 @@ class datahub_dashboard_view(webapp.RequestHandler):
           totals[key] += provider_data[provider_idx][-1][key]
         except:
           colstr = "\nacn('0');"
+
+        dated_values = []
         for date_idx, hour in enumerate(sorted_dates):
           try:
             rec = provider_data[provider_idx][date_idx]
             val = "sv("+str(date_idx)+","+str(colnum)+","+str(rec[key])+");"
+            dated_values.append({'date':hour, key:str(rec[key])})
           except:
             val = ""
           colstr += val
         colnum += 1
         js_data += colstr
+
+        if key == 'listings':
+          while len(history_details) <= provider_idx:
+            history_details.append({'date':'-',key:'0'})
+          history_details[provider_idx] = dated_values
+
+      if show_details and len(details_html) < 1:
+        for provider_idx, provider in enumerate(sorted_providers):
+          if provider_idx < len(history_details) and provider_idx == detail_idx:
+            details_html += ('<div class="details"><h3><a id="anchor' + str(detail_idx) + 
+                        '" name="anchor' + str(detail_idx) + 
+                        '">' + provider + '</a></h3>\n')
+            details_html += '<table>\n'
+            for rec in history_details[provider_idx]:
+              details_html += "<tr><td>%s</td><td>%s</td></tr>\n" % (rec['date'], rec['listings'])
+            details_html += '</table></div>\n'
+            break
+
       js_data += "data.addRows(1);"
       js_data += "\nacn('"+commas(str(totals[key]))+"');"
       js_data += "sv(0,"+str(len(sorted_providers))+",0);"
@@ -1354,7 +1396,10 @@ class datahub_dashboard_view(webapp.RequestHandler):
       js_data += "  document.getElementById('"+key+"_chart'));\n"
       js_data += "chart.draw(data,{width:200,height:50,showAxisLines:false,"
       js_data += "  showValueLabels:false,labelPosition:'right'});\n"
+
     template_values['datahub_dashboard_js_data'] = js_data
+    template_values['datahub_dashboard_history'] = details_html
+
     logging.debug("datahub_dashboard_view: %s" % template_values['msg'])
     self.response.out.write(render_template(DATAHUB_DASHBOARD_TEMPLATE,
                                             template_values))
