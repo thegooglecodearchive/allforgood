@@ -322,6 +322,10 @@ def search(args, dumping = False):
   # TODO: return in TSV format for fastest possible parsing, i.e. split("\t") 
   query_url += "&wt=json"
 
+  # limit to opps which have not expired yet
+  # [expires:NOW TO *] means "expires prior to today"
+  query_url += "&fq=expires:[NOW-3DAYS%20TO%20*]"
+
   num_to_fetch = int(args[api.PARAM_NUM]) + 1
   query_url += "&rows=" + str(num_to_fetch)
   query_url += "&start=" + str(int(args[api.PARAM_START]) - 1)
