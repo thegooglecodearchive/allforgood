@@ -71,15 +71,24 @@ def geocode(addr, usecache=True, retrying = False):
     return val
 
   if not retrying:
+    #params = urllib.urlencode(
+    #  {'q':loc.lower(), 'output':'csv', 'oe':'utf8', 'sensor':'false', 'gl':'us',
+    #   'key':'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxQuOQhskTx7t90ovP5xOuY'+\
+    #   '_YrlyqBQajVan2ia99rD9JgAcFrdQnTD4JQ'})
     params = urllib.urlencode(
-      {'q':loc.lower(), 'output':'csv', 'oe':'utf8', 'sensor':'false', 'gl':'us',
-       'key':'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxQuOQhskTx7t90ovP5xOuY'+\
-       '_YrlyqBQajVan2ia99rD9JgAcFrdQnTD4JQ'})
+      {'q':loc.lower(), 
+       'output':'csv', 
+       'oe':'utf8', 
+       'sensor':'false', 
+       'gl':'us',
+       'client':'gme-craigslistfoundation'
+      })
     fetchurl = "http://maps.google.com/maps/geo?%s" % params
     logging.info("geocode: cache miss, trying " + fetchurl)
     fetch_result = urlfetch.fetch(fetchurl, deadline = api.CONST_MAX_FETCH_DEADLINE)
     if fetch_result.status_code != 200:
       # fail and also don't cache
+      logging.info("gecode: fail %s %s" % (str(fetch_result.status_code), fetch_result.content))
       return ""
 
     res = fetch_result.content
