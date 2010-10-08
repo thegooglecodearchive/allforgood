@@ -2,11 +2,7 @@
 
 ==WorkFlow Chart==
 
-Below is the proposed workflow for getting code from the deveopers, to QA, and eventually production.  
-
-http://create.ly/g4r2hsk02&fake_param=devprocess.png
-
-(Created with create.ly, click here to edit: http://creately.com/app?diagID=g4r2hsk02)
+Below is the proposed workflow for getting code from the developers, to QA, and eventually production.  
 
   # Design Accepted - The basic requirements for the feature or bug have been discussed and understood by both the developer and 'owner'.  More details on this below.
   # Code Locally - The developer uses the GettingStarted guide to setup a local all For Good development environment, and makes the changes to his or her local instance.
@@ -34,7 +30,3 @@ For feature requests, the level of definition varies in proportion to the impact
 ==Personal Instances==
 
 The nice thing about App Engine is that it's very easy for each developer to have one or more publicly available 'personal' instances.  So, rather than contend for a single QA instance, it makes more sense for each developer or development group to maintain their own app engine instances for dev and QA.  However, we need to figure out the best way to share SOLR instances.  This document is geared towards front-end development, changes to the back-end SOLR system will need a more complicated work-flow unless the developer can set-up their own private SOLR instance.
-
-==Pushed To Production==
-
-The other outstanding issue is deciding who gives the thumbs up to moving changes to production immediately versus waiting for a later release.  
