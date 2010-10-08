@@ -1,30 +1,3 @@
 #summary High Level View of AfG Architecture
-= Data Flow =
 
-http://allforgood.googlecode.com/svn/trunk/documentation/images/HighLevelArch.png
-
-= Technology =
-
-== Data Load/Import ==
-
-Home grown python scripts 
-
-== Data Store ==
-
-SOLR Server
-
-== Search ==
-
-Home grown python scripts interfacing with SOLR server 
-
-== Presentation ==
-
-This layer runs in a google appengine container utilizing memcache to reduce load on the backend.
-
-=== API ===
-
-Home grown python scripts, with access to Django templates
-
-=== Web ===
-
-Django templates with home grown python
+For an overview of the All For Good architecture and systems see [https://docs.google.com/Doc?docid=0Af2uzfMXJ8MvZGY2N21uMnhfMjBocWg4dzZmcw&hl=en&authkey=CLXp5aMC].
