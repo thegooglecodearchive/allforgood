@@ -19,6 +19,8 @@ import xml_helpers as xmlh
 from datetime import datetime
 import re
 
+from pipeline import print_progress
+
 # 90 days
 DEFAULT_EXPIRATION = (90 * 86400)
 
@@ -77,23 +79,29 @@ def parse_fast(instr, maxrecs, progress):
   for match in re.finditer(re.compile(
       '<VolunteerOpportunity>.+?</VolunteerOpportunity>', re.DOTALL), instr):
     opp = xmlh.simple_parser(match.group(0), KNOWN_ELNAMES, False)
+
     numopps += 1
     if (maxrecs > 0 and numopps > maxrecs):
       break
     if progress and numopps % 250 == 0:
       print datetime.now(), ": ", numopps, " records generated."
+
+    # these set_default_* functions dont do anything if the field
+    # doesnt already exists
     xmlh.set_default_value(opp, opp, "volunteersNeeded", -8888)
     xmlh.set_default_value(opp, opp, "paid", "No")
     xmlh.set_default_value(opp, opp, "sexRestrictedTo", "Neither")
     xmlh.set_default_value(opp, opp, "language", "English")
     set_default_time_elem(opp, opp, "lastUpdated")
     set_default_time_elem(opp, opp, "expires", 
-                          xmlh.current_ts(DEFAULT_EXPIRATION))
+        xmlh.current_ts(DEFAULT_EXPIRATION))
+   
     for loc in opp.getElementsByTagName("location"):
       xmlh.set_default_value(opp, loc, "virtual", "No")
       xmlh.set_default_value(opp, loc, "country", "US")
+
     for dttm in opp.getElementsByTagName("dateTimeDurations"):
-      xmlh.set_default_value(opp, dttm, "openEnded", "No")
+      # redundant xmlh.set_default_value(opp, dttm, "openEnded", "No")
       xmlh.set_default_value(opp, dttm, "iCalRecurrence", "")
       if (dttm.getElementsByTagName("startTime") == None and
           dttm.getElementsByTagName("endTime") == None):
@@ -101,11 +109,22 @@ def parse_fast(instr, maxrecs, progress):
       else:
         set_default_time_elem(opp, dttm, "timeFlexible", "No")
       xmlh.set_default_value(opp, dttm, "openEnded", "No")
+
     time_elems = opp.getElementsByTagName("startTime")
     time_elems += opp.getElementsByTagName("endTime")
     for el in time_elems:
       xmlh.set_default_attr(opp, el, "olsonTZ", "America/Los_Angeles")
-    outstr_list.append(xmlh.prettyxml(opp, True))
+
+    str_opp = xmlh.prettyxml(opp, True)
+
+    """
+    # if we dont have an expires field try to make one now
+    if str_opp.find("<expires>") < 0:
+      default_expiration = xmlh.current_ts(DEFAULT_EXPIRATION)
+      str_opp += "<expires>" + default_expiration + "</expires>"
+    """
+    outstr_list.append(str_opp)
+
   outstr_list.append('</VolunteerOpportunities>')
 
   outstr_list.append('</FootprintFeed>')
