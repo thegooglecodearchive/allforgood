@@ -117,12 +117,6 @@ def parse_fast(instr, maxrecs, progress):
 
     str_opp = xmlh.prettyxml(opp, True)
 
-    """
-    # if we dont have an expires field try to make one now
-    if str_opp.find("<expires>") < 0:
-      default_expiration = xmlh.current_ts(DEFAULT_EXPIRATION)
-      str_opp += "<expires>" + default_expiration + "</expires>"
-    """
     outstr_list.append(str_opp)
 
   outstr_list.append('</VolunteerOpportunities>')

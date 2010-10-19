@@ -45,6 +45,7 @@ from taggers import get_taggers, XMLRecord
 
 FIELDSEP = "\t"
 RECORDSEP = "\n"
+FED_DIR = 'fed/'
 # 3 days
 DEFAULT_EXPIRES = (3 * 86400)
 
@@ -638,7 +639,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       # make a file indicating to us that this 
       # opp has been found in a current feed
       try:
-        open('fed/' + opp_id, 'w').close()
+        open(FED_DIR + opp_id, 'w').close()
       except:
         pass
 
