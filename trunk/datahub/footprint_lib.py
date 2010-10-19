@@ -30,6 +30,7 @@ import parse_usaservice
 import parse_networkforgood
 import parse_idealist
 import parse_craigslist
+import parse_350org
 import parse_volunteermatch
 import subprocess
 import sys
@@ -44,6 +45,8 @@ from taggers import get_taggers, XMLRecord
 
 FIELDSEP = "\t"
 RECORDSEP = "\n"
+# 3 days
+DEFAULT_EXPIRES = (3 * 86400)
 
 MAX_ABSTRACT_LEN = 300
 
@@ -429,6 +432,7 @@ def compute_stable_id(opp, org, locstr, openended, duration,
                       abstract,
                       detailURL,
                       description])
+
    
   return hashlib.md5(hashstr).hexdigest()
 
@@ -456,8 +460,18 @@ def get_direct_mapped_fields(opp, org):
   outstr += FIELDSEP + output_field("paid", paid)
   detailURL = xmlh.get_tag_val(opp, "detailURL")
   outstr += FIELDSEP + output_field("detailURL", detailURL)
+
   for field in DIRECT_MAP_FIELDS:
-    outstr += FIELDSEP + output_tag_value(opp, field)
+    if field != "expires":
+      outstr += FIELDSEP + output_tag_value(opp, field)
+    else:
+      # we need to have a expires value
+      expires = xmlh.get_tag_val(opp, "expires")
+      if PRINTHEAD or len(expires) > 0:
+        outstr += FIELDSEP + output_tag_value(opp, field)
+      else:
+        outstr += FIELDSEP + xmlh.current_ts(DEFAULT_EXPIRES)
+
   for field in ORGANIZATION_FIELDS:
     outstr += FIELDSEP + output_field("org_"+field,
                                       xmlh.get_tag_val(org, field))
@@ -620,6 +634,13 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       if duplicate_opp(opp, locstr, startend):
         print_progress("dedup: skipping duplicate " + opp_id)
         return totrecs, ""
+
+      # make a file indicating to us that this 
+      # opp has been found in a current feed
+      try:
+        open('fed/' + opp_id, 'w').close()
+      except:
+        pass
 
       totrecs = totrecs + 1
       if PROGRESS and totrecs % 250 == 0:
@@ -873,6 +894,8 @@ def guess_shortname(filename):
   """from the input filename, guess which feed this is."""
   if re.search(r'rockthevote', filename):
     return "rockthevote"
+  if re.search(r'350org', filename):
+    return "350org"
   if re.search(r'1sky', filename):
     return "1sky"
   if re.search("usa-?service", filename):
@@ -942,6 +965,8 @@ def guess_shortname(filename):
     return "christianvolunteering"
   if re.search("volunteer(two|2)", filename):
     return "volunteertwo"
+  if re.search("up2us", filename):
+    return "up2us"
   if re.search("mentorpro", filename):
     return "mentorpro"
   if re.search(r'(mpsg_feed|myproj_servegov)', filename):
@@ -1052,6 +1077,10 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '136', 'rockthevote', 'rockthevote', 'http://rockthevote.com/',
       'rockthevote')
+  if shortname == "up2us":
+    return "fpxml", fp.parser(
+      '137', 'up2us', 'up2us', 'http://www.civicore.com/',
+      'civicore')
   #are they VETTED? check to see if we need to add the new feed to list of Vetted feeds in taggers.py 
 
   if shortname == "habitat":
@@ -1112,6 +1141,9 @@ def guess_parse_func(inputfmt, filename):
 
   if shortname == "craigslist" or shortname == "cl":
     return "craigslist", parse_craigslist.parse
+
+  if shortname == "350org":
+    return "350org", parse_350org.parse
 
   # legacy-- to be safe, remove after 9/1/2009
   #if shortname == "volunteermatch" or shortname == "vm":

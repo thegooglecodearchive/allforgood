@@ -24,8 +24,9 @@ import time
 from csv import DictReader, DictWriter, excel_tab, register_dialect, QUOTE_NONE
 from datetime import datetime
 import footprint_lib
+import xml_helpers as xmlh
 
-LOGPATH = "/home/footprint/public_html/datahub/dashboard/"
+LOGPATH = "/home/footprint/public_html/datahub/dashboard.ing/"
 HOMEDIR = "/home/footprint/allforgood-read-only/datahub"
 
 # rename these-- but remember that the dashboard has to be updated first...
@@ -464,9 +465,9 @@ def loaders():
                "citizencorps", "extraordinaries", "givingdupage",
                "greentheblock", "habitat", "mlk_day", "mybarackobama",
                "myproj_servegov", "newyorkcares", 
-               "rockthevote",
+               "rockthevote", "threefiftyorg",
                "seniorcorps", "servenet", "servicenation",
-               "universalgiving", "volunteergov", 
+               "universalgiving", "volunteergov", "up2us",
                "volunteertwo", "washoecounty", "ymca", "vm-nat"]:
     if not FILENAMES or name in FILENAMES:
       run_pipeline(name, name+".xml")
@@ -567,7 +568,7 @@ def solr_retransform(fname):
     if rows["title"] and rows["title"].lower().find('anytown museum') >= 0:
       #bogus event
       continue
-    
+
     # Split the date range into separate fields
     # event_date_range can be either start_date or start_date/end_date
     split_date_range = rows["event_date_range"].split('/')
@@ -712,10 +713,12 @@ def main():
       for solr_url in OPTIONS.solr_urls:
         print_progress('Performing clean-up and index optimization of ' + \
                        'SOLR instance at: ' + solr_url)
+        """
         solr_update_query(
           '<delete><query>expires:[* TO NOW-1DAY]</query></delete>',
           solr_url)
         print_progress('Removed expired documents.')
+        """
 
         solr_update_query('<optimize/>', solr_url)
         print_progress('Optimized index.')
