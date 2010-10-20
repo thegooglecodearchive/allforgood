@@ -512,6 +512,7 @@
     <!-- default values for query parameters -->
      <lst name="defaults">
        <str name="defType">boostmax</str>
+       <bool name="escapeQuery">false</bool>
        <str name="echoParams">explicit</str>
        <!--
        <int name="rows">10</int>
