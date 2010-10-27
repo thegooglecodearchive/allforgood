@@ -483,7 +483,7 @@
 <str name="distanceField">distance</str>
 </defaults>
 </searchComponent>
-
+<!--
   <searchComponent name="collapse" class="org.apache.solr.handler.component.CollapseComponent">
     <collapseCollectorFactory class="solr.fieldcollapse.collector.DocumentGroupCountCollapseCollectorFactory" />
 
@@ -498,7 +498,7 @@
       <function name="max" class="org.apache.solr.search.fieldcollapse.collector.aggregate.MaxFunction"/>
     </collapseCollectorFactory>
   </searchComponent>
-
+-->
 
   <!-- requestHandler plugins... incoming queries will be dispatched to the
      correct handler based on the path or the qt (query type) param.
@@ -521,7 +521,8 @@
         -->
      </lst>
     <arr name="components">
-      <str>collapse</str>
+<!--      <str>collapse</str>-->
+      <str>query</str>
       <str>facet</str>
       <str>mlt</str>
       <str>highlight</str>
