@@ -20,8 +20,6 @@ from datetime import datetime, date, time
 import xml_helpers as xmlh
 import re
 
-
-
 # Different Record classes are used to represent volunteer listings that are
 # being run through the taggers in different formats.  Each class must have
 # get_val(field) and add_tag(tag) functions that access data about the listing
@@ -336,6 +334,11 @@ def get_taggers():
     '(9[\/\.]11|sep(t(\.|ember)?)?[ -]?(11|eleven)(th)?|' +
     'National Day of Service (and|&) Rememb(e)?rance)')
 
+  veteransday_provider_tagger = FeedProviderIDTagger('VeteransDay', [
+      '133' #servicenation
+      ]) 
+  veteransday_tagger = WSVKeywordTagger('VeteransDay', 'veteran')
+
   vetted_tagger = FeedProviderIDTagger('Vetted', [
       #UGC '101', # usaservice (no longer active)
       '102', # handsonnetwork
@@ -367,7 +370,6 @@ def get_taggers():
       '130', # universalgiving
       #UGC '131', 911dayofservice
       #'132', newyorkcares
-      #'133', servicenation
       '134', #samaritan
       '1002', # girl scouts
       '1003', # united jewish communities
@@ -405,8 +407,10 @@ def get_taggers():
     repairman_tagger, videographer_tagger, graphicdesigner_tagger,
     oilspill_tagger,
     spanish_tagger,
+    veteransday_provider_tagger,
+    veteransday_tagger,
     # special events
-    #september11_tagger
+    september11_tagger
     ]
 
   return taggers

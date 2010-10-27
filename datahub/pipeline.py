@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 #
 
 """
@@ -26,8 +26,10 @@ from datetime import datetime
 import footprint_lib
 import xml_helpers as xmlh
 
-LOGPATH = "/home/footprint/public_html/datahub/dashboard.ing/"
-HOMEDIR = "/home/footprint/allforgood-read-only/datahub"
+#LOGPATH = "/home/footprint/public_html/datahub/dashboard.ing/"
+#HOMEDIR = "/home/footprint/allforgood-read-only/datahub"
+LOGPATH = "/home/footprint/allforgood/datahub/dashboard.ing"
+HOMEDIR = "/home/footprint/allforgood/datahub"
 
 # rename these-- but remember that the dashboard has to be updated first...
 LOG_FN = "load_gbase.log"
@@ -275,15 +277,16 @@ def print_field_stats():
   print_progress("writing "+FIELD_STATS_FN+"...")
   outfh = open(LOGPATH+FIELD_STATS_FN, "w")
   outfh.write("number of records: "+str(NUM_RECORDS_TOTAL)+"\n")
-  for i, fieldname in enumerate(FIELD_NAMES):
-    outfh.write("field "+fieldname+":uniqvals="+str(len(FIELD_VALUES[i]))+"\n")
-    sorted_vals = list(FIELD_VALUES[i].iteritems())
-    sorted_vals.sort(cmp=lambda a, b: cmp(b[1], a[1]))
-    for val, freq in sorted_vals[0:1000]:
-      if freq < 10:
-        break
-      outfh.write("  %5d %s\n" % (freq, val))
-  outfh.close()
+  if FIELD_NAMES:
+    for i, fieldname in enumerate(FIELD_NAMES):
+      outfh.write("field "+fieldname+":uniqvals="+str(len(FIELD_VALUES[i]))+"\n")
+      sorted_vals = list(FIELD_VALUES[i].iteritems())
+      sorted_vals.sort(cmp=lambda a, b: cmp(b[1], a[1]))
+      for val, freq in sorted_vals[0:1000]:
+        if freq < 10:
+          break
+        outfh.write("  %5d %s\n" % (freq, val))
+    outfh.close()
   print_progress("done writing "+FIELD_STATS_FN)
 
 def print_field_histograms():
@@ -465,7 +468,7 @@ def loaders():
                "citizencorps", "extraordinaries", "givingdupage",
                "greentheblock", "habitat", "mlk_day", "mybarackobama",
                "myproj_servegov", "newyorkcares", 
-               "rockthevote", "threefiftyorg",
+               "rockthevote", "threefiftyorg", "catchafire",
                "seniorcorps", "servenet", "servicenation",
                "universalgiving", "volunteergov", "up2us",
                "volunteertwo", "washoecounty", "ymca", "vm-nat"]:
@@ -683,6 +686,7 @@ def timeout_alarm_handler(signum, frame):
 
 def upload_solr_file(filename, url):
   """ Updates the Solr index with a CSV file """
+  return
   cmd = 'curl -s -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + \
         '\' \'' + url + \
         'update/csv?commit=true&separator=%09&escape=%10\' --data-binary @' + \
@@ -709,17 +713,14 @@ def main():
     test_loaders()
   else:
     loaders()
-    if OPTIONS.use_solr:
+    if False and OPTIONS.use_solr:
       for solr_url in OPTIONS.solr_urls:
         print_progress('Performing clean-up and index optimization of ' + \
                        'SOLR instance at: ' + solr_url)
-        """
         solr_update_query(
           '<delete><query>expires:[* TO NOW-1DAY]</query></delete>',
           solr_url)
         print_progress('Removed expired documents.')
-        """
-
         solr_update_query('<optimize/>', solr_url)
         print_progress('Optimized index.')
 

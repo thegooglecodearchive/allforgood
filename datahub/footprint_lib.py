@@ -46,8 +46,8 @@ from taggers import get_taggers, XMLRecord
 FIELDSEP = "\t"
 RECORDSEP = "\n"
 FED_DIR = 'fed/'
-# 3 days
-DEFAULT_EXPIRES = (3 * 86400)
+# 7 days
+DEFAULT_EXPIRES = (7 * 86400)
 
 MAX_ABSTRACT_LEN = 300
 
@@ -917,6 +917,8 @@ def guess_shortname(filename):
     return "citizencorps"
   if re.search(r'samaritan', filename):
     return "samaritan"
+  if re.search(r'catchafire', filename):
+    return "catchafire"
   if re.search(r'ymca', filename):
     return "ymca"
   if re.search(r'newyorkcares', filename):
@@ -1038,6 +1040,10 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '126', 'ymca', 'ymca', 'http://www.ymca.net/',
       'YMCA')
+  if shortname == "catchafire":
+    return "fpxml", fp.parser(
+      '138', 'catchafire', 'catchafire', 'http://catchafire.org/',
+      'CatchAFire')
   if shortname == "aarp":
     return "fpxml", fp.parser(
       '127', 'aarp', 'aarp', 'http://www.aarp.org/',
