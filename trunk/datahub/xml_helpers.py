@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # Copyright 2009 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -84,6 +85,8 @@ def print_rps_progress(noun, progress, recno, maxrecs):
 def get_tag_val(entity, tag):
   """walk the DOM of entity looking for the first child named (tag)."""
   #print "----------------------------------------"
+  if not entity:
+    return ""
   nodes = entity.getElementsByTagName(tag)
   #print "nodes:", nodes
   if (nodes.length == 0):
@@ -93,8 +96,12 @@ def get_tag_val(entity, tag):
     return ""
   if (nodes[0].firstChild == None):
     return ""
-  if (nodes[0].firstChild.data == None):
+  try:
+    if (nodes[0].firstChild.data == None):
+      return ""
+  except:
     return ""
+
   outstr = ""
   for node in nodes[0].childNodes:
     if node.nodeType == node.TEXT_NODE:
@@ -107,6 +114,8 @@ def get_tag_val(entity, tag):
 def get_tag_attr(entity, tag, attribute):
   """Finds the first element named (tag) and returns the named
   attribute."""
+  if not entity:
+    return ""
   nodes = entity.getElementsByTagName(tag)
   if (nodes.length == 0):
     return ""
@@ -119,6 +128,8 @@ def get_tag_attr(entity, tag, attribute):
 
 def set_default_value(parent, entity, tagname, default_value):
   """add the element if not already present in the DOM tree."""
+  if not parent or not entity:
+    return 
   nodes = entity.getElementsByTagName(tagname)
   if len(nodes) == 0:
     newnode = parent.createElement(tagname)
@@ -128,6 +139,8 @@ def set_default_value(parent, entity, tagname, default_value):
 
 def set_default_attr(doc, entity, attrname, default_value):
   """create and set the attribute if not already set."""
+  if not entity:
+    return
   if entity.getAttributeNode(attrname) == None:
     entity.setAttribute(attrname, default_value)
 
