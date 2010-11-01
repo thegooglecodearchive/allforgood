@@ -83,8 +83,7 @@ SPEC_TEMPLATE = 'spec.html'
 COS_TEMPLATE = 'cos.html'
 APPS_TEMPLATE = 'apps.html'
 
-DASHBOARD_BASE_URL = "http://google1.osuosl.org/~footprint/datahub/dashboard/"
-DATAHUB_LOG = DASHBOARD_BASE_URL + "load_gbase.log.bz2"
+DATAHUB_LOG = private_keys.DASHBOARD_BASE_URL + "load_gbase.log.bz2"
 
 DEFAULT_NUM_RESULTS = 10
 
