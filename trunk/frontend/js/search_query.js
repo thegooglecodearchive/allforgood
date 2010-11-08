@@ -21,6 +21,9 @@ function setKeywordAndExecute(keywords) {
   if (keywords == 'OilSpill') {
     keywords = '"Oil Spill"';
   }
+  else if (keywords == 'Veterans Day') {
+    keywords = 'veterans';
+  }
   setInputFieldValue(el('keywords'), keywords);
   submitForm('keywords');
 }
