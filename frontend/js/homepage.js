@@ -78,12 +78,10 @@ function renderHomepage() {
   //el('home_video_placeholder2').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/sLBkWRQe5Ms&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/sLBkWRQe5Ms&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
   //el('home_video_placeholder').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/gulf-attrib.jpg" alt="Gulf of Mexico - Image courtesy of Wired.com" />';
   //el('home_video_placeholder2').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/pakistan.jpg" alt="Pakistan - Image courtesy of New York Times" />';
+  //el('home_video_placeholder').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/waitingforsuperman.jpg" alt="Waiting for Superman" />';
+  el('home_video_placeholder').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/mission-serve-logo.png" alt="Mission Serve" />';
 
-  el('home_video_placeholder').innerHTML = 
-  '<img width="290" src="http://www.allforgood.org/gadget/waitingforsuperman.jpg" alt="Waiting for Superman" />';
-
-  el('home_video_placeholder2').innerHTML = 
-  '<img width="290" src="http://www.allforgood.org/gadget/911-2010.jpg" alt="National Day of Service" />';
+  el('home_video_placeholder2').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/waitingforsuperman.jpg" alt="Waiting for Superman" />';
 }
 
 function doHomepageChangeLocationClick() {
