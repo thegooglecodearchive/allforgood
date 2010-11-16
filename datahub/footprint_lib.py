@@ -593,7 +593,12 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
   repeated_fields = get_repeated_fields(feedinfo, opp, org)
   if len(opp_times) == 0:
     opp_times = [ None ]
+
+  unwound_dates = 0
+  unwound_locations = 0
+
   for opptime in opp_times:
+    # unwind multiple dates
     if opptime == None:
       startend = convert_dt_to_gbase("1971-01-01", "00:00:00-00:00", "UTC")
       starttime = "0000"
@@ -615,12 +620,18 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       if (end_date != "" and end_date + end_time > start_date + start_time):
         endstr = convert_dt_to_gbase(end_date, end_time, "UTC")
         startend += "/" + endstr
+
     duration = xmlh.get_tag_val(opptime, "duration")
     hrs_per_week = xmlh.get_tag_val(opptime, "commitmentHoursPerWeek")
     time_fields = get_time_fields(openended, duration, hrs_per_week, startend)
+
+    unwound_dates += 1
+
     if len(opp_locations) == 0:
       opp_locations = [ None ]
+
     for opploc in opp_locations:
+      # unwind multiple locations
       if opploc == None:
         locstr, latlng, geocoded_loc = ("", "", "")
         loc_fields = get_loc_fields("", "0.0", "0.0", "", "")
@@ -631,10 +642,13 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
                                     str(float(lng)+1000.0), addr,
                                     xmlh.get_tag_val(opploc, "name"))
 
-      opp_id = compute_stable_id(opp, org, locstr, openended, duration, hrs_per_week, startend)
+      opp_id = compute_stable_id(opp, org, locstr, openended, 
+                                 duration, hrs_per_week, startend)
       if duplicate_opp(opp, locstr, startend):
         print_progress("dedup: skipping duplicate " + opp_id)
         return totrecs, ""
+
+      unwound_locations += 1
 
       # make a file indicating to us that this 
       # opp has been found in a current feed
@@ -646,6 +660,16 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       totrecs = totrecs + 1
       if PROGRESS and totrecs % 250 == 0:
         print_progress(str(totrecs)+" records generated.")
+
+      if unwound_dates > 1:
+        xmlh.processing_trace("footprint_lib.output_opportunity",
+                              "unwound %g dates from %s:%s" 
+                              % (unwound_dates, org_id, opp_id))
+
+      if unwound_locations > 1:
+        xmlh.processing_trace("footprint_lib.output_opportunity",
+                              "unwound %g locations from %s:%s" 
+                              % (unwound_locations, org_id, opp_id))
 
       outstr_list.append(output_field("id", opp_id))
       outstr_list.append(repeated_fields)
