@@ -30,6 +30,7 @@ import time
 SIMPLE_CHARS = ''.join(map(chr, range(32, 127)))
 SIMPLE_CHARS_CLASS = '[^\\n%s]' % re.escape(SIMPLE_CHARS)
 SIMPLE_CHARS_RE = re.compile(SIMPLE_CHARS_CLASS)
+DEFAULT_TRACE_LOG = "trace.log"
 
 PROGRESS_START_TS = datetime.now()
 
@@ -57,6 +58,17 @@ def get_children_by_tagname(elem, name):
     if child.nodeType == child.ELEMENT_NODE and child.nodeName == name:
       temp.append(child)
   return temp
+
+
+def processing_trace(src, msg, trace_log = DEFAULT_TRACE_LOG):
+  try:
+    fh = open(trace_log, 'a')
+    log_entry = [str(datetime.now()), src, msg]
+    fh.write("\t".join(log_entry) + "\n")
+    fh.close()
+  except:
+    pass
+  
 
 def print_progress(msg, filename="", progress=True):
   """print progress indicator."""
