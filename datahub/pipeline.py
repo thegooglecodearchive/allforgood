@@ -714,17 +714,6 @@ def main():
     test_loaders()
   else:
     loaders()
-    # this functionality was moved out of pipeline.py in Aug, 2010
-    #if OPTIONS.use_solr:
-    #  for solr_url in OPTIONS.solr_urls:
-    #    print_progress('Performing clean-up and index optimization of ' + \
-    #                   'SOLR instance at: ' + solr_url)
-    #    solr_update_query(
-    #      '<delete><query>expires:[* TO NOW-1DAY]</query></delete>',
-    #      solr_url)
-    #    print_progress('Removed expired documents.')
-    #    solr_update_query('<optimize/>', solr_url)
-    #    print_progress('Optimized index.')
 
   print_word_stats()
   print_field_stats()
