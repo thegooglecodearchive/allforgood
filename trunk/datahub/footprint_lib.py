@@ -591,11 +591,14 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
   opp_locations = opp.getElementsByTagName("location")
   opp_times = opp.getElementsByTagName("dateTimeDuration")
   repeated_fields = get_repeated_fields(feedinfo, opp, org)
-  if len(opp_times) == 0:
-    opp_times = [ None ]
 
-  unwound_dates = 0
-  unwound_locations = 0
+  number_of_opptimes = len(opp_times)
+  if number_of_opptimes == 0:
+    opp_opptimes = [ None ]
+  elif number_of_opptimes > 1:
+    xmlh.processing_trace("footprint_lib.output_opportunity",
+                          "unwound %g dates from %s:%s" 
+                          % (number_of_opptimes, org_id, opp_id))
 
   for opptime in opp_times:
     # unwind multiple dates
@@ -625,10 +628,13 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
     hrs_per_week = xmlh.get_tag_val(opptime, "commitmentHoursPerWeek")
     time_fields = get_time_fields(openended, duration, hrs_per_week, startend)
 
-    unwound_dates += 1
-
-    if len(opp_locations) == 0:
+    number_of_locations = len(opp_locations)
+    if number_of_locations == 0:
       opp_locations = [ None ]
+    elif number_of_locations > 1:
+      xmlh.processing_trace("footprint_lib.output_opportunity",
+                            "unwound %g locations from %s:%s" 
+                            % (number_of_locations, org_id, opp_id))
 
     for opploc in opp_locations:
       # unwind multiple locations
@@ -648,8 +654,6 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
         print_progress("dedup: skipping duplicate " + opp_id)
         return totrecs, ""
 
-      unwound_locations += 1
-
       # make a file indicating to us that this 
       # opp has been found in a current feed
       try:
@@ -660,16 +664,6 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       totrecs = totrecs + 1
       if PROGRESS and totrecs % 250 == 0:
         print_progress(str(totrecs)+" records generated.")
-
-      if unwound_dates > 1:
-        xmlh.processing_trace("footprint_lib.output_opportunity",
-                              "unwound %g dates from %s:%s" 
-                              % (unwound_dates, org_id, opp_id))
-
-      if unwound_locations > 1:
-        xmlh.processing_trace("footprint_lib.output_opportunity",
-                              "unwound %g locations from %s:%s" 
-                              % (unwound_locations, org_id, opp_id))
 
       outstr_list.append(output_field("id", opp_id))
       outstr_list.append(repeated_fields)
