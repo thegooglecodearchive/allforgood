@@ -633,8 +633,9 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       opp_locations = [ None ]
     elif number_of_locations > 1:
       xmlh.processing_trace("footprint_lib.output_opportunity",
-                            "unwound %g locations from %s:%s" 
-                            % (number_of_locations, org_id, opp_id))
+                            "unwound %g locations, %g date(s) from %s:%s" 
+                            % (number_of_locations, number_of_opptimes, 
+                               org_id, opp_id))
 
     for opploc in opp_locations:
       # unwind multiple locations
