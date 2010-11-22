@@ -45,6 +45,8 @@ from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 
+from google.appengine.runtime import DeadlineExceededError
+
 from fastpageviews import pagecount
 from third_party.recaptcha.client import captcha
 
@@ -78,9 +80,10 @@ MODERATE_TEMPLATE = 'moderate.html'
 STATIC_CONTENT_TEMPLATE = 'static_content.html'
 NOT_FOUND_TEMPLATE = 'not_found.html'
 SPEC_TEMPLATE = 'spec.html'
+COS_TEMPLATE = 'cos.html'
+APPS_TEMPLATE = 'apps.html'
 
-DASHBOARD_BASE_URL = "http://google1.osuosl.org/~footprint/datahub/dashboard/"
-DATAHUB_LOG = DASHBOARD_BASE_URL + "load_gbase.log.bz2"
+DATAHUB_LOG = private_keys.DASHBOARD_BASE_URL + "load_gbase.log.bz2"
 
 DEFAULT_NUM_RESULTS = 10
 
@@ -136,7 +139,7 @@ def require_moderator(handler_method):
         not self.user.get_user_info().moderator):
       self.error(403)
       self.response.out.write('<html><body>Permission denied.</body></html>')
-      logging.warning('Non-moderator blacklist attempt.')
+      logging.warning('views.require_moderator non-moderator blacklist attempt')
       return
     return handler_method(self)
   return decorate
@@ -151,7 +154,7 @@ def require_usig(handler_method):
     self.usig = userinfo.get_usig(self.user)
     if self.usig != self.request.get('usig'):
       self.error(403)
-      logging.warning('XSRF attempt. %s!=%s',
+      logging.warning('views.require_usig XSRF attempt %s!=%s',
                       self.usig, self.request.get('usig'))
       return
     return handler_method(self)
@@ -206,28 +209,58 @@ def expires(seconds):
     return decorate
   return decorator
 
+def deadline_exceeded(request_handler, fx_name):
+  """ DeadlineExceeded handler """
+  # http://code.google.com/appengine/docs/python/runtime.html
+  # now that we are here, we have about one second to live
+  #
+  # the reason for trapping this error is that otherwise it puts 
+  # a traceback in the log which is great for detailed debugging but 
+  # makes it hard to see the patterns, ie most freq. causes
+  #
+  # if we wanted to retry the request we could do this...
+  # request_handler.redirect(urls.URL_CONSUMER_UI_SEARCH + "#" +
+  #                          request_handler.request.query_string)
+  # but then an evil request could loop us to infinity and beyond 
+  #
+  # maybe an 'oops' page  would be nicer, esp for the API
+  # for which we could ouput <error>timeout</error> 
+  # but for now...
+  request_handler.response.set_status(500)
+  request_handler.response.out.write("request timed out")
+  logging.error('views.%s exceeded deadline' % fx_name)
+
 
 class test_page_views_view(webapp.RequestHandler):
   """testpage for pageviews counter."""
   @expires(0)
   def get(self):
     """HTTP get method."""
-    pagename = "testpage%s" % (self.request.get('pagename'))
-    pc = pagecount.IncrPageCount(pagename, 1)
-    template_values = pagecount.GetStats()
-    template_values["pagename"] = pagename
-    template_values["pageviews"] = pc
-    self.response.out.write(render_template(TEST_PAGEVIEWS_TEMPLATE,
+    try:
+      pagename = "testpage%s" % (self.request.get('pagename'))
+      pc = pagecount.IncrPageCount(pagename, 1)
+      template_values = pagecount.GetStats()
+      template_values["pagename"] = pagename
+      template_values["pageviews"] = pc
+
+      self.response.out.write(render_template(TEST_PAGEVIEWS_TEMPLATE,
                                            template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "test_page_views_view")
+
 
 class home_page_view(webapp.RequestHandler):
   """default homepage for consumer UI."""
   @expires(0)  # User specific.
   def get(self):
     """HTTP get method."""
-    template_values = get_default_template_values(self.request, 'HOMEPAGE')
-    self.response.out.write(render_template(HOMEPAGE_TEMPLATE,
+    try:
+      template_values = get_default_template_values(self.request, 'HOMEPAGE')
+      self.response.out.write(render_template(HOMEPAGE_TEMPLATE,
                                            template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "home_page_view")
+
 
 class home_page_redir_view(webapp.RequestHandler):
   """handler for /home, which somehow got indexed by google."""
@@ -236,12 +269,40 @@ class home_page_redir_view(webapp.RequestHandler):
     """HTTP get method."""
     self.redirect("/")
 
+
 class not_found_handler(webapp.RequestHandler):
+  """ throw 404 """
   def get(self):
-    self.error(404)
-    template_values = get_default_template_values(self.request, 'STATIC_PAGE')
-    self.response.out.write(render_template(NOT_FOUND_TEMPLATE,
+    """ HTTP GET method """
+    try:
+      self.error(404)
+      template_values = get_default_template_values(self.request, 'STATIC_PAGE')
+      self.response.out.write(render_template(NOT_FOUND_TEMPLATE,
                                             template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "not_found_handler")
+
+
+class apps_view(webapp.RequestHandler):
+  @expires(0)
+  def get(self):
+    try:
+      template_values = get_default_template_values(self.request, 'APPS')
+      self.response.out.write(render_template(APPS_TEMPLATE,
+                                            template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "apps_handler")
+
+class cos_view(webapp.RequestHandler):
+  @expires(0)
+  def get(self):
+    try:
+      template_values = get_default_template_values(self.request, 'COS')
+      self.response.out.write(render_template(COS_TEMPLATE,
+                                            template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "cos_handler")
+
 		
 class consumer_ui_search_redir_view(webapp.RequestHandler):
   """handler for embedded HTML forms, which can't form queries
@@ -254,27 +315,34 @@ class consumer_ui_search_redir_view(webapp.RequestHandler):
     # required by HTML embedders, then this algorithm could become
     # more complex, possibly including real page(s) instead of a 
     # simple reuse of the consumer UI.
-    dest = urls.URL_CONSUMER_UI_SEARCH + "#" + self.request.query_string
-    self.redirect(dest)
+    try:
+      dest = urls.URL_CONSUMER_UI_SEARCH + "#" + self.request.query_string
+      self.redirect(dest)
+    except DeadlineExceededError:
+      deadline_exceeded(self, "consumer_ui_search_redir_view")
+
 
 class consumer_ui_search_view(webapp.RequestHandler):
   """default homepage for consumer UI."""
   @expires(0)  # User specific.
   def get(self):
     """HTTP get method."""
-    template_values = get_default_template_values(self.request, 'SEARCH')
-    template_values['result_set'] = {}
-    template_values['is_main_page'] = True
-    self.handle_sponsored(template_values)
-    self.response.out.write(render_template(SEARCH_RESULTS_TEMPLATE,
+    try:
+      template_values = get_default_template_values(self.request, 'SEARCH')
+      template_values['result_set'] = {}
+      template_values['is_main_page'] = True
+      self.handle_sponsored(template_values)
+      self.response.out.write(render_template(SEARCH_RESULTS_TEMPLATE,
                                             template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "consumer_ui_search_view")
     
   def handle_sponsored(self, template_values):
     #temp hack, need to find best way to pass campaign_id
     campaign_id = template_values.get('campaign_id', None)
     if campaign_id:
       try:
-        logging.warn('Campaign ID is %s' % campaign_id)
+        logging.debug('Campaign ID is %s' % campaign_id)
         template_values['campaign_id'] = campaign_id
         import gdata
         import gdata.service
@@ -325,7 +393,7 @@ class consumer_ui_search_view(webapp.RequestHandler):
         # log the exception, but continue normally
         import traceback
         tb = traceback.format_exc()
-        logging.error('Error Handling Campaign: ' + str(tb) )
+        logging.error('views.handle_sponsored campaign: ' + str(tb))
     if template_values.has_key('campaign_id'):
       del template_values['campaign_id']
     return False
@@ -336,67 +404,88 @@ class spec_view(webapp.RequestHandler):
   def get(self):
     """HTTP get method."""
     template_values = get_default_template_values(self.request, 'SPEC')
-    self.response.out.write(render_template(SPEC_TEMPLATE,
+    try:
+      self.response.out.write(render_template(SPEC_TEMPLATE,
                                             template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "spec_view")
 
 class search_view(webapp.RequestHandler):
   """run a search from the API.  note various output formats."""
   @expires(1800)  # Search results change slowly; cache for half an hour.
   def get(self):
     """HTTP get method."""
-    unique_args = get_unique_args_from_request(self.request)
+    try:
+      unique_args = get_unique_args_from_request(self.request)
 
-    if "key" not in unique_args:
-      tplresult = render_template(SEARCH_RESULTS_MISSING_KEY_TEMPLATE, {})
-      self.response.out.write(tplresult)
-      pagecount.IncrPageCount("key.missing", 1)
-      return
-    pagecount.IncrPageCount("key.%s.searches" % unique_args["key"], 1)
-    result_set = search.search(unique_args)
+      if "key" not in unique_args:
+        tplresult = render_template(SEARCH_RESULTS_MISSING_KEY_TEMPLATE, {})
+        self.response.out.write(tplresult)
+        pagecount.IncrPageCount("key.missing", 1)
+        return
 
-    # insert the interest data-- API searches are anonymous, so set the user
-    # interests to 'None'.  Note: left here to avoid polluting searchresults.py
-    # with view_helper.py and social/personalization stuff.
-    opp_ids = []
-    # perf: only get interest counts for opps actually in the clipped results
-    for primary_res in result_set.clipped_results:
-      opp_ids += [result.item_id for result in primary_res.merged_list]
-    others_interests = view_helper.get_interest_for_opportunities(opp_ids)
-    view_helper.annotate_results(None, others_interests, result_set)
-    # add-up the interests from the children
-    for primary_res in result_set.clipped_results:
-      for result in primary_res.merged_list:
-        primary_res.interest_count += result.interest_count
+      pagecount.IncrPageCount("key.%s.searches" % unique_args["key"], 1)
 
-    result_set.request_url = self.request.url
+      dumping = False
+      if api.PARAM_DUMP in unique_args and unique_args[api.PARAM_DUMP] == '1':
+        dumping = True
+        logging.info("dumping request");
 
-    output = None
-    if api.PARAM_OUTPUT in unique_args:
-      output = unique_args[api.PARAM_OUTPUT]
+      result_set = search.search(unique_args, dumping)
+  
+      # insert the interest data-- API searches are anonymous, so set the user
+      # interests to 'None'.  Note: left here to avoid polluting searchresults.py
+      # with view_helper.py and social/personalization stuff.
+      opp_ids = []
+      # perf: only get interest counts for opps actually in the clipped results
+      for primary_res in result_set.clipped_results:
+        opp_ids += [result.item_id for result in primary_res.merged_list]
+
+      if not dumping:
+        others_interests = view_helper.get_interest_for_opportunities(opp_ids)
+        view_helper.annotate_results(None, others_interests, result_set)
+
+        # add-up the interests from the children
+        for primary_res in result_set.clipped_results:
+          for result in primary_res.merged_list:
+            primary_res.interest_count += result.interest_count
+
+      result_set.request_url = self.request.url
+
+      output = None
+      if api.PARAM_OUTPUT in unique_args:
+        output = unique_args[api.PARAM_OUTPUT]
       
-    if not output:
-      output = "html"
+      if not output:
+        output = "html"
 
-    if output == "html":
-      if "geocode_responses" not in unique_args:
-        unique_args["geocode_responses"] = 1
+      if output == "html":
+        if "geocode_responses" not in unique_args:
+          unique_args["geocode_responses"] = 1
     
-    latlng_string = ""
-    if "lat" in result_set.args and "long" in result_set.args:
-      latlng_string = "%s,%s" % (result_set.args["lat"],
-                                 result_set.args["long"])
-      result_set.args["latlong"] = latlng_string
-    logging.debug("geocode("+result_set.args[api.PARAM_VOL_LOC]+") = "+
-                  result_set.args["lat"]+","+result_set.args["long"])
+      latlng_string = ""
+      if api.PARAM_LAT in result_set.args and api.PARAM_LNG in result_set.args:
+        latlng_string = "%s,%s" % (result_set.args[api.PARAM_LAT],
+                                 result_set.args[api.PARAM_LNG])
+        result_set.args["latlong"] = latlng_string
+      logging.debug("geocode("+result_set.args[api.PARAM_VOL_LOC]+") = "+
+                  result_set.args[api.PARAM_LAT]+","+result_set.args[api.PARAM_LNG])
 
-    writer = apiwriter.get_writer(output)
-    writer.setup(self.request, result_set)
-    logging.info("Clipped results: %d" % len(result_set.clipped_results))
-    for result in result_set.clipped_results:
-      writer.add_result(result)
+      writer = apiwriter.get_writer(output)
+      writer.setup(self.request, result_set)
+      logging.info('views.search_view clipped %d, beginning apiwriter' % 
+                  len(result_set.clipped_results))
 
-    self.response.headers["Content-Type"] = writer.content_type
-    self.response.out.write(writer.finalize())
+      for result in result_set.clipped_results:
+        writer.add_result(result)
+      logging.info('views.search_view completed apiwriter')
+
+      self.response.headers["Content-Type"] = writer.content_type
+      self.response.out.write(writer.finalize())
+      logging.info('views.search_view completed %d' % 
+                  len(result_set.clipped_results))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "search_view")
 
 
 class ui_snippets_view(webapp.RequestHandler):
@@ -406,52 +495,55 @@ class ui_snippets_view(webapp.RequestHandler):
   @expires(0)  # User specific.
   def get(self):
     """HTTP get method."""
-    campaign_id = self.request.get('campaign_id', None)
-    unique_args = get_unique_args_from_request(self.request)
-    result_set = search.search(unique_args)
-    result_set.request_url = self.request.url
-    template_values = get_default_template_values(self.request, 'SEARCH')
+    try:
+      campaign_id = self.request.get('campaign_id', None)
+      unique_args = get_unique_args_from_request(self.request)
+      result_set = search.search(unique_args)
+      result_set.request_url = self.request.url
+      template_values = get_default_template_values(self.request, 'SEARCH')
 
-    # Retrieve the user-specific information for the search result set.
-    user = template_values['user']
-    if user:
-      template_values['moderator'] = user.get_user_info().moderator
-      result_set = view_helper.get_annotated_results(user, result_set)
-      view_data = view_helper.get_friends_data_for_snippets(user)
-    else:
-      template_values['moderator'] = False
-      view_data = {
-        'friends': [],
-        'friends_by_event_id_js': '{}',
-      }
+      # Retrieve the user-specific information for the search result set.
+      user = template_values['user']
+      if user:
+        template_values['moderator'] = user.get_user_info().moderator
+        result_set = view_helper.get_annotated_results(user, result_set)
+        view_data = view_helper.get_friends_data_for_snippets(user)
+      else:
+        template_values['moderator'] = False
+        view_data = {
+          'friends': [],
+          'friends_by_event_id_js': '{}',
+        }
 
-    loc = unique_args.get(api.PARAM_VOL_LOC, None)
-    if loc and not geocode.is_latlong(loc) and not geocode.is_latlongzoom(loc):
-      template_values['query_param_loc'] = loc
-    else:
-      template_values['query_param_loc'] = None
+      loc = unique_args.get(api.PARAM_VOL_LOC, None)
+      if loc and not geocode.is_latlong(loc) and not geocode.is_latlongzoom(loc):
+        template_values['query_param_loc'] = loc
+      else:
+        template_values['query_param_loc'] = None
 
-    hp_num = min(6,len(result_set.clipped_results))
-    template_values.update({
-        'result_set': result_set,
-        'has_results' : (result_set.num_merged_results > 0),  # For django.
-        'last_result_index' : result_set.estimated_results,
-        'display_nextpage_link' : result_set.has_more_results,
-        'friends' : view_data['friends'],
-        'friends_by_event_id_js': view_data['friends_by_event_id_js'],
-        'query_param_q' : unique_args.get(api.PARAM_Q, None),
-        'full_list' : self.request.get('minimal_snippets_list') != '1',
-        'six_results' : result_set.clipped_results[:hp_num],
-      })
+      hp_num = min(6, len(result_set.clipped_results))
+      template_values.update({
+          'result_set': result_set,
+          'has_results' : (result_set.num_merged_results > 0),  # For django.
+          'last_result_index' : result_set.estimated_results,
+          'display_nextpage_link' : result_set.has_more_results,
+          'friends' : view_data['friends'],
+          'friends_by_event_id_js': view_data['friends_by_event_id_js'],
+          'query_param_q' : unique_args.get(api.PARAM_Q, None),
+          'full_list' : self.request.get('minimal_snippets_list') != '1',
+          'six_results' : result_set.clipped_results[:hp_num],
+        })
 
-    if self.request.get('minimal_snippets_list'):
-      # Minimal results list for homepage.
-      result_set.clipped_results.sort(cmp=searchresult.compare_result_dates)
-      self.response.out.write(render_template(SNIPPETS_LIST_MINI_TEMPLATE,
+      if self.request.get('minimal_snippets_list'):
+        # Minimal results list for homepage.
+        result_set.clipped_results.sort(cmp=searchresult.compare_result_dates)
+        self.response.out.write(render_template(SNIPPETS_LIST_MINI_TEMPLATE,
                                               template_values))
-    else:
-      self.response.out.write(render_template(SNIPPETS_LIST_TEMPLATE,
-                                              template_values))
+      else:
+        self.response.out.write(render_template(SNIPPETS_LIST_TEMPLATE,
+                                                template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "ui_snippets_view")
 
 class ui_my_snippets_view(webapp.RequestHandler):
   """The current spec for the My Events view (also known as "Profile")
@@ -476,79 +568,86 @@ class ui_my_snippets_view(webapp.RequestHandler):
   @expires(0)  # User specific.
   def get(self):
     """HTTP get method."""
-    template_values = get_default_template_values(self.request, 'MY_EVENTS')
-    user_info = template_values['user']
+    try:
+      template_values = get_default_template_values(self.request, 'MY_EVENTS')
+      user_info = template_values['user']
 
-    unique_args = get_unique_args_from_request(self.request)
+      unique_args = get_unique_args_from_request(self.request)
 
-    if user_info:
-      # Get the list of all events that I like or am doing.
-      # This is a dict of event id keys and interest flag values (right now
-      # we only support Liked).
-      (my_interests, ordered_event_ids) = \
-          view_helper.get_user_interests(user_info, True)
-      
-      # Fetch the event details for the events I like, so they can be
-      # displayed in the snippets template.
-      my_events_gbase_result_set = solr_search.get_from_ids(ordered_event_ids)
-      for result in my_events_gbase_result_set.results:
-        result.interest = my_interests.get(result.item_id, 0)
+      if user_info:
+        # Get the list of all events that I like or am doing.
+        # This is a dict of event id keys and interest flag values (right now
+        # we only support Liked).
+        (my_interests, ordered_event_ids) = \
+            view_helper.get_user_interests(user_info, True)
+        
+        # Fetch the event details for the events I like, so they can be
+        # displayed in the snippets template.
+        my_events_gbase_result_set = solr_search.get_from_ids(ordered_event_ids)
+        for result in my_events_gbase_result_set.results:
+          result.interest = my_interests.get(result.item_id, 0)
 
-      search.normalize_query_values(unique_args)
-      start = unique_args[api.PARAM_START]
-      my_events_gbase_result_set.clip_start_index = start
-      num = unique_args[api.PARAM_NUM]
+        search.normalize_query_values(unique_args)
+        start = unique_args[api.PARAM_START]
+        my_events_gbase_result_set.clip_start_index = start
+        num = unique_args[api.PARAM_NUM]
 
-      # Handle clipping.
-      my_events_gbase_result_set.clip_results(start, num)
+        # Handle clipping.
+        my_events_gbase_result_set.clip_results(start, num)
 
-      # Get general interest numbers (i.e., not filtered to friends).
-      overall_stats_for_my_interests = \
-        view_helper.get_interest_for_opportunities(my_interests)
-      view_helper.annotate_results(my_interests,
+        # Get general interest numbers (i.e., not filtered to friends).
+        overall_stats_for_my_interests = \
+          view_helper.get_interest_for_opportunities(my_interests)
+        view_helper.annotate_results(my_interests,
                                    overall_stats_for_my_interests,
                                    my_events_gbase_result_set)
 
-      friend_data = view_helper.get_friends_data_for_snippets(user_info)
-      template_values.update({
-          'result_set': my_events_gbase_result_set,
-          'has_results' : len(my_events_gbase_result_set.clipped_results) > 0,
-          'last_result_index':
-            my_events_gbase_result_set.clip_start_index + \
-            len(my_events_gbase_result_set.clipped_results),
-          'display_nextpage_link' : my_events_gbase_result_set.has_more_results,
-          'friends' : friend_data['friends'],
-          'friends_by_event_id_js': friend_data['friends_by_event_id_js'],
-          'like_count': len(my_interests),
-        })
-    else:
-      template_values.update({ 'has_results' : False, })
+        friend_data = view_helper.get_friends_data_for_snippets(user_info)
+        template_values.update({
+            'result_set': my_events_gbase_result_set,
+            'has_results' : len(my_events_gbase_result_set.clipped_results) > 0,
+            'last_result_index':
+              my_events_gbase_result_set.clip_start_index + \
+              len(my_events_gbase_result_set.clipped_results),
+            'display_nextpage_link':my_events_gbase_result_set.has_more_results,
+            'friends' : friend_data['friends'],
+            'friends_by_event_id_js':friend_data['friends_by_event_id_js'],
+            'like_count': len(my_interests),
+          })
+      else:
+        template_values.update({ 'has_results' : False, })
 
-    template_values['query_param_q'] = unique_args.get(api.PARAM_Q, None)
-    loc = unique_args.get(api.PARAM_VOL_LOC, None)
-    if not geocode.is_latlong(loc) and not geocode.is_latlongzoom(loc):
-      template_values['query_param_loc'] = loc
+      template_values['query_param_q'] = unique_args.get(api.PARAM_Q, None)
 
-    self.response.out.write(render_template(SNIPPETS_LIST_TEMPLATE,
+      loc = unique_args.get(api.PARAM_VOL_LOC, None)
+      if not geocode.is_latlong(loc) and not geocode.is_latlongzoom(loc):
+        template_values['query_param_loc'] = loc
+
+      self.response.out.write(render_template(SNIPPETS_LIST_TEMPLATE,
                                             template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "ui_my_snippets_view")
 
 class my_events_view(webapp.RequestHandler):
   """Shows events that you and your friends like or are doing."""
   @expires(0)  # User specific.
   def get(self):
     """HTTP get method."""
-    template_values = get_default_template_values(self.request, 'MY_EVENTS')
-    if not template_values['user']:
-      template_values = {
-        'current_page': 'MY_EVENTS',
-        # Don't bother rendering this page if not authenticated.
-        'redirect_to_home': True,
-      }
-      self.response.out.write(render_template(MY_EVENTS_TEMPLATE,
+    try:
+      template_values = get_default_template_values(self.request, 'MY_EVENTS')
+      if not template_values['user']:
+        template_values = {
+          'current_page': 'MY_EVENTS',
+          # Don't bother rendering this page if not authenticated.
+          'redirect_to_home': True,
+        }
+        self.response.out.write(render_template(MY_EVENTS_TEMPLATE,
           template_values))
-      return
-    self.response.out.write(render_template(MY_EVENTS_TEMPLATE,
+        return
+      self.response.out.write(render_template(MY_EVENTS_TEMPLATE,
                                             template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "my_events_view")
 
 class post_view(webapp.RequestHandler):
   """user posting flow."""
@@ -611,8 +710,8 @@ class post_view(webapp.RequestHandler):
       if keystr in template_values:
         # should never happen-- throwing a 500 avoids silent failures
         self.response.set_status(500)
-        self.response.out.write("internal error: duplicate template key")
-        logging.error("internal error: duplicate template key: "+keystr)
+        self.response.out.write("internal viewserror: duplicate template key")
+        logging.error('views.post_view duplicate template key: %s' % keystr)
         return
       template_values[keystr] = str(vals[key])
     self.response.out.write(render_template(POST_RESULT_TEMPLATE,
@@ -730,7 +829,8 @@ class admin_view(webapp.RequestHandler):
                            userinfo.get_cookie('dev_appserver_login'))
     if self.request.get('usig') != usig:
       self.error(400)
-      logging.warning('XSRF attempt. %s!=%s', usig, self.request.get('usig'))
+      logging.warning('views.admin.post XSRF attempt. %s!=%s', 
+              usig, self.request.get('usig'))
       return
 
     keys_to_enable = self.request.POST.getall('enable')
@@ -979,12 +1079,12 @@ class action_view(webapp.RequestHandler):
     new_value = self.request.get('i')
 
     if not user:
-      logging.warning('No user.')
+      logging.warning('views.action_view No user.')
       self.error(401)  # Unauthorized
       return
 
     if not opp_id or not base_url or not new_value:
-      logging.warning('bad param')
+      logging.warning('views.action_view bad param')
       self.error(400)  # Bad request
       return
 
@@ -1001,7 +1101,7 @@ class action_view(webapp.RequestHandler):
 
     if not xsrf_header_found:
       self.error(400)
-      logging.warning('Attempted XSRF.')
+      logging.warning('views.action_view Attempted XSRF.')
       return
 
     user_entity = user.get_user_info()
@@ -1054,41 +1154,48 @@ class static_content(webapp.RequestHandler):
   @expires(0)  # User specific. Maybe we should remove that so it's cacheable.
   def get(self):
     """HTTP get method."""
-    remote_url = (urls.STATIC_CONTENT_LOCATION +
-        urls.STATIC_CONTENT_FILES[self.request.path])
+    try:
+      if urls.STATIC_CONTENT_FILES[self.request.path] == "app.html":
+      	remote_url = ("http://www.allforgood.org/" +
+          urls.STATIC_CONTENT_FILES[self.request.path])
+      else:
+      	remote_url = (urls.STATIC_CONTENT_LOCATION +
+          urls.STATIC_CONTENT_FILES[self.request.path])
 
-    # &debug=1 reads from local files rather than the repository for debugging
-    text = None
-    debug = self.request.get('debug') or '0'
-    if debug == '1':
-      path = os.path.join(os.path.dirname(__file__), 'html/'+
+      # &debug=1 reads from local files rather than the repository for debugging
+      text = None
+      debug = self.request.get('debug') or '0'
+      if debug == '1':
+        path = os.path.join(os.path.dirname(__file__), 'html/'+
                           urls.STATIC_CONTENT_FILES[self.request.path])
-      logging.info("debug: reading html from "+path)
-      fh = open(path, 'r')
-      text = fh.read()
-      logging.info("read %d bytes." % len(text))
+        logging.debug("debug: reading html from "+path)
+        fh = open(path, 'r')
+        text = fh.read()
+        logging.debug("read %d bytes." % len(text))
 
-    if not text:
-      text = memcache.get(self.STATIC_CONTENT_MEMCACHE_KEY + remote_url)
-    if not text:
-      # Content is not in memcache.  Fetch from remote location.
-      # We have to append ?zx= to URL to avoid urlfetch's cache.
-      result = urlfetch.fetch("%s?zx=%d" % (remote_url,
+      if not text:
+        text = memcache.get(self.STATIC_CONTENT_MEMCACHE_KEY + remote_url)
+      if not text:
+        # Content is not in memcache.  Fetch from remote location.
+        # We have to append ?zx= to URL to avoid urlfetch's cache.
+        result = urlfetch.fetch("%s?zx=%d" % (remote_url,
                                             datetime.now().microsecond))
-      if result.status_code == 200:
-        text = result.content
-        memcache.set(self.STATIC_CONTENT_MEMCACHE_KEY + remote_url,
+        if result.status_code == 200:
+          text = result.content
+          memcache.set(self.STATIC_CONTENT_MEMCACHE_KEY + remote_url,
                      text,
                      self.STATIC_CONTENT_MEMCACHE_TIME)
 
-    if not text:
-      self.error(404)
-      return
+      if not text:
+        self.error(404)
+        return
 
-    template_values = get_default_template_values(self.request, 'STATIC_PAGE')
-    template_values['static_content'] = text
-    self.response.out.write(render_template(STATIC_CONTENT_TEMPLATE,
+      template_values = get_default_template_values(self.request, 'STATIC_PAGE')
+      template_values['static_content'] = text
+      self.response.out.write(render_template(STATIC_CONTENT_TEMPLATE,
                                             template_values))
+    except DeadlineExceeded:
+      deadline_exceeded(self, "static_content")
 
 class datahub_dashboard_view(webapp.RequestHandler):
   """stats by provider, on a hidden URL (underlying data is a hidden URL)."""
@@ -1108,6 +1215,16 @@ class datahub_dashboard_view(webapp.RequestHandler):
       template_values['msg'] = \
           "error fetching dashboard data: code %d" % fetch_result.status_code
 
+    unique_args = get_unique_args_from_request(self.request)
+    detail_idx = None
+    show_details = False
+    if 'provider_idx' in unique_args:
+      try:
+        detail_idx = int(unique_args['provider_idx'])
+        show_details = True
+      except:
+        pass
+
     if re.search(r'[.]bz2$', url):
       import bz2
       fetch_result.content = bz2.decompress(fetch_result.content)
@@ -1118,6 +1235,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
     statusrx = re.compile("(\d+-\d+-\d+) (\d+:\d+:\d+)[.]\d+:STATUS:(.+?) "+
                           "done parsing: output (\d+) organizations and "+
                           "(\d+) opportunities .(\d+) bytes.: (\d+) minutes")
+
     def parse_date(datestr, timestr):
       """uses day granularity now that we have a few weeks of data.
       At N=10 providers, 5 values, 12 bytes each, 600B per record.
@@ -1128,6 +1246,8 @@ class datahub_dashboard_view(webapp.RequestHandler):
       return datestr
 
     js_data = ""
+    details_html = ""
+
     known_dates = {}
     date_strings = []
     known_providers = {}
@@ -1139,6 +1259,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
         known_dates[hour] = 0
         known_providers[match.group(3)] = 0
         #js_data += "// hour="+hour+" provider="+match.group(3)+"\n"
+
     template_values['provider_data'] = provider_data = []
     sorted_providers = sorted(known_providers.keys())
     for i, provider in enumerate(sorted_providers):
@@ -1146,6 +1267,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
       provider_data.append([])
       provider_names.append(provider)
       #js_data += "// provider_names["+str(i)+"]="+provider_names[i]+"\n"
+
     sorted_dates = sorted(known_dates.keys())
     for i, hour in enumerate(sorted_dates):
       for j, provider in enumerate(sorted_providers):
@@ -1153,6 +1275,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
       known_dates[hour] = i
       date_strings.append(hour)
     #js_data += "// date_strings["+str(i)+"]="+date_strings[i]+"\n"
+
     def commas(num):
       num = str(num)
       while True:
@@ -1161,6 +1284,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
           break
         num = newnum
       return num
+
     max_date = {}
     for line in lines:
       match = re.search(statusrx, line)
@@ -1176,6 +1300,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
         rec['listings'] = int(match.group(5))
         rec['kbytes'] = int(float(match.group(6))/1024.0)
         rec['loadtimes'] = int(match.group(7))
+
     js_data += "function sv(row,col,val) {data.setValue(row,col,val);}\n"
     js_data += "function ac(typ,key) {data.addColumn(typ,key);}\n"
     js_data += "function acn(key) {data.addColumn('number',key);}\n"
@@ -1187,13 +1312,14 @@ class datahub_dashboard_view(webapp.RequestHandler):
     for provider_idx, provider in enumerate(sorted_providers):
       js_data += "\nacn('"+provider+"');"
       js_data += "sv(0,"+str(provider_idx)+",0);"
+
     js_data += "data.addRows(1);"
     js_data += "\nacn('totals');"
     js_data += "sv(0,"+str(len(sorted_providers))+",0);"
     js_data += "\n"
-    js_data += "var chart = new google.visualization.ImageSparkLine("
+    js_data += "provider_chart = new google.visualization.ImageSparkLine("
     js_data += "  document.getElementById('provider_names'));\n"
-    js_data += "chart.draw(data,{width:160,height:50,showAxisLines:false,"
+    js_data += "provider_chart.draw(data,{width:160,height:50,showAxisLines:false,"
     js_data += "  showValueLabels:false,labelPosition:'right'});\n"
 
     # provider last loaded times are implemented as chart labels, so
@@ -1206,6 +1332,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
       js_data += "sv(0,"+str(provider_idx)+",0);"
       if maxdate < max_date[provider_idx]:
         maxdate = max_date[provider_idx]
+
     js_data += "data.addRows(1);"
     js_data += "\nacn('"+maxdate+"');"
     js_data += "sv(0,"+str(len(sorted_providers))+",0);"
@@ -1215,6 +1342,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
     js_data += "chart.draw(data,{width:150,height:50,showAxisLines:false,"
     js_data += "  showValueLabels:false,labelPosition:'right'});\n"
 
+    history_details = []
     totals = {}
     for key in ['organizations', 'listings', 'kbytes', 'loadtimes']:
       totals[key] = 0
@@ -1229,15 +1357,36 @@ class datahub_dashboard_view(webapp.RequestHandler):
           totals[key] += provider_data[provider_idx][-1][key]
         except:
           colstr = "\nacn('0');"
+
+        dated_values = []
         for date_idx, hour in enumerate(sorted_dates):
           try:
             rec = provider_data[provider_idx][date_idx]
             val = "sv("+str(date_idx)+","+str(colnum)+","+str(rec[key])+");"
+            dated_values.append({'date':hour, key:str(rec[key])})
           except:
             val = ""
           colstr += val
         colnum += 1
         js_data += colstr
+
+        if key == 'listings':
+          while len(history_details) <= provider_idx:
+            history_details.append({'date':'-',key:'0'})
+          history_details[provider_idx] = dated_values
+
+      if show_details and len(details_html) < 1:
+        for provider_idx, provider in enumerate(sorted_providers):
+          if provider_idx < len(history_details) and provider_idx == detail_idx:
+            details_html += ('<div class="details"><h3><a id="anchor' + str(detail_idx) + 
+                        '" name="anchor' + str(detail_idx) + 
+                        '">' + provider + '</a></h3>\n')
+            details_html += '<table>\n'
+            for rec in history_details[provider_idx]:
+              details_html += "<tr><td>%s</td><td>%s</td></tr>\n" % (rec['date'], rec['listings'])
+            details_html += '</table></div>\n'
+            break
+
       js_data += "data.addRows(1);"
       js_data += "\nacn('"+commas(str(totals[key]))+"');"
       js_data += "sv(0,"+str(len(sorted_providers))+",0);"
@@ -1246,7 +1395,10 @@ class datahub_dashboard_view(webapp.RequestHandler):
       js_data += "  document.getElementById('"+key+"_chart'));\n"
       js_data += "chart.draw(data,{width:200,height:50,showAxisLines:false,"
       js_data += "  showValueLabels:false,labelPosition:'right'});\n"
+
     template_values['datahub_dashboard_js_data'] = js_data
+    template_values['datahub_dashboard_history'] = details_html
+
     logging.debug("datahub_dashboard_view: %s" % template_values['msg'])
     self.response.out.write(render_template(DATAHUB_DASHBOARD_TEMPLATE,
                                             template_values))

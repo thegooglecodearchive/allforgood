@@ -20,6 +20,7 @@ typos become compile-time errors.
 PARAM_NUM = 'num'
 CONST_MIN_NUM = 1
 CONST_MAX_NUM = 999
+CONST_DFLT_NUM = 10
 
 PARAM_START = 'start'
 CONST_MIN_START = 1
@@ -81,6 +82,10 @@ PARAM_VOL_INCLUSIVEDATES = 'vol_inclusivedates'
 PARAM_VOL_TZ = 'vol_tz'
 PARAM_VOL_PROVIDER = 'vol_provider'
 PARAM_VOL_STARTDAYOFWEEK = 'vol_startdayofweek'
+
+PARAM_VIRTUAL = 'virtual'
+PARAM_MERGE = 'merge'
+PARAM_DUMP = 'dump'
 
 PARAM_BACKFILL = 'bf'
 PARAM_BACKFILL_TITLES = 'bft'

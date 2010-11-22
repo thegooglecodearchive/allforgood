@@ -147,6 +147,32 @@ addthis.button('#share_{{forloop.counter0}}', { username: "footprint2009dev", se
 <div id='paginator'>
 </div>
 <script>
+function stripTags(s){
+  var rtn = '';  
+  s = (s || '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/<([^>]+)>/g,'');
+  var n = s.length;  
+  var intag = false;  
+  for (var i = 0; i < n; i++) {
+    if (s.charAt(i) == '<') {
+      intag = true;
+    } else if (s.charAt(i) == '>') {
+      intag = false;    
+    } else if (!intag) {
+      rtn += s.charAt(i);    
+    }  
+  }
+  return rtn;
+}
+function cleanSnippets() {
+  var ar = document.getElementsByTagName('div');
+  for (var i in ar) {
+    if (ar[i] && ar[i].className == 'snippet_text') {
+      ar[i].innerHTML = stripTags(ar[i].innerHTML);
+    }
+  }
+}
+cleanSnippets();
+
   renderPaginator(el('paginator'), {{last_result_index|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
   initMap();
 </script>

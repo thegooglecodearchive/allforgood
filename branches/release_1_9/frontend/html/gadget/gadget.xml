@@ -38,15 +38,14 @@
   </UserPref>
   <UserPref name="category" display_name="__MSG_category__" default_value="" datatype="enum">
     <EnumValue value="" display_value="__MSG_all__"/>
-    <EnumValue value="Animals" display_value="__MSG_animals__"/>
+    <EnumValue value="OilSpill" display_value="OilSpill"/>
     <EnumValue value="Education" display_value="__MSG_education__"/>
-    <EnumValue value="Health" display_value="__MSG_health__"/>
-    <EnumValue value="Hunger" display_value="__MSG_hunger"/>
-    <EnumValue value="MLK" display_value="__MSG_mlk"/>
-    <EnumValue value="Nature" display_value="__MSG_nature__"/>
+    <EnumValue value="Hunger" display_value="Hunger"/>
+    <EnumValue value="Animals" display_value="Animals"/>
+    <EnumValue value="Health" display_value="Health"/>
     <EnumValue value="Seniors" display_value="__MSG_seniors__"/>
-    <EnumValue value="September11" display_value="__MSG_september_11__"/>
     <EnumValue value="Technology" display_value="__MSG_technology__"/>
+    <EnumValue value="Poverty" display_value="Poverty"/>
   </UserPref>
   <UserPref name="prefLocation"
             display_name="__MSG_default_location__"
@@ -295,6 +294,7 @@ var PAGES_PER_QUERY = 3;
  */
 var feedParams = {
   vol_loc: '',
+  vol_dist: '',
   q: '',
   key: 'gf-gadget',
   start: 1,
@@ -505,6 +505,7 @@ function showRecordsAndUpdatePagination() {
       'href="http://www.allforgood.org/search#cache=1&num=10' +
       '&start=', feedParams.start,
       '&vol_loc=', _esc(feedParams.vol_loc),
+      '&vol_dist=', _esc(feedParams.vol_dist),
       '&timeperiod=', feedParams.timeperiod,
       '&q=', _esc(feedParams.q),
       '" style="float:left;"  class="afg-pagination">',
@@ -687,8 +688,36 @@ function navigatePage(step) {
  * @param {boolean} opt_hidePopup Information whether to hide the
  *     dialog window or not (optional).
  */
-function search(opt_searchTxt, opt_hidePopup) {
-  var location = prefs.getString('prefLocation');
+function getLatLng(json_rsp, opt_searchTxt, opt_hidePopup) {
+  var latlng = 'err';
+  try {
+    if (json_rsp) {
+      var jo = JSON.parse(decodeURIComponent(json_rsp));
+      if (jo) {
+        if (jo.Status.code == 200) {
+          latlng = jo.Placemark[0].Point.coordinates[1] + ',' + jo.Placemark[0].Point.coordinates[0];
+        }
+      }
+    }
+  } catch(err) {
+  }
+  search(opt_searchTxt, opt_hidePopup, latlng);
+}
+
+function search(opt_searchTxt, opt_hidePopup, latlng) {
+  var location = '';
+  if (!latlng) {
+    location = prefs.getString('prefLocation');
+    if (location) {
+      var url = 'http://maps.google.com/maps/geo?q=' + encodeURIComponent(location);
+      _IG_FetchContent(url, _IG_Callback(getLatLng, opt_searchTxt, opt_hidePopup));
+      return;
+    }
+  }
+  if (latlng == 'err') {
+    latlng = '';
+  }
+  
   var prefKeywords = prefs.getString('preferredKeywords');
   var category = prefs.getString('category');
   var searchText = opt_searchTxt || _gel('afg-search-text').value || '';
@@ -697,7 +726,8 @@ function search(opt_searchTxt, opt_hidePopup) {
     category = 'category:' + category;
   }
   feedParams.start = 1;
-  feedParams.vol_loc = location;
+  feedParams.vol_loc = (latlng || location);
+  feedParams.vol_dist = '100';
   feedParams.q = [category, prefKeywords, searchText].join(' ');
   feedParams.timeperiod = prefs.getString('timePeriod');
   // Reset FeedRecord and pagination related variables.
@@ -976,6 +1006,8 @@ window.onresize = function() {
  * Entry point.
  */
 _IG_RegisterOnloadHandler(init);
+
+if(!this.JSON){JSON=function(){function f(n){return n<10?'0'+n:n}Date.prototype.toJSON=function(){return this.getUTCFullYear()+'-'+f(this.getUTCMonth()+1)+'-'+f(this.getUTCDate())+'T'+f(this.getUTCHours())+':'+f(this.getUTCMinutes())+':'+f(this.getUTCSeconds())+'Z'};var m={'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'};function stringify(value,whitelist){var a,i,k,l,r=/["\\\x00-\x1f\x7f-\x9f]/g,v;switch(typeof value){case'string':return r.test(value)?'"'+value.replace(r,function(a){var c=m[a];if(c){return c}c=a.charCodeAt();return'\\u00'+Math.floor(c/16).toString(16)+(c%16).toString(16)})+'"':'"'+value+'"';case'number':return isFinite(value)?String(value):'null';case'boolean':case'null':return String(value);case'object':if(!value){return'null'}if(typeof value.toJSON==='function'){return stringify(value.toJSON())}a=[];if(typeof value.length==='number'&&!(value.propertyIsEnumerable('length'))){l=value.length;for(i=0;i<l;i+=1){a.push(stringify(value[i],whitelist)||'null')}return'['+a.join(',')+']'}if(whitelist){l=whitelist.length;for(i=0;i<l;i+=1){k=whitelist[i];if(typeof k==='string'){v=stringify(value[k],whitelist);if(v){a.push(stringify(k)+':'+v)}}}}else{for(k in value){if(typeof k==='string'){v=stringify(value[k],whitelist);if(v){a.push(stringify(k)+':'+v)}}}}return'{'+a.join(',')+'}'}}return{stringify:stringify,parse:function(text,filter){var j;function walk(k,v){var i,n;if(v&&typeof v==='object'){for(i in v){if(Object.prototype.hasOwnProperty.apply(v,[i])){n=walk(i,v[i]);if(n!==undefined){v[i]=n}}}}return filter(k,v)}if(/^[\],:{}\s]*$/.test(text.replace(/\\./g,'@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(:?[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){j=eval('('+text+')');return typeof filter==='function'?walk('',j):j}throw new SyntaxError('parseJSON');}}}()}
 
 </script>
 <div id="afg-main">
