@@ -153,7 +153,12 @@ def form_solr_query(args):
     solr_query += "*:*"
     query_is_empty = True
 
-  logging.info("solr_query: %s" % solr_query)
+  # 2010-08-26 truist.com/volunteersolutions.org went down
+  # solr_query += " AND -detailurl:truist.com"
+  # solr_query += " AND -detailurl:volunteersolutions.org"
+
+  #mt1955@gmail.com:please keep as info for a while, then change to debug later
+  logging.info('solr_search.form_solr_query solr_query=%s' % solr_query)
 
   if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "":
     start_date = datetime.datetime.today()
@@ -161,14 +166,16 @@ def form_solr_query(args):
       start_date = datetime.datetime.strptime(
                      args[api.PARAM_VOL_STARTDATE].strip(), "%Y-%m-%d")
     except:
-      logging.error("malformed start date: %s" % args[api.PARAM_VOL_STARTDATE])
+      logging.debug('solr_search.form_solr_query malformed start date: %s' % 
+                    args[api.PARAM_VOL_STARTDATE])
     end_date = None
     if api.PARAM_VOL_ENDDATE in args and args[api.PARAM_VOL_ENDDATE] != "":
       try:
         end_date = datetime.datetime.strptime(
                        args[api.PARAM_VOL_ENDDATE].strip(), "%Y-%m-%d")
       except:
-        logging.error("malformed end date: %s" % args[api.PARAM_VOL_ENDDATE])
+        logging.debug('solr_search.form_solr_query malformed end date: %s' % 
+                       args[api.PARAM_VOL_ENDDATE])
     if not end_date:
       end_date = start_date
     start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
@@ -188,7 +195,8 @@ def form_solr_query(args):
     else:
       # illegal providername
       # TODO: throw 500
-      logging.error("illegal providername: " + args[api.PARAM_VOL_PROVIDER])
+      logging.error('solr_search.form_solr_query illegal providername: %s' % 
+                    args[api.PARAM_VOL_PROVIDER])
   # TODO: injection attack on sort
   if api.PARAM_SORT not in args:
     args[api.PARAM_SORT] = "r"
@@ -206,7 +214,7 @@ def form_solr_query(args):
     max_dist = float(args[api.PARAM_VOL_DIST]) / 60
 
     # TODO: Re-add locationless listings as a query param.
-    #lat, lng = float(args["lat"]), float(args["long"])
+    #lat, lng = float(args[api.PARAM_LAT]), float(args[api.PARAM_LNG])
     #if (lat < 0.5 and lng < 0.5):
     #  solr_query += add_range_filter("latitude", '*', '0.5')
     #  solr_query += add_range_filter("longitude", '*', '0.5')
@@ -254,7 +262,7 @@ def form_solr_query(args):
     except:
       raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- "+
                      "please install correct private_keys.py file")
-  logging.info("backend="+args[api.PARAM_BACKEND_URL])
+  logging.debug("backend=" + args[api.PARAM_BACKEND_URL])
 
   if api.PARAM_START not in args:
     args[api.PARAM_START] = 1
@@ -276,7 +284,7 @@ def parseLatLng(val):
 # note: many of the XSS and injection-attack defenses are unnecessary
 # given that the callers are also protecting us, but I figure better
 # safe than sorry, and defense-in-depth.
-def search(args):
+def search(args, dumping = False):
   """run a SOLR search."""
   def have_valid_query(args):
     """ make sure we were given a value for at least one of these arguments """
@@ -294,8 +302,10 @@ def search(args):
       if param in args and args[param]:
         if param == api.PARAM_VOL_LOC:
           # vol_loc must render a lat, long pair
-          if (not args["lat"] or parseLatLng(args["lat"]) == 0 or 
-              not args["long"] or parseLatLng(args["long"]) == 0):
+          if (not args[api.PARAM_LAT] or 
+              parseLatLng(args[api.PARAM_LAT]) == 0 or 
+              not args[api.PARAM_LNG] or 
+              parseLatLng(args[api.PARAM_LNG]) == 0):
             continue
         valid_query = True
         break
@@ -311,6 +321,10 @@ def search(args):
   # Return results in JSON format
   # TODO: return in TSV format for fastest possible parsing, i.e. split("\t") 
   query_url += "&wt=json"
+
+  # limit to opps which have not expired yet
+  # [expires:NOW TO *] means "expires prior to today"
+  query_url += "&fq=expires:[NOW-3DAYS%20TO%20*]"
 
   num_to_fetch = int(args[api.PARAM_NUM]) + 1
   query_url += "&rows=" + str(num_to_fetch)
@@ -331,9 +345,9 @@ def search(args):
     result_set.parse_time = 0
     return result_set
 
-  logging.debug("calling SOLR: "+query_url)
-  results = query(query_url, args, False)
-  logging.debug("SOLR call done: "+str(len(results.results))+
+  logging.info("calling SOLR: "+query_url)
+  results = query(query_url, args, False, dumping)
+  logging.info("SOLR call done: "+str(len(results.results))+
                 " results, fetched in "+str(results.fetch_time)+" secs,"+
                 " parsed in "+str(results.parse_time)+" secs.")
 
@@ -349,9 +363,9 @@ def search(args):
   return results
 
 
-def query(query_url, args, cache):
+def query(query_url, args, cache, dumping = False):
   """run the actual SOLR query (no filtering or sorting)."""
-  #logging.info("Query URL: " + query_url + '&debugQuery=on')
+  logging.debug("Query URL: " + query_url + '&debugQuery=on')
   result_set = searchresult.SearchResultSet(urllib.unquote(query_url),
                                             query_url,
                                             [])
@@ -362,11 +376,21 @@ def query(query_url, args, cache):
   result_set.parse_time = 0
   
   fetch_start = time.time()
-  fetch_result = urlfetch.fetch(query_url,
+  status_code = 999
+  try:
+    fetch_result = urlfetch.fetch(query_url,
                    deadline = api.CONST_MAX_FETCH_DEADLINE)
+    status_code = fetch_result.status_code
+  except:
+    # can get a response too large error here
+    if status_code == 999:
+      logging.info('solr_search.query error')
+    else:
+      logging.info('solr_search.query responded %s' % str(status_code))
+
   fetch_end = time.time()
   result_set.fetch_time = fetch_end - fetch_start
-  if fetch_result.status_code != 200:
+  if status_code != 200:
     return result_set
   result_content = fetch_result.content
 
@@ -382,9 +406,11 @@ def query(query_url, args, cache):
       latstr = entry["latitude"]
       longstr = entry["longitude"]
       if latstr and longstr and latstr != "" and longstr != "":
-        entry["detailurl"] = "http://maps.google.com/maps?q=" + str(latstr) + "," + str(longstr)
+        entry["detailurl"] = \
+          "http://maps.google.com/maps?q=" + str(latstr) + "," + str(longstr)
       else:
-        logging.warning("skipping SOLR record %d: detailurl is missing..." % i)
+        logging.debug('solr_search.query skipping SOLR record' +
+                      ' %d: detailurl is missing...' % i)
         continue
 
     url = entry["detailurl"]
@@ -396,10 +422,17 @@ def query(query_url, args, cache):
     snippet = entry.get('abstract', '')
     title = entry.get('title', '')
     location = entry.get('location_string', '')
-    categories = entry.get('categories', '').split(',')
+
+    categories = entry.get('categories', '')
+    if type(categories).__name__ != 'list':
+      try:
+        categories = categories.split(',')
+      except:
+        categories = []
+    
     org_name = entry.get('org_name', '')
     if re.search(r'[^a-z]acorn[^a-z]', " "+org_name+" ", re.IGNORECASE):
-      logging.warning("skipping: ACORN in org_name..")
+      logging.debug('solr_search.query skipping: ACORN in org_name')
       continue
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
                                     base_url, categories, org_name)
@@ -410,36 +443,41 @@ def query(query_url, args, cache):
     if (res.provider == "myproj_servegov" and
         re.search(r'[^a-z]acorn[^a-z]', " "+result_content+" ", re.IGNORECASE)):
       # per-provider rule because case-insensitivity
-      logging.warning("skipping: ACORN anywhere for myproj_servegov.")
+      logging.info('solr_search.query skipping: ACORN in for myproj_servegov')
       continue
+
     res.orig_idx = i+1
     res.latlong = ""
     latstr = entry["latitude"]
     longstr = entry["longitude"]
     if latstr and longstr and latstr != "" and longstr != "":
-      if api.PARAM_VOL_DIST in args and args[api.PARAM_VOL_DIST] != "":
+      if ( not dumping and
+           api.PARAM_VOL_DIST in args and args[api.PARAM_VOL_DIST] != "" and
+           api.PARAM_LAT in args and args[api.PARAM_LAT] != "" and
+           api.PARAM_LNG in args and args[api.PARAM_LNG] != ""
+         ):
         # beyond distance from requested?
         try:
           max_vol_dist = float(args[api.PARAM_VOL_DIST])
-          vol_lat = float(args["lat"])
-          vol_lng = float(args["long"])
+          vol_lat = float(args[api.PARAM_LAT])
+          vol_lng = float(args[api.PARAM_LNG])
           result_lat = float(latstr)
           result_lng = float(longstr)
           miles_to_opp = (MILES_PER_DEG * pow(pow(vol_lat - result_lat, 2) 
                           + pow(vol_lng - result_lng, 2), 0.5))
           if miles_to_opp > max_vol_dist:
-            logging.warning("skipping SOLR record %d: too far (%d > %d)" % 
+            logging.info("skipping SOLR record %d: too far (%d > %d)" % 
               (i, miles_to_opp, max_vol_dist))
             continue
         except:
-          logging.warning("could not calc %s max distance [%s,%s] to [%s,%s]" %
-            (args[api.PARAM_VOL_DIST], args["lat"], args["long"], 
+          logging.info("could not calc %s max distance [%s,%s] to [%s,%s]" %
+            (args[api.PARAM_VOL_DIST], args[api.PARAM_LAT], args[api.PARAM_LNG], 
               latstr, longstr))
 
       res.latlong = str(latstr) + "," + str(longstr)
 
     # TODO: remove-- working around a DB bug where all latlongs are the same
-    if "geocode_responses" in args:
+    if not dumping and "geocode_responses" in args:
       res.latlong = geocode.geocode(location,
             args["geocode_responses"]!="nocache" )
 
@@ -449,10 +487,11 @@ def query(query_url, args, cache):
     res.event_date_range = entry["event_date_range"]
     res.startdate = datetime.datetime.strptime("2000-01-01", "%Y-%m-%d")
     res.enddate = datetime.datetime.strptime("2038-01-01", "%Y-%m-%d")
-    if res.event_date_range:
+    if not dumping and res.event_date_range:
       match = DATE_FORMAT_PATTERN.findall(res.event_date_range)
       if not match:
-        logging.warning('skipping Base record %d: bad date range: %s for %s' %
+        logging.debug('solr_search.query skipping record' +
+                        ' %d: bad date range: %s for %s' % 
                         (i, res.event_date_range, url))
         continue
       else:
@@ -534,8 +573,8 @@ def get_from_ids(ids):
     if not item_id in datastore_results:
       datastore_missing_ids.append(item_id)
   if datastore_missing_ids:
-    logging.warning('Could not find entry in datastore for ids: %s' %
-                    datastore_missing_ids)
+    logging.warning('solr_search.get_from_ids Could not find entry in' +
+                    ' datastore for ids: %s' % datastore_missing_ids)
 
   # Bogus args for search. TODO: Remove these, why are they needed above?
   args = {}
@@ -548,15 +587,16 @@ def get_from_ids(ids):
   # TODO(mblain): Figure out how to pull in multiple base entries in one call.
   for (item_id, volunteer_opportunity_entity) in datastore_results.iteritems():
     if not volunteer_opportunity_entity.base_url:
-      logging.warning('no base_url in datastore for id: %s' % item_id)
+      logging.warning('solr_search.get_from_ids no base_url in datastore ' +
+                      'for id: %s' % item_id)
       continue
-    logging.info("Datastore Entry: " + volunteer_opportunity_entity.base_url) ##
+    logging.debug("Datastore Entry: " + volunteer_opportunity_entity.base_url) ##
     try:
       query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + \
           '?wt=json&q=id:' + volunteer_opportunity_entity.base_url
     except:
       raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- "+
-                     "please install correct private_keys.py file")
+                      "please install correct private_keys.py file")
     temp_results = query(query_url, args, True)
     if not temp_results.results:
       # The base URL may have changed from under us. Oh well.
@@ -571,8 +611,8 @@ def get_from_ids(ids):
       volunteer_opportunity_entity.put()
       continue
     if temp_results.results[0].item_id != item_id:
-      logging.error('First result is not expected result. '
-                    'Expected: %s Found: %s. len(results): %s' %
+      logging.error('solr_search.get_from_ids First result not expected result.'
+                    ' Expected: %s Found: %s. len(results): %s' %
                     (item_id, temp_results.results[0].item_id, len(results)))
       # Not sure if we should touch the VolunteerOpportunity or not.
       continue

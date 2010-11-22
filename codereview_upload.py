@@ -1362,9 +1362,10 @@ def RealMain(argv, data=None):
       ErrorExit("Can't specify description and description_editor")
     if options.description_file:
       ErrorExit("Can't specify description_file and description_editor")
-    if 'EDITOR' not in os.environ:
-      ErrorExit("Please set the EDITOR environment variable.")
-    editor = os.environ['EDITOR']
+    if 'EDITOR' in os.environ:
+      editor = os.environ['EDITOR']
+    else:
+      editor = 'vi'
     if editor == None or editor == "":
       ErrorExit("Please set the EDITOR environment variable.")
     tempfh, filename = tempfile.mkstemp()

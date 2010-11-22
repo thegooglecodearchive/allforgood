@@ -188,13 +188,13 @@ class SearchResultSet(object):
     self.pubdate = get_rfc2822_datetime()
     self.last_build_date = self.pubdate
 
-  def append_results(self, results):
+  def append_results(self, results, merge_by_date_and_location = False):
     """append a results array to this results set and rerun dedup()"""
     self.num_results = len(self.results) + len(results.results)
     self.results.extend(results.results)
     self.merged_results = []
     self.clipped_results = []
-    self.dedup()
+    self.dedup(merge_by_date_and_location)
 
 
   def clip_set(self, start, num, result_set):
@@ -207,17 +207,20 @@ class SearchResultSet(object):
     if self.estimated_merged_results > num:
       self.has_more_results = True
 
+
   def clip_merged_results(self, start, num):
     """clip to start/num using the merged results."""
-    logging.debug("clip_merged_results: start=%d  num=%d  has_more=%s "
+    logging.info("clip_merged_results: start=%d  num=%d  has_more=%s "
                   "(merged len = %d)" %
                   (start, num, str(self.has_more_results),
                    len(self.merged_results)))
     return self.clip_set(start, num, self.merged_results)
 
+
   def clip_results(self, start, num):
     """clip to start/num using the unmerged (original) results."""
     return self.clip_set(start, num, self.results)
+
 
   def track_views(self, num_to_incr=1):
     """increment impression counts for items in the set."""
@@ -232,7 +235,7 @@ class SearchResultSet(object):
       #  res.impressions = pagecount.IncrPageCount(res.item_id, 1)
     logging.debug(str(datetime.datetime.now())+" track_views: end")
 
-  def dedup(self):
+  def dedup(self, merge_by_date_and_location):
     """modify in place, merged by title and snippet."""
 
     def assign_merge_keys():
@@ -254,7 +257,7 @@ class SearchResultSet(object):
         res.merged_list = []
         res.merged_debug = []
 
-    def merge_result(res):
+    def merge_result(res, merge_by_date_and_location):
       """private helper function for dedup()"""
       merged = False
       for i, primary_result in enumerate(self.merged_results):
@@ -271,7 +274,10 @@ class SearchResultSet(object):
             self.merged_results[i].merged_list.append(res)
             self.merged_results[i].merged_debug.append(res.location + ":" +
                 res.startdate.strftime("%Y-%m-%d"))
-          merged = True
+          if not merge_by_date_and_location:
+            merged = False
+          else:
+            merged = True
           break
       if not merged:
         self.merged_results.append(res)
@@ -298,6 +304,7 @@ class SearchResultSet(object):
           for merged_result in res.merged_list:
             def make_linkable(text, merged_result, res):
               """generate HTML hyperlink for text if merged_result != res."""
+              #TODO: find out if we still need to do this
               if merged_result.url != res.url:
                 return '<a href="' + merged_result.url + '">' + text + '</a>'
               else:
@@ -332,7 +339,7 @@ class SearchResultSet(object):
 
       for result in self.results:
         if re.search('ACORN', result.title + result.snippet):
-          logging.info("blacklisting ACORN listing.")
+          logging.debug("blacklisting ACORN listing.")
           continue
         if result.merge_key not in opp_stats:
           unknown_keys.add(result.merge_key)
@@ -354,8 +361,10 @@ class SearchResultSet(object):
     assign_merge_keys()
     remove_blacklisted_results()
     for res in self.results:
-      merge_result(res)
+      merge_result(res, merge_by_date_and_location)
     compute_more_less()
+    if len(self.results) != len(self.merged_results):
+      logging.info("dedup: merged %d to %d results" % (len(self.results), len(self.merged_results)))
 
     self.num_merged_results = len(self.merged_results)
     if len(self.results) == 0:

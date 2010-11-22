@@ -23,7 +23,7 @@ import logging
 import copy
 
 from versioned_memcache import memcache
-from utils import safe_str
+from utils import safe_str, safe_int
 
 import api
 import base_search
@@ -51,7 +51,8 @@ def run_query_rewriters(query):
 # and any path info is supposed to be homogenized into this,
 # e.g. /listing/56_foo should be resolved into [('id',56)]
 # by convention, repeated args are ignored, LAST ONE wins.
-def search(args):
+def search(args, dumping = False):
+  logging.info("search.search enter")
   """run a search against the backend specified by the 'backend' arg.
   Returns a result set that's been (a) de-dup'd ("merged") and (b) truncated
   to the appropriate number of results ("clipped").  Impression tracking
@@ -64,7 +65,7 @@ def search(args):
   #     create a normalized string, for the memcache key.
   # pylint: disable-msg=C0321
   
-  normalize_query_values(args)
+  normalize_query_values(args, dumping)
 
   # TODO: query param (& add to spec) for defeating the cache (incl FastNet)
   # I (mblain) suggest using "zx", which is used at Google for most services.
@@ -83,8 +84,8 @@ def search(args):
 
   # note: key cannot exceed 250 bytes
   memcache_key = hashlib.md5('search:' + normalized_query_string).hexdigest()
-  start = int(args[api.PARAM_START])
-  num = int(args[api.PARAM_NUM])
+  start = safe_int(args[api.PARAM_START], api.CONST_MIN_START)
+  num = safe_int(args[api.PARAM_NUM], api.CONST_DFLT_NUM)
 
   result_set = None
   if use_cache:
@@ -98,10 +99,12 @@ def search(args):
       logging.debug('not in cache: "' + normalized_query_string + '"')
 
   if not result_set:
-    result_set = fetch_result_set(args)
+    result_set = fetch_result_set(args, dumping)
     memcache.set(memcache_key, result_set, time=CACHE_TIME)
 
   result_set.clip_merged_results(start, num)
+  logging.info("search.search clip_merged_results completed")
+
   # TODO: for better results, we should segment CTR computation by
   # homepage vs. search views, etc. -- but IMHO it's better to give
   # up and outsource stats to a web-hosted service.
@@ -110,13 +113,18 @@ def search(args):
     # needed to populate stats
     result_set.track_views(num_to_incr=0)
   else:
-    result_set.track_views(num_to_incr=1)
+    if not dumping:
+      result_set.track_views(num_to_incr=1)
+    else:
+      result_set.merged_impressions = 0
+
+  logging.info("search.search completed")
   return result_set
 
 def min_max(val, minval, maxval):
   return max(min(maxval, val), minval)
 
-def normalize_query_values(args):
+def normalize_query_values(args, dumping = False):
   """Pre-processes several values related to the search API that might be
   present in the query string."""
 
@@ -137,26 +145,39 @@ def normalize_query_values(args):
   # RESERVED: type
 
   def dbgargs(arg):
-    logging.warn("args[%s]=%s" % (arg, args[arg]))
+    logging.debug("args[%s]=%s" % (arg, args[arg]))
 
-  num = int(args.get(api.PARAM_NUM, 10)) 
+  if not api.PARAM_NUM in args:
+    args[api.PARAM_NUM] = api.CONST_DFLT_NUM
+
+  num = safe_int(args[api.PARAM_NUM], api.CONST_DFLT_NUM) 
   args[api.PARAM_NUM] = min_max(num, api.CONST_MIN_NUM, api.CONST_MAX_NUM)
+
   dbgargs(api.PARAM_NUM)
 
-  start_index = int(args.get(api.PARAM_START, 1)) 
-  args[api.PARAM_START] = min_max(
-    start_index, api.CONST_MIN_START, api.CONST_MAX_START-num)
+  if not dumping:
+    if not api.PARAM_START in args:
+      args[api.PARAM_START] = api.CONST_MIN_START
+    else:
+      args[api.PARAM_START] = min_max(
+                safe_int(args[api.PARAM_START], api.CONST_MIN_START), 
+                api.CONST_MIN_START, api.CONST_MAX_START - num)
+
   dbgargs(api.PARAM_START)
   
-  if api.PARAM_OVERFETCH_RATIO in args:
-    overfetch_ratio = float(args[api.PARAM_OVERFETCH_RATIO])
-  elif args[api.PARAM_START] > 1:
-    # increase the overfetch ratio after the first page--
-    # overfetch is expensive and we don't want to do this
-    # on page one, which is very performance sensitive.
-    overfetch_ratio = api.CONST_MAX_OVERFETCH_RATIO
+  if dumping:
+      overfetch_ratio = 1.0
   else:
-    overfetch_ratio = 2.0
+    if api.PARAM_OVERFETCH_RATIO in args:
+      overfetch_ratio = float(args[api.PARAM_OVERFETCH_RATIO])
+    elif args[api.PARAM_START] > 1:
+      # increase the overfetch ratio after the first page--
+      # overfetch is expensive and we don't want to do this
+      # on page one, which is very performance sensitive.
+      overfetch_ratio = api.CONST_MAX_OVERFETCH_RATIO
+    else:
+      overfetch_ratio = 2.0
+
   args[api.PARAM_OVERFETCH_RATIO] = min_max(
     overfetch_ratio, api.CONST_MIN_OVERFETCH_RATIO,
     api.CONST_MAX_OVERFETCH_RATIO)
@@ -211,8 +232,11 @@ def normalize_query_values(args):
     # note that this implementation also makes q=nature match
     # a town near santa ana, CA
     # http://www.allforgood.org/search#q=nature&vol_loc=nature%2C%20USA
-    args[api.PARAM_VOL_LOC] = args[api.PARAM_Q] + " USA"
+    # args[api.PARAM_VOL_LOC] = args[api.PARAM_Q] + " USA"
+    # MT: 8/26/2010 - in practice that causes a lot of 602 results in geocode, eg "Laywers, USA"
+    args[api.PARAM_VOL_LOC] = "USA"
 
+  args[api.PARAM_BACKFILL] = ""
   # First run query_rewriter classes
   args[api.PARAM_Q] = run_query_rewriters(args[api.PARAM_Q])
   # TODO: special hack for MLK day-- backfill with keywordless query
@@ -226,28 +250,30 @@ def normalize_query_values(args):
     logging.debug("found MLK query-- backfilling with keywordless 1/16-1/24: "+
                   args[api.PARAM_BACKFILL])
 
-  args["lat"] = args["long"] = ""
+  args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
   if api.PARAM_VOL_LOC in args:
     zoom = 5
     if geocode.is_latlong(args[api.PARAM_VOL_LOC]):
-      args["lat"], args["long"] = args[api.PARAM_VOL_LOC].split(",")
+      args[api.PARAM_LAT], args[api.PARAM_LNG] = \
+                             args[api.PARAM_VOL_LOC].split(",")
     elif geocode.is_latlongzoom(args[api.PARAM_VOL_LOC]):
-      args["lat"], args["long"], zoom = args[api.PARAM_VOL_LOC].split(",")
+      args[api.PARAM_LAT], args[api.PARAM_LNG], zoom = \
+                             args[api.PARAM_VOL_LOC].split(",")
     elif args[api.PARAM_VOL_LOC] == "virtual":
-      args["lat"] = args["long"] = "0.0"
+      args[api.PARAM_LAT] = args[api.PARAM_LNG] = "0.0"
       zoom = 6
     elif args[api.PARAM_VOL_LOC] == "anywhere":
-      args["lat"] = args["long"] = ""
+      args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
     else:
       res = geocode.geocode(args[api.PARAM_VOL_LOC])
       if res != "":
-        args["lat"], args["long"], zoom = res.split(",")
-    args["lat"] = args["lat"].strip()
-    args["long"] = args["long"].strip()
+        args[api.PARAM_LAT], args[api.PARAM_LNG], zoom = res.split(",")
+    args[api.PARAM_LAT] = args[api.PARAM_LAT].strip()
+    args[api.PARAM_LNG] = args[api.PARAM_LNG].strip()
     if api.PARAM_VOL_DIST in args:
-      args[api.PARAM_VOL_DIST] = int(args[api.PARAM_VOL_DIST])
+      args[api.PARAM_VOL_DIST] = safe_int(args[api.PARAM_VOL_DIST])
     else:
-      zoom = int(zoom)
+      zoom = safe_int(zoom, 1)
       if zoom == 1:
         # country zoomlevel is kinda bogus--
         # 500 mile search radius (avoids 0.0,0.0 in the atlantic ocean)
@@ -278,8 +304,9 @@ def normalize_query_values(args):
     args[api.PARAM_VOL_LOC] = args[api.PARAM_VOL_DIST] = ""
   dbgargs(api.PARAM_VOL_LOC)
 
-def fetch_and_dedup(args):
+def fetch_and_dedup(args, dumping = False):
   """fetch, score and dedup."""
+  logging.info("search.fetch_and_dedup enter")
   if api.PARAM_BACKEND_TYPE not in args:
     args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_SOLR
 
@@ -288,15 +315,29 @@ def fetch_and_dedup(args):
     result_set = base_search.search(args)
   elif args[api.PARAM_BACKEND_TYPE] == api.BACKEND_TYPE_SOLR:
     logging.debug("Searching using SOLR backend")
-    result_set = solr_search.search(args)
+    result_set = solr_search.search(args, dumping)
   else:
-    logging.error("Unknown backend type: " + args[api.PARAM_BACKEND_TYPE] +
-                  "Defaulting to Base search")
+    logging.error('search.fetch_and_dedup Unknown backend type: ' + 
+                  args[api.PARAM_BACKEND_TYPE] +
+                  ' defaulting to Base search')
     args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_BASE
     result_set = base_search.search(args)
 
-  scoring.score_results_set(result_set, args)
-  result_set.dedup()
+  if dumping:
+    result_set.merged_results = result_set.results
+    for idx, result in enumerate(result_set.merged_results):
+      result_set.merged_results[idx].merge_key = ''
+      result_set.merged_results[idx].merged_list = []
+      result_set.merged_results[idx].merged_debug = []
+      result_set.merged_results[idx].merged_impressions = 0
+  else:
+    scoring.score_results_set(result_set, args)
+    merge_by_date_and_location = True
+    if "key" in args:
+      merge_by_date_and_location = False
+      if api.PARAM_MERGE in args and args[api.PARAM_MERGE] == "1":
+        merge_by_date_and_location = True
+    result_set.dedup(merge_by_date_and_location)
 
   return result_set
 
@@ -321,9 +362,13 @@ class BackfillQuery(object):
       logging.debug("BackfillQuery: &%s=%s" % (param_name, param_value))
 
 
-def fetch_result_set(args):
+def fetch_result_set(args, dumping = False):
   """Validate the search parameters, and perform the search."""
-  # TODO: terrible hack-- want to rewrite MLK queries
+  logging.info("search.fetch_result_set enter")
+
+  allow_virtual = False
+  if api.PARAM_VIRTUAL in args and args[api.PARAM_VIRTUAL] == "1":
+    allow_virtual = True
 
   def can_use_backfill(args, result_set):
     logging.debug("can_use_backfill: result_set.has_more_results="+
@@ -332,11 +377,12 @@ def fetch_result_set(args):
                   str(result_set.num_merged_results))
     if (not result_set.has_more_results
         and result_set.num_merged_results <
-        int(args[api.PARAM_NUM]) + int(args[api.PARAM_START])):
+        (safe_int(args[api.PARAM_NUM], api.CONST_DFLT_NUM) + 
+         safe_int(args[api.PARAM_START], api.CONST_MIN_START))):
       return True
     return False
 
-  result_set = fetch_and_dedup(args)
+  result_set = fetch_and_dedup(args, dumping)
 
   if can_use_backfill(args, result_set):
     backfill_num = 0
@@ -366,27 +412,27 @@ def fetch_result_set(args):
         backfill_num += 1
         #logging.debug("BackfillQuery: i=%d  '%s' => %s" %
         #              (backfill_num, bfq.title, bfq.args))
-        bf_res = fetch_and_dedup(bfq.args)
+        bf_res = fetch_and_dedup(bfq.args, dumping)
         for res in bf_res.merged_results:
           res.backfill_title = bfq.title
           res.backfill_number = backfill_num
           #logging.info("BackfillQuery %d: %s with %s" % 
           #             (res.backfill_number, bfq.title, res.title))
-        result_set.append_results(bf_res)
+        result_set.append_results(bf_res, True)
 
     # backfill with locationless listings
-    if (args["lat"] != "0.0" or args["long"] != "0.0"):
+    if allow_virtual and (args[api.PARAM_LAT] != "0.0" or args[api.PARAM_LNG] != "0.0"):
       backfill_num += 1
       newargs = copy.copy(args)
-      newargs["lat"] = newargs["long"] = "0.0"
+      newargs[api.PARAM_LAT] = newargs[api.PARAM_LNG] = "0.0"
       newargs[api.PARAM_VOL_DIST] = 50
       logging.debug("backfilling with locationless listings...")
-      locationless_result_set = fetch_and_dedup(newargs)
+      locationless_result_set = fetch_and_dedup(newargs, dumping)
       for res in locationless_result_set.merged_results:
         res.backfill_title = "locationless (virtual) listings"
         res.backfill_number = backfill_num
       old_len = len(result_set.results)
-      result_set.append_results(locationless_result_set)
+      result_set.append_results(locationless_result_set, True)
       logging.debug("#results=%d  #locationless=%d = new #results=%d" %
                     (old_len, len(locationless_result_set.results),
                     len(result_set.results)))

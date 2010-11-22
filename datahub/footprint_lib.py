@@ -17,9 +17,10 @@
 main() for the crawling/parsing/loading pipeline
 """
 #from xml.dom.ext import PrettyPrint
+import os
 import gzip
 import hashlib
-import urllib
+import urllib2
 import re
 from datetime import datetime
 import geocoder
@@ -29,6 +30,7 @@ import parse_usaservice
 import parse_networkforgood
 import parse_idealist
 import parse_craigslist
+import parse_350org
 import parse_volunteermatch
 import subprocess
 import sys
@@ -43,6 +45,9 @@ from taggers import get_taggers, XMLRecord
 
 FIELDSEP = "\t"
 RECORDSEP = "\n"
+FED_DIR = 'fed/'
+# 7 days
+DEFAULT_EXPIRES = (7 * 86400)
 
 MAX_ABSTRACT_LEN = 300
 
@@ -252,6 +257,20 @@ def output_field(name, value):
     # common error in datafeeds: http://http://
     value = re.sub(r'http://http://', 'http://', value)
 
+  # fix for Scott Stewart 
+  if re.search(r'americorps\.org', value, re.IGNORECASE):
+    value = re.sub(r'(?i)americorps\.org', 'americorps.gov', value)
+    print_progress("replaced americorps")
+  if re.search(r'learnandserve\.org', value, re.IGNORECASE):
+    value = re.sub(r'(?i)learnandserve\.org', 'learnandserve.gov', value)
+    print_progress("replaced learnandserve")
+  if re.search(r'seniorcorps\.org', value, re.IGNORECASE):
+    value = re.sub(r'(?i)seniorcorps\.org', 'seniorcorps.gov', value)
+    print_progress("replaced seniorcorps")
+  if re.search(r'nationalservice\.org', value, re.IGNORECASE):
+    value = re.sub(r'(?i)nationalservice\.org', 'nationalservice.gov', value)
+    print_progress("replaced nationalservice")
+    
   if OUTPUTFMT == "basetsv":
     # grr: Base tries to treat commas in custom fields as being lists ?!
     # http://groups.google.com/group/base-help-basics/browse_thread/thread/
@@ -366,6 +385,25 @@ def output_tag_value_renamed(node, xmlname, newname):
   """macro for output_field( get node value ) then emitted as newname"""
   return output_field(newname, xmlh.get_tag_val(node, xmlname))
 
+def duplicate_opp(opp, locstr, startend):
+  rtn = False
+  title = get_title(opp).lower()
+  abstract = get_abstract(opp).lower()
+  #detailURL = xmlh.get_tag_val(opp, 'detailURL')
+  #dedup_str = "".join([title, desc, detailURL, locstr, startend])
+  dedup_str = "".join([title, abstract, locstr, startend])
+  dedup_file = 'dups/' + hashlib.md5(dedup_str).hexdigest()
+  if os.path.exists(dedup_file): 
+     rtn = True
+  else:
+    try:
+      open(dedup_file, 'w').close()
+    except:
+      pass
+
+  return rtn
+
+
 def compute_stable_id(opp, org, locstr, openended, duration,
                       hrs_per_week, startend):
   """core algorithm for computing an opportunity's unique id."""
@@ -395,7 +433,10 @@ def compute_stable_id(opp, org, locstr, openended, duration,
                       abstract,
                       detailURL,
                       description])
+
+   
   return hashlib.md5(hashstr).hexdigest()
+
 
 def get_abstract(opp):
   """process abstract-- shorten, strip newlines and formatting.
@@ -420,8 +461,18 @@ def get_direct_mapped_fields(opp, org):
   outstr += FIELDSEP + output_field("paid", paid)
   detailURL = xmlh.get_tag_val(opp, "detailURL")
   outstr += FIELDSEP + output_field("detailURL", detailURL)
+
   for field in DIRECT_MAP_FIELDS:
-    outstr += FIELDSEP + output_tag_value(opp, field)
+    if field != "expires":
+      outstr += FIELDSEP + output_tag_value(opp, field)
+    else:
+      # we need to have a expires value
+      expires = xmlh.get_tag_val(opp, "expires")
+      if PRINTHEAD or len(expires) > 0:
+        outstr += FIELDSEP + output_tag_value(opp, field)
+      else:
+        outstr += FIELDSEP + xmlh.current_ts(DEFAULT_EXPIRES)
+
   for field in ORGANIZATION_FIELDS:
     outstr += FIELDSEP + output_field("org_"+field,
                                       xmlh.get_tag_val(org, field))
@@ -461,30 +512,34 @@ def get_base_other_fields(opp, org):
 
 sent_start_rx = re.compile(r'((^\s*|[.]\s+)[A-Z])([A-Z0-9 ,;-]{13,})')
 def cleanse_snippet(instr):
-  # convert known XML/XHTML chars
-  instr = re.sub(r'&nbsp;', ' ', instr)
-  instr = re.sub(r'&quot;', '"', instr)
-  instr = re.sub(r'&(uml|middot|ndash|bull|mdash|hellip);', '-', instr)
-  # strip \n and \b
-  instr = re.sub(r'(\\[bn])+', ' ', instr)
-  # doubly-escaped HTML
-  instr = re.sub(r'&amp;lt;.+?&amp;gt;', '', instr)
-  instr = re.sub(r'&(amp;)+([a-z]+);', r'&\2;', instr)
-  instr = re.sub(r'&amp;#\d+;', '', instr)
-  # singly-escaped HTML
-  # </p>, <br/>
-  instr = re.sub(r'&lt;/?[a-zA-Z]+?/?&gt;', '', instr)
-  # <a href=...>, <font ...>
-  instr = re.sub(r'&lt;?(font|a|p|img)[^&]*/?&gt;', '', instr, re.IGNORECASE)
-  # strip leftover XML escaped chars
-  instr = re.sub(r'&([a-z]+|#[0-9]+);', '', instr)
-  # strip repeated spaces, so maxlen works
-  instr = re.sub(r'\s+', ' ', instr)
 
-  # fix obnoxious all caps titles and snippets
-  for str in re.finditer(sent_start_rx, instr):
-    instr = re.sub(sent_start_rx, str.group(1)+str.group(3).lower(), instr, 1)
-  
+  instr_was = None
+  while instr and instr_was != instr:
+    instr_was = instr
+    # convert known XML/XHTML chars
+    instr = re.sub(r'&nbsp;', ' ', instr)
+    instr = re.sub(r'&quot;', '"', instr)
+    instr = re.sub(r'&(uml|middot|ndash|bull|mdash|hellip);', '-', instr)
+    # strip \n and \b
+    instr = re.sub(r'(\\[bn])+', ' ', instr)
+    # doubly-escaped HTML
+    instr = re.sub(r'&amp;lt;.+?&amp;gt;', '', instr)
+    instr = re.sub(r'&(amp;)+([a-z]+);', r'&\2;', instr)
+    instr = re.sub(r'&amp;#\d+;', '', instr)
+    # singly-escaped HTML
+    # </p>, <br/>
+    instr = re.sub(r'&lt;/?[a-zA-Z]+?/?&gt;', '', instr)
+    # <a href=...>, <font ...>
+    instr = re.sub(r'&lt;?(font|a|p|img)[^&]*/?&gt;', '', instr, re.IGNORECASE)
+    # strip leftover XML escaped chars
+    instr = re.sub(r'&([a-z]+|#[0-9]+);', '', instr)
+    # strip repeated spaces, so maxlen works
+    instr = re.sub(r'\s+', ' ', instr)
+
+    # fix obnoxious all caps titles and snippets
+    for str in re.finditer(sent_start_rx, instr):
+      instr = re.sub(sent_start_rx, str.group(1)+str.group(3).lower(), instr, 1)
+
   return instr
 
 def get_title(opp):
@@ -566,9 +621,6 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
     if len(opp_locations) == 0:
       opp_locations = [ None ]
     for opploc in opp_locations:
-      totrecs = totrecs + 1
-      if PROGRESS and totrecs % 250 == 0:
-        print_progress(str(totrecs)+" records generated.")
       if opploc == None:
         locstr, latlng, geocoded_loc = ("", "", "")
         loc_fields = get_loc_fields("", "0.0", "0.0", "", "")
@@ -578,8 +630,23 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
         loc_fields = get_loc_fields("", str(float(lat)+1000.0),
                                     str(float(lng)+1000.0), addr,
                                     xmlh.get_tag_val(opploc, "name"))
-      opp_id = compute_stable_id(opp, org, locstr, openended, duration,
-                           hrs_per_week, startend)
+
+      opp_id = compute_stable_id(opp, org, locstr, openended, duration, hrs_per_week, startend)
+      if duplicate_opp(opp, locstr, startend):
+        print_progress("dedup: skipping duplicate " + opp_id)
+        return totrecs, ""
+
+      # make a file indicating to us that this 
+      # opp has been found in a current feed
+      try:
+        open(FED_DIR + opp_id, 'w').close()
+      except:
+        pass
+
+      totrecs = totrecs + 1
+      if PROGRESS and totrecs % 250 == 0:
+        print_progress(str(totrecs)+" records generated.")
+
       outstr_list.append(output_field("id", opp_id))
       outstr_list.append(repeated_fields)
       outstr_list.append(time_fields)
@@ -738,6 +805,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
           '[^0-9]', # not a number
       re.IGNORECASE)    
 
+    tag_count_dict = {}
     oppslist_output = []
     for oppmatch in re.finditer(re.compile(
         '<VolunteerOpportunity>.+?</VolunteerOpportunity>', re.DOTALL), instr):
@@ -786,7 +854,8 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       #add tags
       for tagger in taggers:
         rec = XMLRecord(opp)
-        rec = tagger.do_tagging(rec, feedinfo)
+        rec, tag_count_dict = tagger.do_tagging(rec, feedinfo, tag_count_dict)
+
       opp = rec.opp
       if not HEADER_ALREADY_OUTPUT:
         outstr = output_header(feedinfo, opp, example_org)
@@ -794,6 +863,10 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       oppslist_output.append(spiece)
       if (maxrecs > 0 and numopps > maxrecs):
         break
+      
+    for tag, tag_count in tag_count_dict.iteritems():
+      print "tagged %s: %d" % (tag, tag_count)
+
     outstr += "".join(oppslist_output)
   else:
     # not fastparse
@@ -820,6 +893,12 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
 
 def guess_shortname(filename):
   """from the input filename, guess which feed this is."""
+  if re.search(r'rockthevote', filename):
+    return "rockthevote"
+  if re.search(r'350org', filename):
+    return "350org"
+  if re.search(r'1sky', filename):
+    return "1sky"
   if re.search("usa-?service", filename):
     return "usaservice"
   if re.search(r'meetup', filename):
@@ -836,6 +915,10 @@ def guess_shortname(filename):
     return "greentheblock"
   if re.search(r'citizencorps', filename):
     return "citizencorps"
+  if re.search(r'samaritan', filename):
+    return "samaritan"
+  if re.search(r'catchafire', filename):
+    return "catchafire"
   if re.search(r'ymca', filename):
     return "ymca"
   if re.search(r'newyorkcares', filename):
@@ -872,15 +955,21 @@ def guess_shortname(filename):
     return "mlk_day"
   if re.search("servenet", filename):
     return "servenet"
+  if re.search("servicenation", filename):
+    return "servicenation"
   if re.search(r'(seniorcorps|985148b9e3c5b9523ed96c33de482e3d)', filename):
     # note: has to come before volunteermatch
     return "seniorcorps"
   if re.search(r'(volunteermatch|cfef12bf527d2ec1acccba6c4c159687)', filename):
     return "volunteermatch"
+  if re.search(r'vm-nat', filename):
+    return "vm-nat"
   if re.search("christianvol", filename):
     return "christianvolunteering"
   if re.search("volunteer(two|2)", filename):
     return "volunteertwo"
+  if re.search("up2us", filename):
+    return "up2us"
   if re.search("mentorpro", filename):
     return "mentorpro"
   if re.search(r'(mpsg_feed|myproj_servegov)', filename):
@@ -909,6 +998,10 @@ def guess_parse_func(inputfmt, filename):
   if shortname == "volunteermatch":
     return "fpxml", fp.parser(
       '104', 'volunteermatch', 'volunteermatch',
+      'http://www.volunteermatch.org/', 'Volunteer Match')
+  if shortname == "vm-nat":
+    return "fpxml", fp.parser(
+      '104', 'vm-nat', 'vm-nat', 
       'http://www.volunteermatch.org/', 'Volunteer Match')
   if shortname == "volunteergov":
     return "fpxml", fp.parser(
@@ -947,6 +1040,10 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '126', 'ymca', 'ymca', 'http://www.ymca.net/',
       'YMCA')
+  if shortname == "catchafire":
+    return "fpxml", fp.parser(
+      '138', 'catchafire', 'catchafire', 'http://catchafire.org/',
+      'CatchAFire')
   if shortname == "aarp":
     return "fpxml", fp.parser(
       '127', 'aarp', 'aarp', 'http://www.aarp.org/',
@@ -971,6 +1068,27 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '132', 'newyorkcares', 'newyorkcares', 'http://www.newyorkcares.org/',
       'New York Cares')
+  if shortname == "servicenation":
+    return "fpxml", fp.parser(
+      '133', 'servicenation', 'servicenation', 'http://www.servicenation.org/',
+      'Service Nation')
+  if shortname == "samaritan":
+    return "fpxml", fp.parser(
+      '134', 'samaritan', 'samaritan', 'http://www.samaritan.com',
+      'Samaritan')
+  if shortname == "1sky":
+    return "fpxml", fp.parser(
+      '135', '1sky', '1sky', 'http://1sky.org/',
+      '1Sky')
+  if shortname == "rockthevote":
+    return "fpxml", fp.parser(
+      '136', 'rockthevote', 'rockthevote', 'http://rockthevote.com/',
+      'rockthevote')
+  if shortname == "up2us":
+    return "fpxml", fp.parser(
+      '137', 'up2us', 'up2us', 'http://www.civicore.com/',
+      'civicore')
+  #are they VETTED? check to see if we need to add the new feed to list of Vetted feeds in taggers.py 
 
   if shortname == "habitat":
     parser = fp.parser(
@@ -1030,6 +1148,9 @@ def guess_parse_func(inputfmt, filename):
 
   if shortname == "craigslist" or shortname == "cl":
     return "craigslist", parse_craigslist.parse
+
+  if shortname == "350org":
+    return "350org", parse_350org.parse
 
   # legacy-- to be safe, remove after 9/1/2009
   #if shortname == "volunteermatch" or shortname == "vm":
@@ -1127,8 +1248,12 @@ def open_input_filename(filename):
   """handle different file/URL opening methods."""
   if re.search(r'^https?://', filename):
     print_progress("starting download of "+filename)
-    outfh = urllib.urlopen(filename)
-    if (re.search(r'[.]gz$', filename)):
+    try:
+      outfh = urllib2.urlopen(filename)
+    except:
+      outfh = None
+
+    if outfh is not None and (re.search(r'[.]gz$', filename)):
       # is there a way to fetch and unzip an URL in one shot?
       print_progress("ah, gzip format.")
       content = outfh.read()
@@ -1187,6 +1312,9 @@ def process_file(filename, options, providerName="", providerID="",
   shortname = guess_shortname(filename)
   inputfmt, parsefunc = guess_parse_func(options.inputfmt, filename)
   infh = open_input_filename(filename)
+  if not infh:
+    print_progress("could not open %s" % filename)
+    return 0, 0, 0, ""
   print_progress("reading data...")
   # don't put this inside open_input_filename() because it could be large
   instr = infh.read()
@@ -1307,6 +1435,9 @@ def main():
       providerURL += match.group(1)
       providerURL += "/1/public/basic"
       feedID = re.sub(r'[^a-z]', '', providerName.lower())[0:24]
+      if len(feedID) < 1:
+        feedID = providerName
+
       if PROGRESS:
         print "processing spreadsheet", providerURL, "named", providerName,\
             " - feedID", feedID

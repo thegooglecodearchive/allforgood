@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 #
 
 """
@@ -19,12 +19,17 @@ import os
 import pipeline_keys
 import random
 import subprocess
+import signal
 import time
 from csv import DictReader, DictWriter, excel_tab, register_dialect, QUOTE_NONE
 from datetime import datetime
 import footprint_lib
+import xml_helpers as xmlh
 
-LOGPATH = "/home/footprint/public_html/datahub/dashboard/"
+#LOGPATH = "/home/footprint/public_html/datahub/dashboard.ing/"
+#HOMEDIR = "/home/footprint/allforgood-read-only/datahub"
+LOGPATH = "/home/footprint/allforgood/datahub/dashboard.ing"
+HOMEDIR = "/home/footprint/allforgood/datahub"
 
 # rename these-- but remember that the dashboard has to be updated first...
 LOG_FN = "load_gbase.log"
@@ -272,15 +277,16 @@ def print_field_stats():
   print_progress("writing "+FIELD_STATS_FN+"...")
   outfh = open(LOGPATH+FIELD_STATS_FN, "w")
   outfh.write("number of records: "+str(NUM_RECORDS_TOTAL)+"\n")
-  for i, fieldname in enumerate(FIELD_NAMES):
-    outfh.write("field "+fieldname+":uniqvals="+str(len(FIELD_VALUES[i]))+"\n")
-    sorted_vals = list(FIELD_VALUES[i].iteritems())
-    sorted_vals.sort(cmp=lambda a, b: cmp(b[1], a[1]))
-    for val, freq in sorted_vals[0:1000]:
-      if freq < 10:
-        break
-      outfh.write("  %5d %s\n" % (freq, val))
-  outfh.close()
+  if FIELD_NAMES:
+    for i, fieldname in enumerate(FIELD_NAMES):
+      outfh.write("field "+fieldname+":uniqvals="+str(len(FIELD_VALUES[i]))+"\n")
+      sorted_vals = list(FIELD_VALUES[i].iteritems())
+      sorted_vals.sort(cmp=lambda a, b: cmp(b[1], a[1]))
+      for val, freq in sorted_vals[0:1000]:
+        if freq < 10:
+          break
+        outfh.write("  %5d %s\n" % (freq, val))
+    outfh.close()
   print_progress("done writing "+FIELD_STATS_FN)
 
 def print_field_histograms():
@@ -328,7 +334,6 @@ def error_exit(msg):
 
 # Use a shell for subcommands on Windows to get a PATH search.
 USE_SHELL = sys.platform.startswith("win")
-
 def solr_update_query (query_str, url):
   """Queries the Solr backend specified via the command line args."""
   cmd = 'curl -s -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + \
@@ -336,7 +341,9 @@ def solr_update_query (query_str, url):
         'update?commit=true\' --data-binary ' + \
         '\'' + query_str + '\'' \
         ' -H \'Content-type:text/plain; charset=utf-8\';'
+
   subprocess.call(cmd, shell=True)
+
 
 def run_shell_with_retcode(command, print_output=False,
                            universal_newlines=True):
@@ -450,23 +457,24 @@ def test_loaders():
 
 def loaders():
   """put all loaders in one function for easier testing."""
-  for name in ["911dayofservice",
-               "aarp", "americanredcross", "americansolutions",
-               "americorps", "christianvolunteering",
-               "citizencorps", "extraordinaries", "givingdupage",
-               "greentheblock",
-               "habitat", "handsonnetwork", "idealist", "meetup",
-               "mentorpro", "mlk_day", "mybarackobama",
-               "myproj_servegov", "newyorkcares", "seniorcorps", "servenet",
-               "unitedway", "universalgiving",
-               "volunteergov", "volunteermatch",
-               "volunteertwo", "washoecounty", "ymca"]:
-    if not FILENAMES or name in FILENAMES:
-      run_pipeline(name, name+".xml")
   # requires special crawling
   if not FILENAMES or "gspreadsheets" in FILENAMES:
     run_pipeline("gspreadsheets",
                  "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
+
+  for name in ["unitedway", "volunteermatch", "handsonnetwork", "idealist", "meetup", "mentorpro", 
+               "aarp", "911dayofservice", "americanredcross", "americansolutions",
+               "americorps", "christianvolunteering", "1sky",
+               "citizencorps", "extraordinaries", "givingdupage",
+               "greentheblock", "habitat", "mlk_day", "mybarackobama",
+               "myproj_servegov", "newyorkcares", 
+               "rockthevote", "threefiftyorg", "catchafire",
+               "seniorcorps", "servenet", "servicenation",
+               "universalgiving", "volunteergov", "up2us",
+               "volunteertwo", "washoecounty", "ymca", "vm-nat"]:
+    if not FILENAMES or name in FILENAMES:
+      run_pipeline(name, name+".xml")
+
   # note: craiglist crawler is run asynchronously, hence the local file
   if not FILENAMES or "craigslist" in FILENAMES:
     run_pipeline("craigslist", "craigslist-cache.txt")
@@ -526,8 +534,13 @@ def solr_retransform(fname):
   print_progress('Creating Solr transformed file for: ' + fname)
   out_filename = fname + '.transformed'
   data_file = open(fname, "r")
-  csv_reader = DictReader(data_file, dialect='our-dialect')
-  csv_reader.next()
+  try:
+    csv_reader = DictReader(data_file, dialect='our-dialect')
+    csv_reader.next()
+  except:
+    print_progress("error processing %s" % str(fname))
+    return
+
   fnames = csv_reader.fieldnames[:]
   fnames.append("c:eventrangestart:dateTime")
   fnames.append("c:eventrangeend:dateTime")
@@ -548,12 +561,17 @@ def solr_retransform(fname):
   csv_writer.writerow(fnamesdict)
   now = parser.parse(commands.getoutput("date"))
   today = now.date()
+  expired_by_end_date = 0
   for rows in csv_reader:
     # The random salt is added to the result score during ranking to prevent
     # groups of near-identical results with identical scores from appearing
     # together in the same result pages without harming quality.
     rows["c:randomsalt:float"] = str(random.uniform(0.0, 1.0))
-    
+
+    if rows["title"] and rows["title"].lower().find('anytown museum') >= 0:
+      #bogus event
+      continue
+
     # Split the date range into separate fields
     # event_date_range can be either start_date or start_date/end_date
     split_date_range = rows["event_date_range"].split('/')
@@ -578,13 +596,25 @@ def solr_retransform(fname):
           rows[key] = 0
         else:
           # find the first numbers from the string, e.g. abc123.4 => 123
-          rows[key] = int(re.sub(r'^.*?([0-9]+).*$', r'\1', rows[key]))
+          try:
+            rows[key] = int(re.sub(r'^.*?([0-9]+).*$', r'\1', rows[key]))
+          except:
+            print_progress("error parsing rows[key]=%s -- rejecting record." % str(rows[key]))
+            continue
 
     try:
       start_date = parser.parse(rows["c:eventrangestart:dateTime"], ignoretz=True)
       end_date = parser.parse(rows["c:eventrangeend:dateTime"], ignoretz=True)
     except:
       print_progress("error parsing start or end date-- rejecting record.")
+      continue
+
+    # check for expired opportunities
+    delta_days = get_delta_days(relativedelta.relativedelta(end_date, today))
+    if delta_days < -2 and delta_days > -3000:
+      # more than 3000? it's the 1971 thing
+      # else it expired at least two days ago
+      expired_by_end_date += 1
       continue
 
     duration_rdelta = relativedelta.relativedelta(end_date, start_date) 
@@ -625,6 +655,7 @@ def solr_retransform(fname):
     csv_writer.writerow(rows)
 
   data_file.close()
+  print_progress("expired by end date: %d" % expired_by_end_date)
   return out_filename
   
 def update_solr_index(filename):
@@ -638,19 +669,39 @@ def update_solr_index(filename):
   f_in.close()
   
   solr_filename = solr_retransform(filename)
-  for solr_url in OPTIONS.solr_urls:
-    print_progress('Uploading file to ' + solr_url)
-    # HTTP POST an index update command to Solr and commit changes.
-    upload_solr_file(solr_filename, solr_url)
+  if solr_filename:
+    for solr_url in OPTIONS.solr_urls:
+      print_progress('Uploading %s to %s' % (solr_filename, solr_url))
+      # HTTP POST an index update command to Solr and commit changes.
+      upload_solr_file(solr_filename, solr_url)
+
+
+class TimeoutAlarm(Exception):
+    pass
+
+
+def timeout_alarm_handler(signum, frame):
+    raise TimeoutAlarm
+
 
 def upload_solr_file(filename, url):
   """ Updates the Solr index with a CSV file """
+  return
   cmd = 'curl -s -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + \
         '\' \'' + url + \
         'update/csv?commit=true&separator=%09&escape=%10\' --data-binary @' + \
         filename + \
         ' -H \'Content-type:text/plain; charset=utf-8\';'
-  subprocess.call(cmd, shell=True)
+
+  signal.signal(signal.SIGALRM, timeout_alarm_handler)
+  signal.alarm(60 * 60) # wait up to one hour 
+  try:
+    subprocess.call(cmd, shell=True)
+    signal.alarm(0)  # reset the alarm
+  except TimeoutAlarm:
+    print_progress('timed out uploading ' + filename)
+    subprocess.call(HOMEDIR + '/notify_michael.sh timed out uploading ' + filename, shell=True)
+
 
 def main():
   """shutup pylint."""
@@ -662,7 +713,7 @@ def main():
     test_loaders()
   else:
     loaders()
-    if OPTIONS.use_solr:
+    if False and OPTIONS.use_solr:
       for solr_url in OPTIONS.solr_urls:
         print_progress('Performing clean-up and index optimization of ' + \
                        'SOLR instance at: ' + solr_url)
@@ -670,7 +721,6 @@ def main():
           '<delete><query>expires:[* TO NOW-1DAY]</query></delete>',
           solr_url)
         print_progress('Removed expired documents.')
-
         solr_update_query('<optimize/>', solr_url)
         print_progress('Optimized index.')
 

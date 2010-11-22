@@ -293,7 +293,10 @@ function onLoadSearch() {
 
   createQueryFromUrlParams().execute();
 
-  el('more').style.display = '';
+  try {
+    el('more').style.display = '';
+  } catch(err) {
+  }
 }
 
 /** Asynchronously execute a search based on the current parameters.
@@ -567,7 +570,6 @@ initMap = function() {
     }
   };
 }(); // executed inline to close over the 'initialized' variable.
-
 
 /** A single search result.
  * @constructor
