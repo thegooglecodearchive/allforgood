@@ -71,6 +71,10 @@ def geocode(addr, usecache=True, retrying = False):
     return val
 
   if not retrying:
+    #params = urllib.urlencode(
+    #  {'q':loc.lower(), 'output':'csv', 'oe':'utf8', 'sensor':'false', 'gl':'us',
+    #   'key':'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxQuOQhskTx7t90ovP5xOuY'+\
+    #   '_YrlyqBQajVan2ia99rD9JgAcFrdQnTD4JQ'})
     params = urllib.urlencode(
       {'q':loc.lower(), 
        'output':'csv', 
