@@ -1,4 +1,5 @@
-application: servicefootprint
+application: footprint2009dev
+#application: servicefootprint
 
 version: release-1-9-r332
 #version: mt1955
