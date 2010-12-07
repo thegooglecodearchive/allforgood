@@ -337,7 +337,7 @@ def get_taggers():
   veteransday_provider_tagger = FeedProviderIDTagger('VeteransDay', [
       '133' #servicenation
       ]) 
-  veteransday_tagger = WSVKeywordTagger('VeteransDay', 'veteran')
+  veteransday_tagger = WSVKeywordTagger('VeteransDay', 'veteran veterans')
 
   vetted_tagger = FeedProviderIDTagger('Vetted', [
       #UGC '101', # usaservice (no longer active)

@@ -63,7 +63,7 @@ def crawl_metros():
   domains = []
   for node in nodes:
     domain = node.getAttribute("href")
-    #print "finding submetros within", domain
+    print "finding submetros within", domain
     fh1 = urllib2.urlopen(domain)
     domain_homepage = fh1.read()  
     fh1.close()  
@@ -249,8 +249,10 @@ if __name__ == "__main__":
   parser.add_option("--load_cache", action="store_true", dest="load_cache")
   parser.add_option("--noload_cache", action="store_false", dest="load_cache")
   (options, args) = parser.parse_args(sys.argv[1:])
+
   if options.metros:
     crawl_metros()
+
   read_metros()
   if options.load_cache:
     load_cache()
@@ -259,6 +261,7 @@ if __name__ == "__main__":
       os.unlink(CACHE_FN)
     except:
       pass
+
   num_cached_pages = len(pages)
 
   outstr = ""
