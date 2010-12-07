@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% comment %}
+  A layout template, overrides the content_layout block of base.html.
+
+  This layout simply takes over the full area of the <body> element,
+  below the standard header.
+
+  blocks that can be overridden:
+    content: HTML for the content region.
+{% endcomment %}
+
+{% block content_layout %}
+<div id='content'>
+{% block content %}{% endblock %}
+</div>
+{% endblock %}
