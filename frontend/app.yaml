@@ -1,9 +1,8 @@
-#application: servicefootprint
-#application: footprint2009dev-ehysen
 application: footprint2009dev
-#application: footprint-loadtest
+#application: servicefootprint
 
-version: 1
+version: release-1-9-r332
+#version: mt1955
 runtime: python
 api_version: 1
 

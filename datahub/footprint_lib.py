@@ -591,17 +591,9 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
   opp_locations = opp.getElementsByTagName("location")
   opp_times = opp.getElementsByTagName("dateTimeDuration")
   repeated_fields = get_repeated_fields(feedinfo, opp, org)
-
-  number_of_opptimes = len(opp_times)
-  if number_of_opptimes == 0:
-    opp_opptimes = [ None ]
-  elif number_of_opptimes > 1:
-    xmlh.processing_trace("footprint_lib.output_opportunity",
-                          "unwound %g dates from %s:%s" 
-                          % (number_of_opptimes, org_id, opp_id))
-
+  if len(opp_times) == 0:
+    opp_times = [ None ]
   for opptime in opp_times:
-    # unwind multiple dates
     if opptime == None:
       startend = convert_dt_to_gbase("1971-01-01", "00:00:00-00:00", "UTC")
       starttime = "0000"
@@ -623,22 +615,12 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       if (end_date != "" and end_date + end_time > start_date + start_time):
         endstr = convert_dt_to_gbase(end_date, end_time, "UTC")
         startend += "/" + endstr
-
     duration = xmlh.get_tag_val(opptime, "duration")
     hrs_per_week = xmlh.get_tag_val(opptime, "commitmentHoursPerWeek")
     time_fields = get_time_fields(openended, duration, hrs_per_week, startend)
-
-    number_of_locations = len(opp_locations)
-    if number_of_locations == 0:
+    if len(opp_locations) == 0:
       opp_locations = [ None ]
-    elif number_of_locations > 1:
-      xmlh.processing_trace("footprint_lib.output_opportunity",
-                            "unwound %g locations, %g date(s) from %s:%s" 
-                            % (number_of_locations, number_of_opptimes, 
-                               org_id, opp_id))
-
     for opploc in opp_locations:
-      # unwind multiple locations
       if opploc == None:
         locstr, latlng, geocoded_loc = ("", "", "")
         loc_fields = get_loc_fields("", "0.0", "0.0", "", "")
@@ -649,8 +631,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
                                     str(float(lng)+1000.0), addr,
                                     xmlh.get_tag_val(opploc, "name"))
 
-      opp_id = compute_stable_id(opp, org, locstr, openended, 
-                                 duration, hrs_per_week, startend)
+      opp_id = compute_stable_id(opp, org, locstr, openended, duration, hrs_per_week, startend)
       if duplicate_opp(opp, locstr, startend):
         print_progress("dedup: skipping duplicate " + opp_id)
         return totrecs, ""

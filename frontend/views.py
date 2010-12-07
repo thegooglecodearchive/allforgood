@@ -270,6 +270,14 @@ class home_page_redir_view(webapp.RequestHandler):
     self.redirect("/")
 
 
+class home4holidays_redir_view(webapp.RequestHandler):
+  """handler for /home4holidays """
+  @expires(0)
+  def get(self):
+    """HTTP get method."""
+    self.redirect("http://www.gmodules.com/ig/creator?url=http%3A%2F%2Fhosting.gmodules.com%2Fig%2Fgadgets%2Ffile%2F110804810900731027561%2Fiams.xml")
+
+
 class not_found_handler(webapp.RequestHandler):
   """ throw 404 """
   def get(self):

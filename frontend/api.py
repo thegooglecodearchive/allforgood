@@ -92,5 +92,3 @@ PARAM_BACKFILL_TITLES = 'bft'
 
 PARAM_LAT = 'lat'
 PARAM_LNG = 'long'
-
-PARAM_SOLR_PATH = 'solr_path'
