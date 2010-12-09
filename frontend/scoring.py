@@ -57,15 +57,6 @@ def score_results_set(result_set, args):
       score *= vetted_mult
       score_notes += "  vetted listing: mult=%.3f\n" % (vetted_mult)
 
-    if 'MLK' in res.all_categories:
-      # blood drives and date ranges are included in the MLK category 
-      # so if has mlk or martin luther, bump it up
-      text = (res.title + ' ' + res.snippet).lower()
-      if text.find('mlk') >=0 or text.find('martin luther') >=0:
-        mlk_mult = 5.0
-        score *= mlk_mult
-        score_notes += "  mlk fix: mult=%.3f\n" % (mlk_mult)
-
     # TODO: match on start time, etc.
 
     ONEDAY = 24.0 * 3600.0

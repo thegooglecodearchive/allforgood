@@ -239,16 +239,6 @@ def normalize_query_values(args, dumping = False):
   args[api.PARAM_BACKFILL] = ""
   # First run query_rewriter classes
   args[api.PARAM_Q] = run_query_rewriters(args[api.PARAM_Q])
-  # TODO: special hack for MLK day-- backfill with keywordless query
-  # across the week
-  logging.debug("q="+args[api.PARAM_Q]+" after reqrites")
-  if args[api.PARAM_Q].find("category:MLK") >= 0:
-    args[api.PARAM_BACKFILL] = api.PARAM_Q + "[]" + \
-        ":"+api.PARAM_VOL_DIST + "[10]" + \
-        ":"+api.PARAM_VOL_STARTDATE + "[2010-01-16]" + \
-        ":"+api.PARAM_VOL_ENDDATE + "[2010-01-24]"
-    logging.debug("found MLK query-- backfilling with keywordless 1/16-1/24: "+
-                  args[api.PARAM_BACKFILL])
 
   args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
   if api.PARAM_VOL_LOC in args:
