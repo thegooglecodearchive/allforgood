@@ -250,7 +250,7 @@ def get_taggers():
   # nature_tagger = KeywordTagger('Nature', {'environment':1.0, 'nature':1.0,
   # 'environmental':1.0, 'outdoors':1.0, 'gardening':1.0, 'garden':1.0,
   # 'park':1.0, 'wetlands':1.0,'forest':1.0, 'trees':1.0})
-  mlk_date_tagger = DateRangeTagger('MLK', 1, 15, 1, 20)
+  mlk_date_tagger = DateRangeTagger('MLK', 1, 17, 1, 22)
   mlk_tagger = WSVKeywordTagger('MLK', 'mlk' +
     ' martin+luther mlktech king+day donate+blood blood+drive' +
     ' day+on+not+a+day+off day+of+service')
