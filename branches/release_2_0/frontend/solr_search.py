@@ -183,7 +183,7 @@ def form_solr_queryV2(args):
   else:
     # Query is empty, search for anything at all.
     # TODO: ask Kelvin what the wildcard case is here, * does not work
-    solr_query += "-noway"
+    solr_query += "*:*"
     query_is_empty = True
 
   # date range
