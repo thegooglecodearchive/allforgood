@@ -142,7 +142,7 @@ def rewrite_query(query_str):
 
   return rewritten_query
 
-def form_solr_queryV2(args):
+def form_solr_query(args):
   """ /solr/select?q={!spatial%20lat=33.9019949%20long=-84.4296446%20radius=300}nature
                   &wt=xml&debugQuery=on&bq=categories:vetted^10
                   &fl=id,feedid,abstract,categories,geo_distance
@@ -254,8 +254,6 @@ def form_solr_queryV2(args):
 
   return solr_query
 
-
-def form_solr_query(args, solr_path = SOLR_V2):
   """ensure args[] has all correct and well-formed members and
   return a solr query string."""
 
