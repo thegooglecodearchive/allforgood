@@ -145,7 +145,13 @@ def normalize_query_values(args, dumping = False):
   # RESERVED: type
 
   def dbgargs(arg):
-    logging.debug("args[%s]=%s" % (arg, args[arg]))
+    try:
+      logging.debug("args[%s]=%s" % (arg, args[arg]))
+    except:
+      pass
+
+  if not api.PARAM_START in args:
+    args[api.PARAM_START] = 1
 
   if not api.PARAM_NUM in args:
     args[api.PARAM_NUM] = api.CONST_DFLT_NUM
@@ -176,7 +182,7 @@ def normalize_query_values(args, dumping = False):
       # on page one, which is very performance sensitive.
       overfetch_ratio = api.CONST_MAX_OVERFETCH_RATIO
     else:
-      overfetch_ratio = 2.0
+      overfetch_ratio = 4.0
 
   args[api.PARAM_OVERFETCH_RATIO] = min_max(
     overfetch_ratio, api.CONST_MIN_OVERFETCH_RATIO,
@@ -284,7 +290,7 @@ def normalize_query_values(args, dumping = False):
       elif zoom == 5:
         # postal codes are also a common case-- start with a narrower
         # radius than the city, and we'll fallback to larger.
-        args[api.PARAM_VOL_DIST] = 15
+        args[api.PARAM_VOL_DIST] = 75
       elif zoom > 5:
         # street address or GPS coordinates-- start with a very narrow
         # search suitable for walking.
