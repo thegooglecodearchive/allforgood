@@ -47,76 +47,38 @@ DATE_FORMAT_PATTERN = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
 MAX_RESULTS = 1000
 
 MILES_PER_DEG = 69
-DEFAULT_VOL_DIST = 25
-SOLR_V1 = '1'
-SOLR_V2 = '2'
+DEFAULT_VOL_DIST = 300
 
-def build_function_query(base_lat, base_long, max_dist, get_random_results):
-  """Builds a function query for Solr scoring and ranking.
+def default_boosts(args):
+  boost = ""
   
-     For more info: http://wiki.apache.org/solr/FunctionQuery
-     Results are sorted by score. The final score is computed as follows:
-     final_score = relevancy + geo_score + duration_score"""
+  if api.PARAM_Q in args and args[api.PARAM_Q] == "":    
+    
+    # boosting vetted categories
+    boost += '&bq=categories:vetted^10'
+    
+    # big penalty for events starting in the far future
+    boost += '%20eventrangestart:[*%20TO%20NOW%2B6MONTHS]^1000'
+    
+    # big boost for events starting in the near future
+    boost += '%20eventrangestart:[NOW%20TO%20NOW%2B1MONTHS]^1000'
+    
+    # slight penalty for events started recently
+    boost += '%20=eventrangestart:[NOW%20TO%20*]^5'
+    
+    # modest penalty for events started long ago
+    boost += '%20eventrangestart:[NOW-6MONTHS%20TO%20*]^100'
+    
+    # modest penalty for events ending in the far future
+    boost += '%20eventrangeend:[*%20TO%20NOW%2B6MONTHS]^100' 
+    
+    # big boost for events ending in the near future
+    boost += '%20eventrangeend:[NOW%20TO%20NOW%2B1MONTHS]^1000'
+    
+    # boost short events
+    boost += '%20eventduration:[1%20TO%2010]^10'
   
-  # FQs don't support subtraction, so we need to add negative numbers.
-  neg_lat = '-' + base_lat
-  if neg_lat.startswith('--'):
-    neg_lat = neg_lat[2:]
-  neg_long = '-' + base_long
-  if neg_long.startswith('--'):
-    neg_long = neg_long[2:]
-
-  negative_max_dist_squared = str(max_dist * (-max_dist))
-
-  # Geo scoring - Favors nearby results
-  # Equals 1 at the base location and drops to 0 at max_dist miles away.
-  # Formula: (max_dist^2 - dist^2) / max_dist^2
-  distance_squared ='sum(' \
-                      'product(' \
-                        'sum(' + neg_lat + ', latitude),' \
-                        'sum(' + neg_lat + ', latitude)' \
-                      '),' \
-                      'product(' \
-                        'sum(' + neg_long + ', longitude),' \
-                        'sum(' + neg_long + ', longitude)' \
-                      ')' \
-                    ')'
-
-  geo_score_str = 'div(' \
-                    'sum(' + \
-                      negative_max_dist_squared + ',' + \
-                      distance_squared + \
-                    '),' + \
-                    negative_max_dist_squared + \
-                  ')'
-  
-  # Duration scoring - Favors short events
-  # Equals 1 for 1-day events (duration 0), and decays exponentially 
-  # with a half life of 10 days
-  duration_score_str = 'div(1,log(sum(10,eventduration)))'
-  
-  # Now set the weights for each score (relevance has a hardcoded weight of 1)
-  # Relevancy isn't really applicable to volunteer opportunity, so we set
-  # other weights way higher. Location is more important than duration, hence
-  # the 6:3 ratio.
-  geo_weight = '6'
-  duration_weight = '3'
-  geo_score_str = 'product(' + geo_weight + ',' + geo_score_str + ')'
-  duration_score_str = 'product(' + duration_weight + ',' + \
-                       duration_score_str + ')'
-  score_str = 'sum(' + geo_score_str + ',' + duration_score_str + ')'
-
-  # Add the salt to the final score to make results more varied per page.
-  if get_random_results:
-    # If the query is empty, we assume the user wants to browse, so we up the
-    # random salt 10x.
-    score_str = 'sum(' + score_str + ',product(10, randomsalt))'
-  else:
-    score_str = 'sum(' + score_str + ',randomsalt)'
-  function_query = ' AND _val_:"' + score_str
-  
-  function_query += '"'
-  return function_query
+  return boost  
 
 def add_range_filter(field, min_val, max_val):
   """ Convert colons in the field name and build a range specifier
@@ -143,12 +105,6 @@ def rewrite_query(query_str):
   return rewritten_query
 
 def form_solr_query(args):
-  """ /solr/select?q={!spatial%20lat=33.9019949%20long=-84.4296446%20radius=300}nature
-                  &wt=xml&debugQuery=on&bq=categories:vetted^10
-                  &fl=id,feedid,abstract,categories,geo_distance
-                  &fq=feedid:handsonnetwork&qf=title^1.2+aggregatefield
-  """
-
   solr_query = ''
 
   # args fix up
@@ -173,16 +129,33 @@ def form_solr_query(args):
     if args[api.PARAM_VOL_DIST] < 1:
       args[api.PARAM_VOL_DIST] = DEFAULT_VOL_DIST
     max_dist = float(args[api.PARAM_VOL_DIST])
-
-  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + '}'
+  
+  boost_params = default_boosts(args);
+  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1000}'   
 
   # keyword
   query_is_empty = False
   if api.PARAM_Q in args and args[api.PARAM_Q] != "":
-    solr_query += rewrite_query(args[api.PARAM_Q])
+    if args[api.PARAM_Q].find('category:IAMS') >= 0:
+      solr_query = rewrite_query('%s' %
+        '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster) AND category:Animals)')
+    elif args[api.PARAM_Q].find('category:MLKDay') >= 0:
+      solr_query = rewrite_query('%s' % 
+         '(categories:MLK'
+         + ' OR title:(mlk and (\'day of service\'))^20'
+         + ' OR title:mlk^10'
+         + ' OR title:(\'ml king\')^10'
+         + ' OR title:(\'martin luther\')^10'
+         + ' OR abstract:(mlk and (\'day of service\'))^20'
+         + ' OR abstract:(\'day of service\')^10'
+         + ' OR abstract:mlk^10'
+         + ' OR abstract:(\'ml king\')^5'
+         + ' OR abstract:(\'martin luther\')^5'
+         + ' OR blood)')
+    else:
+      solr_query += rewrite_query(args[api.PARAM_Q])
   else:
     # Query is empty, search for anything at all.
-    # TODO: ask Kelvin what the wildcard case is here, * does not work
     solr_query += "*:*"
     query_is_empty = True
 
@@ -221,20 +194,20 @@ def form_solr_query(args):
 
   # for ad campaigns
   if api.PARAM_CAMPAIGN_ID in args:
-    # we need to exclude the opted out opprotunities
+    # we need to exclude the opted out opportunities
     # they can be tagged as opt_out_all_campaigns
     # or opt_out_campaign_XXX where XXX is the campaign ID.
     exclusion = '!categories:%s !categories:%s' % (
       'optout_all_campaigns',
       'optout_campaign_' + args[api.PARAM_CAMPAIGN_ID]
     )
-    # TODO: campaign_ids are per-campaign, but opprotunities
+    # TODO: campaign_ids are per-campaign, but opportunities
     # might prefer to opt out of an entire sponsor.
-    # should probablly add a 'sponsor_id' to the spreadsheet,
+    # should probably add a 'sponsor_id' to the spreadsheet,
     # and have optout_sponsor_XXX as well.
     solr_query += exclusion
 
-  # solr vs google base
+  # grab DEFAULT_BACKEND_URL_SOLR from private_keys
   if api.PARAM_BACKEND_URL not in args:
     try:
       args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
@@ -252,142 +225,7 @@ def form_solr_query(args):
     else:
       solr_query += '*'
 
-  return solr_query
-
-  """ensure args[] has all correct and well-formed members and
-  return a solr query string."""
-
-  if api.PARAM_SOLR_PATH in args and args[api.PARAM_SOLR_PATH] != '':
-    solr_path = api.PARAM_SOLR_PATH
-
-  if solr_path == SOLR_V2:
-    return form_solr_queryV2(args)
-
-  logging.debug("form_solr_query: "+str(args))
-  solr_query = ""
-  query_is_empty = False
-  if api.PARAM_Q in args and args[api.PARAM_Q] != "":
-    solr_query += rewrite_query(args[api.PARAM_Q])
-  else:
-    # Query is empty, search for anything at all.
-    solr_query += "*:*"
-    query_is_empty = True
-
-  # 2010-08-26 truist.com/volunteersolutions.org went down
-  # solr_query += " AND -detailurl:truist.com"
-  # solr_query += " AND -detailurl:volunteersolutions.org"
-
-  #mt1955@gmail.com:please keep as info for a while, then change to debug later
-  logging.info('solr_search.form_solr_query solr_query=%s' % solr_query)
-
-  if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "":
-    start_date = datetime.datetime.today()
-    try:
-      start_date = datetime.datetime.strptime(
-                     args[api.PARAM_VOL_STARTDATE].strip(), "%Y-%m-%d")
-    except:
-      logging.debug('solr_search.form_solr_query malformed start date: %s' % 
-                    args[api.PARAM_VOL_STARTDATE])
-    end_date = None
-    if api.PARAM_VOL_ENDDATE in args and args[api.PARAM_VOL_ENDDATE] != "":
-      try:
-        end_date = datetime.datetime.strptime(
-                       args[api.PARAM_VOL_ENDDATE].strip(), "%Y-%m-%d")
-      except:
-        logging.debug('solr_search.form_solr_query malformed end date: %s' % 
-                       args[api.PARAM_VOL_ENDDATE])
-    if not end_date:
-      end_date = start_date
-    start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
-    end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
-    if (api.PARAM_VOL_INCLUSIVEDATES in args and 
-       args[api.PARAM_VOL_INCLUSIVEDATES] == 'true'):
-      solr_query += add_range_filter("eventrangestart", start_datetime_str, '*')
-      solr_query += add_range_filter("eventrangeend", '*', end_datetime_str)
-    else:
-      solr_query += add_range_filter("eventrangestart", '*', end_datetime_str)
-      solr_query += add_range_filter("eventrangeend", start_datetime_str, '*')
-
-  if api.PARAM_VOL_PROVIDER in args and args[api.PARAM_VOL_PROVIDER] != "":
-    if re.match(r'[a-zA-Z0-9:/_. -]+', args[api.PARAM_VOL_PROVIDER]):
-      solr_query += " AND feed_providername:" + \
-                      args[api.PARAM_VOL_PROVIDER]
-    else:
-      # illegal providername
-      # TODO: throw 500
-      logging.error('solr_search.form_solr_query illegal providername: %s' % 
-                    args[api.PARAM_VOL_PROVIDER])
-  # TODO: injection attack on sort
-  if api.PARAM_SORT not in args:
-    args[api.PARAM_SORT] = "r"
-
-  # Generate geo search parameters
-  if api.PARAM_LAT in args and api.PARAM_LNG in args and \
-     (args[api.PARAM_LAT] != "" and args[api.PARAM_LNG] != ""):
-    logging.debug("args[%s] = %s  args[%s] = %s" % 
-      (api.PARAM_LAT, args[api.PARAM_LAT], api.PARAM_LNG, args[api.PARAM_LNG]))
-    if api.PARAM_VOL_DIST not in args or args[api.PARAM_VOL_DIST] == "":
-      args[api.PARAM_VOL_DIST] = DEFAULT_VOL_DIST
-    args[api.PARAM_VOL_DIST] = int(str(args[api.PARAM_VOL_DIST]))
-    if args[api.PARAM_VOL_DIST] < 1:
-      args[api.PARAM_VOL_DIST] = 1
-    max_dist = float(args[api.PARAM_VOL_DIST]) / 60
-
-    # TODO: Re-add locationless listings as a query param.
-    #lat, lng = float(args[api.PARAM_LAT]), float(args[api.PARAM_LNG])
-    #if (lat < 0.5 and lng < 0.5):
-    #  solr_query += add_range_filter("latitude", '*', '0.5')
-    #  solr_query += add_range_filter("longitude", '*', '0.5')
-    #else:
-    #  solr_query += add_range_filter("latitude",
-    #                                  lat - max_dist, lat + max_dist)
-    #  solr_query += add_range_filter("longitude",
-    #                                  lng - max_dist, lng + max_dist)
-    solr_query += build_function_query(args[api.PARAM_LAT],
-                                       args[api.PARAM_LNG],
-                                       max_dist,
-                                       query_is_empty)
-    
-  if api.PARAM_CAMPAIGN_ID in args:
-    # we need to exclude the opted out opprotunities
-    # they can be tagged as opt_out_all_campaigns
-    # or opt_out_campaign_XXX where XXX is the campaign ID.
-    exclusion = '!categories:%s !categories:%s' % (
-      'optout_all_campaigns',
-      'optout_campaign_' + args[api.PARAM_CAMPAIGN_ID]
-    )
-    # TODO: campaign_ids are per-campaign, but opprotunities
-    # might prefer to opt out of an entire sponsor.
-    # should probablly add a 'sponsor_id' to the spreadsheet,
-    # and have optout_sponsor_XXX as well.
-    solr_query += exclusion
-
-  solr_query = urllib.quote_plus(solr_query)
-
-  # Specify which fields to return. Returning less fields decreases latency as
-  # the search is performed on a different machine than the front-end.
-  solr_query += '&fl='
-  if api.PARAM_OUTPUT not in args:
-    solr_query += api.DEFAULT_OUTPUT_FIELDS
-  else:
-    if args[api.PARAM_OUTPUT] in api.FIELDS_BY_OUTPUT_TYPE:
-      solr_query += api.FIELDS_BY_OUTPUT_TYPE[args[api.PARAM_OUTPUT]]
-    else:
-      solr_query += '*'
-  
-  # TODO: injection attack on backend
-  if api.PARAM_BACKEND_URL not in args:
-    try:
-      args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
-    except:
-      raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- "+
-                     "please install correct private_keys.py file")
-  logging.debug("backend=" + args[api.PARAM_BACKEND_URL])
-
-  if api.PARAM_START not in args:
-    args[api.PARAM_START] = 1
-
-  return solr_query
+  return solr_query + boost_params
 
 def parseLatLng(val):
   """ return precisely zero if a lat|lng value is very nearly zero."""
@@ -432,7 +270,11 @@ def search(args, dumping = False):
       
     return valid_query
 
-  solr_query = form_solr_query(args)
+  if api.PARAM_SOLR_PATH in args and args[api.PARAM_SOLR_PATH]:
+    solr_query = form_solr_query(args, args[api.PARAM_SOLR_PATH])
+  else:
+    solr_query = form_solr_query(args)
+
   query_url = args[api.PARAM_BACKEND_URL]
   if query_url.find("?") < 0:
     # yeah yeah, should really parse the URL

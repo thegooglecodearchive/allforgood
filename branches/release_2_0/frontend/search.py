@@ -321,12 +321,12 @@ def fetch_and_dedup(args, dumping = False):
       result_set.merged_results[idx].merged_debug = []
       result_set.merged_results[idx].merged_impressions = 0
   else:
-    scoring.score_results_set(result_set, args)
-    merge_by_date_and_location = True
+    #scoring.score_results_set(result_set, args)
+    merge_by_date_and_location = False
     if "key" in args:
       merge_by_date_and_location = False
       if api.PARAM_MERGE in args and args[api.PARAM_MERGE] == "1":
-        merge_by_date_and_location = True
+        merge_by_date_and_location = False
     result_set.dedup(merge_by_date_and_location)
 
   return result_set

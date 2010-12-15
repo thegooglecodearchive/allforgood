@@ -52,7 +52,7 @@ FIELDS_BY_OUTPUT_TYPE = {'html' :
                            'longitude,' + \
                            'title'
                            }
-# Fielts to be returned when PARAM_OUTPUT is not set.
+# Fields to be returned when PARAM_OUTPUT is not set.
 # TODO: remove this once all output types have been specified.
 DEFAULT_OUTPUT_FIELDS = FIELDS_BY_OUTPUT_TYPE['html']
 
