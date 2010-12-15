@@ -410,7 +410,9 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
     print_progress('Feed file missing: ' + url)
     return
   if do_processing:
-    stdout, stderr, retcode = run_shell(["./footprint_lib.py", "--progress",
+    stdout, stderr, retcode = run_shell(["./footprint_lib.py",
+                                         "--progress",
+                                         "--inputfmt", "fpxml",
                                          "--output", tsv_filename, url,
                                          "--compress_output" ],
                                         silent_ok=True, print_output=False)
@@ -579,6 +581,9 @@ def solr_retransform(fname):
     if len(split_date_range) > 1:
       rows["c:eventrangeend:dateTime"] = split_date_range[1]
     else:
+      if rows["c:openended:boolean"] == "Yes":
+        rows["c:eventrangeend:dateTime"] = rows["c:expires:dateTime"]
+      else:
       rows["c:eventrangeend:dateTime"] = rows["c:eventrangestart:dateTime"]
 
     rows["c:aggregatefield:string"] = ' '.join([rows["description"],

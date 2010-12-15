@@ -46,10 +46,12 @@ FIELDS_BY_OUTPUT_TYPE = {'html' :
                            'detailurl,' + \
                            'event_date_range,' + \
                            'feed_providername,' + \
+                           'ical_recurrence,' + \
                            'id,' + \
                            'latitude,' + \
                            'location_string,' + \
                            'longitude,' + \
+                           'openended,' + \
                            'title'
                            }
 # Fields to be returned when PARAM_OUTPUT is not set.
@@ -94,3 +96,5 @@ PARAM_LAT = 'lat'
 PARAM_LNG = 'long'
 
 PARAM_SOLR_PATH = 'solr_path'
+PARAM_TYPE = "type"
+PARAM_VIRTUAL = "virtual"

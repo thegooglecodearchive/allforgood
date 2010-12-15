@@ -28,15 +28,17 @@ var searchResults = [];
  * @param {Object} opt_filters Filters for this query.
  *      Maps 'filtername':value.
  */
-function Query(keywords, location, pageNum, useCache, opt_timePeriod,
-               opt_filters) {
+function Query(keywords, location, virtual, pageNum, useCache, opt_timePeriod,
+               opt_filters, opt_activityType) {
   var me = this;
   me.keywords_ = keywords;
   me.location_ = location;
+  me.virtual = virtual;
   me.pageNum_ = pageNum;
   me.use_cache_ = useCache;
   me.timePeriod_ = opt_timePeriod || 'everything';
   me.filters_ = opt_filters || {};
+  me.activityType = opt_activityType || 'any_kind';
 };
 
 Query.prototype.clone = function() {
@@ -131,10 +133,19 @@ Query.prototype.getUrlQuery = function() {
     addQueryParam('vol_loc', location);
   }
 
+  // Virtual
+  if (me.virtual) {
+    addQueryParam('virtual', 1);
+  }
+
   // Time period
   var period = me.getTimePeriod();
   if (period) {
     addQueryParam('timeperiod', period)
+  }
+
+  if (me.activityType && me.activityType != 'any_kind') {
+    addQueryParam('type', me.activityType);
   }
 
   // Add additional filters to query URL.
@@ -167,6 +178,8 @@ function createQueryFromUrlParams() {
   var location = getHashParam('vol_loc',
       getDefaultLocation().displayLong);
 
+  var virtual = getHashParam('virtual', '');
+
   var start = Number(getHashParam('start', '1'));
   start = Math.max(start, 1);
 
@@ -194,9 +207,11 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('vol_startdate');
   getNamedFilterFromUrl('vol_enddate');
 
+  var activityType = getHashParam('type');
+
   var use_cache = Number(getHashParam('cache', '1'));
 
-  return new Query(keywords, location, pageNum, use_cache, timePeriod, filters);
+  return new Query(keywords, location, virtual, pageNum, use_cache, timePeriod, filters, activityType);
 }
 
 /**
@@ -277,6 +292,27 @@ function onLoadSearch() {
     setInputFieldValue(el('location'), getDefaultLocation().displayLong);
   }
 
+  if (el('where_filter_widget')) {
+    whereFilterWidget =
+        new FilterWidget(el('where_filter_widget'),
+                         'Where',
+                         [ ['My location', 'near_location'],
+                           ['From home', 'virtual'] ],
+                         'near_location',
+                         function(value) { submitForm('where_widget'); });
+  }
+
+  if (el('what_filter_widget')) {
+    whatFilterWidget =
+        new FilterWidget(el('what_filter_widget'),
+                         'What',
+                         [ ['Any kind', 'any_kind'],
+                           ['Pro bono', 'pro_bono'],
+                           ['Group', 'group'] ],
+                         'any_kind',
+                         function(value) { submitForm('what_widget'); });
+  }
+
   // Using jquery json functions where RSH expects other json functions,
   // pass in as overrides.
   dhtmlHistory.create({
@@ -338,6 +374,12 @@ executeSearchFromHashParams = function(currentLocation) {
       setInputFieldValue(el('keywords'), query.getKeywords());
       if (whenFilterWidget) {
         whenFilterWidget.setValue(query.getTimePeriod());
+      }
+      if (whereFilterWidget) {
+        whereFilterWidget.setValue(query.virtual ? 'virtual' : 'near_location');
+      }
+      if (whatFilterWidget) {
+        whatFilterWidget.setValue(query.activityType || 'any_kind');
       }
       var regexp = new RegExp('[a-zA-Z]')
       if (regexp.exec(query.getLocation())) {
@@ -424,6 +466,8 @@ function submitForm(invoker) {
   }
 
   var timePeriod = whenFilterWidget.getValue();
+  var virtual = (whereFilterWidget.getValue() == 'virtual');
+  var activityType = whatFilterWidget.getValue();
 
   // TODO: strip leading/trailing whitespace.
 
@@ -434,8 +478,10 @@ function submitForm(invoker) {
   var query = lastSearchQuery.clone();
   query.setKeywords(keywords);
   query.setLocation(location);
+  query.virtual = virtual;
   query.setPageNum(0);
   query.setTimePeriod(timePeriod);
+  query.activityType = activityType;
 
   query.execute();
 }
@@ -604,5 +650,7 @@ function SearchResult(url, url_sig, title, location, snippet, startdate, enddate
 
 var lastSearchQuery = new Query('', '', 0, {}, 1);
 var whenFilterWidget;
+var whereFilterWidget;
+var whatFilterWidget;
 
 asyncLoadManager.addCallback('bodyload', onLoadSearch);

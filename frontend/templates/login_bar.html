@@ -50,7 +50,7 @@
   {% endifequal %}
   
   {##### Help link #####}
-  | <a href='/help'><b>Help</b></a>
+  | <a href='/help'>Help</a>
 
   {##### Logout link #####}
   | {% ifequal user.account_type "friendconnect"%}
@@ -82,9 +82,11 @@
       var fcString = 'liked <a href="' + eventRedirectUrl + '">' + eventName + ' on ' + eventWebsite + '</a>';
       var fbString = fcString + ' via <a href="http://www.AllForGood.org">AllForGood.org</a>';
 
-      createActivity(fbString, fcString);
+      /* Commented this call out since it uses deprecated APIs that no longer work. */
+      /* createActivity(fbString, fcString); */
     }
 
+    /*
     function createActivity(fbString, fcString) {
       {% ifequal user.account_type "friendconnect"%}
         var activity = opensocial.newActivity(
@@ -96,6 +98,7 @@
           [], '', 1, FB.RequireConnect.require, function(){});
       {% endifequal %}{% endifequal %}
     }
+    */
   </script>
 {% else %}
   <div id='sign_in'>
@@ -115,9 +118,8 @@
         });
       }
     </script>
-    | <a href='/help'><b>Help</b></a>
+    | <a href='/help'>Help</a>
   </div>
 
 {% endif %}
 </nobr>
-

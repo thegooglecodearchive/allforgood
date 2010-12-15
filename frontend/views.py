@@ -529,6 +529,10 @@ class ui_snippets_view(webapp.RequestHandler):
       else:
         template_values['query_param_loc'] = None
 
+      virtual = unique_args.get(api.PARAM_VIRTUAL, False)
+      if virtual:
+        template_values['query_param_virtual'] = True
+
       hp_num = min(6, len(result_set.clipped_results))
       template_values.update({
           'result_set': result_set,

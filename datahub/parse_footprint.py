@@ -39,7 +39,7 @@ KNOWN_ELNAMES = [
   'guidestarID', 'iCalRecurrence', 'language', 'latitude', 'lastUpdated',
   'location', 'locationType', 'locations', 'logoURL', 'longitude', 'minimumAge',
   'missionStatement', 'name', 'nationalEIN', 'openEnded', 'organizationID',
-  'organizationURL', 'paid', 'phone', 'postalCode', 'providerID',
+  'organizationURL', 'paid', 'phone', 'postalCode', 'providerID', 'probono',
   'providerName', 'providerURL', 'region', 'schemaVersion', 'sexRestrictedEnum',
   'sexRestrictedTo', 'skills', 'sponsoringOrganizationID', 'startDate',
   'startTime', 'streetAddress1', 'streetAddress2', 'streetAddress3', 'title',

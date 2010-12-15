@@ -19,7 +19,7 @@ Liking an activity lets you promote an organization or cause. Simply click "like
 <br><br>
 Your search
 {% if query_param_q %} for &#8220;<b>{{ query_param_q|escape }}</b>&#8221;{% endif %}
-{% if query_param_loc %} near &#8220;<b>{{ query_param_loc|escape }}</b>&#8221;{%endif %}
+{% if query_param_loc and not query_param_virtual %} near &#8220;<b>{{ query_param_loc|escape }}</b>&#8221;{%endif %}
 did not match any volunteering activities.
 Suggestions:
 <ul>

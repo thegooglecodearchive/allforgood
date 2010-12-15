@@ -10,6 +10,9 @@ function ensureSubmitForm() {
         vol_loc = '&vol_loc=' + escape(location);
         setSessionCookie('user_vol_loc', location);
       }
+      if (fromWhere == 'virtual_location') {
+        vol_loc += '&virtual=1'
+      }
       window.location = '/search#q=' +
           escape(getInputFieldValue(el('keywords'))) +
           vol_loc;

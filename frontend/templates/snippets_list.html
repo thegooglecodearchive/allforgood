@@ -36,20 +36,18 @@
 <h1 class='snippets_list_header'>Your Activities</h1>
 {% endifequal %}
 
-
-{% comment %}
-TODO: re-enable result counts once they're reasonably accurate
-  {% if not campaign_id %}
-  <p style='text-align:right'>approximately {{ result_set.estimated_merged_results|add_commas }} results found.</p>
+{% if not campaign_id and result_set.estimated_merged_results %}
+<div class="approximate_results">About {{ result_set.estimated_merged_results|add_commas }} results</div>
   {% endif %}
-{% endcomment %}
 
 {% for result in result_set.clipped_results %}
   <div class='snippet'>
     <table class='snippet_table'>
     <tr>
     <td valign='top' class='snippet_number'>
-      {{ forloop.counter0|as_letter }}
+      {% if result.latlong %}
+        <img src='http://www.google.com/mapfiles/marker_midblue{{ forloop.counter0|as_letter }}.png' />
+      {% endif %}
     </td>
 
     <td valign='top'>
@@ -73,10 +71,7 @@ TODO: re-enable result counts once they're reasonably accurate
         <div class='snippet_sub_text'>
           {{ result.location|escape}}
           {% if result.location %}-{% endif %}
-          {{ result.startdate|custom_date_format }}
-          {% ifnotequal result.startdate.date result.enddate.date %}
-          - {{ result.enddate|custom_date_format }}
-          {% endifnotequal %}
+          {{ result|custom_date_range_format }}
         </div>
       {% endif %}
       {% if result.have_more %}

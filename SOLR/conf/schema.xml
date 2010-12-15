@@ -364,6 +364,16 @@
 <field name="org_name" type="text" indexed="true" stored="true"/>
 <field name="org_name_str" type="string" indexed="true" stored="true"/>
 
+<!-- flags an opportunity as pro bono, e.g. for lawyers searching for pro bono work -->
+<field name="probono" type="boolean" indexed="true" stored="true" default="false"/>
+
+<!-- flags an opportunity as virtual, i.e. it is not location-based -->
+<field name="virtual" type="boolean" indexed="true" stored="true" default="false"/>
+
+<!-- contains the ical encoding of recurring events, see element element iCalRecurrence>
+     in FPXML definition of user feeds -->
+<field name="ical_recurrence" type="string" indexed="true" stored="true"/>
+
 <field name="longitude" type="double" indexed="true" stored="true"/>
 <field name="latitude" type="double" indexed="true" stored="true"/>
 <dynamicField name="_tier_*" type="string" indexed="true" stored="true"/>

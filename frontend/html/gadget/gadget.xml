@@ -426,7 +426,7 @@ function updateTitle(location, searchText, category) {
   } else {
     _gel('afg-clear-search').style.display = 'none';
   }
-  if (location) {
+  if (location && location != 'virtual') {
     str.push(prefs.getMsg('near'), ' <strong>', location, '<\/strong> ');
   }
   if (category) {
@@ -936,7 +936,8 @@ function insertOption(selectBox, optionElement, index) {
 function setSettings() {
   _gel('afg-cancel-button1').style.display = '';
 
-  var location = _gel('afg-location-text').value || '';
+  var location = _gel('afg-virtual').checked ? 
+    "virtual" : _gel('afg-location-text').value || '';
   prefs.set('hideSettings', 1);
   prefs.set('prefLocation', location);
   prefs.set('storiesToRead', getSelectBoxValue('settings-stories'));
@@ -958,6 +959,10 @@ function setDefaultSettingsUI() {
   setSelectBoxValue('settings-categories', prefs.getString('category'));
   setSelectBoxValue('settings-time-period', prefs.getString('timePeriod'));
   _gel('afg-location-text').value = prefs.getString('prefLocation');
+  if (_gel('afg-location-text').value == 'virtual') {
+    _gel('afg-virtual').checked = 1;
+    _gel('afg-location-text').disabled = 1;
+  }
 }
 
 /**
@@ -976,6 +981,14 @@ function hideMiniMessage() {
     miniMsg.dismissMessage(window.msgElement);
   }
 }
+
+/** 
+ * Toggle the virtual location.
+ */
+function toggleVirtual() {
+  _gel('afg-location-text').disabled = _gel('afg-virtual').checked;
+}
+
 
 /**
  * Called on load of the gadget.
@@ -1138,13 +1151,18 @@ if(!this.JSON){JSON=function(){function f(n){return n<10?'0'+n:n}Date.prototype.
                   __MSG_default_location_value__</a>
             </div>
           </li>
+          <li style="clear:both;">Location-less listings</li>
+          <li>
+            <input type="checkbox" id="afg-virtual" tabIndex="4" 
+onChange="toggleVirtual()"/>
+          </li>
           <li style="text-align:center;clear:both;float:none;width:100%;padding:0;">
-            <input id="afg-ok-button" class="afg-ok-button" tabIndex="4"
+            <input id="afg-ok-button" class="afg-ok-button" tabIndex="5"
               alt="__MSG_ok__" title="__MSG_ok__" type="image"
               src="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_ok_btn__.gif"
               onerror="this.src='http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_ok_btn__.gif'"/>
             <img id="afg-cancel-button1" class="afg-cancel-button"
-              alt="__MSG_cancel__" title="__MSG_cancel__" tabIndex="5"
+              alt="__MSG_cancel__" title="__MSG_cancel__" tabIndex="6"
               onclick="hideDialog();" onkeypress="hideDialog();"
               src="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_cancel_btn__.gif"
               onerror="this.src='http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/theme/__MSG_cancel_btn__.gif'" />
