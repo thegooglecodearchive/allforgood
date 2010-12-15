@@ -24,7 +24,7 @@ expects the caller to pass in the providerID and providerName)
 #<id>http://spreadsheets.google.com/feeds/cells/pMY64RHUNSVfKYZKPoVXPBg
 #/1/public/basic/R14C13</id>
 #<updated>2009-04-28T03:29:56.957Z</updated>
-#<category scheme='http://schemas.google.com/spreadsheets/2006' 
+#<category scheme='http://schemas.google.com/spreadsheets/2006'
 #term='http://schemas.google.com/spreadsheets/2006#cell'/>
 #<title type='text'>M14</title>
 #<content type='text'>ginny@arthur.edu</content>
@@ -141,7 +141,7 @@ def record_to_fpxml(record):
   fpxml += '</location>'
   fpxml += '</locations>'
   fpxml += xmlh.output_val('paid', recordval(record,'Paid'))
-  
+  fpxml += xmlh.output_val('probono', recordval(record,'ProBono'))
   v = recordval(record,'MinimumAge')
   if v:
     try:
@@ -296,6 +296,8 @@ def parse(instr, maxrecs, progress):
       field_name = "DaysOfWeek"
     elif header_str.find("paid") >= 0:
       field_name = "Paid"
+    elif header_str.find("probono") >= 0:
+      field_name = "ProBono"
     elif header_str.find("commitment") >= 0 or header_str.find("hours") >= 0:
       field_name = "CommitmentHours"
     elif header_str.find("age") >= 0 and header_str.find("min") >= 0:
@@ -397,4 +399,3 @@ def parse(instr, maxrecs, progress):
   #print outstr
 
   return outstr, numorgs, numopps
-

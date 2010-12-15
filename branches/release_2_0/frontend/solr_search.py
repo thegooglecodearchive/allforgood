@@ -31,6 +31,7 @@ from google.appengine.api import urlfetch
 import api
 
 import geocode
+import ical_filter
 import models
 import modelutils
 import posting
@@ -191,6 +192,14 @@ def form_solr_query(args):
   # geo params go in first
   solr_query = geo_params + solr_query
   solr_query = urllib.quote_plus(solr_query)
+    
+  if api.PARAM_TYPE in args:
+    if args[api.PARAM_TYPE] == "pro_bono":
+      solr_query += " AND probono:true"
+    elif args[api.PARAM_TYPE] == "group":
+      solr_query += " AND volunteersneeded:[10 TO *]"
+    elif api.PARAM_VIRTUAL in args:
+      solr_query += " AND virtual:true"
 
   # for ad campaigns
   if api.PARAM_CAMPAIGN_ID in args:
@@ -206,7 +215,7 @@ def form_solr_query(args):
     # should probably add a 'sponsor_id' to the spreadsheet,
     # and have optout_sponsor_XXX as well.
     solr_query += exclusion
-
+  logging.debug("basic solr query: " + solr_query)
   # grab DEFAULT_BACKEND_URL_SOLR from private_keys
   if api.PARAM_BACKEND_URL not in args:
     try:
@@ -250,6 +259,7 @@ def search(args, dumping = False):
     api_list = [api.PARAM_Q,
                 api.PARAM_TIMEPERIOD,
                 api.PARAM_VOL_LOC,
+                'virtual',
                 api.PARAM_VOL_STARTDATE,
                 api.PARAM_VOL_ENDDATE,
                 api.PARAM_VOL_DURATION,
@@ -260,7 +270,8 @@ def search(args, dumping = False):
       if param in args and args[param]:
         if param == api.PARAM_VOL_LOC:
           # vol_loc must render a lat, long pair
-          if (not args[api.PARAM_LAT] or 
+          if (args[param] != "virtual" and
+              not args[api.PARAM_LAT] or 
               parseLatLng(args[api.PARAM_LAT]) == 0 or 
               not args[api.PARAM_LNG] or 
               parseLatLng(args[api.PARAM_LNG]) == 0):
@@ -396,9 +407,16 @@ def query(query_url, args, cache, dumping = False):
     if re.search(r'[^a-z]acorn[^a-z]', " "+org_name+" ", re.IGNORECASE):
       logging.debug('solr_search.query skipping: ACORN in org_name')
       continue
+    latstr = entry["latitude"]
+    longstr = entry["longitude"]
+    virtual = (entry.get('virtual') == 'true' or 
+               not latstr and not longstr or
+               latstr and longstr and latstr == '0.0' and longstr == '0.0')
+    pro_bono = entry.get("pro_bono")
+    volunteers_needed = entry.get("volunteersneeded")
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
-                                    base_url, categories, org_name)
-
+                                    base_url, volunteers_needed, virtual,
+                                    pro_bono, categories, org_name)
 
     # TODO: escape?
     res.provider = entry["feed_providername"]
@@ -410,8 +428,6 @@ def query(query_url, args, cache, dumping = False):
 
     res.orig_idx = i+1
     res.latlong = ""
-    latstr = entry["latitude"]
-    longstr = entry["longitude"]
     if latstr and longstr and latstr != "" and longstr != "":
       if ( not dumping and
            api.PARAM_VOL_DIST in args and args[api.PARAM_VOL_DIST] != "" and
@@ -466,6 +482,15 @@ def query(query_url, args, cache, dumping = False):
           res.startdate = startdate
         if enddate < res.enddate:
           res.enddate = enddate
+
+    openended = "openended" in entry and entry["openended"]
+    if openended and "ical_recurrence" in entry:
+      ical_recurrence = entry["ical_recurrence"]
+      query_startdate = args[api.PARAM_VOL_STARTDATE] if api.PARAM_VOL_STARTDATE in args else None
+      query_enddate = args[api.PARAM_VOL_ENDDATE] if api.PARAM_VOL_ENDDATE in args else None
+      if not ical_filter.match(ical_recurrence, query_startdate, query_enddate):
+        logging.warning("skipping SOLR record %d: failed the iCal filter" % i)
+        continue
 
     # posting.py currently has an authoritative list of fields in "argnames"
     # that are available to submitted events which may later appear in GBase

@@ -27,6 +27,9 @@
     <div id='location_subheader'><span id='location_text_prefixed'>In <span id='location_text'></span></span> &nbsp;-
       <a href='javascript:void(0)' onclick='doHomepageChangeLocationClick();return false;'>
         Change location
+      </a> &nbsp;-
+      <a href='javascript:void(0)' onclick='submitForm("virtual_location");return false;'>
+        Show me what I can do from home
       </a>
     </div>
    </div>
@@ -34,7 +37,7 @@
    <div id='location_form' style='display:none;'>
     <form action='/' onsubmit='submitForm("");return false;' class='valign'>
       <input id='location' name='enter your location' size='40' value=''/>
-      <input type=button onclick='submitForm("");return false;' value="Set location" />
+      <input class='location-btn' type='button' onclick='submitForm("");return false;' value="Set location" />
     </form>
    </div>
 

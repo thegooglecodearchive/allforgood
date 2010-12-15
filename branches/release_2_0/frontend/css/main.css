@@ -38,7 +38,7 @@ form {
 }
 
 #header {
-  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 #header a:link { color: white }
@@ -95,7 +95,6 @@ form {
 
 #sign_in {
   font-size: small;
-  font-weight: bold;
   padding: 5px;
   color: white;
 }
@@ -105,10 +104,10 @@ form {
   top: -1px;
 }
 
-#sign_in a:link { color: white }
-#sign_in a:visited { color: white }
-#sign_in a:hover { color: white }
-#sign_in a:active { color: white }
+#sign_in a {
+  color: white;
+  text-decoration: none;
+}
 
 /** Content sections **/
 #content_outer1 {
@@ -133,18 +132,29 @@ form {
 }
 
 .search_button {
-  height: 26px;
-  width: 30px;
+  height: 35px;
+  width: 41px;
 }
 
-input#keywords, input#location {
-  height: 16px;
+input#keywords {
+  width: 426px; 
+  height: 30px;
   padding: 2px 0;
-  font-size: 13px;
+  font-size: 18px;
 }
 
-input#keywords { width: 284px; }
-input#location { width: 180px; }
+input#location { 
+  height: 30px;
+  padding: 2px 0;
+  font-size: 18px;
+  width: 180px; 
+}
+
+.location-btn {
+  height: 36px;
+  width: 110px;
+  font-size: 16px;
+}
 
 /** Search results page **/
 
@@ -232,6 +242,7 @@ input#location { width: 180px; }
 
 .map_hint {
   font-style: italic;
+  font-size: 16px;
 }
 
 /** Work with others **/
@@ -255,10 +266,6 @@ input#location { width: 180px; }
 
 .friend_stars {
   color: #999999;
-}
-
-#when_filter_widget {
-  margin-top: 30px;
 }
 
 /** Profile Box **/
@@ -322,6 +329,13 @@ input#location { width: 180px; }
   font-size: 11px;
 }
 
+.approximate_results {
+  margin-top: 0px;
+  margin-bottom: 2px;
+  text-align: right;
+  color: #666;
+}
+
 #paginator {
   font-size: 14px;
   font-weight: bold;
@@ -368,6 +382,7 @@ input#location { width: 180px; }
   left: 0px;
   z-index: 100;
   width: 100%;
+  border-bottom: 1px solid #8fb1e5;
 }
 
 #login_bar {
@@ -483,7 +498,7 @@ h1 {
   color: #666;
   font-weight: bold;
   margin-right: 8px;
-  width: 1em;
+  width: 1.2em;
 }
 
 .undo_link {
@@ -496,6 +511,7 @@ h1 {
 
 #example_searches {
   color: white;
+  padding: 0;
 }
 
 #example_searches A {
@@ -537,6 +553,10 @@ h1 {
   font-weight: bold;
   color: #039;
   text-decoration: none;
+}
+
+.filterwidget {
+  margin-bottom: 30px;
 }
 
 .undo, .undo A {

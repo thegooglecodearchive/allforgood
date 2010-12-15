@@ -5,12 +5,16 @@
 
 {% ifequal current_page "SEARCH" %}
 <div class="map_hint">
-To change the search location, please enter a zip code or city/state.
+Enter your location.
 </div>
 {% endifequal %}
 
 {% include 'map_widget.html' %}
 
-<div id='when_filter_widget'></div>
 
+<div id='where_filter_widget' class='filterwidget'></div>
+
+<div id='when_filter_widget' class='filterwidget'></div>
+
+<div id='what_filter_widget' class='filterwidget'></div>
 

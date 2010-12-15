@@ -84,6 +84,8 @@ SEARCHFIELDS = {
   # needed for search restricts
   "latitude":"float",
   "longitude":"float",
+  "virtual":"boolean",
+  "probono":"boolean",
   # needed for query by time-of-day
   "startTime":"integer",
   "endTime":"integer",
@@ -115,9 +117,12 @@ FIELDTYPES = {
   "minimumAge":"integer",
   "startTime":"integer",
   "endTime":"integer",
+  "ical_recurrence":"string",
 
   "latitude":"float",
   "longitude":"float",
+  "virtual":"boolean",
+  "probono":"boolean",
 
   "providerURL":"URL",
   "detailURL":"URL",
@@ -452,13 +457,18 @@ def get_direct_mapped_fields(opp, org):
   outstr = output_field("abstract", get_abstract(opp))
   if ABRIDGED:
     return outstr
-
   paid = xmlh.get_tag_val(opp, "paid")
   if (paid == "" or paid.lower()[0] != "y"):
     paid = "n"
   else:
     paid = "y"
   outstr += FIELDSEP + output_field("paid", paid)
+  probono = xmlh.get_tag_val(opp, "probono")
+  if (probono == "" or probono.lower()[0] != "y"):
+    probono = "False"
+  else:
+    probono = "True"
+  outstr += FIELDSEP + output_field("probono", probono)
   detailURL = xmlh.get_tag_val(opp, "detailURL")
   outstr += FIELDSEP + output_field("detailURL", detailURL)
 
@@ -615,6 +625,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       end_date = xmlh.get_tag_val(opptime, "endDate")
       end_time = xmlh.get_tag_val(opptime, "endTime")
       openended = xmlh.get_tag_val(opptime, "openEnded")
+      ical_recurrence = xmlh.get_tag_val(opptime, "iCalRecurrence")
       # e.g. 2006-12-20T23:00:00/2006-12-21T08:30:00, in PST (GMT-8)
       if (start_date == ""):
         start_date = "1971-01-01"
@@ -626,7 +637,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
 
     duration = xmlh.get_tag_val(opptime, "duration")
     hrs_per_week = xmlh.get_tag_val(opptime, "commitmentHoursPerWeek")
-    time_fields = get_time_fields(openended, duration, hrs_per_week, startend)
+    time_fields = get_time_fields(openended, duration, hrs_per_week, startend, ical_recurrence)
 
     number_of_locations = len(opp_locations)
     if number_of_locations == 0:
@@ -641,13 +652,16 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       # unwind multiple locations
       if opploc == None:
         locstr, latlng, geocoded_loc = ("", "", "")
-        loc_fields = get_loc_fields("", "0.0", "0.0", "", "")
+        loc_fields = get_loc_fields(virtual="No", latitude="0.0", longitude="0.0")
       else:
         locstr = get_full_addr_str(opploc)
         addr, lat, lng, acc = find_geocoded_location(opploc)
-        loc_fields = get_loc_fields("", str(float(lat)+1000.0),
-                                    str(float(lng)+1000.0), addr,
-                                    xmlh.get_tag_val(opploc, "name"))
+        virtual = xmlh.get_tag_val(opploc, "virtual")
+        loc_fields = get_loc_fields(virtual=virtual,
+                                    latitude=str(float(lat) + 1000.0),
+                                    longitude=str(float(lng) + 1000.0),
+                                    location_string=addr,
+                                    venue_name=xmlh.get_tag_val(opploc, "name"))
 
       opp_id = compute_stable_id(opp, org, locstr, openended, 
                                  duration, hrs_per_week, startend)
@@ -673,8 +687,13 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       outstr_list.append(RECORDSEP)
   return totrecs, "".join(outstr_list)
 
-def get_time_fields(openended, duration, hrs_per_week, event_date_range):
+def get_time_fields(openended, duration, hrs_per_week, event_date_range, ical_recurrence):
   """output time-related fields, e.g. for multiple times per event."""
+  if openended.lower() == 'yes':
+    event_date_range = "0001-01-01T00:00:00/9999-12-31T23:59:59"
+    openended_bool = "True"
+  else:
+    openended_bool = "False"
   # 2010-02-26T16:00:00/2010-02-26T16:00:00
   match = re.search(r'T(\d\d):(\d\d):\d\d(\s*/\s*.+?T(\d\d):(\d\d):\d\d)?',
                     event_date_range)
@@ -691,20 +710,26 @@ def get_time_fields(openended, duration, hrs_per_week, event_date_range):
   time_fields = FIELDSEP + output_field("event_date_range", event_date_range)
   time_fields += FIELDSEP + output_field("startTime", startstr)
   time_fields += FIELDSEP + output_field("endTime", endstr)
+  time_fields += FIELDSEP + output_field("ical_recurrence", ical_recurrence)
   if ABRIDGED:
     return time_fields
-  time_fields += FIELDSEP + output_field("openended", openended)
+  time_fields += FIELDSEP + output_field("openended", openended_bool)
   time_fields += FIELDSEP + output_field("duration", duration)
   time_fields += FIELDSEP + output_field("commitmentHoursPerWeek", hrs_per_week)
   return time_fields
 
-def get_loc_fields(location, latitude, longitude, location_string,
-                   venue_name):
+def get_loc_fields(virtual, location="", latitude="", longitude="", location_string="", venue_name=""):
   """output location-related fields, e.g. for multiple locations per event."""
   # note: we don't use Google Base's "location" field because it tries to
   # geocode it (even if we pre-geocode it) then for bogus reasons, rejects
   # around 40% of our listings-- again, even if we pre-geocode them.
-  loc_fields = FIELDSEP + output_field("location", location)
+  loc_fields = ""
+  if virtual.lower() == 'yes':
+    virtual_bool = "True"
+  else:
+    virtual_bool = "False"
+  loc_fields += FIELDSEP + output_field("virtual", virtual_bool)
+  loc_fields += FIELDSEP + output_field("location", location)
   loc_fields += FIELDSEP + output_field("latitude", latitude)
   loc_fields += FIELDSEP + output_field("longitude", longitude)
   loc_fields += FIELDSEP + output_field("location_string", location_string)
@@ -731,8 +756,8 @@ def output_header(feedinfo, opp, org):
   PRINTHEAD = True
   outstr = output_field("id", "")
   repeated_fields = get_repeated_fields(feedinfo, opp, org)
-  time_fields = get_time_fields("", "", "", "")
-  loc_fields = get_loc_fields("", "", "", "", "")
+  time_fields = get_time_fields("", "", "", "", "")
+  loc_fields = get_loc_fields(virtual="Yes")
   PRINTHEAD = False
   return outstr + repeated_fields + time_fields + loc_fields + RECORDSEP
 
@@ -791,8 +816,8 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       'locationType', 'locations', 'logoURL', 'longitude', 'minimumAge',
       'missionStatement', 'name', 'nationalEIN', 'openEnded',
       'organizationID', 'organizationURL', 'paid', 'phone', 'postalCode',
-      'providerID', 'providerName', 'providerURL', 'region', 'schemaVersion',
-      'sexRestrictedEnum', 'sexRestrictedTo', 'skills',
+      'probono', 'providerID', 'providerName', 'providerURL', 'region',
+      'schemaVersion', 'sexRestrictedEnum', 'sexRestrictedTo', 'skills',
       'sponsoringOrganizationID', 'startDate', 'startTime', 'streetAddress1',
       'streetAddress2', 'streetAddress3', 'title', 'tzOlsonPath', 'virtual',
       'volunteerHubOrganizationID', 'volunteerOpportunityID',

@@ -183,6 +183,11 @@ def normalize_query_values(args, dumping = False):
     api.CONST_MAX_OVERFETCH_RATIO)
   dbgargs(api.PARAM_OVERFETCH_RATIO)
 
+  use_cache = True
+  if api.PARAM_CACHE in args and args[api.PARAM_CACHE] == '0':
+    use_cache = False
+    logging.debug('Not using search cache')
+    
   # PARAM_TIMEPERIOD overrides VOL_STARTDATE/VOL_ENDDATE
   if api.PARAM_TIMEPERIOD in args:
     period = args[api.PARAM_TIMEPERIOD]
@@ -241,7 +246,11 @@ def normalize_query_values(args, dumping = False):
   args[api.PARAM_Q] = run_query_rewriters(args[api.PARAM_Q])
 
   args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
-  if api.PARAM_VOL_LOC in args:
+  if api.PARAM_VIRTUAL in args:
+    args["lat"] = args["long"] = "0.0"
+    zoom = 6
+    args[api.PARAM_VOL_DIST] = 3
+  elif api.PARAM_VOL_LOC in args:
     zoom = 5
     if geocode.is_latlong(args[api.PARAM_VOL_LOC]):
       args[api.PARAM_LAT], args[api.PARAM_LNG] = \
@@ -255,7 +264,7 @@ def normalize_query_values(args, dumping = False):
     elif args[api.PARAM_VOL_LOC] == "anywhere":
       args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
     else:
-      res = geocode.geocode(args[api.PARAM_VOL_LOC])
+      res = geocode.geocode(args[api.PARAM_VOL_LOC], use_cache)
       if res != "":
         args[api.PARAM_LAT], args[api.PARAM_LNG], zoom = res.split(",")
     args[api.PARAM_LAT] = args[api.PARAM_LAT].strip()
@@ -411,7 +420,9 @@ def fetch_result_set(args, dumping = False):
         result_set.append_results(bf_res, True)
 
     # backfill with locationless listings
-    if allow_virtual and (args[api.PARAM_LAT] != "0.0" or args[api.PARAM_LNG] != "0.0"):
+    if (api.PARAM_VIRTUAL in args 
+        or api.PARAM_VOL_LOC in args and args[api.PARAM_VOL_LOC] != "virtual"
+        or args["lat"] != "0.0" or args["long"] != "0.0"):
       backfill_num += 1
       newargs = copy.copy(args)
       newargs[api.PARAM_LAT] = newargs[api.PARAM_LNG] = "0.0"

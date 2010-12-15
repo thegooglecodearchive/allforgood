@@ -101,14 +101,17 @@ def get_intval(record, field_name):
     parser_error("bad value in "+field_name+": '"+val+"'-- try a number")
   return val
 
-def get_minlen(record, field_name, minlen):
+def get_minmaxlen(record, field_name, minlen, maxlen=-1):
   """parse a field as a minlen string."""
   val = recordval(record, field_name)
-  if val == "":
+  if minlen > 0 and val == "":
     parser_error("missing value in "+field_name+": '"+val+"'-- field required.")
-  elif len(val) < minlen:
+  elif minlen > 0 and len(val) < minlen:
     parser_error("value not long enough in "+field_name+": '"+val+"'-- "+
                  "requires %d characters" % minlen)
+  elif maxlen > 0 and len(val) > maxlen:
+    parser_error("value too long in " + field_name + ": '" + val[0:maxlen] + "'--" +
+                 "requires less than %d characters" % maxlen)
   return val
 
 def get_blank(record, field_name, reason=" in this case."):
@@ -130,14 +133,14 @@ def cellval(row, col):
 def parse_gspreadsheet(instr, updated):
   """load a spreadsheet into a two dimensional array."""
   # look ma, watch me parse XML a zillion times faster!
-  #<entry><id>http://spreadsheets.google.com/feeds/cells/pMY64RHUNSVfKYZKPoVXPBg
-  #/1/public/basic/R14C15</id><updated>2009-04-28T03:34:21.900Z</updated>
-  #<category scheme='http://schemas.google.com/spreadsheets/2006'
-  #term='http://schemas.google.com/spreadsheets/2006#cell'/><title type='text'>
-  #O14</title><content type='text'>http://www.fake.org/vol.php?id=4</content>
-  #<link rel='self' type='application/atom+xml'
-  #href='http://spreadsheets.google.com/feeds/cells/pMY64RHUNSVfKYZKPoVXPBg/1/
-  #public/basic/R14C15'/></entry>
+  #<entry>
+  #  <id>http://spreadsheets.google.com/feeds/cells/pMY64RHUNSVfKYZKPoVXPBg/1/public/basic/R14C15</id>
+  #  <updated>2009-04-28T03:34:21.900Z</updated>
+  #  <category scheme='http://schemas.google.com/spreadsheets/2006' term='http://schemas.google.com/spreadsheets/2006#cell'/>
+  #  <title type='text'>O14</title>
+  #  <content type='text'>http://www.fake.org/vol.php?id=4</content>
+  #  <link rel='self' type='application/atom+xml' href='http://spreadsheets.google.com/feeds/cells/pMY64RHUNSVfKYZKPoVXPBg/1/public/basic/R14C15'/>
+  #</entry>
   regexp = re.compile('<entry>.+?(R(\d+)C(\d+))</id>'+
                       '<updated.*?>(.+?)</updated>.*?'+
                       '<content.*?>(.+?)</content>.+?</entry>', re.DOTALL)
@@ -306,9 +309,9 @@ def parse(instr):
       numopps += 1
       blankrows = 0
       record['oppid'] = str(numopps)
-      get_minlen(record, 'OpportunityTitle', 4)
-      get_minlen(record, 'Description', 15)
-      location_name = get_minlen(record, 'LocationName', 4)
+      get_minmaxlen(record, 'OpportunityTitle', 4, 100)
+      get_minmaxlen(record, 'SpecialSkills', -1, 1000)
+      location_name = get_minmaxlen(record, 'LocationName', 4)
       if location_name == "virtual":
         is_virtual = True
       elif location_name.lower() == "virtaul" or location_name.lower() == "virtual":
@@ -366,6 +369,8 @@ def parse(instr):
       if email != "" and email.find("@") == -1:
         parser_error("malformed email address: "+email)
       url = recordval(record, "URL")
+      if url == "":
+        parser_error("Website - this field is required.")
       urls_ar.append(url)
         
       daysofweek = recordval(record, "DaysOfWeek").split(",")
@@ -393,7 +398,8 @@ def parse(instr):
         parser_error("missing Sponsoring Organization-- this field is required."+
                      "  (it can be an informal name, or even a person's name).")
       else:
-        get_minlen(record, 'SponsoringOrganization', 4)
+        get_minmaxlen(record, 'SponsoringOrganization', 4, 100)
+      get_minmaxlen(record, 'Description', 15, 3000)
       freq = recordval(record, 'Frequency').lower()
       if not (freq == "" or freq == "once" or freq == "daily" or
               freq == "weekly" or freq == "every other week" or 
@@ -402,7 +408,7 @@ def parse(instr):
                      recordval(record, 'Frequency')+"'")
     CURRENT_ROW += 1
   if len(MESSAGES) == 0:
-    MESSAGES.append("spreadsheet parsed correctly!" + 
-      " Feel free to submit if the locations and URL's check out.")
+    MESSAGES.append("Spreadsheet parsed correctly!" + 
+      " Feel free to submit if the locations and URLs check out.")
   return DATA, MESSAGES, addr_ar, urls_ar
 
