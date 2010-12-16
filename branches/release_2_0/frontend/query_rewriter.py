@@ -170,7 +170,7 @@ def get_rewriters():
   september11_rewriter = RegexRewriter(
     '(9[\/\.]11|sep(t(\.|ember)?)?[ -]?(11|eleven)(th)?|' +
     'National Day of Service (and|&) Rememb(e)?rance)', 'category:September11')
-  mlk_rewriter = RegexRewriter('mlk|martin luther', 'category:MLK')
+  mlk_rewriter = RegexRewriter('mlk|martin luther', 'category:MLKDay')
 
   # Vetted?
 

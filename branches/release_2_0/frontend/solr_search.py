@@ -126,6 +126,7 @@ def form_solr_query(args):
 
   # Generate geo search parameters
   # TODO: formalize these constants
+  # this is near the middle of the continental US 
   lat = '37'
   lng = '-95'
   max_dist = 1500
@@ -211,8 +212,8 @@ def form_solr_query(args):
     # should probably add a 'sponsor_id' to the spreadsheet,
     # and have optout_sponsor_XXX as well.
     solr_query += exclusion
-  logging.debug("basic solr query: " + solr_query)
-  # grab DEFAULT_BACKEND_URL_SOLR from private_keys
+
+  # set the solr instance we need to use if not given as an arg
   if api.PARAM_BACKEND_URL not in args:
     try:
       args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
