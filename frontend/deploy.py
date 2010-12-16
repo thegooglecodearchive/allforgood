@@ -32,7 +32,8 @@ MAPS_API_KEYS = {
   'allforgood.org' : 'ABQIAAAAHtEBbyenR4BaYGl54_p0fRQu5fCZl1K7T-61hQb7PrEsg72lpRQbhbBcd0325oSLzGUQxP7Nz9Rquw',
   'footprint2009qa.appspot.com' : 'ABQIAAAA1sNtdnui_8Lmt75VBAosOhRSEEb9tdSIuCkRNLnpLNbLMSh74BRy7tIEe3Z6GgLCRLUFTTQ45vQ3mg',
   'footprint-loadtest.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxSWKH9akPVZO-6F_G0PvWoeHNZVdRSifDQCrd-osJFuWDqR3Oh0nKDgbw',
-  'footprint2009dev.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxTpeCj-9ism2i6Mt7fLlVoN6HsfDBSOZjcyagWjKTMT32rzg71rFenopA'
+  'footprint2009dev.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxTpeCj-9ism2i6Mt7fLlVoN6HsfDBSOZjcyagWjKTMT32rzg71rFenopA',
+  'mt1955.latest.servicefootprint.appspot.com' : 'ABQIAAAAienQr37mEiFBwlgibJ1JcxR1KvS2SINSTEhx6KwLmvTr3pfveRSjY7BvkzTo44hCktsrLKU800bN1g'
 }
 # pylint: enable-msg=C0301
 

@@ -47,7 +47,7 @@ DATE_FORMAT_PATTERN = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
 MAX_RESULTS = 1000
 
 MILES_PER_DEG = 69
-DEFAULT_VOL_DIST = 25
+DEFAULT_VOL_DIST = 75
 SOLR_V1 = '1'
 SOLR_V2 = '2'
 
@@ -136,6 +136,14 @@ def rewrite_query(query_str):
   rewritten_query = query_str.lower()
   rewritten_query = rewritten_query.replace(' or ', ' OR ')
   rewritten_query = rewritten_query.replace(' and ', ' AND ')
+  rewritten_query = rewritten_query.replace(' to ', ' TO ')
+  
+  # 2011-01-17T00:00:00.000Z is a valid date string 
+  # but 2011-01-17t00:00:00.000z is not
+  def reupcase(match_obj):
+    return match_obj.group(0).upper()
+  rewritten_query = re.sub(r'[0-9]t[0-9]', reupcase, rewritten_query)
+  rewritten_query = re.sub(r'[0-9]z', reupcase, rewritten_query)
 
   # Replace the category filter shortcut with its proper name.
   rewritten_query = rewritten_query.replace('category:', 'categories:')
@@ -160,6 +168,7 @@ def form_solr_queryV2(args):
 
   # Generate geo search parameters
   # TODO: formalize these constants
+  # this is near the middle of the continental US 
   lat = '37'
   lng = '-95'
   max_dist = 1500
@@ -183,18 +192,19 @@ def form_solr_queryV2(args):
       solr_query = rewrite_query('%s' %
         '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster) AND category:Animals)')
     elif args[api.PARAM_Q].find('category:MLKDay') >= 0:
-      solr_query = rewrite_query('%s' % 
-         '(categories:MLK'
-         + ' OR title:(mlk and (\'day of service\'))^20'
-         + ' OR title:mlk^10'
-         + ' OR title:(\'ml king\')^10'
-         + ' OR title:(\'martin luther\')^10'
-         + ' OR abstract:(mlk and (\'day of service\'))^20'
-         + ' OR abstract:(\'day of service\')^10'
-         + ' OR abstract:mlk^10'
-         + ' OR abstract:(\'ml king\')^5'
-         + ' OR abstract:(\'martin luther\')^5'
-         + ' OR blood)')
+      solr_query = rewrite_query('(categories:MLK'
+                 + ' OR eventrangestart:[2011-01-17T00:00:00.000Z TO 2011-01-17T23:59:59.999Z]^20'
+                 + ' OR eventrangestart:[2011-01-17T00:00:00.000Z TO 2011-01-22T23:59:59.999Z]^5'
+                 + ' OR title:(mlk and (\'day of service\'))^20'
+                 + ' OR title:mlk^10'
+                 + ' OR title:(\'ml king\')^10'
+                 + ' OR title:(\'martin luther\')^10'
+                 + ' OR abstract:(mlk and (\'day of service\'))^20'
+                 + ' OR abstract:(\'day of service\')^10'
+                 + ' OR abstract:mlk^10'
+                 + ' OR abstract:(\'ml king\')^5'
+                 + ' OR abstract:(\'martin luther\')^5'
+                 + ' OR blood)')
     else:
       solr_query += rewrite_query(args[api.PARAM_Q])
   else:
@@ -238,7 +248,7 @@ def form_solr_queryV2(args):
 
   # for ad campaigns
   if api.PARAM_CAMPAIGN_ID in args:
-    # we need to exclude the opted out opprotunities
+    # we need to exclude the opted out opportunities
     # they can be tagged as opt_out_all_campaigns
     # or opt_out_campaign_XXX where XXX is the campaign ID.
     exclusion = '!categories:%s !categories:%s' % (
@@ -251,7 +261,7 @@ def form_solr_queryV2(args):
     # and have optout_sponsor_XXX as well.
     solr_query += exclusion
 
-  # solr vs google base
+  # set the solr instance we need to use if not given as an arg
   if api.PARAM_BACKEND_URL not in args:
     try:
       args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
@@ -279,8 +289,11 @@ def form_solr_query(args, solr_path = SOLR_V2):
   if api.PARAM_SOLR_PATH in args and args[api.PARAM_SOLR_PATH] != '':
     solr_path = api.PARAM_SOLR_PATH
 
-  if solr_path == SOLR_V2:
+  if solr_path == SOLR_V2:  
+    DEFAULT_BACKEND_URL = private_keys.DEFAULT_BACKEND_URL_SOLR_V2
     return form_solr_queryV2(args)
+  
+  DEFAULT_BACKEND_URL = private_keys.DEFAULT_BACKEND_URL_SOLR_V1
 
   logging.debug("form_solr_query: "+str(args))
   solr_query = ""
