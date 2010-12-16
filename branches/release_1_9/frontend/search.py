@@ -232,7 +232,10 @@ def normalize_query_values(args, dumping = False):
     args[api.PARAM_Q] = args[api.PARAM_Q].strip()
   dbgargs(api.PARAM_Q)
 
-  if api.PARAM_VOL_LOC not in args or args[api.PARAM_VOL_LOC] == "":
+  if (api.PARAM_VOL_LOC not in args 
+      or args[api.PARAM_VOL_LOC] == ""
+      or args[api.PARAM_VOL_LOC].lower().find("location") >=0
+     ):
     # bugfix for http://code.google.com/p/footprint2009dev/issues/detail?id=461
     # q=Massachusetts should imply vol_loc=Massachusetts, USA
     # note that this implementation also makes q=nature match
