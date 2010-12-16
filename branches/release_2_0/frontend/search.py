@@ -29,7 +29,6 @@ import api
 import base_search
 import geocode
 from fastpageviews import pagecount
-import scoring
 import solr_search
 import re
 
@@ -330,7 +329,6 @@ def fetch_and_dedup(args, dumping = False):
       result_set.merged_results[idx].merged_debug = []
       result_set.merged_results[idx].merged_impressions = 0
   else:
-    #scoring.score_results_set(result_set, args)
     merge_by_date_and_location = False
     if "key" in args:
       merge_by_date_and_location = False

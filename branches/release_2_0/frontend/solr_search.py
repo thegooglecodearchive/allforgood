@@ -36,6 +36,7 @@ import models
 import modelutils
 import posting
 import private_keys
+import boosts
 import searchresult
 
 RESULT_CACHE_TIME = 900 # seconds
@@ -48,7 +49,7 @@ DATE_FORMAT_PATTERN = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
 MAX_RESULTS = 1000
 
 MILES_PER_DEG = 69
-DEFAULT_VOL_DIST = 300
+DEFAULT_VOL_DIST = 75
 
 def default_boosts(args):
   boost = ""
@@ -56,25 +57,25 @@ def default_boosts(args):
   if api.PARAM_Q in args and args[api.PARAM_Q] == "":    
     
     # boosting vetted categories
-    boost += '&bq=categories:vetted^10'
+    boost += '&bq=categories:vetted^15'
     
     # big penalty for events starting in the far future
-    boost += '%20eventrangestart:[*%20TO%20NOW%2B6MONTHS]^1000'
+    boost += '%20eventrangestart:[*%20TO%20NOW%2B6MONTHS]^15'
     
     # big boost for events starting in the near future
-    boost += '%20eventrangestart:[NOW%20TO%20NOW%2B1MONTHS]^1000'
+    boost += '%20eventrangestart:[NOW%20TO%20NOW%2B1MONTHS]^10'
     
     # slight penalty for events started recently
     boost += '%20=eventrangestart:[NOW%20TO%20*]^5'
     
     # modest penalty for events started long ago
-    boost += '%20eventrangestart:[NOW-6MONTHS%20TO%20*]^100'
+    boost += '%20eventrangestart:[NOW-6MONTHS%20TO%20*]^7'
     
     # modest penalty for events ending in the far future
-    boost += '%20eventrangeend:[*%20TO%20NOW%2B6MONTHS]^100' 
+    boost += '%20eventrangeend:[*%20TO%20NOW%2B6MONTHS]^7' 
     
     # big boost for events ending in the near future
-    boost += '%20eventrangeend:[NOW%20TO%20NOW%2B1MONTHS]^1000'
+    boost += '%20eventrangeend:[NOW%20TO%20NOW%2B1MONTHS]^10'
     
     # boost short events
     boost += '%20eventduration:[1%20TO%2010]^10'
@@ -99,7 +100,15 @@ def rewrite_query(query_str):
   rewritten_query = query_str.lower()
   rewritten_query = rewritten_query.replace(' or ', ' OR ')
   rewritten_query = rewritten_query.replace(' and ', ' AND ')
+  rewritten_query = rewritten_query.replace(' to ', ' TO ')
+  
+  # 2011-01-17T00:00:00.000Z is a valid date string
+  # but 2011-01-17t00:00:00.000z is not
+  def reupcase(match_obj):
+    return match_obj.group(0).upper()
 
+  rewritten_query = re.sub(r'[0-9]t[0-9]', reupcase, rewritten_query)
+  rewritten_query = re.sub(r'[0-9]z', reupcase, rewritten_query)
   # Replace the category filter shortcut with its proper name.
   rewritten_query = rewritten_query.replace('category:', 'categories:')
 
@@ -137,22 +146,9 @@ def form_solr_query(args):
   # keyword
   query_is_empty = False
   if api.PARAM_Q in args and args[api.PARAM_Q] != "":
-    if args[api.PARAM_Q].find('category:IAMS') >= 0:
-      solr_query = rewrite_query('%s' %
-        '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster) AND category:Animals)')
-    elif args[api.PARAM_Q].find('category:MLKDay') >= 0:
-      solr_query = rewrite_query('%s' % 
-         '(categories:MLK'
-         + ' OR title:(mlk and (\'day of service\'))^20'
-         + ' OR title:mlk^10'
-         + ' OR title:(\'ml king\')^10'
-         + ' OR title:(\'martin luther\')^10'
-         + ' OR abstract:(mlk and (\'day of service\'))^20'
-         + ' OR abstract:(\'day of service\')^10'
-         + ' OR abstract:mlk^10'
-         + ' OR abstract:(\'ml king\')^5'
-         + ' OR abstract:(\'martin luther\')^5'
-         + ' OR blood)')
+    query_boosts = boosts.query_time_boosts(args)
+    if query_boosts:
+      solr_query = query_boosts    
     else:
       solr_query += rewrite_query(args[api.PARAM_Q])
   else:
@@ -441,8 +437,7 @@ def query(query_url, args, cache, dumping = False):
           vol_lng = float(args[api.PARAM_LNG])
           result_lat = float(latstr)
           result_lng = float(longstr)
-          miles_to_opp = (MILES_PER_DEG * pow(pow(vol_lat - result_lat, 2) 
-                          + pow(vol_lng - result_lng, 2), 0.5))
+          miles_to_opp = float(entry["geo_distance"])
           if miles_to_opp > max_vol_dist:
             logging.info("skipping SOLR record %d: too far (%d > %d)" % 
               (i, miles_to_opp, max_vol_dist))

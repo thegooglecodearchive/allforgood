@@ -400,7 +400,7 @@
 
 <!--    employer       quantity        image_link      abstract       paid  opportunityID  organizationID volunteersSlots       volunteersFilled      volunteersNeeded      minimumAge    sexRestrictedTo        skills contactName    contactPhone   contactEmail   providerURL       language       lastUpdated  expires      detailURL org_nationalEIN        org_guidestarID        org_name       org_missionStatement   org_description        org_phone      org_fax        org_email      org_organizationURL       org_logoURL       org_providerURL   categories     audiences      orgLocation    event_date_range        startTime     endTime       openended     duration       commitmentHoursPerWeek location        latitude        longitude       location_string        venue_name -->
    <!-- Some sample docs exists solely to demonstrate the spellchecker
-        functionality, this is the only field they container.
+        functionality, this   is the only field they container.
         Typically you might build the spellchecker of "catchall" type field
         containing all of the text in each document
      -->
