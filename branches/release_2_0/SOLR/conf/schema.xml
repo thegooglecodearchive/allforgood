@@ -354,7 +354,8 @@
 <field name="feed_providerurl" type="string" indexed="true" stored="false"/>
 <field name="feed_description" type="string" indexed="true" stored="false"/>
 <field name="title" type="text" indexed="true" stored="true"/>
-<field name="description" type="text" indexed="true" stored="true"/>
+<field name="description" type="text_html" indexed="true" stored="true"/>
+<field name="abstract" type="text_html" indexed="true" stored="true"/>
 <field name="categories" type="text_keyword" indexed="true" stored="true" multiValued="true"/>
 <field name="aggregatefield" type="text_html" indexed="true" stored="true"/>
 
