@@ -31,37 +31,19 @@ function setKeywordAndExecute(keywords) {
   submitForm('keywords');
 }
 
+function submitCategory(category) {
+    window.location = '/search#category=' + category;
+}
+
 function createExampleSearchText() {
-  // Put categories to receive the "New!" superscript in here
-  var new_popular = [] // ["September 11"]
+  var new_popular = []
   var html = 'Categories: ';
   var links = [];
   for (var i = 0; i < popularSearches.length; i++) {
-    var pop_str = popularSearches[i] + '</a>'
-    /*
-    if (new_popular.indexOf(popularSearches[i]) != -1){
-      var pop_str = popularSearches[i] + "</a><span class='new_pop'>New!</span>"
-    } else {
-      var pop_str = popularSearches[i] + '</a>'
-    }
-    */
-    if (popularSearches[i] && popularSearches[i].indexOf('OilSpill') >= 0) {
-      links.push('<a onclick="setKeywordAndExecute(\'OilSpill\');return false;"' +
+    var pop_str = popularSearches[i][0] + '</a>'
+    links.push('<a onclick="submitCategory(\'' + 
+                popularSearches[i][1] + '\');return false;"' +
         'href="javascript:void(0);">' + pop_str);
-    } else if (popularSearches[i] && popularSearches[i].indexOf('EarthDay') >= 0) {
-      links.push('<a onclick="setKeywordAndExecute(\'Nature\');return false;"' +
-        'href="javascript:void(0);">' + pop_str);
-    } else if (popularSearches[i] && popularSearches[i].indexOf('Chile') >= 0) {
-      links.push('<a onclick="setKeywordAndExecute(\'Chile\');return false;"' +
-        'href="javascript:void(0);">' + pop_str);
-    } else if (popularSearches[i] && popularSearches[i].indexOf('Haiti') >= 0) {
-      links.push('<a onclick="setKeywordAndExecute(\'Haiti\');return false;"' +
-        'href="javascript:void(0);">' + pop_str);
-    } else {
-      links.push('<a onclick="setKeywordAndExecute(\'category:' + 
-                popularSearches[i].replace(" ", "") + '\');return false;"' +
-        'href="javascript:void(0);">' + pop_str);
-    }
   }
   el('example_searches').innerHTML = html + links.join(', ');
 }
