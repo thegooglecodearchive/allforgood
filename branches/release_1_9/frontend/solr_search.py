@@ -166,24 +166,27 @@ def form_solr_queryV2(args):
   if api.PARAM_SORT not in args:
     args[api.PARAM_SORT] = "r"
 
-  # Generate geo search parameters
-  # TODO: formalize these constants
-  # this is near the middle of the continental US 
-  lat = '37'
-  lng = '-95'
-  max_dist = 1500
-  if api.PARAM_LAT in args and api.PARAM_LNG in args and \
-     (args[api.PARAM_LAT] != "" and args[api.PARAM_LNG] != ""):
-    lat = args[api.PARAM_LAT]
-    lng = args[api.PARAM_LNG]
-    if api.PARAM_VOL_DIST not in args or args[api.PARAM_VOL_DIST] == "":
-      args[api.PARAM_VOL_DIST] = DEFAULT_VOL_DIST
-    max_dist = args[api.PARAM_VOL_DIST] = int(str(args[api.PARAM_VOL_DIST]))
-    if args[api.PARAM_VOL_DIST] < 1:
-      args[api.PARAM_VOL_DIST] = DEFAULT_VOL_DIST
-    max_dist = float(args[api.PARAM_VOL_DIST])
+  if api.PARAM_DUMP in args and args[api.PARAM_DUMP] == '1':
+    geo_params = ''
+  else:
+    # Generate geo search parameters
+    # TODO: formalize these constants
+    # this is near the middle of the continental US 
+    lat = '37'
+    lng = '-95'
+    max_dist = 1500
+    if api.PARAM_LAT in args and api.PARAM_LNG in args and \
+       (args[api.PARAM_LAT] != "" and args[api.PARAM_LNG] != ""):
+      lat = args[api.PARAM_LAT]
+      lng = args[api.PARAM_LNG]
+      if api.PARAM_VOL_DIST not in args or args[api.PARAM_VOL_DIST] == "":
+        args[api.PARAM_VOL_DIST] = DEFAULT_VOL_DIST
+      max_dist = args[api.PARAM_VOL_DIST] = int(str(args[api.PARAM_VOL_DIST]))
+      if args[api.PARAM_VOL_DIST] < 1:
+        args[api.PARAM_VOL_DIST] = DEFAULT_VOL_DIST
+      max_dist = float(args[api.PARAM_VOL_DIST])
 
-  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + '}'
+    geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + '}'
 
   # keyword
   query_is_empty = False
@@ -192,21 +195,27 @@ def form_solr_queryV2(args):
       solr_query = rewrite_query('%s' %
         '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster) AND category:Animals)')
     elif args[api.PARAM_Q].find('category:MLKDay') >= 0:
-      solr_query = rewrite_query('(categories:MLK'
-                 + ' OR eventrangestart:[2011-01-17T00:00:00.000Z TO 2011-01-17T23:59:59.999Z]^20'
-                 + ' OR eventrangestart:[2011-01-17T00:00:00.000Z TO 2011-01-22T23:59:59.999Z]^5'
-                 + ' OR title:(mlk and (\'day of service\'))^20'
+      solr_query = rewrite_query('-feed_providername:meetup AND (categories:MLK'
+                 + ' OR eventrangestart:[2011-01-17T00:00:00.000Z TO 2011-01-23T23:59:59.999Z]^20'
+                 + ' OR eventrangestart:[2011-01-08T00:00:00.000Z TO 2011-01-23T23:59:59.999Z]^5'
+                 + ' OR title:(mlk and (\'day on not a day off\'))^20'
                  + ' OR title:mlk^10'
+                 + ' OR title:mlktech^10'
                  + ' OR title:(\'ml king\')^10'
+                 + ' OR title:(\'king day\')^10'
                  + ' OR title:(\'martin luther\')^10'
-                 + ' OR abstract:(mlk and (\'day of service\'))^20'
-                 + ' OR abstract:(\'day of service\')^10'
+                 + ' OR abstract:(mlk and (\'day on not a day off\'))^20'
+                 + ' OR abstract:(\'day on not a day off\')^10'
                  + ' OR abstract:mlk^10'
+                 + ' OR abstract:mlktech^10'
                  + ' OR abstract:(\'ml king\')^5'
+                 + ' OR abstract:(\'king day\')^5'
                  + ' OR abstract:(\'martin luther\')^5'
-                 + ' OR blood)')
+                 + ' )')
     else:
-      solr_query += rewrite_query(args[api.PARAM_Q])
+      # TODO: e* is a kludge find out from Kelvin how to make 
+      # the spatial + wildcard query work properly
+      solr_query += rewrite_query('e* AND ' + args[api.PARAM_Q])
   else:
     # Query is empty, search for anything at all.
     # TODO: ask Kelvin what the wildcard case is here, * does not work
