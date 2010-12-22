@@ -358,29 +358,16 @@
 <field name="abstract" type="text_html" indexed="true" stored="true"/>
 <field name="categories" type="text_keyword" indexed="true" stored="true" multiValued="true"/>
 <field name="aggregatefield" type="text_html" indexed="true" stored="true"/>
-
 <field name="link" type="string" indexed="true" stored="true"/>
 <field name="detailurl" type="string" indexed="true" stored="true"/>
-
 <field name="org_name" type="text" indexed="true" stored="true"/>
 <field name="org_name_str" type="string" indexed="true" stored="true"/>
-
-<!-- flags an opportunity as pro bono, e.g. for lawyers searching for pro bono work -->
-<field name="probono" type="boolean" indexed="true" stored="true" default="false"/>
-
-<!-- flags an opportunity as virtual, i.e. it is not location-based -->
 <field name="virtual" type="boolean" indexed="true" stored="true" default="false"/>
-
-<!-- contains the ical encoding of recurring events, see element element iCalRecurrence>
-     in FPXML definition of user feeds -->
+<field name="self_directed" type="boolean" indexed="true" stored="true" default="false"/>
 <field name="ical_recurrence" type="string" indexed="true" stored="true"/>
-
 <field name="longitude" type="double" indexed="true" stored="true"/>
 <field name="latitude" type="double" indexed="true" stored="true"/>
-<dynamicField name="_tier_*" type="string" indexed="true" stored="true"/>
-
 <field name="randomsalt" type="double" indexed="true" stored="true"/>
-
 <field name="volunteersslots"  type="tint"    indexed="true"  stored="true"/>
 <field name="volunteersfilled"  type="tint"    indexed="true"  stored="true"/>
 <field name="volunteersneeded"  type="tint"    indexed="true"  stored="true"/>
@@ -388,13 +375,10 @@
 <field name="starttime"  type="tint"    indexed="true"  stored="true"/>
 <field name="endtime"  type="tint"    indexed="true"  stored="true"/>
 <field name="eventduration"  type="tint"    indexed="true"  stored="true"/>
-
-
 <field name="lastupdated" type="tdate"    indexed="true"  stored="true"/>
 <field name="expires" type="tdate"    indexed="true"  stored="true"/>
 <field name="eventrangestart" type="tdate"    indexed="true"  stored="true"/>
 <field name="eventrangeend" type="tdate"    indexed="true"  stored="true"/>
-
 <field name="openended" type="boolean"    indexed="true"  stored="true"/>
 <field name="paid" type="boolean"    indexed="true"  stored="true"/>
 <field name="signature" type="string" stored="true" indexed="true" multiValued="false" />
@@ -406,19 +390,18 @@
         containing all of the text in each document
      -->
    <field name="word" type="string" indexed="true" stored="true"/>
-
    
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
    <field name="text" type="text" indexed="true" stored="false" multiValued="true"/>
 
-
-   <!-- Here, default is used to create a "timestamp" field indicating
+   <!-- Here, default is used to create a "timestamp" field indicating 
         When each document was indexed.
      -->
    <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>
    
    <dynamicField name="_local*" type="double" indexed="true" stored="true"/>
+   <dynamicField name="_tier_*" type="string" indexed="true" stored="true"/>
    <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
         will be used if the name matches any of the patterns.
         RESTRICTION: the glob-like pattern in the name attribute must have
@@ -432,7 +415,6 @@
    <dynamicField name="*_b"  type="boolean" indexed="true"  stored="true"/>
    <dynamicField name="*_f"  type="float"  indexed="true"  stored="true"/>
    <dynamicField name="*_d"  type="double" indexed="true"  stored="true"/>
-
    <dynamicField name="random*" type="random" />
 
    <!-- uncomment the following to ignore any fields that don't already match an existing 
@@ -440,6 +422,7 @@
         alternately, change the type="ignored" to some other type e.g. "text" if you want 
         unknown fields indexed and/or stored by default --> 
    <dynamicField name="*" type="text" indexed="true" stored="true"/>
+   
    
  </fields>
 

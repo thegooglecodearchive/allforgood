@@ -975,11 +975,11 @@
                         </xs:annotation>
                       </xs:element>
 
-                      <xs:element name="probono" type="yesNoEnum" minOccurs="0">
+                      <xs:element name="self_directed" type="yesNoEnum" minOccurs="0">
                         <xs:annotation>
                           <xs:documentation>
                             <![CDATA[
-                              Flag indicating a pro bono professional opportunity. Domain is {"Yes" | "No"}. Optional. Default is "No".
+                              Flag indicating a self-directed professional opportunity. Domain is {"Yes" | "No"}. Optional. Default is "No".
                             ]]>
                           </xs:documentation>
                         </xs:annotation>

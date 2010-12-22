@@ -85,7 +85,7 @@ SEARCHFIELDS = {
   "latitude":"float",
   "longitude":"float",
   "virtual":"boolean",
-  "probono":"boolean",
+  "self_directed":"boolean",
   # needed for query by time-of-day
   "startTime":"integer",
   "endTime":"integer",
@@ -122,7 +122,7 @@ FIELDTYPES = {
   "latitude":"float",
   "longitude":"float",
   "virtual":"boolean",
-  "probono":"boolean",
+  "self_directed":"boolean",
 
   "providerURL":"URL",
   "detailURL":"URL",
@@ -463,12 +463,12 @@ def get_direct_mapped_fields(opp, org):
   else:
     paid = "y"
   outstr += FIELDSEP + output_field("paid", paid)
-  probono = xmlh.get_tag_val(opp, "probono")
-  if (probono == "" or probono.lower()[0] != "y"):
-    probono = "False"
+  self_directed = xmlh.get_tag_val(opp, "self_directed")
+  if (self_directed == "" or self_directed.lower()[0] != "y"):
+    self_directed = "False"
   else:
-    probono = "True"
-  outstr += FIELDSEP + output_field("probono", probono)
+    self_directed = "True"
+  outstr += FIELDSEP + output_field("self_directed", self_directed)
   detailURL = xmlh.get_tag_val(opp, "detailURL")
   outstr += FIELDSEP + output_field("detailURL", detailURL)
 
@@ -816,8 +816,8 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       'locationType', 'locations', 'logoURL', 'longitude', 'minimumAge',
       'missionStatement', 'name', 'nationalEIN', 'openEnded',
       'organizationID', 'organizationURL', 'paid', 'phone', 'postalCode',
-      'probono', 'providerID', 'providerName', 'providerURL', 'region',
-      'schemaVersion', 'sexRestrictedEnum', 'sexRestrictedTo', 'skills',
+      'providerID', 'providerName', 'providerURL', 'region',
+      'schemaVersion', 'self_directed', 'sexRestrictedEnum', 'sexRestrictedTo', 'skills',
       'sponsoringOrganizationID', 'startDate', 'startTime', 'streetAddress1',
       'streetAddress2', 'streetAddress3', 'title', 'tzOlsonPath', 'virtual',
       'volunteerHubOrganizationID', 'volunteerOpportunityID',

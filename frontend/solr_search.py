@@ -191,11 +191,9 @@ def form_solr_query(args):
   solr_query = urllib.quote_plus(solr_query)
     
   if api.PARAM_TYPE in args:
-    if args[api.PARAM_TYPE] == "pro_bono":
-      solr_query += " AND probono:true"
-    elif args[api.PARAM_TYPE] == "group":
-      solr_query += " AND volunteersneeded:[10 TO *]"
-    elif api.PARAM_VIRTUAL in args:
+    if args[api.PARAM_TYPE] == "self_directed":
+      solr_query += " AND self_directed:true"    
+    elif args[api.PARAM_TYPE] == "virtual":
       solr_query += " AND virtual:true"
 
   # for ad campaigns
@@ -409,11 +407,11 @@ def query(query_url, args, cache, dumping = False):
     virtual = (entry.get('virtual') == 'true' or 
                not latstr and not longstr or
                latstr and longstr and latstr == '0.0' and longstr == '0.0')
-    pro_bono = entry.get("pro_bono")
+    self_directed = entry.get("self_directed")
     volunteers_needed = entry.get("volunteersneeded")
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
                                     base_url, volunteers_needed, virtual,
-                                    pro_bono, categories, org_name)
+                                    self_directed, categories, org_name)
 
     # TODO: escape?
     res.provider = entry["feed_providername"]
