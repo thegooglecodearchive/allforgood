@@ -704,9 +704,9 @@ function SearchResult(url, url_sig, title, location, snippet, startdate, enddate
                       itemId, baseUrl, liked, totalInterestCount, hostWebsite) {
   this.url = url;
   this.url_sig = url_sig;
-  this.title = title;
+  this.title = title.replace(/&quot;&quot;/g,"&quot;");
   this.location = location;
-  this.snippet = snippet;
+  this.snippet = snippet.replace(/&quot;&quot;/g,"&quot;");
   this.startdate = startdate;
   this.enddate = enddate;
   this.itemId = itemId;
