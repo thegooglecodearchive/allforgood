@@ -33,7 +33,7 @@ function Query(keywords, location, category, distance, type, source, pageNum, us
   me.keywords_ = keywords;
   me.location_ = location;
   me.category_ = category || 'all';
-  me.distance_ = distance;
+  me.distance_ = distance || '35';
   me.type_ = type || 'all';
   me.source_ = source || 'all';
   me.pageNum_ = pageNum;
