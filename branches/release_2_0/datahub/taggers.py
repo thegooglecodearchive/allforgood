@@ -119,7 +119,7 @@ class RegexTagger(Tagger):
 
 class DateRangeTagger(Tagger):
   """class for applying tagging based on date range"""
-  def __init__(self, tag_name, month1, day1, month2, day2):
+  def __init__(self, tag_name, month1, day1, month2, day2, omitted_providers = []):
     """Create relevant variables for the RegexTagger."""
     Tagger.__init__(self, tag_name)
     now = datetime.now()
@@ -133,10 +133,14 @@ class DateRangeTagger(Tagger):
     self.date_range_start = datetime(year1 , month1, day1)
     self.date_range_end = datetime(year2 , month2, day2)
     self.score_threshold = 0.0
+    self.omitted_providers = omitted_providers
     self.tagging_functions.append(self.tag_by_date_range)
 
   def tag_by_date_range(self, rec, feedinfo):
     rtn = 0.0
+    if xmlh.get_tag_val(feedinfo, "providerID") in self.omitted_providers:
+      return 0.0
+
     str_start_date = rec.get_val("startDate")
     if len(str_start_date) > 0:
       try:
@@ -250,10 +254,10 @@ def get_taggers():
   # nature_tagger = KeywordTagger('Nature', {'environment':1.0, 'nature':1.0,
   # 'environmental':1.0, 'outdoors':1.0, 'gardening':1.0, 'garden':1.0,
   # 'park':1.0, 'wetlands':1.0,'forest':1.0, 'trees':1.0})
-  mlk_date_tagger = DateRangeTagger('MLK', 1, 17, 1, 22)
+  mlk_date_tagger = DateRangeTagger('MLK', 1, 8, 1, 23, ['meetup'])
   mlk_tagger = WSVKeywordTagger('MLK', 'mlk' +
-    ' martin+luther mlktech king+day donate+blood blood+drive' +
-    ' day+on+not+a+day+off day+of+service')
+    ' martin+luther mlktech king+day' +
+    ' day+on+not+a+day+off')
 
   oilspill_tagger = WSVKeywordTagger('OilSpill', 'oil+spill' +
     ' bp gulf+cleanup oil+cleanup spill+cleanup')
@@ -396,7 +400,7 @@ def get_taggers():
     vetted_tagger,
     # topics
     earthday_tagger,
-    mlk_tagger, #mlk_date_tagger,
+    mlk_tagger, mlk_date_tagger,
     mom_tagger,
     hunger_tagger,
     nature_tagger, education_tagger, animals_tagger, health_tagger,
