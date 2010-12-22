@@ -347,7 +347,7 @@ function onLoadSearch() {
                          [ ['All', 'all'],
 						   ['MLK Day', 'mlk'],
                            ['Education', 'education'],
-						   ['Hunger', 'Hunger'],
+						   ['Hunger', 'hunger'],
 						   ['Animals', 'animals'],
 						   ['Health', 'health'],
 						   ['Seniors', 'seniors'],
@@ -524,7 +524,7 @@ function submitForm(invoker) {
 
   // If the keywords search form is invoked from non-search page,
   // redirect to search page.
-  if (invoker == 'keywords' && currentPageName != 'SEARCH') {
+  if (invoker == 'categories' && currentPageName != 'SEARCH') {
     // TODO: Incorporate current 'when' filter?
     window.location = '/search#q=' + keywords;
     return;

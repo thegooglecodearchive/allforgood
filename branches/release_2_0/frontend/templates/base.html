@@ -52,18 +52,17 @@
 
     var currentPageName = '{{ current_page|escape }}';
 
-    // temporarily supplanted Nature w/ Hunger
-    var popularSearches = [ 'MLK Day',
-                            //'Veterans Day', 
-                            'Education', 
-                            //'September 11', 
-                            //'OilSpill', 
-                            'Haiti', 
-                            'Hunger', 'Animals',
-                            'Health', 'Seniors', 'Technology', 'Poverty' 
-                            ];    
+    var popularSearches = [ ['MLK Day', 'mlk'],                             
+                            ['Education', 'education'],
+                            ['Haiti', 'haiti'], 
+                            ['Hunger', 'hunger'],
+							['Animals', 'animals'],
+                            ['Health', 'health'], 
+							['Seniors', 'seniors'], 
+							['Technology', 'technology'], 
+							['Poverty', 'poverty'] ];    
   </script>
-
+  		   
 {% block js_files %}{% endblock %}
   <link rel='shortcut icon' href='/favicon.ico' />
 {% if optimize_page %} 
