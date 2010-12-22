@@ -28,11 +28,12 @@ var searchResults = [];
  * @param {Object} opt_filters Filters for this query.
  *      Maps 'filtername':value.
  */
-function Query(keywords, location, category, type, source, pageNum, useCache, opt_timePeriod, opt_filters) {
+function Query(keywords, location, category, distance, type, source, pageNum, useCache, opt_timePeriod, opt_filters) {
   var me = this;
   me.keywords_ = keywords;
   me.location_ = location;
   me.category_ = category || 'all';
+  me.distance_ = distance;
   me.type_ = type || 'all';
   me.source_ = source || 'all';
   me.pageNum_ = pageNum;
@@ -93,6 +94,14 @@ Query.prototype.setCategory = function(category) {
 
 Query.prototype.getCategory = function() {
   return this.category_;
+};
+
+Query.prototype.setDistance = function(distance) {
+  this.distance_ = distance;
+};
+
+Query.prototype.getDistance = function() {
+  return this.distance_;
 };
 
 Query.prototype.setType = function(type) {
@@ -162,6 +171,12 @@ Query.prototype.getUrlQuery = function() {
   if (category && category.length > 0) {
     addQueryParam('category', category);
   }
+  
+  // Distance
+  var distance = me.getDistance();
+  if (distance && distance.length > 0) {
+    addQueryParam('distance', distance);
+  }
 
   // Type
   var type = me.getType();
@@ -209,6 +224,7 @@ function createQueryFromUrlParams() {
   var keywords = getHashParam('q', '');
   var location = getHashParam('vol_loc', getDefaultLocation().displayLong);
   var category = getHashParam('category', '');
+  var distance = getHashParam('distance', '');
   var type = getHashParam('type', '');
   var source = getHashParam('source', '');
   var start = Number(getHashParam('start', '1'));  
@@ -232,7 +248,7 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('vol_startdate');
   getNamedFilterFromUrl('vol_enddate'); 
 
-  return new Query(keywords, location, category, type, source, pageNum, use_cache, timePeriod, filters);
+  return new Query(keywords, location, category, distance, type, source, pageNum, use_cache, timePeriod, filters);
 }
 
 /**
@@ -305,6 +321,19 @@ function onLoadSearch() {
                            ['This month', 'this_month'] ],
                          'everything',
                          function(value) { submitForm('when_widget'); });
+  }
+  
+  if (el('distance_filter_widget')) {
+    distanceFilterWidget =
+        new FilterWidget(el('distance_filter_widget'),
+                         'Filter By Distance (in miles)',
+                         [ ['35', '35'],
+                           ['50', '50'],
+                           ['75', '75'],
+                           ['100', '100'],
+                           ['500', '500'] ],
+                         '35',
+                         function(value) { submitForm('distance_widget'); });
   }
 
   if (el('location')) {
@@ -413,6 +442,9 @@ executeSearchFromHashParams = function(currentLocation) {
       setInputFieldValue(el('keywords'), query.getKeywords());
 	  if (categoryFilterWidget) {
         categoryFilterWidget.setValue(query.getCategory());
+      }	  
+	  if (distanceFilterWidget) {
+        distanceFilterWidget.setValue(query.getDistance());
       }
       if (whenFilterWidget) {
         whenFilterWidget.setValue(query.getTimePeriod());
@@ -506,6 +538,7 @@ function submitForm(invoker) {
 
   var timePeriod = whenFilterWidget.getValue();
   var category = (categoryFilterWidget.getValue());
+  var distance = (distanceFilterWidget.getValue());
   var type = (typeFilterWidget.getValue());
   var source = (sourceFilterWidget.getValue());
 
@@ -519,6 +552,7 @@ function submitForm(invoker) {
   query.setKeywords(keywords);
   query.setLocation(location);
   query.setCategory(category);
+  query.setDistance(distance);
   query.setType(type);
   query.setSource(source)
   query.setPageNum(0);
@@ -686,5 +720,6 @@ var lastSearchQuery = new Query('', '','', 0, {}, 1);
 var whenFilterWidget;
 var typeFilterWidget;
 var sourceFilterWidget;
+var distanceFilterWidget;
 
 asyncLoadManager.addCallback('bodyload', onLoadSearch);

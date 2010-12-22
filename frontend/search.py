@@ -270,35 +270,10 @@ def normalize_query_values(args, dumping = False):
         args[api.PARAM_LAT], args[api.PARAM_LNG], zoom = res.split(",")
     args[api.PARAM_LAT] = args[api.PARAM_LAT].strip()
     args[api.PARAM_LNG] = args[api.PARAM_LNG].strip()
-    if api.PARAM_VOL_DIST in args:
-      args[api.PARAM_VOL_DIST] = safe_int(args[api.PARAM_VOL_DIST])
+    if api.PARAM_DISTANCE in args:
+      args[api.PARAM_VOL_DIST] = safe_int(args[api.PARAM_DISTANCE])
     else:
-      zoom = safe_int(zoom, 1)
-      if zoom == 1:
-        # country zoomlevel is kinda bogus--
-        # 500 mile search radius (avoids 0.0,0.0 in the atlantic ocean)
-        args[api.PARAM_VOL_DIST] = 500
-      elif zoom == 2: # region
-        # state/region is very wide-- start with 50 mile radius,
-        # and we'll fallback to larger.
-        args[api.PARAM_VOL_DIST] = 200
-      elif zoom == 3: # county
-        # county radius should be pretty rare-- start with 10 mile radius,
-        # and we'll fallback to larger.
-        args[api.PARAM_VOL_DIST] = 40
-      elif zoom == 4 or zoom == 0:
-        # city is the common case-- start with 5 mile search radius,
-        # and we'll fallback to larger.  This avoids accidentally
-        # prioritizing listings from neighboring cities.
-        args[api.PARAM_VOL_DIST] = 35
-      elif zoom == 5:
-        # postal codes are also a common case-- start with a narrower
-        # radius than the city, and we'll fallback to larger.
-        args[api.PARAM_VOL_DIST] = 35
-      elif zoom > 5:
-        # street address or GPS coordinates-- start with a very narrow
-        # search suitable for walking.
-        args[api.PARAM_VOL_DIST] = 3
+      args[api.PARAM_VOL_DIST] = 35
 
   else:
     args[api.PARAM_VOL_LOC] = args[api.PARAM_VOL_DIST] = ""
