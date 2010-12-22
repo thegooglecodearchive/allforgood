@@ -294,7 +294,7 @@ def normalize_query_values(args, dumping = False):
       elif zoom == 5:
         # postal codes are also a common case-- start with a narrower
         # radius than the city, and we'll fallback to larger.
-        args[api.PARAM_VOL_DIST] = 15
+        args[api.PARAM_VOL_DIST] = 35
       elif zoom > 5:
         # street address or GPS coordinates-- start with a very narrow
         # search suitable for walking.

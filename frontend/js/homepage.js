@@ -25,8 +25,6 @@ function runSnippetsQuery() {
   if (defaultLocation != '') {
     vol_loc_term = '&vol_loc=' + defaultLocation;
   } else {
-    /* TODO: Move defaults to search.py/base_search.py, then
-       test that "No Results" message doesn't show "USA". */
     vol_loc_term = '&vol_loc=USA&vol_dist=1500';
   }
   var url = '/ui_snippets?start=0&num=15&minimal_snippets_list=1' + vol_loc_term;

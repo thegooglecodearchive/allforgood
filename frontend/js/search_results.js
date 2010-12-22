@@ -28,17 +28,17 @@ var searchResults = [];
  * @param {Object} opt_filters Filters for this query.
  *      Maps 'filtername':value.
  */
-function Query(keywords, location, virtual, pageNum, useCache, opt_timePeriod,
-               opt_filters, opt_activityType) {
+function Query(keywords, location, category, type, source, pageNum, useCache, opt_timePeriod, opt_filters) {
   var me = this;
   me.keywords_ = keywords;
   me.location_ = location;
-  me.virtual = virtual;
+  me.category_ = category || 'all';
+  me.type_ = type || 'all';
+  me.source_ = source || 'all';
   me.pageNum_ = pageNum;
   me.use_cache_ = useCache;
   me.timePeriod_ = opt_timePeriod || 'everything';
-  me.filters_ = opt_filters || {};
-  me.activityType = opt_activityType || 'any_kind';
+  me.filters_ = opt_filters || {};  
 };
 
 Query.prototype.clone = function() {
@@ -87,6 +87,30 @@ Query.prototype.setLocation = function(location) {
   this.location_ = location;
 };
 
+Query.prototype.setCategory = function(category) {
+  this.category_ = category;
+};
+
+Query.prototype.getCategory = function() {
+  return this.category_;
+};
+
+Query.prototype.setType = function(type) {
+  this.type_ = type;
+};
+
+Query.prototype.getType = function() {
+  return this.type_;
+};
+
+Query.prototype.setSource = function(source) {
+  this.source_ = source;
+};
+
+Query.prototype.getSource = function() {
+  return this.source_;
+};
+
 Query.prototype.getTimePeriod = function() {
   return this.timePeriod_;
 };
@@ -132,20 +156,29 @@ Query.prototype.getUrlQuery = function() {
   if (location && location.length > 0) {
     addQueryParam('vol_loc', location);
   }
+  
+  // Category
+  var category = me.getCategory();
+  if (category && category.length > 0) {
+    addQueryParam('category', category);
+  }
 
-  // Virtual
-  if (me.virtual) {
-    addQueryParam('virtual', 1);
+  // Type
+  var type = me.getType();
+  if (type && type.length > 0) {
+    addQueryParam('type', type);
+  }
+  
+  // Source
+  var source = me.getSource();
+  if (source && source.length > 0) {
+    addQueryParam('source', source);
   }
 
   // Time period
   var period = me.getTimePeriod();
   if (period) {
     addQueryParam('timeperiod', period)
-  }
-
-  if (me.activityType && me.activityType != 'any_kind') {
-    addQueryParam('type', me.activityType);
   }
 
   // Add additional filters to query URL.
@@ -174,22 +207,17 @@ Query.prototype.setUseCache = function(use_cache) {
 
 function createQueryFromUrlParams() {
   var keywords = getHashParam('q', '');
-
-  var location = getHashParam('vol_loc',
-      getDefaultLocation().displayLong);
-
-  var virtual = getHashParam('virtual', '');
-
-  var start = Number(getHashParam('start', '1'));
+  var location = getHashParam('vol_loc', getDefaultLocation().displayLong);
+  var category = getHashParam('category', '');
+  var type = getHashParam('type', '');
+  var source = getHashParam('source', '');
+  var start = Number(getHashParam('start', '1'));  
+  var timePeriod = getHashParam('timeperiod');
+  var use_cache = Number(getHashParam('cache', '1'));
   start = Math.max(start, 1);
-
   var numPerPage = Number(getHashParam('num', NUM_PER_PAGE));
   numPerPage = Math.max(numPerPage, 1);
-
   var pageNum = (start - 1) / numPerPage;
-
-  var timePeriod = getHashParam('timeperiod');
-
   var filters = {};
 
   // Read in the other filters from the URL, and place them in
@@ -197,21 +225,14 @@ function createQueryFromUrlParams() {
   function getNamedFilterFromUrl(name) {
     filters[name] = getHashParam(name, '');
   }
-  getNamedFilterFromUrl('who_filter');
-  getNamedFilterFromUrl('activity_filter');
-
-  // mt: add new params here
+  
   getNamedFilterFromUrl('bf');
   getNamedFilterFromUrl('bft');
   getNamedFilterFromUrl('vol_dist');
   getNamedFilterFromUrl('vol_startdate');
-  getNamedFilterFromUrl('vol_enddate');
+  getNamedFilterFromUrl('vol_enddate'); 
 
-  var activityType = getHashParam('type');
-
-  var use_cache = Number(getHashParam('cache', '1'));
-
-  return new Query(keywords, location, virtual, pageNum, use_cache, timePeriod, filters, activityType);
+  return new Query(keywords, location, category, type, source, pageNum, use_cache, timePeriod, filters);
 }
 
 /**
@@ -219,13 +240,11 @@ function createQueryFromUrlParams() {
  */
 function FilterWidget(div, title, entries, initialValue, callback) {
   var me = this;
-
   me.div_ = div;
   me.title_ = title;
   me.entries_ = entries;
   me.value_ = initialValue;
   me.callback_ = callback;
-
   me.render();
 }
 
@@ -278,7 +297,7 @@ function onLoadSearch() {
   if (el('when_filter_widget')) {
     whenFilterWidget =
         new FilterWidget(el('when_filter_widget'),
-                         'When',
+                         'Filter By Date',
                          [ ['Anytime', 'everything'],
                            ['Today', 'today'],
                            ['This weekend', 'this_weekend'],
@@ -291,27 +310,47 @@ function onLoadSearch() {
   if (el('location')) {
     setInputFieldValue(el('location'), getDefaultLocation().displayLong);
   }
-
-  if (el('where_filter_widget')) {
-    whereFilterWidget =
-        new FilterWidget(el('where_filter_widget'),
-                         'Where',
-                         [ ['My location', 'near_location'],
-                           ['From home', 'virtual'] ],
-                         'near_location',
-                         function(value) { submitForm('where_widget'); });
+  
+  if (el('category_filter_widget')) {
+    categoryFilterWidget =
+        new FilterWidget(el('category_filter_widget'),
+                         'Filter By Category',
+                         [ ['All', 'all'],
+						   ['MLK Day', 'mlk'],
+                           ['Education', 'education'],
+						   ['Hunger', 'Hunger'],
+						   ['Animals', 'animals'],
+						   ['Health', 'health'],
+						   ['Seniors', 'seniors'],
+						   ['Technology', 'technology'],
+						   ['Poverty', 'poverty']],
+                         'all',
+                         function(value) { submitForm('category_widget'); });
   }
 
-  if (el('what_filter_widget')) {
-    whatFilterWidget =
-        new FilterWidget(el('what_filter_widget'),
-                         'What',
-                         [ ['Any kind', 'any_kind'],
-                           ['Pro bono', 'pro_bono'],
-                           ['Group', 'group'] ],
-                         'any_kind',
-                         function(value) { submitForm('what_widget'); });
+  if (el('type_filter_widget')) {
+    typeFilterWidget =
+        new FilterWidget(el('type_filter_widget'),
+                         'Filter By Type',
+                         [ ['All', 'all'],
+						   ['Virtual', 'virtual'],
+                           ['Self-Directed', 'self_directed']],
+                         'all',
+                         function(value) { submitForm('type_widget'); });
   }
+  
+  if (el('source_filter_widget')) {
+	    sourceFilterWidget =
+	        new FilterWidget(el('source_filter_widget'),
+	                         'Filter By Source',
+	                         [ ['All', 'all'],
+							   ['American Red Cross', 'american_red_cross'],
+	                           ['HandsOn Network', 'handsonnetwork'],
+	                           ['United Way', 'unitedway'],
+	                           ['Citizen Corps', 'citizencorps']],
+	                         'all',
+	                         function(value) { submitForm('source_widget'); });
+	  }
 
   // Using jquery json functions where RSH expects other json functions,
   // pass in as overrides.
@@ -372,14 +411,17 @@ executeSearchFromHashParams = function(currentLocation) {
 
     var success = function(text, status) {
       setInputFieldValue(el('keywords'), query.getKeywords());
+	  if (categoryFilterWidget) {
+        categoryFilterWidget.setValue(query.getCategory());
+      }
       if (whenFilterWidget) {
         whenFilterWidget.setValue(query.getTimePeriod());
       }
-      if (whereFilterWidget) {
-        whereFilterWidget.setValue(query.virtual ? 'virtual' : 'near_location');
+      if (typeFilterWidget) {
+        typeFilterWidget.setValue(query.getType());
       }
-      if (whatFilterWidget) {
-        whatFilterWidget.setValue(query.activityType || 'any_kind');
+      if (sourceFilterWidget) {
+        sourceFilterWidget.setValue(query.getSource());
       }
       var regexp = new RegExp('[a-zA-Z]')
       if (regexp.exec(query.getLocation())) {
@@ -426,9 +468,6 @@ executeSearchFromHashParams = function(currentLocation) {
 
     var location = query.getLocation();
     if (!location || location.length == 0) {
-      // TODO: Make these the defaults inside search.py/base_search.py.
-      //       Will then need to test that "No Results" message doesn't
-      //       show "USA".
       url += '&vol_loc=USA&vol_dist=1500';
     }
 
@@ -466,8 +505,9 @@ function submitForm(invoker) {
   }
 
   var timePeriod = whenFilterWidget.getValue();
-  var virtual = (whereFilterWidget.getValue() == 'virtual');
-  var activityType = whatFilterWidget.getValue();
+  var category = (categoryFilterWidget.getValue());
+  var type = (typeFilterWidget.getValue());
+  var source = (sourceFilterWidget.getValue());
 
   // TODO: strip leading/trailing whitespace.
 
@@ -478,17 +518,11 @@ function submitForm(invoker) {
   var query = lastSearchQuery.clone();
   query.setKeywords(keywords);
   query.setLocation(location);
-  query.virtual = virtual;
+  query.setCategory(category);
+  query.setType(type);
+  query.setSource(source)
   query.setPageNum(0);
   query.setTimePeriod(timePeriod);
-  query.activityType = activityType;
-
-  query.execute();
-}
-
-function setWhoFilter(value) {
-  var query = lastSearchQuery.clone();
-  query.setFilter('who_filter', value);
   query.execute();
 }
 
@@ -648,9 +682,9 @@ function SearchResult(url, url_sig, title, location, snippet, startdate, enddate
   this.hostWebsite = hostWebsite;
 }
 
-var lastSearchQuery = new Query('', '', 0, {}, 1);
+var lastSearchQuery = new Query('', '','', 0, {}, 1);
 var whenFilterWidget;
-var whereFilterWidget;
-var whatFilterWidget;
+var typeFilterWidget;
+var sourceFilterWidget;
 
 asyncLoadManager.addCallback('bodyload', onLoadSearch);

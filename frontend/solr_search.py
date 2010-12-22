@@ -57,28 +57,21 @@ def default_boosts(args):
   if api.PARAM_Q in args and args[api.PARAM_Q] == "":    
     
     # boosting vetted categories
-    boost += '&bq=categories:vetted^15'
-    
+    boost += '&bq=categories:vetted^15'    
     # big penalty for events starting in the far future
-    boost += '%20eventrangestart:[*%20TO%20NOW%2B6MONTHS]^15'
-    
+    boost += '+eventrangestart:[*+TO+NOW%2B6MONTHS]^15'    
     # big boost for events starting in the near future
-    boost += '%20eventrangestart:[NOW%20TO%20NOW%2B1MONTHS]^10'
-    
+    boost += '+eventrangestart:[NOW+TO+NOW%2B1MONTHS]^10'    
     # slight penalty for events started recently
-    boost += '%20=eventrangestart:[NOW%20TO%20*]^5'
-    
+    boost += '+=eventrangestart:[NOW+TO+*]^5'    
     # modest penalty for events started long ago
-    boost += '%20eventrangestart:[NOW-6MONTHS%20TO%20*]^7'
-    
+    boost += '+eventrangestart:[NOW-6MONTHS+TO+*]^7'    
     # modest penalty for events ending in the far future
-    boost += '%20eventrangeend:[*%20TO%20NOW%2B6MONTHS]^7' 
-    
+    boost += '+eventrangeend:[*+TO+NOW%2B6MONTHS]^7'     
     # big boost for events ending in the near future
-    boost += '%20eventrangeend:[NOW%20TO%20NOW%2B1MONTHS]^10'
-    
+    boost += '+eventrangeend:[NOW+TO+NOW%2B1MONTHS]^10'    
     # boost short events
-    boost += '%20eventduration:[1%20TO%2010]^10'
+    boost += '+eventduration:[1+TO+10]^10'
   
   return boost  
 
@@ -146,7 +139,7 @@ def form_solr_query(args):
 
   # keyword
   query_is_empty = False
-  if api.PARAM_Q in args and args[api.PARAM_Q] != "":
+  if (api.PARAM_Q in args and args[api.PARAM_Q] != "") or (api.PARAM_CATEGORY in args and args[api.PARAM_CATEGORY] != "all") or (api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all"):
     query_boosts = boosts.query_time_boosts(args)
     if query_boosts:
       solr_query = query_boosts    
@@ -189,12 +182,21 @@ def form_solr_query(args):
   # geo params go in first
   solr_query = geo_params + solr_query
   solr_query = urllib.quote_plus(solr_query)
-    
+  
+  # Type
   if api.PARAM_TYPE in args:
     if args[api.PARAM_TYPE] == "self_directed":
       solr_query += " AND self_directed:true"    
     elif args[api.PARAM_TYPE] == "virtual":
       solr_query += " AND virtual:true"
+  
+  # Category
+  if api.PARAM_CATEGORY in args and args[api.PARAM_CATEGORY] != "all":
+    solr_query += "categories:" + args[api.PARAM_CATEGORY] + "+OR+aggregatefield:" + args[api.PARAM_CATEGORY]
+    
+  # Source
+  if api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all":
+    solr_query += "feed_providername:" + args[api.PARAM_SOURCE]
 
   # for ad campaigns
   if api.PARAM_CAMPAIGN_ID in args:
