@@ -26,20 +26,6 @@ def query_time_boosts(args):
   if args[api.PARAM_Q].find('category:IAMS') >= 0:
       solr_query = solr_search.rewrite_query('%s' %
         '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster) AND category:Animals)')
-  elif args[api.PARAM_CATEGORY] == "mlk":
-      solr_query = solr_search.rewrite_query('(categories:MLK'
-                 + ' OR eventrangestart:[2011-01-17T00:00:00.000Z TO 2011-01-17T23:59:59.999Z]^20'
-                 + ' OR eventrangestart:[2011-01-17T00:00:00.000Z TO 2011-01-22T23:59:59.999Z]^5'
-                 + ' OR title:(mlk and (\'day of service\'))^20'
-                 + ' OR title:mlk^10'
-                 + ' OR title:(\'ml king\')^10'
-                 + ' OR title:(\'martin luther\')^10'
-                 + ' OR abstract:(mlk and (\'day of service\'))^20'
-                 + ' OR abstract:(\'day of service\')^10'
-                 + ' OR abstract:mlk^10'
-                 + ' OR abstract:(\'ml king\')^5'
-                 + ' OR abstract:(\'martin luther\')^5'
-                 + ' OR (blood AND (eventrangestart:[2011-01-17T00:00:00.000Z TO 2011-01-17T23:59:59.999Z] OR eventrangestart:[2011-01-17T00:00:00.000Z TO 2011-01-22T23:59:59.999Z])))')
   else:
      solr_query = "" 
   return solr_query

@@ -89,9 +89,6 @@ PARAM_VIRTUAL = 'virtual'
 PARAM_MERGE = 'merge'
 PARAM_DUMP = 'dump'
 
-PARAM_BACKFILL = 'bf'
-PARAM_BACKFILL_TITLES = 'bft'
-
 PARAM_LAT = 'lat'
 PARAM_LNG = 'long'
 
@@ -99,4 +96,4 @@ PARAM_SOLR_PATH = 'solr_path'
 PARAM_TYPE = "type"
 PARAM_CATEGORY = "category"
 PARAM_SOURCE = "source"
-PARAM_DISTANCE = "distance" 
+PARAM_DISTANCE = "distance"

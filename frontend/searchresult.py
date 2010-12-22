@@ -118,11 +118,6 @@ class SearchResult(object):
     self.score = 0.0
     self.score_notes = ""
     self.score_str = ""
-    self.backfill_number = 0
-    # TODO: save memcache space by moving the backfill titles to being
-    # a property of the search results set-- requires changes in the
-    # output functions e.g. the API.
-    self.backfill_title = ""
  
   def set_score(self, score, notes):
     """assign score value-- TODO: consider moving scoring code to this class."""

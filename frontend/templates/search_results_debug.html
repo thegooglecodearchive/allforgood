@@ -10,7 +10,7 @@ See the <a href="http://www.allforgood.org/help/reference.html">All for Good API
 timings: fetch={{result_set.fetch_time|escape}}   parse={{result_set.parse_time|escape}}
 links: <a href="{{result_set.query_url_encoded}}">Google Base query</a>
 query_url=<a href="{{result_set.query_url}}">{{result_set.query_url|escape}}</a>
-query (q)={{keywords|escape}}   backfill={{backfill|escape}}
+query (q)={{keywords|escape}}
 location center (vol_loc)={{location|escape}} / {{latlong|escape}}   (center point)
 max distance from center (vol_dist)={{max_distance|escape}}  (max distance)
 results: backend-estimated={{result_set.estimated_results|escape}}  merged-estimated={{result_set.estimated_merged_results|escape}}  backend={{result_set.num_results|escape}}   merged={{result_set.num_merged_results|escape}}
@@ -19,7 +19,7 @@ results: backend-estimated={{result_set.estimated_results|escape}}  merged-estim
 {% for result in result_set.clipped_results %}
 <span style='font-size:12px'>{{result.idx|escape}}.   <a href="{{result.url}}">{{result.title|escape}}</a></span>
 loc: {% if result.virtual %}**LOCATIONLESS**{% else %}{{result.location|escape}} ({{result.latlong|escape}}){% endif %}
-id: {{result.item_id|escape}}     provider: {{result.provider|escape}}   backfill: {{result.backfill_number|escape}}  {{result.backfill_title|escape}}
+id: {{result.item_id|escape}}     provider: {{result.provider|escape}}
 desc: {{result.snippet|escape}}
 self-directed: {% if result.self_directed %}yes{% else %}no{% endif %}
 score: {{result.score_str|escape}} (orig result #{{result.orig_idx|escape}}){{result.score_notes|escape}}
