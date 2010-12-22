@@ -584,7 +584,7 @@ def solr_retransform(fname):
       if rows["c:openended:boolean"] == "Yes":
         rows["c:eventrangeend:dateTime"] = rows["c:expires:dateTime"]
       else:
-      rows["c:eventrangeend:dateTime"] = rows["c:eventrangestart:dateTime"]
+        rows["c:eventrangeend:dateTime"] = rows["c:eventrangestart:dateTime"]
 
     rows["c:aggregatefield:string"] = ' '.join([rows["description"],
                                                rows["c:org_name:string"],
