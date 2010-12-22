@@ -97,4 +97,3 @@ PARAM_LNG = 'long'
 
 PARAM_SOLR_PATH = 'solr_path'
 PARAM_TYPE = "type"
-PARAM_VIRTUAL = "virtual"
