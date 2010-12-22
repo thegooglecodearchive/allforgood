@@ -26,7 +26,6 @@ from versioned_memcache import memcache
 from utils import safe_str, safe_int
 
 import api
-import base_search
 import geocode
 from fastpageviews import pagecount
 import solr_search
@@ -308,21 +307,7 @@ def normalize_query_values(args, dumping = False):
 def fetch_and_dedup(args, dumping = False):
   """fetch, score and dedup."""
   logging.info("search.fetch_and_dedup enter")
-  if api.PARAM_BACKEND_TYPE not in args:
-    args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_SOLR
-
-  if args[api.PARAM_BACKEND_TYPE] == api.BACKEND_TYPE_BASE:
-    logging.debug("Searching using BASE backend")
-    result_set = base_search.search(args)
-  elif args[api.PARAM_BACKEND_TYPE] == api.BACKEND_TYPE_SOLR:
-    logging.debug("Searching using SOLR backend")
-    result_set = solr_search.search(args, dumping)
-  else:
-    logging.error('search.fetch_and_dedup Unknown backend type: ' + 
-                  args[api.PARAM_BACKEND_TYPE] +
-                  ' defaulting to Base search')
-    args[api.PARAM_BACKEND_TYPE] = api.BACKEND_TYPE_BASE
-    result_set = base_search.search(args)
+  result_set = solr_search.search(args, dumping)
 
   if dumping:
     result_set.merged_results = result_set.results
