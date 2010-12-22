@@ -13,6 +13,8 @@ function ensureSubmitForm() {
       if (fromWhere == 'virtual_location') {
         vol_loc += '&virtual=1'
       }
+	  var category = getInputFieldValue(el('categories'));
+	  vol_loc += "&category=" + category;
       window.location = '/search#q=' +
           escape(getInputFieldValue(el('keywords'))) +
           vol_loc;
@@ -20,28 +22,19 @@ function ensureSubmitForm() {
   }
 }
 
-function setKeywordAndExecute(keywords) {
-  if (keywords == 'OilSpill') {
-    keywords = '"Oil Spill"';
-  }
-  else if (keywords == 'Veterans Day') {
-    keywords = 'veterans';
-  }
-  setInputFieldValue(el('keywords'), keywords);
-  submitForm('keywords');
-}
-
-function submitCategory(category) {
-    window.location = '/search#category=' + category;
+function setCategory(category) {
+  setInputFieldValue(el('categories'), category);
+  submitForm('category', category);
 }
 
 function createExampleSearchText() {
-  var new_popular = []
+  // Put categories to receive the "New!" superscript in here
+  var new_popular = [] // ["September 11"]
   var html = 'Categories: ';
   var links = [];
   for (var i = 0; i < popularSearches.length; i++) {
     var pop_str = popularSearches[i][0] + '</a>'
-    links.push('<a onclick="submitCategory(\'' + 
+    links.push('<a onclick="setCategory(\'' + 
                 popularSearches[i][1] + '\');return false;"' +
         'href="javascript:void(0);">' + pop_str);
   }
