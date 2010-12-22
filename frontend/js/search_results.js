@@ -347,7 +347,7 @@ function onLoadSearch() {
                          [ ['All', 'all'],
 						   ['MLK Day', 'mlk'],
                            ['Education', 'education'],
-						   ['Hunger', 'hunger'],
+						   ['Hunger', 'Hunger'],
 						   ['Animals', 'animals'],
 						   ['Health', 'health'],
 						   ['Seniors', 'seniors'],
@@ -410,7 +410,7 @@ executeSearchFromHashParams = function(currentLocation) {
    * @type {XMLHttpRequest}
    */
   var currentXhr;
-  
+
   return function(currentLocation) {
     // Try to avoid the annoyance of a useless extra click on Back button.
     // TODO(timman): Find a cleaner way to determine first-rewrite.
@@ -510,23 +510,23 @@ executeSearchFromHashParams = function(currentLocation) {
       error: error,
       success: success
     });
-	jQuery(this).ajaxStop(function() { scroll(0,0); });
   };
 }(); // executed inline to close over the 'currentXhr' variable.
+
 
 /** Called from the "Refine" button's onclick, the main form onsubmit,
  * and the time period filter.
  * @param {string} invoker Who invoked this submission?  One of
  *                         ['keywords', 'when_widget', 'map'].
  */
-function submitForm(invoker) {
+function submitForm(invoker, value) {
   var keywords = getInputFieldValue(el('keywords'));
 
   // If the keywords search form is invoked from non-search page,
   // redirect to search page.
-  if (invoker == 'categories' && currentPageName != 'SEARCH') {
+  if (invoker == 'category' && currentPageName != 'SEARCH') {
     // TODO: Incorporate current 'when' filter?
-    window.location = '/search#q=' + keywords;
+    window.location = '/search#category=' + value;
     return;
   }
 
@@ -537,7 +537,7 @@ function submitForm(invoker) {
   }
 
   var timePeriod = whenFilterWidget.getValue();
-  var category = (categoryFilterWidget.getValue());
+  var category = getInputFieldValue(el('categories')) || (categoryFilterWidget.getValue());
   var distance = (distanceFilterWidget.getValue());
   var type = (typeFilterWidget.getValue());
   var source = (sourceFilterWidget.getValue());
@@ -704,9 +704,9 @@ function SearchResult(url, url_sig, title, location, snippet, startdate, enddate
                       itemId, baseUrl, liked, totalInterestCount, hostWebsite) {
   this.url = url;
   this.url_sig = url_sig;
-  this.title = title.replace(/&quot;&quot;/g,"&quot;");
+  this.title = title;
   this.location = location;
-  this.snippet = snippet.replace(/&quot;&quot;/g,"&quot;");
+  this.snippet = snippet;
   this.startdate = startdate;
   this.enddate = enddate;
   this.itemId = itemId;
