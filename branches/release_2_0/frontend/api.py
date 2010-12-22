@@ -98,4 +98,5 @@ PARAM_LNG = 'long'
 PARAM_SOLR_PATH = 'solr_path'
 PARAM_TYPE = "type"
 PARAM_CATEGORY = "category"
-PARAM_SOURCE = "source" 
+PARAM_SOURCE = "source"
+PARAM_DISTANCE = "distance" 
