@@ -249,10 +249,9 @@ def normalize_query_values(args, dumping = False):
   args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
   if api.PARAM_VIRTUAL in args:
     args["lat"] = args["long"] = "0.0"
-    zoom = 6
-    args[api.PARAM_VOL_DIST] = 3
+    args[api.PARAM_VOL_DIST] = 35
+    
   elif api.PARAM_VOL_LOC in args:
-    zoom = 5
     if geocode.is_latlong(args[api.PARAM_VOL_LOC]):
       args[api.PARAM_LAT], args[api.PARAM_LNG] = \
                              args[api.PARAM_VOL_LOC].split(",")
@@ -261,13 +260,13 @@ def normalize_query_values(args, dumping = False):
                              args[api.PARAM_VOL_LOC].split(",")
     elif args[api.PARAM_VOL_LOC] == "virtual":
       args[api.PARAM_LAT] = args[api.PARAM_LNG] = "0.0"
-      zoom = 6
     elif args[api.PARAM_VOL_LOC] == "anywhere":
       args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
     else:
       res = geocode.geocode(args[api.PARAM_VOL_LOC], use_cache)
       if res != "":
         args[api.PARAM_LAT], args[api.PARAM_LNG], zoom = res.split(",")
+    
     args[api.PARAM_LAT] = args[api.PARAM_LAT].strip()
     args[api.PARAM_LNG] = args[api.PARAM_LNG].strip()
     if api.PARAM_DISTANCE in args:
