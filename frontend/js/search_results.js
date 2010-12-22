@@ -410,7 +410,7 @@ executeSearchFromHashParams = function(currentLocation) {
    * @type {XMLHttpRequest}
    */
   var currentXhr;
-
+  
   return function(currentLocation) {
     // Try to avoid the annoyance of a useless extra click on Back button.
     // TODO(timman): Find a cleaner way to determine first-rewrite.
@@ -510,9 +510,9 @@ executeSearchFromHashParams = function(currentLocation) {
       error: error,
       success: success
     });
+	jQuery(this).ajaxStop(function() { scroll(0,0); });
   };
 }(); // executed inline to close over the 'currentXhr' variable.
-
 
 /** Called from the "Refine" button's onclick, the main form onsubmit,
  * and the time period filter.
