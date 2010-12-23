@@ -197,7 +197,7 @@ def form_solr_query(args):
   # Source
   if api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all":
     solr_query += "feed_providername:" + args[api.PARAM_SOURCE]
-
+      
   # for ad campaigns
   if api.PARAM_CAMPAIGN_ID in args:
     # we need to exclude the opted out opportunities
@@ -291,6 +291,11 @@ def search(args, dumping = False):
   # Return results in JSON format
   # TODO: return in TSV format for fastest possible parsing, i.e. split("\t") 
   query_url += "&wt=json"
+  
+  # Sort
+  logging.info(args[api.PARAM_SORT]);
+  if api.PARAM_SORT in args:
+    query_url += "&sort=" + args[api.PARAM_SORT] + "%20desc"
 
   # limit to opps which have not expired yet
   # [expires:NOW TO *] means "expires prior to today"

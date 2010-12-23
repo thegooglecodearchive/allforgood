@@ -28,7 +28,7 @@ var searchResults = [];
  * @param {Object} opt_filters Filters for this query.
  *      Maps 'filtername':value.
  */
-function Query(keywords, location, category, distance, type, source, pageNum, useCache, opt_timePeriod, opt_filters) {
+function Query(keywords, location, category, distance, type, source, pageNum, sort, useCache, opt_timePeriod, opt_filters) {
   var me = this;
   me.keywords_ = keywords;
   me.location_ = location;
@@ -37,6 +37,7 @@ function Query(keywords, location, category, distance, type, source, pageNum, us
   me.type_ = type || 'all';
   me.source_ = source || 'all';
   me.pageNum_ = pageNum;
+  me.sort_ = sort;
   me.use_cache_ = useCache;
   me.timePeriod_ = opt_timePeriod || 'everything';
   me.filters_ = opt_filters || {};  
@@ -120,6 +121,14 @@ Query.prototype.getSource = function() {
   return this.source_;
 };
 
+Query.prototype.setSort = function(sort) {
+  this.sort_ = sort;
+};
+
+Query.prototype.getSort = function() {
+  return this.sort_;
+};
+
 Query.prototype.getTimePeriod = function() {
   return this.timePeriod_;
 };
@@ -189,6 +198,12 @@ Query.prototype.getUrlQuery = function() {
   if (source && source.length > 0) {
     addQueryParam('source', source);
   }
+  
+  // Sort
+  var sort = me.getSort();
+  if (sort && sort.length > 0) {
+    addQueryParam('sort', sort);
+  }
 
   // Time period
   var period = me.getTimePeriod();
@@ -227,6 +242,7 @@ function createQueryFromUrlParams() {
   var distance = getHashParam('distance', '');
   var type = getHashParam('type', '');
   var source = getHashParam('source', '');
+  var sort = getHashParam('sort', '');
   var start = Number(getHashParam('start', '1'));  
   var timePeriod = getHashParam('timeperiod');
   var use_cache = Number(getHashParam('cache', '1'));
@@ -248,7 +264,7 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('vol_startdate');
   getNamedFilterFromUrl('vol_enddate'); 
 
-  return new Query(keywords, location, category, distance, type, source, pageNum, use_cache, timePeriod, filters);
+  return new Query(keywords, location, category, distance, type, source, pageNum, sort, use_cache, timePeriod, filters);
 }
 
 /**
@@ -529,6 +545,11 @@ function submitForm(invoker, value) {
     window.location = '/search#category=' + value;
     return;
   }
+  
+  if (invoker == 'sort' && currentPageName != 'SEARCH') {
+  	window.location = '/search#sort=' + value;
+    return;
+  }
 
   var location = getInputFieldValue(el('location'));
 
@@ -541,6 +562,7 @@ function submitForm(invoker, value) {
   var distance = (distanceFilterWidget.getValue());
   var type = (typeFilterWidget.getValue());
   var source = (sourceFilterWidget.getValue());
+  var sort = getInputFieldValue(el('sort'));
 
   // TODO: strip leading/trailing whitespace.
 
@@ -556,6 +578,7 @@ function submitForm(invoker, value) {
   query.setType(type);
   query.setSource(source)
   query.setPageNum(0);
+  query.setSort(sort);
   query.setTimePeriod(timePeriod);
   query.execute();
 }

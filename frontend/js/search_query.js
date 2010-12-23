@@ -15,6 +15,8 @@ function ensureSubmitForm() {
       }
 	  var category = getInputFieldValue(el('categories'));
 	  vol_loc += "&category=" + category;
+	  var sort = getInputFieldValue(el('sort'));
+	  vol_loc += "&sort=" + (sort || 'score');
       window.location = '/search#q=' +
           escape(getInputFieldValue(el('keywords'))) +
           vol_loc;
@@ -25,6 +27,11 @@ function ensureSubmitForm() {
 function setCategory(category) {
   setInputFieldValue(el('categories'), category);
   submitForm('category', category);
+}
+
+function sortResults(value) {
+  setInputFieldValue(el('sort'), value);
+  submitForm('sort', value);
 }
 
 function createExampleSearchText() {
