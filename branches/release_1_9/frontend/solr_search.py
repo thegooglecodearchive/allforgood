@@ -195,10 +195,11 @@ def form_solr_queryV2(args):
       solr_query = rewrite_query('%s' %
         '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster) AND category:Animals)')
     elif args[api.PARAM_Q].find('category:MLKDay') >= 0:
-      solr_query = rewrite_query('-feed_providername:meetup AND (categories:MLK'
-                 + ' OR eventrangestart:[2011-01-00T00:00:00.000Z TO 2011-01-23T23:59:59.999Z]^20'
-                 + ' OR (eventrangestart:[* TO 2011-01-08T00:00:00.000Z]'
-                 + ' AND eventrangeend:[2011-01-23T00:00:00.000Z TO *])^5'
+      # eg, q=ballroom and category:MLKDay
+      query_str = args[api.PARAM_Q].replace('category:MLKDay', '').strip()
+
+      query_str += (' -feed_providername:meetup AND ('
+                 + ' eventrangestart:[2011-01-08T00:00:00.000Z TO 2011-01-23T23:59:59.999Z]^20'
                  + ' OR title:(mlk and (\'day on not a day off\'))^20'
                  + ' OR title:mlk^10'
                  + ' OR title:mlktech^10'
@@ -212,15 +213,15 @@ def form_solr_queryV2(args):
                  + ' OR abstract:(\'ml king\')^5'
                  + ' OR abstract:(\'king day\')^5'
                  + ' OR abstract:(\'martin luther\')^5'
+                 + ' OR (eventrangestart:[* TO 2011-01-08T00:00:00.000Z]'
+                 + ' AND eventrangeend:[2011-01-23T00:00:00.000Z TO *])'
                  + ')')
+      solr_query = rewrite_query(query_str)
     else:
-      # TODO: e* is a kludge find out from Kelvin how to make 
-      # the spatial + wildcard query work properly
-      solr_query += rewrite_query('e* AND ' + args[api.PARAM_Q])
+      solr_query += rewrite_query('*:* AND ' + args[api.PARAM_Q])
   else:
     # Query is empty, search for anything at all.
-    # TODO: ask Kelvin what the wildcard case is here, * does not work
-    solr_query += "e*"
+    solr_query += '*:*'
     query_is_empty = True
 
   # date range
