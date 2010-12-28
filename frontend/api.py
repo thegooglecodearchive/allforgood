@@ -37,6 +37,7 @@ PARAM_SORT = 'sort'
 PARAM_CACHE = 'cache'
 PARAM_FIELDS = 'fields'
 PARAM_CAMPAIGN_ID = 'campaign_id'
+PARAM_KEY = 'key'
 
 # If PARAM_OUTPUT matches one of these entries, only certain fields will be
 # returned. Otherwise, all fields are returned.
