@@ -16,6 +16,7 @@ limitations under the License.
 var map;
 var NUM_PER_PAGE = 10;
 var searchResults = [];
+var filters = [];
 
 /** Query params for backend search, based on frontend parameters.
  *
@@ -28,7 +29,7 @@ var searchResults = [];
  * @param {Object} opt_filters Filters for this query.
  *      Maps 'filtername':value.
  */
-function Query(keywords, location, category, distance, type, source, pageNum, sort, useCache, opt_timePeriod, opt_filters) {
+function Query(keywords, location, category, distance, type, source, pageNum, sort, useCache, get_facet_counts, opt_timePeriod, opt_filters) {
   var me = this;
   me.keywords_ = keywords;
   me.location_ = location;
@@ -39,6 +40,7 @@ function Query(keywords, location, category, distance, type, source, pageNum, so
   me.pageNum_ = pageNum;
   me.sort_ = sort;
   me.use_cache_ = useCache;
+  me.get_facet_counts_ = get_facet_counts || true;
   me.timePeriod_ = opt_timePeriod || 'everything';
   me.filters_ = opt_filters || {};  
 };
@@ -76,6 +78,10 @@ Query.prototype.getPageNum = function() {
 Query.prototype.getKeywords = function() {
   return this.keywords_;
 };
+
+Query.prototype.getFacetCounts = function() {
+  return this.get_facet_counts_;
+}
 
 Query.prototype.setKeywords = function(keywords) {
   this.keywords_ = keywords;
@@ -152,12 +158,17 @@ Query.prototype.setFilter = function(name, value) {
 Query.prototype.getUrlQuery = function() {
   var me = this;
   urlQuery = '';
+  var facet_fields_added = 0;
   function addQueryParam(name, value) {
     if (urlQuery.length > 0) {
       urlQuery += '&';
     }
     urlQuery += name + '=' + escape(value);
   }
+  function addFacetField(value) {
+    addQueryParam('facet.field' + facet_fields_added++, value);
+  }
+  
 
   // Keyword search
   var keywords = me.getKeywords();
@@ -218,11 +229,19 @@ Query.prototype.getUrlQuery = function() {
       addQueryParam(name, value);
     }
   }
-
+  if (me.getFacetCounts())
+  {
+    var facetFieldCount = 0;
+    addQueryParam('facet', 'true');
+    addQueryParam('facet.limit', '-1');
+    addFacetField('feed_providername');
+	addFacetField('categories');
+  }
+  
   // Use Cache
   var use_cache = me.getUseCache();
   addQueryParam('cache', use_cache);
-
+  
   return urlQuery;
 };
 
@@ -246,6 +265,7 @@ function createQueryFromUrlParams() {
   var start = Number(getHashParam('start', '1'));  
   var timePeriod = getHashParam('timeperiod');
   var use_cache = Number(getHashParam('cache', '1'));
+  var get_facet_counts = getHashParam('facet', 'true');
   start = Math.max(start, 1);
   var numPerPage = Number(getHashParam('num', NUM_PER_PAGE));
   numPerPage = Math.max(numPerPage, 1);
@@ -264,7 +284,7 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('vol_startdate');
   getNamedFilterFromUrl('vol_enddate'); 
 
-  return new Query(keywords, location, category, distance, type, source, pageNum, sort, use_cache, timePeriod, filters);
+  return new Query(keywords, location, category, distance, type, source, pageNum, sort, use_cache, get_facet_counts, timePeriod, filters);
 }
 
 /**
@@ -277,14 +297,19 @@ function FilterWidget(div, title, entries, initialValue, callback) {
   me.entries_ = entries;
   me.value_ = initialValue;
   me.callback_ = callback;
+  filters.push(me);
   me.render();
 }
 
 FilterWidget.prototype.render = function() {
   var me = this;
   var titleDiv = document.createElement('div');
-  titleDiv.innerHTML = me.title_;
+  var catLink = document.createElement('a');
   titleDiv.className = 'filterwidget_title';
+  catLink.innerHTML = me.title_;
+  catLink.href = 'javascript:void(0)';
+  //catLink.onclick = expandFilterWidget(me);
+  titleDiv.appendChild(catLink);
   me.div_.innerHTML = '';
   me.div_.appendChild(titleDiv);
 
@@ -313,6 +338,10 @@ FilterWidget.prototype.render = function() {
   }
 };
 
+FilterWidget.prototype.isDefault = function() { 
+	return (this.value_ == this.entries_[0][1]);
+};
+
 FilterWidget.prototype.getValue = function() {
   return this.value_;
 };
@@ -322,6 +351,15 @@ FilterWidget.prototype.setValue = function(newValue) {
   me.value_ = newValue;
   me.render();
 };
+
+FilterWidget.prototype.getName = function() {
+  var me = this;
+  for (var i = 0; i < me.entries_.length; i++)
+  {
+    if (me.entries_[i][1] == me.value_)
+	  return me.entries_[i][0];
+  }
+}
 
 /** Perform a search using the current URL parameters and IP geolocation.
  */
@@ -419,6 +457,40 @@ function onLoadSearch() {
   }
 }
 
+function populateSearchHistory()
+{
+	if (el('filter_results'))
+	{
+		var me = el('filter_results');
+		var titleDiv = document.createElement('div');
+		var catLink = document.createElement('a');
+		titleDiv.className = 'filterwidget_title';
+		catLink.innerHTML = 'Search History';
+		catLink.href = 'javascript:void(0)';
+		titleDiv.appendChild(catLink);
+		me.innerHTML = '';
+		me.appendChild(titleDiv);
+		for (var i = 0; i < filters.length; i++)
+		{
+			var filt = filters[i];
+			if (!filt.isDefault())
+			{
+				var entryDiv = document.createElement('div');
+				entryDiv.className = 'filterwidget_entry';
+				me.appendChild(entryDiv);
+				var change = document.createElement('b');
+				change.innerHTML = filt.getName() + "&nbsp;&nbsp;&nbsp;";
+				entryDiv.appendChild(change);
+				var link = document.createElement('a');
+				link.innerHTML = '(undo)';
+				link.href = 'javascript:void(0)';
+				link.onclick = filt.setValue(0);
+				entryDiv.appendChild(link);
+			}
+		}
+	}
+}
+
 /** Asynchronously execute a search based on the current parameters.
  */
 executeSearchFromHashParams = function(currentLocation) {
@@ -491,6 +563,7 @@ executeSearchFromHashParams = function(currentLocation) {
       // Only loading for search result pages here and loaded in
       // homepage.js for the hp and in base.html for static pages
       loadGA();
+	  //populateSearchHistory();
     };
 
     var error = function (XMLHttpRequest, textStatus, errorThrown) {
@@ -739,7 +812,7 @@ function SearchResult(url, url_sig, title, location, snippet, startdate, enddate
   this.hostWebsite = hostWebsite;
 }
 
-var lastSearchQuery = new Query('', '','', 0, {}, 1);
+var lastSearchQuery = new Query('', '','', 0, true, {}, 1);
 var whenFilterWidget;
 var typeFilterWidget;
 var sourceFilterWidget;

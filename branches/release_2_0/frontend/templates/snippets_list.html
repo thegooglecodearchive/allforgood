@@ -162,8 +162,11 @@ function cleanSnippets() {
   var ar = document.getElementsByTagName('div');
   for (var i in ar) {
     if (ar[i] && ar[i].className == 'snippet_text') {
-      ar[i].innerHTML = stripTags(ar[i].innerHTML);
+      ar[i].innerHTML = stripTags(ar[i].innerHTML).replace(/""/g,'"');
     }
+	else if (ar[i] && ar[i].className == 'snippet_title') {
+	  ar[i].innerHTML = ar[i].innerHTML.replace(/""/g,'"');
+	}
   }
 }
 cleanSnippets();

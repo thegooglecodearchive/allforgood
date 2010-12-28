@@ -281,6 +281,8 @@ class SearchResultSet(object):
           break
       if not merged:
         self.merged_results.append(res)
+        return True
+      return False
 
     def compute_more_less():
       """Now we are making something for the django template to display
