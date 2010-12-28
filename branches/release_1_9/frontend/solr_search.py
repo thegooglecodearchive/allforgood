@@ -145,6 +145,9 @@ def rewrite_query(query_str):
   rewritten_query = re.sub(r'[0-9]t[0-9]', reupcase, rewritten_query)
   rewritten_query = re.sub(r'[0-9]z', reupcase, rewritten_query)
 
+  if rewritten_query.find('meetup') < 0:
+    rewritten_query = '(' + rewritten_query + ') AND -feed_providername:meetup'
+
   # Replace the category filter shortcut with its proper name.
   rewritten_query = rewritten_query.replace('category:', 'categories:')
 
@@ -221,7 +224,7 @@ def form_solr_queryV2(args):
       solr_query += rewrite_query('*:* AND ' + args[api.PARAM_Q])
   else:
     # Query is empty, search for anything at all.
-    solr_query += '*:*'
+    solr_query += rewrite_query('*:*')
     query_is_empty = True
 
   # date range

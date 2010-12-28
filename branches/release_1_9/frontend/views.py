@@ -426,13 +426,13 @@ class search_view(webapp.RequestHandler):
     try:
       unique_args = get_unique_args_from_request(self.request)
 
-      if "key" not in unique_args:
+      if api.PARAM_KEY not in unique_args:
         tplresult = render_template(SEARCH_RESULTS_MISSING_KEY_TEMPLATE, {})
         self.response.out.write(tplresult)
         pagecount.IncrPageCount("key.missing", 1)
         return
 
-      pagecount.IncrPageCount("key.%s.searches" % unique_args["key"], 1)
+      pagecount.IncrPageCount("key.%s.searches" % unique_args[api.PARAM_KEY], 1)
 
       dumping = False
       if api.PARAM_DUMP in unique_args and unique_args[api.PARAM_DUMP] == '1':
