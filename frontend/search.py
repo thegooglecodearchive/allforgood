@@ -69,8 +69,9 @@ def search(args, dumping = False):
   args_array = [str(key)+'='+str(value) for (key, value) in args.items()]
   args_array.sort()
   normalized_query_string = str('&'.join(args_array))
+  logging.info('normalized_query_string: ' + normalized_query_string)
 
-  use_cache = True
+  use_cache = False
   if api.PARAM_CACHE in args and args[api.PARAM_CACHE] == '0':
     use_cache = False
     logging.debug('Not using search cache')
@@ -94,6 +95,8 @@ def search(args, dumping = False):
   if not result_set:
     result_set = fetch_result_set(args, dumping)
     memcache.set(memcache_key, result_set, time=CACHE_TIME)
+    
+  logging.info('result_set size after dedup: ' + str(result_set.num_merged_results))
 
   result_set.clip_merged_results(start, num)
   logging.info("search.search clip_merged_results completed")

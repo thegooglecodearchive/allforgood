@@ -229,7 +229,24 @@ def form_solr_query(args):
     if args[api.PARAM_OUTPUT] in api.FIELDS_BY_OUTPUT_TYPE:
       solr_query += api.FIELDS_BY_OUTPUT_TYPE[args[api.PARAM_OUTPUT]]
     else:
-      solr_query += '*'
+      solr_query += '*' 
+
+  #facet counts
+  if api.PARAM_FACET in args:
+      solr_query += '&facet=' + args[api.PARAM_FACET]
+      if api.PARAM_FACET_LIMIT in args:
+          solr_query += '&facet.limit=' + args[api.PARAM_FACET_LIMIT]
+      facet_field = 0
+      while True:
+          facet_field_str = api.PARAM_FACET_FIELD + str(facet_field)
+          facet_field = facet_field + 1
+          if facet_field_str in args:
+              solr_query += '&facet.field=' + args[facet_field_str]
+          else:
+              break
+          
+        
+          
 
   return solr_query + boost_params
 
@@ -301,7 +318,8 @@ def search(args, dumping = False):
   # [expires:NOW TO *] means "expires prior to today"
   query_url += "&fq=expires:[NOW-3DAYS%20TO%20*]"
 
-  num_to_fetch = int(args[api.PARAM_NUM]) + 1
+  #num_to_fetch = int(args[api.PARAM_NUM]) + 1
+  num_to_fetch = 50
   query_url += "&rows=" + str(num_to_fetch)
   query_url += "&start=" + str(int(args[api.PARAM_START]) - 1)
 
