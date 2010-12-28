@@ -391,6 +391,9 @@ def query(query_url, args, cache, dumping = False):
   # undo comma encoding -- see datahub/footprint_lib.py
   result_content = re.sub(r';;', ',', result_content)
   result = simplejson.loads(result_content)
+  facet_counts = result["facet_counts"]["facet_fields"]
+  for i, entry in enumerate(facet_counts):
+      logging.info(str(i) + ' :' + entry)
   doc_list = result["response"]["docs"]
 
   for i, entry in enumerate(doc_list):
