@@ -196,7 +196,7 @@ def form_solr_queryV2(args):
         '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster) AND category:Animals)')
     elif args[api.PARAM_Q].find('category:MLKDay') >= 0:
       # eg, q=ballroom and category:MLKDay
-      query_str = args[api.PARAM_Q].replace('category:MLKDay', '').strip()
+      query_str = args[api.PARAM_Q].replace('category:MLKDay', '').replace('( OR )', '').strip()
 
       query_str += (' -feed_providername:meetup AND ('
                  + ' eventrangestart:[2011-01-08T00:00:00.000Z TO 2011-01-23T23:59:59.999Z]^20'

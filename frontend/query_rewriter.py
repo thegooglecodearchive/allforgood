@@ -198,7 +198,7 @@ def get_rewriters():
       graphicdesigner_rewriter,
       spanish_rewriter,
       # special events
-      mlk_rewriter
+      #mlk_rewriter
       #september11_rewriter
       ])
 
