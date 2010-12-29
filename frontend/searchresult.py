@@ -182,6 +182,7 @@ class SearchResultSet(object):
     self.num_merged_results = 0
     self.merged_results = []
     self.clipped_results = []
+    self.facet_counts = dict()
     self.clip_start_index = 0  # Index at which clipped_results begins.
     self.has_more_results = False  # After clipping, are there more results?
     self.estimated_merged_results = 0

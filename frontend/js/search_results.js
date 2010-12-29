@@ -234,6 +234,7 @@ Query.prototype.getUrlQuery = function() {
     var facetFieldCount = 0;
     addQueryParam('facet', 'true');
     addQueryParam('facet.limit', '-1');
+	addQueryParam('facet.mincount', '1');
     addFacetField('feed_providername');
 	addFacetField('categories');
   }
@@ -325,12 +326,18 @@ FilterWidget.prototype.render = function() {
     var entryDiv = document.createElement('div');
     entryDiv.className = 'filterwidget_entry';
     me.div_.appendChild(entryDiv);
+	
+	var display = me.entries_[i][0];
+	if (me.entries_[i].length >= 3)
+	{
+		display += ' (' + me.entries_[i][2] + ')';
+	}
 
     if (me.entries_[i][1] == me.value_) {
       entryDiv.innerHTML = '<b>' + me.entries_[i][0] + '</b>';
     } else {
       var link = document.createElement('a');
-      link.innerHTML = me.entries_[i][0];
+      link.innerHTML = display;
       link.href = 'javascript:void(0)';
       link.onclick = clickCallback(i);
       entryDiv.appendChild(link);
@@ -421,19 +428,6 @@ function onLoadSearch() {
                          'all',
                          function(value) { submitForm('type_widget'); });
   }
-  
-  if (el('source_filter_widget')) {
-	    sourceFilterWidget =
-	        new FilterWidget(el('source_filter_widget'),
-	                         'Filter By Source',
-	                         [ ['All', 'all'],
-							   ['American Red Cross', 'american_red_cross'],
-	                           ['HandsOn Network', 'handsonnetwork'],
-	                           ['United Way', 'unitedway'],
-	                           ['Citizen Corps', 'citizencorps']],
-	                         'all',
-	                         function(value) { submitForm('source_widget'); });
-	  }
 
   // Using jquery json functions where RSH expects other json functions,
   // pass in as overrides.

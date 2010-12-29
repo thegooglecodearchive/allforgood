@@ -104,6 +104,9 @@ def add_commas(value):
       break
   return ''.join(parts)
 
+def getkey(value, arg):
+  return value[arg]
+  
 # Prevents pylint from triggering on the 'register' name. Django expects this
 # module to have a 'register' variable.
 # pylint: disable-msg=C0103
@@ -112,3 +115,4 @@ register.filter('truncate_chars', truncate_chars)
 register.filter('as_letter', as_letter)
 register.filter('bold_query', bold_query)
 register.filter('add_commas', add_commas)
+register.filter('getkey', getkey)
