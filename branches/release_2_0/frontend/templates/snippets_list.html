@@ -142,42 +142,46 @@ addthis.button('#share_{{forloop.counter0}}', { username: "footprint2009dev", se
 
 var query = createQueryFromUrlParams();
 
-var feed_providername_labels =
+function makeFilterWidgetArray(defaultValuesArray, dataArray, labelsArray)
 {
-	unitedway: "United Way",
-	universalgiving: "Universal Giving",
-	volunteermatch: "Volunteer Match"
-};
+	var fwArr = Array();
+	var totalCount = 0;
+	for (var i = 1; i < dataArray.length; i+=2)
+	{
+		totalCount += parseInt(dataArray[i]);
+	}
+	fwArr.push(Array(defaultValuesArray[0], defaultValuesArray[1]));
+	for (var i = 0; i < dataArray.length; i+=2)
+	{
+		if (dataArray[i] in labelsArray)
+		{
+			fwArr.push(
+				Array(
+					labelsArray[dataArray[i]],
+					dataArray[i],
+					dataArray[i+1])
+				);
+		}
+	}
+	return fwArr;
+}
 
 {% for facet_count in result_set.facet_counts %}
-
-	{% ifequal facet_count "feed_providername" %}
-		feed_providername_data = Array();
-		{% for info in result_set.facet_counts|getkey:facet_count %}
-			feed_providername_data.push('{{info}}');
-		{% endfor %}
-	{% endifequal %}
-
+	{{facet_count}}_data = Array();
+	{% for info in result_set.facet_counts|getkey:facet_count %}
+		{{facet_count}}_data.push('{{info}}');
+	{% endfor %}
 {% endfor %}
 
 if (typeof feed_providername_data != undefined)
 {
-	var feed_providername = Array();
-	var totalCount = 0;
-	for (var i = 1; i < feed_providername_data.length; i+=2)
+	var feed_providername_labels =
 	{
-		totalCount += parseInt(feed_providername_data[i]);
-	}
-	feed_providername.push(Array('All', 'all'));
-	for (var i = 0; i < feed_providername_data.length; i+=2)
-	{
-		feed_providername.push(
-			Array(
-				feed_providername_labels[feed_providername_data[i]],
-				feed_providername_data[i],
-				feed_providername_data[i+1])
-			);
-	}
+		unitedway: "United Way",
+		universalgiving: "Universal Giving",
+		volunteermatch: "Volunteer Match"
+	};
+	var feed_providername = makeFilterWidgetArray(Array('All', 'all'), feed_providername_data, feed_providername_labels);
 	if (el('source_filter_widget')) {
 	    sourceFilterWidget =
 	        new FilterWidget(el('source_filter_widget'),
@@ -186,6 +190,43 @@ if (typeof feed_providername_data != undefined)
 	                         query.getSource() || 'all',
 	                         function(value) { submitForm('source_widget'); });
 	  }
+}
+if (typeof categories_data != undefined)
+{
+	var categories_labels =
+	{
+		mlk: 'MLK Day',
+		education: 'Education',
+		Hunger: 'Hunger',
+		animals: 'Animals',
+		health: 'Health',
+		seniors: 'Seniors',
+		technology: 'Technology',
+		poverty: 'Poverty'
+	};
+	var categories = makeFilterWidgetArray(Array('All', 'all'), categories_data, categories_labels);
+	if (el('category_filter_widget')) {
+    categoryFilterWidget =
+        new FilterWidget(el('category_filter_widget'),
+                         'Filter By Category',
+                         categories,
+                         query.getCategory() || 'all',
+                         function(value) { submitForm('category_widget'); });
+	}
+}
+if (typeof virtual_data != undefined && typeof self_directed_data != undefined)
+{
+	/*
+	if (el('type_filter_widget')) {
+    typeFilterWidget =
+        new FilterWidget(el('type_filter_widget'),
+                         'Filter By Type',
+                         [ ['All', 'all'],
+						   ['Virtual', 'virtual'],
+                           ['Self-Directed', 'self_directed']],
+                         'all',
+                         function(value) { submitForm('type_widget'); });
+  }*/
 }
 
 </script>

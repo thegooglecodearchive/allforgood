@@ -237,6 +237,8 @@ Query.prototype.getUrlQuery = function() {
 	addQueryParam('facet.mincount', '1');
     addFacetField('feed_providername');
 	addFacetField('categories');
+	addFacetField('virtual:true');
+	addFacetField('self_directed:true');
   }
   
   // Use Cache
@@ -302,8 +304,9 @@ function FilterWidget(div, title, entries, initialValue, callback) {
   me.render();
 }
 
-FilterWidget.prototype.render = function() {
+FilterWidget.prototype.render = function(oldValue) {
   var me = this;
+  oldValue = typeof oldValue == undefined ? '' : oldValue;
   var titleDiv = document.createElement('div');
   var catLink = document.createElement('a');
   titleDiv.className = 'filterwidget_title';
@@ -328,7 +331,7 @@ FilterWidget.prototype.render = function() {
     me.div_.appendChild(entryDiv);
 	
 	var display = me.entries_[i][0];
-	if (me.entries_[i].length >= 3)
+	if (me.entries_[i].length >= 3 && me.entries_[i][1] != oldValue)
 	{
 		display += ' (' + me.entries_[i][2] + ')';
 	}
@@ -355,8 +358,9 @@ FilterWidget.prototype.getValue = function() {
 
 FilterWidget.prototype.setValue = function(newValue) {
   var me = this;
+  var oldValue = me.value_;
   me.value_ = newValue;
-  me.render();
+  me.render(oldValue);
 };
 
 FilterWidget.prototype.getName = function() {
@@ -399,23 +403,6 @@ function onLoadSearch() {
 
   if (el('location')) {
     setInputFieldValue(el('location'), getDefaultLocation().displayLong);
-  }
-  
-  if (el('category_filter_widget')) {
-    categoryFilterWidget =
-        new FilterWidget(el('category_filter_widget'),
-                         'Filter By Category',
-                         [ ['All', 'all'],
-						   ['MLK Day', 'mlk'],
-                           ['Education', 'education'],
-						   ['Hunger', 'Hunger'],
-						   ['Animals', 'animals'],
-						   ['Health', 'health'],
-						   ['Seniors', 'seniors'],
-						   ['Technology', 'technology'],
-						   ['Poverty', 'poverty']],
-                         'all',
-                         function(value) { submitForm('category_widget'); });
   }
 
   if (el('type_filter_widget')) {
@@ -811,5 +798,6 @@ var whenFilterWidget;
 var typeFilterWidget;
 var sourceFilterWidget;
 var distanceFilterWidget;
+var categoryFilterWidget;
 
 asyncLoadManager.addCallback('bodyload', onLoadSearch);
