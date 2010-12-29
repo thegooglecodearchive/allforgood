@@ -92,7 +92,6 @@ template.register_template_library('templatetags.comparisonfilters')
 template.register_template_library('templatetags.stringutils')
 template.register_template_library('templatetags.dateutils_tags')
 
-
 # TODO: not safe vs. spammers to checkin... but in our design,
 # the worst that happens is a bit more spam in our moderation
 # queue, i.e. no real badness, just slightly longer review
@@ -102,7 +101,6 @@ template.register_template_library('templatetags.dateutils_tags')
 # is intentionally boring, to avoid accidental discovery by
 # code search tools.
 PK = "6Le2dgUAAAAAABp1P_NF8wIUSlt8huUC97owQ883"
-
 
 def get_unique_args_from_request(request):
   """ Gets unique args from a request.arguments() list.

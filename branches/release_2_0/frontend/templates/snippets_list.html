@@ -138,6 +138,58 @@ addthis.button('#share_{{forloop.counter0}}', { username: "footprint2009dev", se
   </div>
 {% endfor %}
 
+<script language="text/javascript">
+
+var query = createQueryFromUrlParams();
+
+var feed_providername_labels =
+{
+	unitedway: "United Way",
+	universalgiving: "Universal Giving",
+	volunteermatch: "Volunteer Match"
+};
+
+{% for facet_count in result_set.facet_counts %}
+
+	{% ifequal facet_count "feed_providername" %}
+		feed_providername_data = Array();
+		{% for info in result_set.facet_counts|getkey:facet_count %}
+			feed_providername_data.push('{{info}}');
+		{% endfor %}
+	{% endifequal %}
+
+{% endfor %}
+
+if (typeof feed_providername_data != undefined)
+{
+	var feed_providername = Array();
+	var totalCount = 0;
+	for (var i = 1; i < feed_providername_data.length; i+=2)
+	{
+		totalCount += parseInt(feed_providername_data[i]);
+	}
+	feed_providername.push(Array('All', 'all', totalCount));
+	for (var i = 0; i < feed_providername_data.length; i+=2)
+	{
+		feed_providername.push(
+			Array(
+				feed_providername_labels[feed_providername_data[i]],
+				feed_providername_data[i],
+				feed_providername_data[i+1])
+			);
+	}
+	if (el('source_filter_widget')) {
+	    sourceFilterWidget =
+	        new FilterWidget(el('source_filter_widget'),
+	                         'Filter By Source',
+	                         feed_providername,
+	                         query.getSource() || 'all',
+	                         function(value) { submitForm('source_widget'); });
+	  }
+}
+
+</script>
+
 <span id='loading-bottom' style='display:none;float:right;'><span id='loading'>Loading...</span></span>
 <div id='paginator'>
 </div>

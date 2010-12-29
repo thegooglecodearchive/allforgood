@@ -27,6 +27,7 @@ import urllib
 from django.utils import simplejson
 from versioned_memcache import memcache
 from google.appengine.api import urlfetch
+from copy import deepcopy
 
 import api
 
@@ -135,7 +136,9 @@ def form_solr_query(args):
     max_dist = float(args[api.PARAM_VOL_DIST])
   
   boost_params = default_boosts(args);
-  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1000}'   
+  #TODO: fix this part of the query
+  #geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1000}'   
+  geo_params = ''
 
   # keyword
   query_is_empty = False
@@ -190,12 +193,16 @@ def form_solr_query(args):
     elif args[api.PARAM_TYPE] == "virtual":
       solr_query += " AND virtual:true"
   
+  added_categories = False
   # Category
   if api.PARAM_CATEGORY in args and args[api.PARAM_CATEGORY] != "all":
     solr_query += "categories:" + args[api.PARAM_CATEGORY] + "+OR+aggregatefield:" + args[api.PARAM_CATEGORY]
+    added_categories = True
     
   # Source
   if api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all":
+    if added_categories:
+      solr_query += "+AND+"
     solr_query += "feed_providername:" + args[api.PARAM_SOURCE]
       
   # for ad campaigns
@@ -236,6 +243,8 @@ def form_solr_query(args):
       solr_query += '&facet=' + args[api.PARAM_FACET]
       if api.PARAM_FACET_LIMIT in args:
           solr_query += '&facet.limit=' + args[api.PARAM_FACET_LIMIT]
+      if api.PARAM_FACET_MINCNT in args:
+          solr_query += '&facet.mincount=' + args[api.PARAM_FACET_MINCNT]
       facet_field = 0
       while True:
           facet_field_str = api.PARAM_FACET_FIELD + str(facet_field)
@@ -391,14 +400,16 @@ def query(query_url, args, cache, dumping = False):
   # undo comma encoding -- see datahub/footprint_lib.py
   result_content = re.sub(r';;', ',', result_content)
   result = simplejson.loads(result_content)
+  
+  #facet_counts
   facet_counts = result["facet_counts"]["facet_fields"]
-  for i, entry in enumerate(facet_counts):
-      logging.info(str(i) + ' :' + entry)
+  result_set.facet_counts = deepcopy(facet_counts)
+
   doc_list = result["response"]["docs"]
 
   for i, entry in enumerate(doc_list):
     if not "detailurl" in entry:
-      # URL is required
+      # URL is required 
       latstr = entry["latitude"]
       longstr = entry["longitude"]
       if latstr and longstr and latstr != "" and longstr != "":
