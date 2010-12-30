@@ -19,7 +19,18 @@ Enter your location.
 
 <div id='type_filter_widget' class='filterwidget'></div>
 
-<div id='when_filter_widget' class='filterwidget'></div>
+<div id='when_filter_widget' class='filterwidget'>
+<div class="filterwidget_title">
+Filter By Date
+</div>
+<form onsubmit="submitForm('when_filter_widget');return false;">
+<p>Start Date: <input id="startdate" type="text"></p>
+
+<p>End Date: <input id="enddate" type="text"></p>
+<p><input type="button" value="Submit" onclick="submitForm('when_filter_widget'); return false;"></p>
+</form>
+
+</div>
 
 <div id='source_filter_widget' class='filterwidget'>
 </div>

@@ -80,7 +80,7 @@ def add_range_filter(field, min_val, max_val):
   """ Convert colons in the field name and build a range specifier
   in SOLR query syntax"""
   # TODO: Deal with escapification
-  result = ' AND '
+  result = ' +AND+ '
   result += field
   result += ':[' + str(min_val) +' TO ' + str(max_val) + ']'
   return result
@@ -280,7 +280,8 @@ def search(args, dumping = False):
     """ make sure we were given a value for at least one of these arguments """
     valid_query = False
     api_list = [api.PARAM_Q,
-                api.PARAM_TIMEPERIOD,
+                api.PARAM_TIMEPERIOD_START,
+                api.PARAM_TIMEPERIOD_END,
                 api.PARAM_VOL_LOC,
                 'virtual',
                 api.PARAM_VOL_STARTDATE,
