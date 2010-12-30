@@ -127,7 +127,7 @@ def add_range_filter(field, min_val, max_val):
   result += ':[' + str(min_val) +' TO ' + str(max_val) + ']'
   return result
 
-def rewrite_query(query_str):
+def rewrite_query(query_str, api_key = None):
   """ Rewrites the query string from an easy to type and understand format
   into a Solr-readable format"""
   # Lower-case everything and make boolean operators upper-case, so they
@@ -145,13 +145,15 @@ def rewrite_query(query_str):
   rewritten_query = re.sub(r'[0-9]t[0-9]', reupcase, rewritten_query)
   rewritten_query = re.sub(r'[0-9]z', reupcase, rewritten_query)
 
-  if rewritten_query.find('meetup') < 0:
+  if rewritten_query.find('meetup') < 0 and api_key and api_key in private_keys.MEETUP_EXCLUDERS:
+    logging.info('solr_search.rewrite_query api key %s excludes meetup' % api_key)
     rewritten_query = '(' + rewritten_query + ') AND -feed_providername:meetup'
 
   # Replace the category filter shortcut with its proper name.
   rewritten_query = rewritten_query.replace('category:', 'categories:')
 
   return rewritten_query
+
 
 def form_solr_queryV2(args):
   """ /solr/select?q={!spatial%20lat=33.9019949%20long=-84.4296446%20radius=300}nature
@@ -161,6 +163,11 @@ def form_solr_queryV2(args):
   """
 
   solr_query = ''
+
+  api_key = None
+  if api.PARAM_KEY in args:
+    api_key = args[api.PARAM_KEY]
+    logging.info('api_key = %s' % api_key)
 
   # args fix up
   if api.PARAM_START not in args:
@@ -196,7 +203,7 @@ def form_solr_queryV2(args):
   if api.PARAM_Q in args and args[api.PARAM_Q] != "":
     if args[api.PARAM_Q].find('category:IAMS') >= 0:
       solr_query = rewrite_query('%s' %
-        '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster) AND category:Animals)')
+        '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))')
     elif args[api.PARAM_Q].find('category:MLKDay') >= 0:
       # eg, q=ballroom and category:MLKDay
       query_str = args[api.PARAM_Q].replace('category:MLKDay', '').replace('( OR )', '').strip()
@@ -221,10 +228,10 @@ def form_solr_queryV2(args):
                  + ')')
       solr_query = rewrite_query(query_str)
     else:
-      solr_query += rewrite_query('*:* AND ' + args[api.PARAM_Q])
+      solr_query += rewrite_query('*:* AND ' + args[api.PARAM_Q], api_key)
   else:
     # Query is empty, search for anything at all.
-    solr_query += rewrite_query('*:*')
+    solr_query += rewrite_query('*:*', api_key)
     query_is_empty = True
 
   # date range
