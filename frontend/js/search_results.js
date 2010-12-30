@@ -193,6 +193,7 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('vol_dist');
   getNamedFilterFromUrl('vol_startdate');
   getNamedFilterFromUrl('vol_enddate');
+  getNamedFilterFromUrl('key');
 
   var use_cache = Number(getHashParam('cache', '1'));
 
@@ -388,6 +389,11 @@ executeSearchFromHashParams = function(currentLocation) {
       //       Will then need to test that "No Results" message doesn't
       //       show "USA".
       url += '&vol_loc=USA&vol_dist=1500';
+    }
+
+    var referrer = document.referrer;
+    if (referrer) {
+      url += '&referrer=' + encodeURIComponent(referrer);
     }
 
     currentXhr = jQuery.ajax({
