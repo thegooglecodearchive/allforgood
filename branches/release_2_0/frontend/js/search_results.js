@@ -18,7 +18,12 @@ var NUM_PER_PAGE = 10;
 var searchResults = [];
 var filters = [];
 
-/** Query params for backend search, based on frontend parameters.
+$(document).ready(function() {
+    $("#startdate").datepicker();
+	$("#enddate").datepicker();
+  });
+  
+  /** Query params for backend search, based on frontend parameters.
  *
  * @constructor
  * @param {string} keywords Search keywords.
@@ -29,7 +34,7 @@ var filters = [];
  * @param {Object} opt_filters Filters for this query.
  *      Maps 'filtername':value.
  */
-function Query(keywords, location, category, distance, type, source, pageNum, sort, useCache, get_facet_counts, opt_timePeriod, opt_filters) {
+function Query(keywords, location, category, distance, type, source, pageNum, sort, useCache, get_facet_counts, opt_timePeriodStart, opt_timePeriodEnd, opt_filters) {
   var me = this;
   me.keywords_ = keywords;
   me.location_ = location;
@@ -41,7 +46,8 @@ function Query(keywords, location, category, distance, type, source, pageNum, so
   me.sort_ = sort;
   me.use_cache_ = useCache;
   me.get_facet_counts_ = get_facet_counts || true;
-  me.timePeriod_ = opt_timePeriod || 'everything';
+  me.timePeriodStart_ = opt_timePeriodStart || 'everything';
+  me.timePeriodEnd_ = opt_timePeriodEnd || 'everything';
   me.filters_ = opt_filters || {};  
 };
 
@@ -135,12 +141,20 @@ Query.prototype.getSort = function() {
   return this.sort_;
 };
 
-Query.prototype.getTimePeriod = function() {
-  return this.timePeriod_;
+Query.prototype.getTimePeriodStart = function() {
+  return this.timePeriodStart_;
 };
 
-Query.prototype.setTimePeriod = function(period) {
-  this.timePeriod_ = period;
+Query.prototype.setTimePeriodStart = function(period) {
+  this.timePeriodStart_ = period;
+};
+
+Query.prototype.getTimePeriodEnd = function() {
+  return this.timePeriodEnd_;
+};
+
+Query.prototype.setTimePeriodEnd = function(period) {
+  this.timePeriodEnd_ = period;
 };
 
 Query.prototype.getFilter = function(name) {
@@ -159,6 +173,7 @@ Query.prototype.getUrlQuery = function() {
   var me = this;
   urlQuery = '';
   var facet_fields_added = 0;
+  var facet_queries_added = 0;
   function addQueryParam(name, value) {
     if (urlQuery.length > 0) {
       urlQuery += '&';
@@ -168,7 +183,9 @@ Query.prototype.getUrlQuery = function() {
   function addFacetField(value) {
     addQueryParam('facet.field' + facet_fields_added++, value);
   }
-  
+  function addFacetQuery(value) {
+	addQueryParam('facet.query' + facet_queries_added++, value);
+  }
 
   // Keyword search
   var keywords = me.getKeywords();
@@ -217,9 +234,13 @@ Query.prototype.getUrlQuery = function() {
   }
 
   // Time period
-  var period = me.getTimePeriod();
-  if (period) {
-    addQueryParam('timeperiod', period)
+  var periodStart = me.getTimePeriodStart();
+  if (periodStart) {
+    addQueryParam('timeperiodstart', periodStart)
+  }
+  var periodEnd = me.getTimePeriodEnd();
+  if (periodEnd) {
+    addQueryParam('timeperiodend', periodEnd)
   }
 
   // Add additional filters to query URL.
@@ -237,8 +258,8 @@ Query.prototype.getUrlQuery = function() {
 	addQueryParam('facet.mincount', '1');
     addFacetField('feed_providername');
 	addFacetField('categories');
-	addFacetField('virtual:true');
-	addFacetField('self_directed:true');
+	addFacetField('virtual');
+	addFacetField('self_directed');
   }
   
   // Use Cache
@@ -266,7 +287,8 @@ function createQueryFromUrlParams() {
   var source = getHashParam('source', '');
   var sort = getHashParam('sort', '');
   var start = Number(getHashParam('start', '1'));  
-  var timePeriod = getHashParam('timeperiod');
+  var timePeriodStart = getHashParam('timeperiodstart');
+  var timePeriodEnd = getHashParam('timeperiodend');
   var use_cache = Number(getHashParam('cache', '1'));
   var get_facet_counts = getHashParam('facet', 'true');
   start = Math.max(start, 1);
@@ -287,7 +309,7 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('vol_startdate');
   getNamedFilterFromUrl('vol_enddate'); 
 
-  return new Query(keywords, location, category, distance, type, source, pageNum, sort, use_cache, get_facet_counts, timePeriod, filters);
+  return new Query(keywords, location, category, distance, type, source, pageNum, sort, use_cache, get_facet_counts, timePeriodStart, timePeriodEnd, filters);
 }
 
 /**
@@ -375,6 +397,7 @@ FilterWidget.prototype.getName = function() {
 /** Perform a search using the current URL parameters and IP geolocation.
  */
 function onLoadSearch() {
+/*
   if (el('when_filter_widget')) {
     whenFilterWidget =
         new FilterWidget(el('when_filter_widget'),
@@ -387,6 +410,7 @@ function onLoadSearch() {
                          'everything',
                          function(value) { submitForm('when_widget'); });
   }
+  */
   
   if (el('distance_filter_widget')) {
     distanceFilterWidget =
@@ -403,17 +427,6 @@ function onLoadSearch() {
 
   if (el('location')) {
     setInputFieldValue(el('location'), getDefaultLocation().displayLong);
-  }
-
-  if (el('type_filter_widget')) {
-    typeFilterWidget =
-        new FilterWidget(el('type_filter_widget'),
-                         'Filter By Type',
-                         [ ['All', 'all'],
-						   ['Virtual', 'virtual'],
-                           ['Self-Directed', 'self_directed']],
-                         'all',
-                         function(value) { submitForm('type_widget'); });
   }
 
   // Using jquery json functions where RSH expects other json functions,
@@ -515,9 +528,9 @@ executeSearchFromHashParams = function(currentLocation) {
 	  if (distanceFilterWidget) {
         distanceFilterWidget.setValue(query.getDistance());
       }
-      if (whenFilterWidget) {
+      /*if (whenFilterWidget) {
         whenFilterWidget.setValue(query.getTimePeriod());
-      }
+      }*/
       if (typeFilterWidget) {
         typeFilterWidget.setValue(query.getType());
       }
@@ -583,6 +596,14 @@ executeSearchFromHashParams = function(currentLocation) {
   };
 }(); // executed inline to close over the 'currentXhr' variable.
 
+function getStartDate()
+{
+  return dateFormat($("#startdate").datepicker("getDate"), "yyyy-mm-dd");
+}
+function getEndDate()
+{
+  return dateFormat($("#enddate").datepicker("getDate"), "yyyy-mm-dd");
+}
 
 /** Called from the "Refine" button's onclick, the main form onsubmit,
  * and the time period filter.
@@ -611,11 +632,25 @@ function submitForm(invoker, value) {
     setSessionCookie('user_vol_loc', location);
   }
 
-  var timePeriod = whenFilterWidget.getValue();
-  var category = getInputFieldValue(el('categories')) || (categoryFilterWidget.getValue());
-  var distance = (distanceFilterWidget.getValue());
-  var type = (typeFilterWidget.getValue());
-  var source = (sourceFilterWidget.getValue());
+  //var timePeriod = whenFilterWidget.getValue();
+  var timePeriodStart = getStartDate();
+  var timePeriodEnd = getEndDate();
+  if (categoryFilterWidget)
+  {
+	var category = getInputFieldValue(el('categories')) || (categoryFilterWidget.getValue());
+  }
+  if (distanceFilterWidget)
+  {
+    var distance = (distanceFilterWidget.getValue());
+  }
+  if (typeFilterWidget)
+  {
+	var type = (typeFilterWidget.getValue());
+  }
+  if (sourceFilterWidget)
+  {
+    var source = (sourceFilterWidget.getValue());
+  }
   var sort = getInputFieldValue(el('sort'));
 
   // TODO: strip leading/trailing whitespace.
@@ -633,7 +668,8 @@ function submitForm(invoker, value) {
   query.setSource(source)
   query.setPageNum(0);
   query.setSort(sort);
-  query.setTimePeriod(timePeriod);
+  query.setTimePeriodStart(timePeriodStart);
+  query.setTimePeriodEnd(timePeriodEnd);
   query.execute();
 }
 

@@ -65,7 +65,8 @@ DEFAULT_OUTPUT_FIELDS = FIELDS_BY_OUTPUT_TYPE['html']
 # E.g., 'today'. The presence of this param implies that 'vol_startdate'
 # and 'vol_enddate' will be automatically calculated, overriding
 # the values of those two params if they were passed in also.
-PARAM_TIMEPERIOD = 'timeperiod'
+PARAM_TIMEPERIOD_START = 'timeperiodstart'
+PARAM_TIMEPERIOD_END = 'timeperiodend'
 
 # the ratio of actual results to request from the backend--
 # typical values range from 1.0 to 10.0, where larger numbers

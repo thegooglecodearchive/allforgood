@@ -150,7 +150,10 @@ function makeFilterWidgetArray(defaultValuesArray, dataArray, labelsArray)
 	{
 		totalCount += parseInt(dataArray[i]);
 	}
-	fwArr.push(Array(defaultValuesArray[0], defaultValuesArray[1]));
+	if (defaultValuesArray.length >= 2)
+	{
+		fwArr.push(Array(defaultValuesArray[0], defaultValuesArray[1]));
+	}
 	for (var i = 0; i < dataArray.length; i+=2)
 	{
 		if (dataArray[i] in labelsArray)
@@ -216,17 +219,28 @@ if (typeof categories_data != undefined)
 }
 if (typeof virtual_data != undefined && typeof self_directed_data != undefined)
 {
-	/*
-	if (el('type_filter_widget')) {
+	var virtual = makeFilterWidgetArray(Array(), virtual_data, { 'true': 'Virtual' });
+	var self_directed = makeFilterWidgetArray(Array(), self_directed_data, { 'true': 'Self-Directed' });
+	var type = Array();
+	var hasVirtual = virtual.length > 0;
+	var hasSelfDirected = self_directed.length > 0;
+	type.push(Array('Geographical', 'geo'));
+	if (hasVirtual)
+	{
+		type.push(virtual);
+	}
+	if (hasSelfDirected)
+	{
+		type.push(self_directed);
+	}
+	if (el('type_filter_widget') && (hasVirtual || hasSelfDirected)) {
     typeFilterWidget =
         new FilterWidget(el('type_filter_widget'),
                          'Filter By Type',
-                         [ ['All', 'all'],
-						   ['Virtual', 'virtual'],
-                           ['Self-Directed', 'self_directed']],
-                         'all',
+                         type,
+                         'geo',
                          function(value) { submitForm('type_widget'); });
-  }*/
+	}
 }
 
 </script>
