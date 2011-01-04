@@ -65,7 +65,7 @@
 
       <div class='snippet_title'>
         {# note: id comes after sig to reduce risk of truncation dropping sig #}
-        <a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.title|escape|bold_query:query_param_q }}</a>
+        <a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title|escape|bold_query:query_param_q }}</a>
       </div>
       {% if result.location or result.startdate or result.interest_count %}
         <div class='snippet_sub_text'>
@@ -87,7 +87,7 @@
 </div>
       {% endif %}
       <div class='snippet_text'>
-        {{ result.snippet|truncate_chars:285|escape|bold_query:query_param_q }}
+        {{ result.purged_snippet|truncate_chars:285|escape|bold_query:query_param_q }}
       </div>
 
       <div class='snippet_bottom'>
