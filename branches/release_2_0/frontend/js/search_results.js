@@ -593,6 +593,7 @@ executeSearchFromHashParams = function(currentLocation) {
       error: error,
       success: success
     });
+	jQuery(this).ajaxStop(function() { scroll(0,0); });
   };
 }(); // executed inline to close over the 'currentXhr' variable.
 
