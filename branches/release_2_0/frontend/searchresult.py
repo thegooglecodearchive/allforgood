@@ -53,6 +53,10 @@ def js_escape(string):
   TODO: This escape method is overly agressive and is messing some snippets
   up.  We only need to escape single and double quotes."""
   return re.escape(string)
+  
+def purge_quotes(string):
+    """removes double quotes from string"""
+    return string.replace('"', "")
 
 class SearchResult(object):
   """class to hold the results of a search to the backend."""
@@ -94,7 +98,9 @@ class SearchResult(object):
     # app engine does not currently support the escapejs filter in templates
     # so we have to do it our selves for now
     self.js_escaped_title = js_escape(title)
+    self.purged_title = purge_quotes(title)
     self.js_escaped_snippet = js_escape(snippet)
+    self.purged_snippet = purge_quotes(snippet)
     # TODO: find out why this is not unique
     # hack to avoid guid duplicates
     self.xml_url = escape(url) + "#" + self.item_id
