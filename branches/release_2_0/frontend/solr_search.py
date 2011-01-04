@@ -194,7 +194,7 @@ def form_solr_query(args):
   added_categories = False
   # Category
   if api.PARAM_CATEGORY in args and args[api.PARAM_CATEGORY] != "all":
-    solr_query += "categories:" + args[api.PARAM_CATEGORY] + "+OR+aggregatefield:" + args[api.PARAM_CATEGORY]
+    solr_query += "categories:(" + args[api.PARAM_CATEGORY] + ")"
     added_categories = True
     
   # Source
@@ -241,8 +241,8 @@ def form_solr_query(args):
       solr_query += '&facet=' + args[api.PARAM_FACET]
       if api.PARAM_FACET_LIMIT in args:
           solr_query += '&facet.limit=' + args[api.PARAM_FACET_LIMIT]
-      if api.PARAM_FACET_MINCNT in args:
-          solr_query += '&facet.mincount=' + args[api.PARAM_FACET_MINCNT]
+      #if api.PARAM_FACET_MINCNT in args:
+      #    solr_query += '&facet.mincount=' + args[api.PARAM_FACET_MINCNT]
       facet_field = 0
       while True:
           facet_field_str = api.PARAM_FACET_FIELD + str(facet_field)
@@ -250,8 +250,8 @@ def form_solr_query(args):
           if facet_field_str in args:
               solr_query += '&facet.field=' + args[facet_field_str]
           else:
-              break          
-
+              break
+          
   return solr_query + boost_params
 
 def parseLatLng(val):
@@ -401,6 +401,8 @@ def query(query_url, args, cache, dumping = False):
   if "facet_counts" in result:
     facet_counts = result["facet_counts"]["facet_fields"]
     result_set.facet_counts = deepcopy(facet_counts)
+  else:
+      result_set.facet_counts = None
 
   doc_list = result["response"]["docs"]
 
