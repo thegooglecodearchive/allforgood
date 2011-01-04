@@ -308,6 +308,7 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('vol_dist');
   getNamedFilterFromUrl('vol_startdate');
   getNamedFilterFromUrl('vol_enddate'); 
+  getNamedFilterFromUrl('key');
 
   return new Query(keywords, location, category, distance, type, source, pageNum, sort, use_cache, get_facet_counts, timePeriodStart, timePeriodEnd, filters);
 }
@@ -584,6 +585,11 @@ executeSearchFromHashParams = function(currentLocation) {
     var location = query.getLocation();
     if (!location || location.length == 0) {
       url += '&vol_loc=USA&vol_dist=1500';
+    }
+
+    var referrer = document.referrer;
+    if (referrer) {
+      url += '&referrer=' + encodeURIComponent(referrer);
     }
 
     currentXhr = jQuery.ajax({

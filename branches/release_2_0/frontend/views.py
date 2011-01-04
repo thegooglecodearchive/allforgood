@@ -424,13 +424,13 @@ class search_view(webapp.RequestHandler):
     try:
       unique_args = get_unique_args_from_request(self.request)
 
-      if "key" not in unique_args:
+      if api.PARAM_KEY not in unique_args:
         tplresult = render_template(SEARCH_RESULTS_MISSING_KEY_TEMPLATE, {})
         self.response.out.write(tplresult)
         pagecount.IncrPageCount("key.missing", 1)
         return
 
-      pagecount.IncrPageCount("key.%s.searches" % unique_args["key"], 1)
+      pagecount.IncrPageCount("key.%s.searches" % unique_args[api.PARAM_KEY], 1)
 
       dumping = False
       if api.PARAM_DUMP in unique_args and unique_args[api.PARAM_DUMP] == '1':
@@ -504,6 +504,13 @@ class ui_snippets_view(webapp.RequestHandler):
     try:
       campaign_id = self.request.get('campaign_id', None)
       unique_args = get_unique_args_from_request(self.request)
+      if api.PARAM_REFERRER in unique_args and len(unique_args[api.PARAM_REFERRER]) > 0:
+        logging.info('referred by %s' % unique_args[api.PARAM_REFERRER])
+        if api.PARAM_KEY not in unique_args or len(unique_args[api.PARAM_KEY]) < 1:
+          for kf in private_keys.KEYED_REFERRERS:
+            if unique_args[api.PARAM_REFERRER].lower().find(kf['id']) >= 0:
+              unique_args[api.PARAM_KEY] = kf['key']
+
       result_set = search.search(unique_args)
       result_set.request_url = self.request.url
       template_values = get_default_template_values(self.request, 'SEARCH')

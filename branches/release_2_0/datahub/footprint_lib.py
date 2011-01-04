@@ -272,7 +272,8 @@ def output_field(name, value):
   if re.search(r'seniorcorps\.org', value, re.IGNORECASE):
     value = re.sub(r'(?i)seniorcorps\.org', 'seniorcorps.gov', value)
     print_progress("replaced seniorcorps")
-  if re.search(r'nationalservice\.org', value, re.IGNORECASE):
+  if (not re.search(r'musicnationalservice\.org', value, re.IGNORECASE)
+      and re.search(r'nationalservice\.org', value, re.IGNORECASE)):
     value = re.sub(r'(?i)nationalservice\.org', 'nationalservice.gov', value)
     print_progress("replaced nationalservice")
     
