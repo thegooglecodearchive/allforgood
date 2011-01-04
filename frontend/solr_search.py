@@ -136,9 +136,7 @@ def form_solr_query(args):
     max_dist = float(args[api.PARAM_VOL_DIST])
   
   boost_params = default_boosts(args);
-  #TODO: fix this part of the query
-  #geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1000}'   
-  geo_params = ''
+  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1000}'   
 
   # keyword
   query_is_empty = False
@@ -252,10 +250,7 @@ def form_solr_query(args):
           if facet_field_str in args:
               solr_query += '&facet.field=' + args[facet_field_str]
           else:
-              break
-          
-        
-          
+              break          
 
   return solr_query + boost_params
 
@@ -403,8 +398,9 @@ def query(query_url, args, cache, dumping = False):
   result = simplejson.loads(result_content)
   
   #facet_counts
-  facet_counts = result["facet_counts"]["facet_fields"]
-  result_set.facet_counts = deepcopy(facet_counts)
+  if "facet_counts" in result:
+    facet_counts = result["facet_counts"]["facet_fields"]
+    result_set.facet_counts = deepcopy(facet_counts)
 
   doc_list = result["response"]["docs"]
 
