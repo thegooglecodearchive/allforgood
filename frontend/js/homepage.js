@@ -77,9 +77,14 @@ function renderHomepage() {
   //el('home_video_placeholder').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/gulf-attrib.jpg" alt="Gulf of Mexico - Image courtesy of Wired.com" />';
   //el('home_video_placeholder2').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/pakistan.jpg" alt="Pakistan - Image courtesy of New York Times" />';
   //el('home_video_placeholder').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/waitingforsuperman.jpg" alt="Waiting for Superman" />';
-  el('home_video_placeholder').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/mission-serve-logo.png" alt="Mission Serve" />';
 
-  el('home_video_placeholder2').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/waitingforsuperman.jpg" alt="Waiting for Superman" />';
+  //el('home_video_placeholder').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/mission-serve-logo.png" alt="Mission Serve" />';
+
+  //el('home_video_placeholder2').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/waitingforsuperman.jpg" alt="Waiting for Superman" />';
+
+  el('home_video_placeholder').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/pointsoflight.jpg" alt="Points of Light Institute" />';
+
+  el('home_video_placeholder2').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/iams.jpg" alt="Home 4 the Holidays" />';
 }
 
 function doHomepageChangeLocationClick() {

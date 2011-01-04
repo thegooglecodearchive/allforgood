@@ -85,7 +85,7 @@ def add_range_filter(field, min_val, max_val):
   result += ':[' + str(min_val) +' TO ' + str(max_val) + ']'
   return result
 
-def rewrite_query(query_str):
+def rewrite_query(query_str, api_key = None):
   """ Rewrites the query string from an easy to type and understand format
   into a Solr-readable format"""
   # Lower-case everything and make boolean operators upper-case, so they
@@ -103,6 +103,10 @@ def rewrite_query(query_str):
 
   rewritten_query = re.sub(r'[0-9]t[0-9]', reupcase, rewritten_query)
   rewritten_query = re.sub(r'[0-9]z', reupcase, rewritten_query)
+  if rewritten_query.find('meetup') < 0 and api_key and api_key in private_keys.MEETUP_EXCLUDERS:
+    logging.info('solr_search.rewrite_query api key %s excludes meetup' % api_key)
+    rewritten_query = '(' + rewritten_query + ') AND -feed_providername:meetup'
+
   # Replace the category filter shortcut with its proper name.
   rewritten_query = rewritten_query.replace('category:', 'categories:')
 
@@ -110,6 +114,11 @@ def rewrite_query(query_str):
 
 def form_solr_query(args):
   solr_query = ''
+
+  api_key = None
+  if api.PARAM_KEY in args:
+    api_key = args[api.PARAM_KEY]
+    logging.info('api_key = %s' % api_key)
 
   # args fix up
   if api.PARAM_START not in args:
@@ -148,7 +157,7 @@ def form_solr_query(args):
       solr_query += rewrite_query(args[api.PARAM_Q])
   else:
     # Query is empty, search for anything at all.
-    solr_query += "*:*"
+    solr_query += rewrite_query('*:*', api_key)
     query_is_empty = True
 
   # date range
