@@ -11,41 +11,27 @@
 # limitations under the License.
 
 #-----------------------------------------------------------------------
-#some test synonym mappings unlikely to appear in real input text
-aaa => aaaa
-bbb => bbbb1 bbbb2
-ccc => cccc1,cccc2
-a\=>a => b\=>b
-a\,a => b\,b
-fooaaa,baraaa,bazaaa
-
-# Some synonym groups specific to this example
-GB,gib,gigabyte,gigabytes
-MB,mib,megabyte,megabytes
-Television, Televisions, TV, TVs
-#notice we use "gib" instead of "GiB" so any WordDelimiterFilter coming
-#after us won't split it into two words.
-
 # AFG Synonyms
-nature,environment,environmental
-education,school,schools
-animal,animals
-health,medical,healthcare,hospital,hospitals
-senior,seniors,elderly
-technology,computer,computers
-poverty,poor
-tutoring,mentoring,tutor,mentor,counseling
-
-# Synonym mappings can be used for spelling correction too
-pixima => pixma
-
-# Category Tags
-nature,environment,environmental
-education,school,schools
-animal,animals
-health,medical,healthcare,hospital,hospitals
-senior,seniors,elderly
-technology,computer,computers
-poverty,poor
-tutoring,mentoring,tutor,mentor,counseling
-
+MLK,mlk,martin luther,mlktech,king day,day on not a day off,ml king
+OilSpill,oil spill,bp,gulf cleanup,oil cleanup,spill cleanup
+EarthDay,environment,nature,environmental,outdoors,gardening,garden,park,wetlands,forest,forests,tree,trees,green,trail,trails,sierra club
+Moms,mom,mother,family,families,kids,children
+Hunger,anti-hunger,childhood hunger,dinner,feeding america,food,food bank,food pantry,food programs,free lunch,healthy meals,hunger,hungry,hungry children,impoverished,lunch,meal programs,meals,meals on wheels,nutritious,reduced lunch,school lunches,share our strength,starvation,starving,underfed,underprivileged,thanksgiving,soup kitchen,poverty,poor nutrition,frac,malnourished,foodbank,dinner
+Nature,environment,environmental,outdoors,gardening,garden,park,wetlands,forest,forests,tree,trees,green,trail,trails,sierra club
+Education,reading,teaching,teacher,teach,books,book,library,literacy,school,schools,libraries
+Animals,animal,animals,dog,dogs,cat,cats,zoo,bird,birds,zoos,puppies,puppy,kitten,kitty,critter,critters,frog,frogs,turtle,turtles,kittens
+Health,,health,hospital,hospitals,medical,healthcare,mental,hospice,nursing,cancer,nurse,nurses,doctor,doctors,red cross
+Seniors,senior,seniors,elderly
+Technology,website,computer,computers,technology,web,video,graphic,design,internet
+Poverty,habitat,homeless,housing,poverty,house,poor
+Tutoring,mentoring,tutoring,mentor,counseling
+Gardening,garden,gardens,gardener,gardeners,gardening
+Lawyer,lawyer.lawyers,attorney,attorneys,legal counsel,family law,court system,court facilities,court forms,legal information,legal help
+Doctor,doctor,doctors,medical professional,medical professionals,nurse,nurses
+Programmer,programmer,programmers,software developer,software developers,software engineer,software engineer
+Repairman,plumber,plumbers,electrician,electricians,carpenter,carpenters,bricklayer,bricklayers,woodworker,woodworkers
+Artist,artist,artists,drawing,painter,painters,painting,sculpting,sculptor,sculptors
+GraphicDesigner,graphic designer,graphic designers,graphic design,graphic skills,graphics skills,graphic artist,graphic artists
+Videographer,videographer,videographers,video,editor
+SpanishSpeaker,spanish,speaking,spanish,speaker,bilingual,spanish,reads,spanish,writes,spanish
+VeteransDay,veteran veterans

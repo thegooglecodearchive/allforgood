@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """
-toss all the query-time boost code into one place (rather than a class file)
+toss all the one-off boosts into one place (rather than a class file)
 """
 
 from datetime import datetime
