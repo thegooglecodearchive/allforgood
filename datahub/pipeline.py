@@ -28,8 +28,8 @@ import xml_helpers as xmlh
 
 #LOGPATH = "/home/footprint/public_html/datahub/dashboard.ing/"
 #HOMEDIR = "/home/footprint/allforgood-read-only/datahub"
-LOGPATH = "/home/footprint/allforgood-read-only/datahub/dashboard.ing/"
-HOMEDIR = "/home/footprint/allforgood-read-only/datahub"
+LOGPATH = "/home/footprint/release_2_0/datahub/dashboard.ing/"
+HOMEDIR = "/home/footprint/release_2_0/datahub"
 
 # rename these-- but remember that the dashboard has to be updated first...
 LOG_FN = "load_gbase.log"

@@ -56,7 +56,6 @@ def default_boosts(args):
   boost = ""
   
   if api.PARAM_Q in args and args[api.PARAM_Q] == "":    
-    
     # boosting vetted categories
     boost += '&bq=categories:vetted^15'    
     # big penalty for events starting in the far future
@@ -64,17 +63,23 @@ def default_boosts(args):
     # big boost for events starting in the near future
     boost += '+eventrangestart:[NOW+TO+NOW%2B1MONTHS]^10'    
     # slight penalty for events started recently
-    boost += '+=eventrangestart:[NOW+TO+*]^5'    
+    boost += '+eventrangestart:[NOW+TO+*]^5'    
     # modest penalty for events started long ago
     boost += '+eventrangestart:[NOW-6MONTHS+TO+*]^7'    
     # modest penalty for events ending in the far future
     boost += '+eventrangeend:[*+TO+NOW%2B6MONTHS]^7'     
     # big boost for events ending in the near future
-    boost += '+eventrangeend:[NOW+TO+NOW%2B1MONTHS]^10'    
+    boost += '+eventrangeend:[NOW+TO+NOW%2B1MONTHS]^10'
+    # slight penalty for meetup events
+    boost += '+-feed_providername:meetup^2'
     # boost short events
     boost += '+eventduration:[1+TO+10]^10'
+    # big boost opps with search terms in title
+    boost += '&qf=title^20'
+    # modest boost opps with search terms in description
+    boost += '+abstract^7'
   
-  return boost  
+  return boost
 
 def add_range_filter(field, min_val, max_val):
   """ Convert colons in the field name and build a range specifier
@@ -125,7 +130,7 @@ def form_solr_query(args):
     args[api.PARAM_START] = 1
 
   if api.PARAM_SORT not in args:
-    args[api.PARAM_SORT] = "r"
+    args[api.PARAM_SORT] = "score"
 
   # Generate geo search parameters
   # TODO: formalize these constants
@@ -159,35 +164,6 @@ def form_solr_query(args):
     # Query is empty, search for anything at all.
     solr_query += rewrite_query('*:*', api_key)
     query_is_empty = True
-
-  # date range
-  if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "":
-    start_date = datetime.datetime.today()
-    try:
-      start_date = datetime.datetime.strptime(
-                     args[api.PARAM_VOL_STARTDATE].strip(), "%Y-%m-%d")
-    except:
-      logging.debug('solr_search.form_solr_query malformed start date: %s' %
-                    args[api.PARAM_VOL_STARTDATE])
-    end_date = None
-    if api.PARAM_VOL_ENDDATE in args and args[api.PARAM_VOL_ENDDATE] != "":
-      try:
-        end_date = datetime.datetime.strptime(
-                       args[api.PARAM_VOL_ENDDATE].strip(), "%Y-%m-%d")
-      except:
-        logging.debug('solr_search.form_solr_query malformed end date: %s' %
-                       args[api.PARAM_VOL_ENDDATE])
-    if not end_date:
-      end_date = start_date
-    start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
-    end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
-    if (api.PARAM_VOL_INCLUSIVEDATES in args and
-       args[api.PARAM_VOL_INCLUSIVEDATES] == 'true'):
-      solr_query += add_range_filter("eventrangestart", start_datetime_str, '*')
-      solr_query += add_range_filter("eventrangeend", '*', end_datetime_str)
-    else:
-      solr_query += add_range_filter("eventrangestart", '*', end_datetime_str)
-      solr_query += add_range_filter("eventrangeend", start_datetime_str, '*')
 
   # geo params go in first
   solr_query = geo_params + solr_query
@@ -327,10 +303,39 @@ def search(args, dumping = False):
   logging.info(args[api.PARAM_SORT]);
   if api.PARAM_SORT in args:
     query_url += "&sort=" + args[api.PARAM_SORT] + "%20desc"
+    
+  # date range
+  date_string = ""
+  if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "":    
+    start_date = datetime.datetime.today()
+    try:
+      start_date = datetime.datetime.strptime(
+                     args[api.PARAM_VOL_STARTDATE].strip(), "%Y-%m-%d")
+    except:
+      logging.debug('solr_search.form_solr_query malformed start date: %s' %
+                    args[api.PARAM_VOL_STARTDATE])
+    end_date = None
+    if api.PARAM_VOL_ENDDATE in args and args[api.PARAM_VOL_ENDDATE] != "":
+      try:
+        end_date = datetime.datetime.strptime(
+                       args[api.PARAM_VOL_ENDDATE].strip(), "%Y-%m-%d")
+      except:
+        logging.debug('solr_search.form_solr_query malformed end date: %s' %
+                       args[api.PARAM_VOL_ENDDATE])
+    if not end_date:
+      end_date = start_date
+    start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
+    end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
+    if (api.PARAM_VOL_INCLUSIVEDATES in args and args[api.PARAM_VOL_INCLUSIVEDATES] == 'true'):
+      date_string += "+(eventrangestart:[" + start_datetime_str + "+TO+*]+AND+" 
+      date_string += "eventrangeend:[*+TO+" + end_datetime_str + "])"     
+    else:
+      date_string += "+(eventrangestart:[*+TO+" + end_datetime_str + "]+AND+"
+      date_string += "eventrangeend:[" + start_datetime_str + "+TO+*])"   
 
   # limit to opps which have not expired yet
   # [expires:NOW TO *] means "expires prior to today"
-  query_url += "&fq=expires:[NOW-3DAYS%20TO%20*]"
+  query_url += "&fq=expires:[NOW-3DAYS%20TO%20*]" + date_string
 
   #num_to_fetch = int(args[api.PARAM_NUM]) + 1
   num_to_fetch = 50

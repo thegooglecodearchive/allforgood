@@ -209,7 +209,7 @@ if (typeof categories_data != undefined)
 	};
 	var categories = makeFilterWidgetArray(Array('All', 'all'), categories_data, categories_labels);
 	if (el('category_filter_widget')) {
-	//alert(query.getCategory());
+
     categoryFilterWidget =
         new FilterWidget(el('category_filter_widget'),
                          'Filter By Category',
@@ -231,12 +231,12 @@ if (typeof virtual_data != undefined && typeof self_directed_data != undefined)
 	type.push(Array('Geographical', 'geo'));
 	if (hasVirtual)
 	{
-	        type.push(virtual);
-		type.push(Array('Virtual', 'virtual_data'));
+        type.push(virtual);
+		type.push(Array('Virtual', 'virtual'));
 	}
 	if (hasSelfDirected)
 	{
-		type.push(Array('Self-Directed', 'self_directed_data'));
+		type.push(Array('Self-Directed', 'self_directed'));
 		type.push(self_directed);
 	}
 	if (el('type_filter_widget')) {
