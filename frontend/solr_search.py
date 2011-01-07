@@ -156,15 +156,19 @@ def form_solr_query(args):
   query_is_empty = False
   if (api.PARAM_Q in args and args[api.PARAM_Q] != "") or (api.PARAM_CATEGORY in args and args[api.PARAM_CATEGORY] != "all") or (api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all"):
     query_boosts = boosts.query_time_boosts(args)
+    
+    # Gross Hack for MLK Day    
+    keyword = args[api.PARAM_Q].replace('category:', '')
+    
     if query_boosts:
       solr_query = query_boosts    
-    else:
-      solr_query += rewrite_query(args[api.PARAM_Q])
+    else:      
+      solr_query += rewrite_query(keyword)
   else:
     # Query is empty, search for anything at all.
     solr_query += rewrite_query('*:*', api_key)
     query_is_empty = True
-
+  logging.info("query:" + keyword)
   # geo params go in first
   solr_query = geo_params + solr_query
   solr_query = urllib.quote_plus(solr_query)
