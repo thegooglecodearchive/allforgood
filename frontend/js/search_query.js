@@ -25,8 +25,8 @@ function ensureSubmitForm() {
 }
 
 function setCategory(category) {
-  setInputFieldValue(el('categories'), category);
-  submitForm('category', category);
+  setInputFieldValue(el('keywords'), category);
+  submitForm('keywords');
 }
 
 function sortResults(value) {
