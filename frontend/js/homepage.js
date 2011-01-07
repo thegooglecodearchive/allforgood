@@ -82,9 +82,16 @@ function renderHomepage() {
 
   //el('home_video_placeholder2').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/waitingforsuperman.jpg" alt="Waiting for Superman" />';
 
-  el('home_video_placeholder').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/pointsoflight.jpg" alt="Points of Light Institute" />';
+  //el('home_video_placeholder2').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/iams.jpg" alt="Home 4 the Holidays" />';
+  //el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/bnfClMe8_kw&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/bnfClMe8_kw&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
+  el('home_video_placeholder').innerHTML = '<div id="MLKVideo" style="width:290px;height:188px;background-image:url(./gadget/mlk.png);"><img onclick="goMLK();" style="margin-left:30px;margin-top:120px;cursor:pointer;opacity:0.8;filter:alpha(opacity=80);" src="./gadget/play.png" alt="Play video" title="Play video"></div>';
 
-  el('home_video_placeholder2').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/iams.jpg" alt="Home 4 the Holidays" />';
+  el('home_video_placeholder2').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/pointsoflight.jpg" alt="Points of Light Institute" />';
+
+}
+
+function goMLK() {
+  el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/bnfClMe8_kw&hl=en&fs=1&rel=0&egm=0&autoplay=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/bnfClMe8_kw&hl=en&fs=1&rel=0&egm=0&autoplay=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
 }
 
 function doHomepageChangeLocationClick() {
