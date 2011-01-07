@@ -168,7 +168,7 @@ def form_solr_query(args):
     # Query is empty, search for anything at all.
     solr_query += rewrite_query('*:*', api_key)
     query_is_empty = True
-  logging.info("query:" + keyword)
+
   # geo params go in first
   solr_query = geo_params + solr_query
   solr_query = urllib.quote_plus(solr_query)
