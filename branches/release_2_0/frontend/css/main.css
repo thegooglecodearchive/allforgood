@@ -131,9 +131,8 @@ form {
   padding-left: 10px;
 }
 
-.search_button {
-  height: 35px;
-  width: 41px;
+#submit_button {
+	margin-bottom:25px;
 }
 
 input#keywords {
@@ -148,6 +147,19 @@ input#location {
   padding: 2px 0;
   font-size: 18px;
   width: 180px; 
+}
+
+.facets #location, #startdate, #enddate { 
+  padding: 2px 0;
+  font-size: 14px;
+  width: 180px;
+  color:#666 !important;
+  height:18px;
+}
+
+#location_slider {
+	width:180px;
+	margin:6px 0 0 6px;
 }
 
 .location-btn {
@@ -535,10 +547,14 @@ h1 {
 }
 
 .filterwidget_title {
-  margin-top: 16px;
+  margin: 14px 0 0 0;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 14px;
   color: #666;
+}
+
+#location_distance {
+	font-size:14px;
 }
 
 .filterwidget_title a {

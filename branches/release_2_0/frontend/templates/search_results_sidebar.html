@@ -2,35 +2,46 @@
     {% include 'campaign_branding_snippet.html' %}
 {% endifnotequal %}
 
-
-{% ifequal current_page "SEARCH" %}
-<div class="map_hint">
-Enter your location.
-</div>
-{% endifequal %}
-
-{% include 'map_widget.html' %}
-
-<div id='filter_results' class='filterwidget'></div>
-
+<!--<div id='filter_results' class='filterwidget'></div>
 <div id='category_filter_widget' class='filterwidget'></div>
-
 <div id='distance_filter_widget' class='filterwidget'></div>
-
 <div id='type_filter_widget' class='filterwidget'></div>
+<div id='source_filter_widget' class='filterwidget'>-->
 
-<div id='when_filter_widget' class='filterwidget'>
-<div class="filterwidget_title">
-Filter By Date
-</div>
-<form onsubmit="submitForm('when_filter_widget');return false;">
-<p>Start Date: <input id="startdate" type="text"></p>
-
-<p>End Date: <input id="enddate" type="text"></p>
-<p><input type="button" value="Submit" onclick="submitForm('when_filter_widget'); return false;"></p>
+<form class="facets">
+	{% ifequal current_page "SEARCH" %}
+		<div class="filterwidget_title">
+			Enter your location
+		</div>
+	{% endifequal %}
+	<div style='margin-bottom: 4px;'>
+	  <div class='valign'>
+	    <table style='width:100%;'>
+	     <tr>
+	      <td valign='middle'>
+	        <input id='location' name='your location'
+	               class='valign' type='text' size='60' value='{{ location|escape }}'/>        
+	      </td>
+	     </tr>
+	    </table>
+	  <script>setInputFieldValue(el('location'), '');</script>
+	  </div>
+	</div>
+	<div id='when_filter_widget' class='filterwidget'>
+		<div class="filterwidget_title">
+			Filter By Date
+		</div>	
+		<p class="filterwidget_title"><input id="startdate" type="text" value="Start Date"></p>		
+		<p class="filterwidget_title"><input id="enddate" type="text" value="End Date"></p>	
+	</div>
+	
+	<div id='distance_filter_widget' class='filterwidget'>
+		<div class="filterwidget_title">
+			Within a <span id="location_distance"></span> mile range
+		</div>
+		<div id="location_slider"></div>	
+	</div>
+	<div id="submit_button"></div>
 </form>
-
-</div>
-
-<div id='source_filter_widget' class='filterwidget'>
+<div id='map'></div>
 </div>
