@@ -310,7 +310,7 @@ def search(args, dumping = False):
     
   # date range
   date_string = ""
-  if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "":    
+  if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "" and args[api.PARAM_VOL_STARTDATE] != "everything":    
     start_date = datetime.datetime.today()
     try:
       start_date = datetime.datetime.strptime(
@@ -330,12 +330,10 @@ def search(args, dumping = False):
       end_date = start_date
     start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
     end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
-    if (api.PARAM_VOL_INCLUSIVEDATES in args and args[api.PARAM_VOL_INCLUSIVEDATES] == 'true'):
-      date_string += "+(eventrangestart:[" + start_datetime_str + "+TO+*]+AND+" 
-      date_string += "eventrangeend:[*+TO+" + end_datetime_str + "])"     
-    else:
-      date_string += "+(eventrangestart:[*+TO+" + end_datetime_str + "]+AND+"
-      date_string += "eventrangeend:[" + start_datetime_str + "+TO+*])"   
+    date_string += "+(eventrangestart:[" + start_datetime_str + "+TO+*]+AND+" 
+    date_string += "eventrangeend:[*+TO+" + end_datetime_str + "])"
+  else:
+    date_string += "+(eventrangestart:[" + datetime.datetime.today().strftime("%Y-%m-%dT00:00:00.000Z") + "+TO+*])"     
 
   # limit to opps which have not expired yet
   # [expires:NOW TO *] means "expires prior to today"

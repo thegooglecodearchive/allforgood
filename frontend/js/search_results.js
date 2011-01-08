@@ -21,6 +21,25 @@ var filters = [];
 $(document).ready(function() {
     $("#startdate").datepicker();
 	$("#enddate").datepicker();
+	$("#location_slider").slider({
+			value:35,
+			min: 5,
+			max: 100,
+			step: 5,
+			slide: function( event, ui ) {
+				$("#location_distance").html(ui.value);
+			}			
+	});
+	$("#location_distance").html($("#location_slider").slider("value"));
+	$("#submit_button").button({
+        icons: {
+            primary: "search_button"			
+    	},
+		label: "Submit"
+	});
+	$("#submit_button").click(function() {
+		submitForm("all");	
+	});
   });
   
   /** Query params for backend search, based on frontend parameters.
@@ -34,14 +53,14 @@ $(document).ready(function() {
  * @param {Object} opt_filters Filters for this query.
  *      Maps 'filtername':value.
  */
-function Query(keywords, location, category, distance, type, source, pageNum, sort, useCache, get_facet_counts, opt_timePeriodStart, opt_timePeriodEnd, opt_filters) {
+function Query(keywords, location, distance, pageNum, sort, useCache, get_facet_counts, opt_timePeriodStart, opt_timePeriodEnd, opt_filters) {
   var me = this;
   me.keywords_ = keywords;
   me.location_ = location;
-  me.category_ = category || 'all';
+  //me.category_ = category || 'all';
   me.distance_ = distance || '35';
-  me.type_ = type || 'all';
-  me.source_ = source || 'all';
+  //me.type_ = type || 'all';
+  //me.source_ = source || 'all';
   me.pageNum_ = pageNum;
   me.sort_ = sort;
   me.use_cache_ = useCache;
@@ -204,10 +223,10 @@ Query.prototype.getUrlQuery = function() {
   }
   
   // Category
-  var category = me.getCategory();
+  /*var category = me.getCategory();
   if (category && category.length > 0) {
     addQueryParam('category', category);
-  }
+  }*/
   
   // Distance
   var distance = me.getDistance();
@@ -216,7 +235,7 @@ Query.prototype.getUrlQuery = function() {
   }
 
   // Type
-  var type = me.getType();
+  /*var type = me.getType();
   if (type && type.length > 0) {
     addQueryParam('type', type);
   }
@@ -225,7 +244,7 @@ Query.prototype.getUrlQuery = function() {
   var source = me.getSource();
   if (source && source.length > 0) {
     addQueryParam('source', source);
-  }
+  }*/
   
   // Sort
   var sort = me.getSort();
@@ -310,7 +329,7 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('vol_enddate'); 
   getNamedFilterFromUrl('key');
 
-  return new Query(keywords, location, category, distance, type, source, pageNum, sort, use_cache, get_facet_counts, timePeriodStart, timePeriodEnd, filters);
+  return new Query(keywords, location, distance, pageNum, sort, use_cache, get_facet_counts, timePeriodStart, timePeriodEnd, filters);
 }
 
 /**
@@ -411,7 +430,7 @@ function onLoadSearch() {
                          'everything',
                          function(value) { submitForm('when_widget'); });
   }
-  */
+  
   
   if (el('distance_filter_widget')) {
     distanceFilterWidget =
@@ -424,7 +443,7 @@ function onLoadSearch() {
                            ['500', '500'] ],
                          '35',
                          function(value) { submitForm('distance_widget'); });
-  }
+  }*/
 
   if (el('location')) {
     setInputFieldValue(el('location'), getDefaultLocation().displayLong);
@@ -523,21 +542,21 @@ executeSearchFromHashParams = function(currentLocation) {
 
     var success = function(text, status) {
       setInputFieldValue(el('keywords'), query.getKeywords());
-	  if (categoryFilterWidget) {
+	  /*if (categoryFilterWidget) {
         categoryFilterWidget.setValue(query.getCategory());
       }	  
 	  if (distanceFilterWidget) {
         distanceFilterWidget.setValue(query.getDistance());
       }
-      /*if (whenFilterWidget) {
+      if (whenFilterWidget) {
         whenFilterWidget.setValue(query.getTimePeriod());
-      }*/
+      }
       if (typeFilterWidget) {
         typeFilterWidget.setValue(query.getType());
       }
       if (sourceFilterWidget) {
         sourceFilterWidget.setValue(query.getSource());
-      }
+      }*/
       var regexp = new RegExp('[a-zA-Z]')
       if (regexp.exec(query.getLocation())) {
         // Update location field in UI, but only if location text isn't
@@ -605,11 +624,23 @@ executeSearchFromHashParams = function(currentLocation) {
 
 function getStartDate()
 {
-  return dateFormat($("#startdate").datepicker("getDate"), "yyyy-mm-dd");
+  var start = getInputFieldValue(el('startdate'));
+  if (!start || "Start Date") {
+  	start = "";
+  }  
+  return start;
 }
 function getEndDate()
 {
-  return dateFormat($("#enddate").datepicker("getDate"), "yyyy-mm-dd");
+  var end = getInputFieldValue(el('enddate'));
+  if (!end || "End Date") {
+  	end = "";
+  }  
+  return end;
+}
+
+function getDistance() {
+	return $("#location_slider").slider("value");
 }
 
 /** Called from the "Refine" button's onclick, the main form onsubmit,
@@ -617,7 +648,7 @@ function getEndDate()
  * @param {string} invoker Who invoked this submission?  One of
  *                         ['keywords', 'when_widget', 'map'].
  */
-function submitForm(invoker, value) {
+function submitForm(invoker, value) {  
   var keywords = getInputFieldValue(el('keywords'));
 
   // If the keywords search form is invoked from non-search page,
@@ -633,16 +664,15 @@ function submitForm(invoker, value) {
     return;
   }
 
-  var location = getInputFieldValue(el('location'));
-
+  var location = getInputFieldValue(el('location'));	
   if (invoker == 'map') {
     setSessionCookie('user_vol_loc', location);
-  }
+  } 
 
   //var timePeriod = whenFilterWidget.getValue();
   var timePeriodStart = getStartDate();
   var timePeriodEnd = getEndDate();
-  if (categoryFilterWidget)
+  /*if (categoryFilterWidget)
   {
 	var category = getInputFieldValue(el('categories')) || (categoryFilterWidget.getValue());
   }
@@ -657,22 +687,40 @@ function submitForm(invoker, value) {
   if (sourceFilterWidget)
   {
     var source = (sourceFilterWidget.getValue());
-  }
+  }*/
   var sort = getInputFieldValue(el('sort'));
 
   // TODO: strip leading/trailing whitespace.
 
   if (location == '') {
     location = getDefaultLocation().displayLong;
+  }  
+   var distance = getDistance();
+   if (invoker == "all" && currentPageName != 'SEARCH') {
+	var qs = "";		
+	if (distance) {
+		qs += ("&distance=" +  distance);
+	} else {
+		qs += ("&distance=35");
+	}	
+	if (timePeriodStart) {
+		qs += ("&timeperiodstart=" + timePeriodStart);
+	}
+	if (timePeriodEnd) {
+		qs += ("&timeperiodend=" + timePeriodEnd);
+	}
+  	setSessionCookie('user_vol_loc', location);
+	window.location = "/search#vol_loc=" + location + qs;	
+	return;
   }
 
   var query = lastSearchQuery.clone();
   query.setKeywords(keywords);
   query.setLocation(location);
-  query.setCategory(category);
+  //query.setCategory(category);
   query.setDistance(distance);
-  query.setType(type);
-  query.setSource(source)
+  //query.setType(type);
+  //query.setSource(source)
   query.setPageNum(0);
   query.setSort(sort);
   query.setTimePeriodStart(timePeriodStart);

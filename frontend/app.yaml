@@ -1,7 +1,8 @@
 application: footprint2009dev
 #application: servicefootprint
 
-version: release-2-0
+#version: release-2-0
+version: staging
 #version: mt1955
 runtime: python
 api_version: 1
