@@ -220,31 +220,13 @@ Query.prototype.getUrlQuery = function() {
   var location = me.getLocation();
   if (location && location.length > 0) {
     addQueryParam('vol_loc', location);
-  }
-  
-  // Category
-  /*var category = me.getCategory();
-  if (category && category.length > 0) {
-    addQueryParam('category', category);
-  }*/
+  } 
   
   // Distance
   var distance = me.getDistance();
   if (distance && distance.length > 0) {
     addQueryParam('distance', distance);
   }
-
-  // Type
-  /*var type = me.getType();
-  if (type && type.length > 0) {
-    addQueryParam('type', type);
-  }
-  
-  // Source
-  var source = me.getSource();
-  if (source && source.length > 0) {
-    addQueryParam('source', source);
-  }*/
   
   // Sort
   var sort = me.getSort();
@@ -272,13 +254,13 @@ Query.prototype.getUrlQuery = function() {
   if (me.getFacetCounts())
   {
     var facetFieldCount = 0;
-    addQueryParam('facet', 'true');
-    addQueryParam('facet.limit', '-1');
-	addQueryParam('facet.mincount', '1');
-    addFacetField('feed_providername');
-	addFacetField('categories');
-	addFacetField('virtual');
-	addFacetField('self_directed');
+    //addQueryParam('facet', 'true');
+    //addQueryParam('facet.limit', '-1');
+	//addQueryParam('facet.mincount', '1');
+    //addFacetField('feed_providername');
+	//addFacetField('categories');
+	//addFacetField('virtual');
+	//addFacetField('self_directed');
   }
   
   // Use Cache
@@ -417,34 +399,6 @@ FilterWidget.prototype.getName = function() {
 /** Perform a search using the current URL parameters and IP geolocation.
  */
 function onLoadSearch() {
-/*
-  if (el('when_filter_widget')) {
-    whenFilterWidget =
-        new FilterWidget(el('when_filter_widget'),
-                         'Filter By Date',
-                         [ ['Anytime', 'everything'],
-                           ['Today', 'today'],
-                           ['This weekend', 'this_weekend'],
-                           ['This week', 'this_week'],
-                           ['This month', 'this_month'] ],
-                         'everything',
-                         function(value) { submitForm('when_widget'); });
-  }
-  
-  
-  if (el('distance_filter_widget')) {
-    distanceFilterWidget =
-        new FilterWidget(el('distance_filter_widget'),
-                         'Filter By Distance (in miles)',
-                         [ ['35', '35'],
-                           ['50', '50'],
-                           ['75', '75'],
-                           ['100', '100'],
-                           ['500', '500'] ],
-                         '35',
-                         function(value) { submitForm('distance_widget'); });
-  }*/
-
   if (el('location')) {
     setInputFieldValue(el('location'), getDefaultLocation().displayLong);
   }
@@ -541,22 +495,7 @@ executeSearchFromHashParams = function(currentLocation) {
     lastSearchQuery = query;
 
     var success = function(text, status) {
-      setInputFieldValue(el('keywords'), query.getKeywords());
-	  /*if (categoryFilterWidget) {
-        categoryFilterWidget.setValue(query.getCategory());
-      }	  
-	  if (distanceFilterWidget) {
-        distanceFilterWidget.setValue(query.getDistance());
-      }
-      if (whenFilterWidget) {
-        whenFilterWidget.setValue(query.getTimePeriod());
-      }
-      if (typeFilterWidget) {
-        typeFilterWidget.setValue(query.getType());
-      }
-      if (sourceFilterWidget) {
-        sourceFilterWidget.setValue(query.getSource());
-      }*/
+      setInputFieldValue(el('keywords'), query.getKeywords());	  
       var regexp = new RegExp('[a-zA-Z]')
       if (regexp.exec(query.getLocation())) {
         // Update location field in UI, but only if location text isn't
@@ -624,23 +563,23 @@ executeSearchFromHashParams = function(currentLocation) {
 
 function getStartDate()
 {
-  var start = getInputFieldValue(el('startdate'));
-  if (!start || "Start Date") {
-  	start = "";
+  var start = getInputFieldValue(el('startdate')).toString();
+  if (!start || start == "Start Date") {
+	start = "";
   }  
   return start;
 }
 function getEndDate()
 {
-  var end = getInputFieldValue(el('enddate'));
-  if (!end || "End Date") {
+  var end = getInputFieldValue(el('enddate')).toString();
+  if (!end || end == "End Date") {
   	end = "";
   }  
   return end;
 }
 
 function getDistance() {
-	return $("#location_slider").slider("value");
+	return $("#location_slider").slider("value").toString();
 }
 
 /** Called from the "Refine" button's onclick, the main form onsubmit,
@@ -669,58 +608,18 @@ function submitForm(invoker, value) {
     setSessionCookie('user_vol_loc', location);
   } 
 
-  //var timePeriod = whenFilterWidget.getValue();
   var timePeriodStart = getStartDate();
   var timePeriodEnd = getEndDate();
-  /*if (categoryFilterWidget)
-  {
-	var category = getInputFieldValue(el('categories')) || (categoryFilterWidget.getValue());
-  }
-  if (distanceFilterWidget)
-  {
-    var distance = (distanceFilterWidget.getValue());
-  }
-  if (typeFilterWidget)
-  {
-	var type = (typeFilterWidget.getValue());
-  }
-  if (sourceFilterWidget)
-  {
-    var source = (sourceFilterWidget.getValue());
-  }*/
+  var distance = getDistance();  
   var sort = getInputFieldValue(el('sort'));
-
-  // TODO: strip leading/trailing whitespace.
-
   if (location == '') {
     location = getDefaultLocation().displayLong;
-  }  
-   var distance = getDistance();
-   if (invoker == "all" && currentPageName != 'SEARCH') {
-	var qs = "";		
-	if (distance) {
-		qs += ("&distance=" +  distance);
-	} else {
-		qs += ("&distance=35");
-	}	
-	if (timePeriodStart) {
-		qs += ("&timeperiodstart=" + timePeriodStart);
-	}
-	if (timePeriodEnd) {
-		qs += ("&timeperiodend=" + timePeriodEnd);
-	}
-  	setSessionCookie('user_vol_loc', location);
-	window.location = "/search#vol_loc=" + location + qs;	
-	return;
   }
-
+  
   var query = lastSearchQuery.clone();
   query.setKeywords(keywords);
   query.setLocation(location);
-  //query.setCategory(category);
   query.setDistance(distance);
-  //query.setType(type);
-  //query.setSource(source)
   query.setPageNum(0);
   query.setSort(sort);
   query.setTimePeriodStart(timePeriodStart);
