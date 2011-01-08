@@ -333,11 +333,12 @@ def search(args, dumping = False):
     date_string += "+(eventrangestart:[" + start_datetime_str + "+TO+*]+AND+" 
     date_string += "eventrangeend:[*+TO+" + end_datetime_str + "])"
   else:
-    date_string += "+(eventrangestart:[" + datetime.datetime.today().strftime("%Y-%m-%dT00:00:00.000Z") + "+TO+*])"     
-
+    date_string += "+(eventrangestart:[" + datetime.datetime.today().strftime("%Y-%m-%dT00:00:00.000Z") + "+TO+*])"  
+    date_string += '+OR+(event_date_range:"' + "1971-01-01T00:00:00" + '")'   
+    
   # limit to opps which have not expired yet
   # [expires:NOW TO *] means "expires prior to today"
-  query_url += "&fq=expires:[NOW-3DAYS%20TO%20*]" + date_string
+  query_url += "&fq=expires:" + date_string
 
   #num_to_fetch = int(args[api.PARAM_NUM]) + 1
   num_to_fetch = 50
