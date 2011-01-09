@@ -22,7 +22,7 @@ $(document).ready(function() {
     $("#startdate").datepicker();
 	$("#enddate").datepicker();
 	$("#location_slider").slider({
-			value:15,
+			value:5,
 			min: 5,
 			max: 100,
 			step: 5,
@@ -58,7 +58,7 @@ function Query(keywords, location, distance, pageNum, sort, useCache, get_facet_
   me.keywords_ = keywords;
   me.location_ = location;
   //me.category_ = category || 'all';
-  me.distance_ = distance || '15';
+  me.distance_ = distance || '5';
   //me.type_ = type || 'all';
   //me.source_ = source || 'all';
   me.pageNum_ = pageNum;
