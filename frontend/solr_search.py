@@ -332,6 +332,9 @@ def search(args, dumping = False):
     
   if start_datetime_str:
     query_url += "&fq=(eventrangeend:[" + start_datetime_str + "+TO+*])"
+  else:
+    query_url += "&fq=(eventrangeend:[NOW-3DAYS%20TO%20*])"
+    
 
   #num_to_fetch = int(args[api.PARAM_NUM]) + 1
   num_to_fetch = 100
