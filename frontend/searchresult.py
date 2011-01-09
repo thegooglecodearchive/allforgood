@@ -273,14 +273,12 @@ class SearchResultSet(object):
           listed = False
           for merged_result in self.merged_results[i].merged_list:
             # do we already have this date + url?
-            if (merged_result.t_startdate == self.merged_results[i].t_startdate
-                and merged_result.url == self.merged_results[i].url):
+            if (merged_result.t_startdate == self.merged_results[i].t_startdate and merged_result.url == self.merged_results[i].url):
               listed = True
               break
-          if not listed:
+          if not listed and res.startdate >= datetime.datetime.today():
             self.merged_results[i].merged_list.append(res)
-            self.merged_results[i].merged_debug.append(res.location + ":" +
-                res.startdate.strftime("%Y-%m-%d"))
+            self.merged_results[i].merged_debug.append(res.location + ":" + res.startdate.strftime("%Y-%m-%d"))
           if not merge_by_date_and_location:
             merged = False
           else:
