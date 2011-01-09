@@ -314,7 +314,7 @@ def search(args, dumping = False):
     start_date = datetime.datetime.today()
     try:
       start_date = datetime.datetime.strptime(
-                     args[api.PARAM_VOL_STARTDATE].strip(), "%Y-%m-%d")
+                     args[api.PARAM_VOL_STARTDATE].strip(), "%m/%d/%Y")
     except:
       logging.debug('solr_search.form_solr_query malformed start date: %s' %
                     args[api.PARAM_VOL_STARTDATE])
@@ -322,7 +322,7 @@ def search(args, dumping = False):
     if api.PARAM_VOL_ENDDATE in args and args[api.PARAM_VOL_ENDDATE] != "":
       try:
         end_date = datetime.datetime.strptime(
-                       args[api.PARAM_VOL_ENDDATE].strip(), "%Y-%m-%d")
+                       args[api.PARAM_VOL_ENDDATE].strip(), "%m/%d/%Y")
       except:
         logging.debug('solr_search.form_solr_query malformed end date: %s' %
                        args[api.PARAM_VOL_ENDDATE])
