@@ -253,7 +253,7 @@ def normalize_query_values(args, dumping = False):
   args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
   if api.PARAM_VIRTUAL in args:
     args["lat"] = args["long"] = "0.0"
-    args[api.PARAM_VOL_DIST] = 35
+    args[api.PARAM_VOL_DIST] = 15
     
   elif api.PARAM_VOL_LOC in args:
     if geocode.is_latlong(args[api.PARAM_VOL_LOC]):
@@ -276,7 +276,7 @@ def normalize_query_values(args, dumping = False):
     if api.PARAM_DISTANCE in args:
       args[api.PARAM_VOL_DIST] = safe_int(args[api.PARAM_DISTANCE])
     else:
-      args[api.PARAM_VOL_DIST] = 35
+      args[api.PARAM_VOL_DIST] = 15
 
   else:
     args[api.PARAM_VOL_LOC] = args[api.PARAM_VOL_DIST] = ""
