@@ -175,7 +175,9 @@ input#location {
 	color: #555555;
 	cursor: pointer;
 	font-weight:bold;
-	padding-left:35px;
+	padding-left:5px;
+	width:100px;
+	text-align:left;
 }
 
 /** Search results page **/
