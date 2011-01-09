@@ -169,7 +169,7 @@ input#location {
 }
 
 
-#submit_button button {
+#submit_button a {
 	border: 1px solid #D3D3D3;	
 	height: 34px;
 	color: #555555;
@@ -178,6 +178,14 @@ input#location {
 	padding-left:5px;
 	width:100px;
 	text-align:left;
+	display:block;
+	text-decoration: none;
+	padding-top: 9px;  
+	height:23px;	
+	font-size:14px;	 
+	font-family:Arial;	 
+	width:93px;	 
+	padding-left:10px;
 }
 
 /** Search results page **/
