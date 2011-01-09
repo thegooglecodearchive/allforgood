@@ -31,8 +31,9 @@ $(document).ready(function() {
 			}			
 	});
 	$("#location_distance").html($("#location_slider").slider("value"));	
-	$("#submit_button > button").click(function() {
-		submitForm("all");	
+	$("#facet_submit").click(function() {
+		submitForm("all");
+		return false;
 	});
 	var start = getHashParam('timeperiodstart', '');
 	var end = getHashParam('timeperiodend', '');
