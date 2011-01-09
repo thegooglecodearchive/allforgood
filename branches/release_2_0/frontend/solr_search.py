@@ -1,5 +1,4 @@
-# Copyright 2009 Google Inc.
-#
+g`"#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -331,10 +330,6 @@ def search(args, dumping = False):
     start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
     end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
 
-    date_string += "+((eventrangestart:[" + start_datetime_str + "+TO+" + end_datetime_str + "]+AND+" 
-    date_string += "eventrangeend:[" + start_datetime_str + "+TO+" + end_datetime_str + "])" 
-    date_string += '+OR+(eventrangestart:"' + "1971-01-01T00:00:00.000Z" + '"+AND+'
-    date_string += "eventrangeend:[*+TO+" + end_datetime_str + "]))"
  #Uncertain if this is still required but leaving for now...just in case     
   #else:
     #date_string += "+(eventrangestart:[" + datetime.datetime.today().strftime("%Y-%m-%dT00:00:00.000Z") + "+TO+*])"  
@@ -342,9 +337,10 @@ def search(args, dumping = False):
     
   # limit to opps which have not expired yet
   # [expires:NOW TO *] means "expires prior to today"
-  query_url += "&fq=expires:[NOW-3DAYS%20TO%20*]"
-  if date_string:
-    query_url += '+' + date_string
+  #query_url += "&fq=expires:[NOW-3DAYS%20TO%20*]"
+  if start_datetime_str:
+    query_url += "&fq=-expires:[*+TO+" + start_datetime_str + "-1DAYS]"
+
 
 
   #num_to_fetch = int(args[api.PARAM_NUM]) + 1
