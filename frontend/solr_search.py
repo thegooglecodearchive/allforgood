@@ -148,7 +148,7 @@ def form_solr_query(args):
     max_dist = float(args[api.PARAM_VOL_DIST])
   
   boost_params = default_boosts(args);
-  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^20}'   
+  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1}'   
 
   # keyword
   query_is_empty = False
@@ -302,9 +302,11 @@ def search(args, dumping = False):
   query_url += "&wt=json"
   
   # Sort
-  logging.info(args[api.PARAM_SORT]);
   if api.PARAM_SORT in args:
-    query_url += "&sort=" + args[api.PARAM_SORT] + "%20desc"
+    sortVal = "desc"
+    if args[api.PARAM_SORT] == "eventrangeend":
+       sortVal = "asc"
+    query_url += "&sort=" + args[api.PARAM_SORT] + "%20" + sortVal
     
   # date range
   date_string = ""

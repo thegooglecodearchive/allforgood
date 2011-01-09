@@ -42,7 +42,7 @@
 		<label for="sort">Sort by:</label>
 		<select id="sort" name="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
 			<option value="score">Relevance</option>
-			<option value="eventrangestart">Date</option>
+			<option value="eventrangeend">Date</option>
 		</select>
 	</div>
 	<div class="approximate_results">About {{ result_set.estimated_merged_results|add_commas }} results</div>
@@ -185,78 +185,13 @@ function makeFilterWidgetArray(defaultValuesArray, dataArray, labelsArray)
 	{% endfor %}
 {% endfor %}
 
-if (typeof feed_providername_data != undefined)
-{
-	var feed_providername_labels =
-	{
-		unitedway: "United Way",
-		universalgiving: "Universal Giving",
-		volunteermatch: "Volunteer Match"
-	};
-	var feed_providername = makeFilterWidgetArray(Array('All', 'all'), feed_providername_data, feed_providername_labels);
-	if (el('source_filter_widget')) {
-	    sourceFilterWidget =
-	        new FilterWidget(el('source_filter_widget'),
-	                         'Filter By Source',
-	                         feed_providername,
-	                         query.getSource() || 'all',
-	                         function(value) { submitForm('source_widget'); });
-	  }
-}
-if (typeof categories_data != undefined)
-{
-	var categories_labels =
-	{
-		mlk: 'MLK Day',
-		education: 'Education',
-		Hunger: 'Hunger',
-		animals: 'Animals',
-		health: 'Health',
-		seniors: 'Seniors',
-		technology: 'Technology',
-		poverty: 'Poverty'
-	};
-	var categories = makeFilterWidgetArray(Array('All', 'all'), categories_data, categories_labels);
-	if (el('category_filter_widget')) {
-
-    categoryFilterWidget =
-        new FilterWidget(el('category_filter_widget'),
-                         'Filter By Category',
-                         categories,
-                         query.getCategory() || 'all',
-                         function(value) { submitForm('category_widget'); });
+	var sort = getHashParam('sort', '');
+	if (sort == "eventrangeend") {
+		$("#sort").attr('selectedIndex', 1);
+	}		
+	else {
+		$("#sort").attr('selectedIndex', 0);
 	}
-}
-
-if (typeof virtual_data != undefined && typeof self_directed_data != undefined)
-{
-	var virtual = makeFilterWidgetArray(Array(), virtual_data, { 'true': 'Virtual' });
-	var self_directed = makeFilterWidgetArray(Array(), self_directed_data, { 'true': 'Self-Directed' });
-	var type = Array();
-
-	var hasVirtual = virtual.length > 0;
-	var hasSelfDirected = self_directed.length > 0;
-
-	type.push(Array('Geographical', 'geo'));
-	if (hasVirtual)
-	{
-        type.push(virtual);
-		type.push(Array('Virtual', 'virtual'));
-	}
-	if (hasSelfDirected)
-	{
-		type.push(Array('Self-Directed', 'self_directed'));
-		type.push(self_directed);
-	}
-	if (el('type_filter_widget')) {
-    typeFilterWidget =
-        new FilterWidget(el('type_filter_widget'),
-                         'Filter By Type',
-                         type,
-                         'geo',
-                         function(value) { submitForm('type_widget'); });
-	}
-}
 
 </script>
 

@@ -22,7 +22,7 @@ $(document).ready(function() {
     $("#startdate").datepicker();
 	$("#enddate").datepicker();
 	$("#location_slider").slider({
-			value:getHashParam('distance', '') | 5,
+			value:getHashParam('distance', '') | 25,
 			min: 5,
 			max: 100,
 			step: 5,
@@ -36,13 +36,13 @@ $(document).ready(function() {
 		return false;
 	});
 	var start = getHashParam('timeperiodstart', '');
-	var end = getHashParam('timeperiodend', '');
+	var end = getHashParam('timeperiodend', '');	
 	if (start != "everything") {
 		getInputFieldValue(el('startdate')).value = start;
 	}
 	if (end != "everything") {
 		getInputFieldValue(el('enddate')).value = end;
-	}
+	}	
   });
   
   /** Query params for backend search, based on frontend parameters.
@@ -61,7 +61,7 @@ function Query(keywords, location, distance, pageNum, sort, useCache, get_facet_
   me.keywords_ = keywords;
   me.location_ = location;
   //me.category_ = category || 'all';
-  me.distance_ = distance || '5';
+  me.distance_ = distance || '25';
   //me.type_ = type || 'all';
   //me.source_ = source || 'all';
   me.pageNum_ = pageNum;
