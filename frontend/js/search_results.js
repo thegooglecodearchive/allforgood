@@ -22,7 +22,7 @@ $(document).ready(function() {
     $("#startdate").datepicker();
 	$("#enddate").datepicker();
 	$("#location_slider").slider({
-			value:5,
+			value:getHashParam('distance', '') | 5,
 			min: 5,
 			max: 100,
 			step: 5,
@@ -40,6 +40,14 @@ $(document).ready(function() {
 	$("#submit_button").click(function() {
 		submitForm("all");	
 	});
+	var start = getHashParam('timeperiodstart', '');
+	var end = getHashParam('timeperiodend', '');
+	if (start != "everything") {
+		getInputFieldValue(el('startdate')).value = start;
+	}
+	if (end != "everything") {
+		getInputFieldValue(el('enddate')).value = end;
+	}
   });
   
   /** Query params for backend search, based on frontend parameters.
