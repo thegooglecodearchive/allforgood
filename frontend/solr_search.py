@@ -330,15 +330,22 @@ def search(args, dumping = False):
       end_date = start_date
     start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
     end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
-    date_string += "+(eventrangestart:[" + start_datetime_str + "+TO+*]+AND+" 
-    date_string += "eventrangeend:[*+TO+" + end_datetime_str + "])"
-  else:
-    date_string += "+(eventrangestart:[" + datetime.datetime.today().strftime("%Y-%m-%dT00:00:00.000Z") + "+TO+*])"  
-    date_string += '+OR+(event_date_range:"' + "1971-01-01T00:00:00" + '")'   
+
+    date_string += "+((eventrangestart:[" + start_datetime_str + "+TO+" + end_datetime_str + "]+AND+" 
+    date_string += "eventrangeend:[" + start_datetime_str + "+TO+" + end_datetime_str + "])" 
+    date_string += '+OR+(eventrangestart:"' + "1971-01-01T00:00:00.000Z" + '"+AND+'
+    date_string += "eventrangeend:[*+TO+" + end_datetime_str + "]))"
+ #Uncertain if this is still required but leaving for now...just in case     
+  #else:
+    #date_string += "+(eventrangestart:[" + datetime.datetime.today().strftime("%Y-%m-%dT00:00:00.000Z") + "+TO+*])"  
+    #date_string += '+OR+(event_date_range:"' + "1971-01-01T00:00:00" + '")'   
     
   # limit to opps which have not expired yet
   # [expires:NOW TO *] means "expires prior to today"
-  query_url += "&fq=expires:" + date_string
+  query_url += "&fq=expires:[NOW-3DAYS%20TO%20*]"
+  if date_string:
+    query_url += '+' + date_string
+
 
   #num_to_fetch = int(args[api.PARAM_NUM]) + 1
   num_to_fetch = 50
