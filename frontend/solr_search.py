@@ -1,4 +1,3 @@
-g`"#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -309,6 +308,7 @@ def search(args, dumping = False):
     
   # date range
   date_string = ""
+  start_datetime_str = None
   if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "" and args[api.PARAM_VOL_STARTDATE] != "everything":    
     start_date = datetime.datetime.today()
     try:
@@ -340,8 +340,6 @@ def search(args, dumping = False):
   #query_url += "&fq=expires:[NOW-3DAYS%20TO%20*]"
   if start_datetime_str:
     query_url += "&fq=-expires:[*+TO+" + start_datetime_str + "-1DAYS]"
-
-
 
   #num_to_fetch = int(args[api.PARAM_NUM]) + 1
   num_to_fetch = 100
