@@ -333,7 +333,7 @@ def search(args, dumping = False):
     end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
     
   if start_datetime_str:
-    query_url += "&fq=(eventrangeend:[" + start_datetime_str + "+TO+*])"
+    query_url += "&fq=((eventrangeend:[" + start_datetime_str + "+TO+*]+AND+eventrangestart:[*+TO+" + end_datetime_str + "])+OR+(eventrangeend:+" +'"1971-01-01T00:00:000Z"' "+AND+eventrangestart:"+'"1971-01-01T00:00:000Z"'+"))"
   else:
     query_url += "&fq=(eventrangeend:[NOW-3DAYS%20TO%20*]+OR+expires:[NOW-3DAYS%20TO%20*])"
 
