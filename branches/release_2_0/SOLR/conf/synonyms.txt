@@ -20,10 +20,10 @@ Hunger,anti-hunger,childhood hunger,dinner,feeding america,food,food bank,food p
 Nature,environment,environmental,outdoors,gardening,garden,park,wetlands,forest,forests,tree,trees,green,trail,trails,sierra club
 Education,reading,teaching,teacher,teach,books,book,library,literacy,school,schools,libraries
 Animals,animal,animals,dog,dogs,cat,cats,zoo,bird,birds,zoos,puppies,puppy,kitten,kitty,critter,critters,frog,frogs,turtle,turtles,kittens
-Health,,health,hospital,hospitals,medical,healthcare,mental,hospice,nursing,cancer,nurse,nurses,doctor,doctors,red cross
+Health,,health,hospital,hospitals,medical,healthcare,mental,hospice,nursing,cancer,nurse,nurses,doctor,doctors
 Seniors,senior,seniors,elderly
-Technology,website,computer,computers,technology,web,video,graphic,design,internet
-Poverty,habitat,homeless,housing,poverty,house,poor
+Technology,website,computer,computers,technology,web,internet
+Poverty,homeless,poverty,poor
 Tutoring,mentoring,tutoring,mentor,counseling
 Gardening,garden,gardens,gardener,gardeners,gardening
 Lawyer,lawyer.lawyers,attorney,attorneys,legal counsel,family law,court system,court facilities,court forms,legal information,legal help
