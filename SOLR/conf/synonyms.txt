@@ -33,5 +33,4 @@ Repairman,plumber,plumbers,electrician,electricians,carpenter,carpenters,brickla
 Artist,artist,artists,drawing,painter,painters,painting,sculpting,sculptor,sculptors
 GraphicDesigner,graphic designer,graphic designers,graphic design,graphic skills,graphics skills,graphic artist,graphic artists
 Videographer,videographer,videographers,video,editor
-SpanishSpeaker,spanish,speaking,spanish,speaker,bilingual,spanish,reads,spanish,writes,spanish
 VeteransDay,veteran veterans
