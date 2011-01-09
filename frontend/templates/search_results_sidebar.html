@@ -1,12 +1,16 @@
 {% ifnotequal campaign_id None %}
     {% include 'campaign_branding_snippet.html' %}
 {% endifnotequal %}
-
 <!--<div id='filter_results' class='filterwidget'></div>
 <div id='category_filter_widget' class='filterwidget'></div>
 <div id='distance_filter_widget' class='filterwidget'></div>
 <div id='type_filter_widget' class='filterwidget'></div>
 <div id='source_filter_widget' class='filterwidget'>-->
+<style type="text/css">
+	#submit_button button {
+		background: url('/zx{{version}}/images/red-search-button-30x26.png') 5% 50% no-repeat;
+	}	
+</style>
 <form class="facets">
 	{% ifequal current_page "SEARCH" %}
 		<div class="filterwidget_title">
@@ -39,7 +43,9 @@
 		<p class="filterwidget_title"><input id="startdate" type="text" value="Start Date"></p>		
 		<p class="filterwidget_title"><input id="enddate" type="text" value="End Date"></p>	
 	</div>	
-	<div id="submit_button"></div>
+	<div id="submit_button">
+		<button>Search</button>
+	</div>
 </form>
 <div id='map'></div>
 </div>

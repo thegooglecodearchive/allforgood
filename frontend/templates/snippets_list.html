@@ -37,7 +37,16 @@
 {% endifequal %}
 
 {% if not campaign_id and result_set.estimated_merged_results %}
-<div class="approximate_results">About {{ result_set.estimated_merged_results|add_commas }} results</div>
+<div class="top_search">
+	<div class="sort_filter">
+		<label for="sort">Sort by:</label>
+		<select id="sort" name="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+			<option value="score">Relevance</option>
+			<option value="eventrangestart">Date</option>
+		</select>
+	</div>
+	<div class="approximate_results">About {{ result_set.estimated_merged_results|add_commas }} results</div>
+</div>
   {% endif %}
 
 {% for result in result_set.clipped_results %}

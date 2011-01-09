@@ -30,14 +30,8 @@ $(document).ready(function() {
 				$("#location_distance").html(ui.value);
 			}			
 	});
-	$("#location_distance").html($("#location_slider").slider("value"));
-	$("#submit_button").button({
-        icons: {
-            primary: "search_button"			
-    	},
-		label: "Submit"
-	});
-	$("#submit_button").click(function() {
+	$("#location_distance").html($("#location_slider").slider("value"));	
+	$("#submit_button > button").click(function() {
 		submitForm("all");	
 	});
 	var start = getHashParam('timeperiodstart', '');
