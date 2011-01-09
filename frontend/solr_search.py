@@ -161,7 +161,7 @@ def form_solr_query(args):
     if query_boosts:
       solr_query = query_boosts    
     else:      
-      solr_query += rewrite_query(keyword)
+      solr_query += rewrite_query('*:* AND ' + args[api.PARAM_Q], api_key)
   else:
     # Query is empty, search for anything at all.
     solr_query += rewrite_query('*:*', api_key)
