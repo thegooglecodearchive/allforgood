@@ -159,13 +159,23 @@ input#location {
 
 #location_slider {
 	width:180px;
-	margin:6px 0 0 6px;
+	margin:6px 0 -14px 6px;
 }
 
 .location-btn {
   height: 36px;
   width: 110px;
   font-size: 16px;
+}
+
+
+#submit_button button {
+	border: 1px solid #D3D3D3;	
+	height: 34px;
+	color: #555555;
+	cursor: pointer;
+	font-weight:bold;
+	padding-left:35px;
 }
 
 /** Search results page **/
@@ -342,11 +352,14 @@ input#location {
 }
 
 .approximate_results {
-  margin-top: 0px;
-  margin-bottom: 2px;
-  text-align: right;
   color: #666;
+  width: 130px; 
+  float: right;
 }
+.top_search {overflow:hidden; margin-bottom:10px;}
+.sort_filter {float:left;}
+
+#when_filter_widget {margin-bottom:10px !important; }
 
 #paginator {
   font-size: 14px;
