@@ -348,7 +348,7 @@ def search(args, dumping = False):
 
 
   #num_to_fetch = int(args[api.PARAM_NUM]) + 1
-  num_to_fetch = 50
+  num_to_fetch = 100
   query_url += "&rows=" + str(num_to_fetch)
   query_url += "&start=" + str(int(args[api.PARAM_START]) - 1)
 
