@@ -22,7 +22,7 @@ $(document).ready(function() {
     $("#startdate").datepicker();
 	$("#enddate").datepicker();
 	$("#location_slider").slider({
-			value:getHashParam('distance', '') | 25,
+			value:getHashParam('distance', '') || 25,
 			min: 5,
 			max: 100,
 			step: 5,

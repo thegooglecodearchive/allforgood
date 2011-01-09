@@ -15,7 +15,7 @@
 """
 Custom filters and tags for dates.
 """
-
+import datetime
 from datetime import date
 from django.utils import dateformat
 from google.appengine.ext.webapp import template
@@ -52,6 +52,8 @@ def custom_date_range_format(result):
         return "Ongoing"
       else:
         return "Starting " + custom_date_format(result.startdate, True)
+    if result.startdate < datetime.datetime.today() and result.enddate < datetime.datetime.today():
+        return "Ongoing"
     startdate = custom_date_format(result.startdate)
     enddate = custom_date_format(result.enddate)
     if startdate == enddate:
