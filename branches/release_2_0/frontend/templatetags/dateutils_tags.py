@@ -31,7 +31,7 @@ def custom_date_format(value, opt_past_dates = False):
   elif value.year < date.today().year and not opt_past_dates:
     return 'Present'
   elif value.year == date.today().year:
-    return dateformat.format(value, 'F j')
+    return dateformat.format(value, 'F j, Y')
   else:
     return dateformat.format(value, 'F j, Y')  
 
