@@ -20,7 +20,10 @@ var filters = [];
 
 $(document).ready(function() {
     $("#startdate").datepicker({
-		minDate: new Date()        		
+		minDate: new Date(),
+		onSelect: function(dateText, inst) {
+			$("#enddate").datepicker("option", "minDate", dateText);
+		}
 	});
 	$("#enddate").datepicker({
 		minDate: new Date()        		
@@ -33,12 +36,7 @@ $(document).ready(function() {
 			slide: function( event, ui ) {
 				$("#location_distance").html(ui.value);
 			}			
-	});
-	$("#startdate").datepicker({
-		onSelect: function(dateText, inst) {
-			$("#enddate").datepicker("option", "minDate", dateText);
-		}
-	});
+	});	
 	$("#location_distance").html($("#location_slider").slider("value"));	
 	$("#facet_submit").click(function() {
 		submitForm("all");
@@ -58,7 +56,7 @@ $(document).ready(function() {
 	}
 	if (end != "everything") {
 		getInputFieldValue(el('enddate')).value = end;
-	}	
+	}		
   });
   
   /** Query params for backend search, based on frontend parameters.
@@ -419,7 +417,7 @@ FilterWidget.prototype.getName = function() {
  */
 function onLoadSearch() {
   if (el('location')) {
-    setInputFieldValue(el('location'), getDefaultLocation().displayLong);
+    setInputFieldValue(el('location'), getHashParam('vol_loc', '') || getDefaultLocation().displayLong);
   }
 
   // Using jquery json functions where RSH expects other json functions,
