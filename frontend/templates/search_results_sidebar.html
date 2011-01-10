@@ -6,11 +6,6 @@
 <div id='distance_filter_widget' class='filterwidget'></div>
 <div id='type_filter_widget' class='filterwidget'></div>
 <div id='source_filter_widget' class='filterwidget'>-->
-<style type="text/css">
-	#submit_button a {
-		background: url('/zx{{version}}/images/red-search-button-30x26.png') 98% 50% no-repeat;
-	}	
-</style>
 <form class="facets">
 	{% ifequal current_page "SEARCH" %}
 		<div class="filterwidget_title">
@@ -38,7 +33,7 @@
 	</div>
 	<div id='when_filter_widget' class='filterwidget'>
 		<div class="filterwidget_title">
-			Filter By Date Range
+			Filter by date range
 		</div>	
 		<div class="date_inputs">
 			<input id="startdate" type="text" value="Start Date"> to	

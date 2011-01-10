@@ -188,23 +188,23 @@ input#location {
 	margin:6px 0 0 0;
 }
 
-#submit_button a {
-	border: 1px solid #aaa;	
-	height: 34px;
-	color:#B8201F;
+#submit_button a {	
+	background:url(/zx0000/images/allforgood-submit-bg.png) 0 0 no-repeat;
+	height: 32px;
+	color:#fff;	
 	cursor: pointer;
 	font-weight:bold;
 	text-align:left;
 	display:block;
-	text-decoration: none;
-	padding:9px 0 0 5px;
+	text-decoration: none;	
+	padding: 8px 0 0 10px;	
 	height:23px;	
 	font-size:14px;	 
 	width:171px;	 
-	padding-left:10px;
 }
 
 .facets {
+	background: #EDF4F7;
 	border:1px solid #C0C0C0; 
 	padding:10px 0 15px 25px; 
 	margin-bottom:15px;
@@ -596,6 +596,7 @@ h1 {
 }
 
 .filterwidget_title {
+  color: #232323;
   margin: 0 0 5px 0;
   font-weight: bold;
   font-size: 14px;
