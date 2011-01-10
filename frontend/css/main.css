@@ -140,6 +140,8 @@ input#keywords {
   height: 30px;
   padding: 2px 0;
   font-size: 18px;
+  height:23px \0/;
+  padding-top:4px \0/;
 }
 
 input#location { 
