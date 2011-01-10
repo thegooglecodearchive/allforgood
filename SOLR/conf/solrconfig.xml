@@ -483,7 +483,7 @@
 <str name="distanceField">distance</str>
 </defaults>
 </searchComponent>
-
+<!--
   <searchComponent name="collapse" class="org.apache.solr.handler.component.CollapseComponent">
     <collapseCollectorFactory class="solr.fieldcollapse.collector.DocumentGroupCountCollapseCollectorFactory" />
 
@@ -498,7 +498,7 @@
       <function name="max" class="org.apache.solr.search.fieldcollapse.collector.aggregate.MaxFunction"/>
     </collapseCollectorFactory>
   </searchComponent>
-
+-->
 
   <!-- requestHandler plugins... incoming queries will be dispatched to the
      correct handler based on the path or the qt (query type) param.
@@ -511,6 +511,8 @@
   <requestHandler name="standard" class="solr.SearchHandler" default="true">
     <!-- default values for query parameters -->
      <lst name="defaults">
+       <str name="defType">boostmax</str>
+       <bool name="escapeQuery">false</bool>
        <str name="echoParams">explicit</str>
        <!--
        <int name="rows">10</int>
@@ -519,7 +521,8 @@
         -->
      </lst>
     <arr name="components">
-      <str>collapse</str>
+<!--      <str>collapse</str>-->
+      <str>query</str>
       <str>facet</str>
       <str>mlt</str>
       <str>highlight</str>
@@ -1087,6 +1090,7 @@ class="nl.jteam.search.solrext.spatial.SpatialTierQueryParserPlugin">
 <str name="latField">latitude</str>
 <str name="lngField">longitude</str>
 <str name="tierPrefix">_tier_</str>
+<bool name="escapeQuery">true</bool>
 <str name="basedOn">boostmax</str>
 </queryParser>
 
