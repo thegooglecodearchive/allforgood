@@ -151,17 +151,31 @@ input#location {
   width: 180px; 
 }
 
-.facets #location, #startdate, #enddate { 
+.facets #location { 
   padding: 2px 0;
+  margin-left:-3px;
   font-size: 14px;
   width: 180px;
   color:#666 !important;
   height:18px;
 }
 
+#startdate, #enddate {
+	padding: 2px 0;
+    font-size: 14px;
+	width:81px;
+	display:inline;
+	color:#666 !important;
+    height:18px;
+}
+
+.date_inputs {
+	color:#666;
+}
+
 #location_slider {
-	width:180px;
-	margin:6px 0 -14px 6px;
+	width:183px;
+	margin:6px 0 -10px 0px;
 }
 
 .location-btn {
@@ -170,24 +184,34 @@ input#location {
   font-size: 16px;
 }
 
+#submit_button {
+	margin:6px 0 0 0;
+}
 
 #submit_button a {
-	border: 1px solid #D3D3D3;	
+	border: 1px solid #aaa;	
 	height: 34px;
-	color: #555555;
+	color:#B8201F;
 	cursor: pointer;
 	font-weight:bold;
-	padding-left:5px;
-	width:100px;
 	text-align:left;
 	display:block;
 	text-decoration: none;
-	padding-top: 9px;  
+	padding:9px 0 0 5px;
 	height:23px;	
 	font-size:14px;	 
-	font-family:Arial;	 
-	width:93px;	 
+	width:171px;	 
 	padding-left:10px;
+}
+
+.facets {
+	border:1px solid #C0C0C0; 
+	padding:10px 0 15px 25px; 
+	margin-bottom:15px;
+}
+
+.facets input {
+	margin-bottom:12px;
 }
 
 /** Search results page **/
@@ -572,7 +596,7 @@ h1 {
 }
 
 .filterwidget_title {
-  margin: 14px 0 0 0;
+  margin: 0 0 5px 0;
   font-weight: bold;
   font-size: 14px;
   color: #666;
