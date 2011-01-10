@@ -146,7 +146,7 @@ def form_solr_query(args):
     if args[api.PARAM_VOL_DIST] < 1:
       args[api.PARAM_VOL_DIST] = DEFAULT_VOL_DIST
     max_dist = float(args[api.PARAM_VOL_DIST])
-  logging.info("dist" + str(args[api.PARAM_VOL_DIST]))
+  
   boost_params = default_boosts(args);
   geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1}'   
 
