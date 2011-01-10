@@ -148,7 +148,12 @@ input#location {
   height: 30px;
   padding: 2px 0;
   font-size: 18px;
-  width: 180px; 
+  width: 180px;
+  _margin-left: -1px;
+}
+
+input.hasDatepicker {
+	_margin-bottom: 0;
 }
 
 .facets #location { 
