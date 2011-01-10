@@ -270,11 +270,14 @@ def normalize_query_values(args, dumping = False):
         args[api.PARAM_LAT], args[api.PARAM_LNG], zoom = res.split(",")
     
     args[api.PARAM_LAT] = args[api.PARAM_LAT].strip()
-    args[api.PARAM_LNG] = args[api.PARAM_LNG].strip()
+    args[api.PARAM_LNG] = args[api.PARAM_LNG].strip()    
     if api.PARAM_DISTANCE in args:
       args[api.PARAM_VOL_DIST] = safe_int(args[api.PARAM_DISTANCE])
     else:
-      args[api.PARAM_VOL_DIST] = 25
+      if api.PARAM_VOL_DIST in args:
+          args[api.PARAM_VOL_DIST] = safe_int(args[api.PARAM_VOL_DIST])
+      else:
+          args[api.PARAM_VOL_DIST] = 25
 
   else:
     args[api.PARAM_VOL_LOC] = args[api.PARAM_VOL_DIST] = ""
