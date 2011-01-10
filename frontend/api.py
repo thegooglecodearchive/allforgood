@@ -68,6 +68,7 @@ DEFAULT_OUTPUT_FIELDS = FIELDS_BY_OUTPUT_TYPE['html']
 # the values of those two params if they were passed in also.
 PARAM_TIMEPERIOD_START = 'timeperiodstart'
 PARAM_TIMEPERIOD_END = 'timeperiodend'
+PARAM_TIMEPERIOD = 'timeperiod'
 
 # the ratio of actual results to request from the backend--
 # typical values range from 1.0 to 10.0, where larger numbers

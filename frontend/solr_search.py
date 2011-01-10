@@ -311,13 +311,14 @@ def search(args, dumping = False):
   # date range
   date_string = ""
   start_datetime_str = None
+  logging.info("type " + str(type(args[api.PARAM_VOL_STARTDATE])))
   if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "" and args[api.PARAM_VOL_STARTDATE] != "everything":    
     start_date = datetime.datetime.today()
     try:
       start_date = datetime.datetime.strptime(
-                     args[api.PARAM_VOL_STARTDATE].strip(), "%m/%d/%Y")
+                     args[api.PARAM_VOL_STARTDATE].strip(), "%m/%d/%Y")      
     except:
-      logging.debug('solr_search.form_solr_query malformed start date: %s' %
+      logging.info('solr_search.form_solr_query malformed start date: %s' %
                     args[api.PARAM_VOL_STARTDATE])
     end_date = None
     if api.PARAM_VOL_ENDDATE in args and args[api.PARAM_VOL_ENDDATE] != "":
@@ -331,7 +332,7 @@ def search(args, dumping = False):
       end_date = start_date
     start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
     end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
-    
+
   if start_datetime_str:
     query_url += "&fq=((eventrangeend:[" + start_datetime_str + "+TO+*]+AND+eventrangestart:[*+TO+" + end_datetime_str + "])+OR+(eventrangeend:+" +'"1971-01-01T00:00:000Z"' "+AND+eventrangestart:"+'"1971-01-01T00:00:000Z"'+"))"
   else:
