@@ -311,7 +311,6 @@ def search(args, dumping = False):
   # date range
   date_string = ""
   start_datetime_str = None
-  logging.info("type " + str(type(args[api.PARAM_VOL_STARTDATE])))
   if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "" and args[api.PARAM_VOL_STARTDATE] != "everything":    
     start_date = datetime.datetime.today()
     try:

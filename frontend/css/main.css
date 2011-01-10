@@ -142,6 +142,8 @@ input#keywords {
   font-size: 18px;
   height:23px \0/;
   padding-top:4px \0/;
+  _height: 26px !important; 
+  _padding-top: 6px !important;
 }
 
 input#location { 
@@ -149,11 +151,11 @@ input#location {
   padding: 2px 0;
   font-size: 18px;
   width: 180px;
-  _margin-left: -1px;
+  _margin-left: -1px !important;
 }
 
 input.hasDatepicker {
-	_margin-bottom: 0;
+	_margin-bottom: 0 !important;
 }
 
 .facets #location { 
