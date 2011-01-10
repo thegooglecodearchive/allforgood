@@ -19,8 +19,12 @@ var searchResults = [];
 var filters = [];
 
 $(document).ready(function() {
-    $("#startdate").datepicker();
-	$("#enddate").datepicker();
+    $("#startdate").datepicker({
+		minDate: new Date()        		
+	});
+	$("#enddate").datepicker({
+		minDate: new Date()        		
+	});
 	$("#location_slider").slider({
 			value:getHashParam('distance', '') || 25,
 			min: 5,
@@ -29,6 +33,11 @@ $(document).ready(function() {
 			slide: function( event, ui ) {
 				$("#location_distance").html(ui.value);
 			}			
+	});
+	$("#startdate").datepicker({
+		onSelect: function(dateText, inst) {
+			$("#enddate").datepicker("option", "minDate", dateText);
+		}
 	});
 	$("#location_distance").html($("#location_slider").slider("value"));	
 	$("#facet_submit").click(function() {
