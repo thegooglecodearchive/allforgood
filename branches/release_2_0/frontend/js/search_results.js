@@ -35,6 +35,13 @@ $(document).ready(function() {
 		submitForm("all");
 		return false;
 	});
+	$("#location").keypress(function(e) {
+		code = (e.keyCode ? e.keyCode : e.which);
+		if (code == 13) {
+			submitForm("all");
+			return false;
+		}		
+	});
 	var start = getHashParam('timeperiodstart', '');
 	var end = getHashParam('timeperiodend', '');	
 	if (start != "everything") {
