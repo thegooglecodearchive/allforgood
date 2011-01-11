@@ -588,8 +588,7 @@ def solr_retransform(fname):
 
     rows["c:aggregatefield:string"] = ' '.join([rows["description"],
                                                rows["c:org_name:string"],
-                                               rows["title"],
-                                               rows["c:categories:string"]])
+                                               rows["title"]])
     for key in rows.keys():
       # Fix to the "double semicolons instead of commas" Base hack.
       rows[key] = rows[key].replace(';;', ',')

@@ -26,6 +26,27 @@ def query_time_boosts(args):
   if args[api.PARAM_Q].find('category:IAMS') >= 0:
       solr_query = solr_search.rewrite_query('%s' %
         '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster) AND category:Animals)')
+  elif args[api.PARAM_Q].find('category:MLKDay') >= 0:
+      # eg, q=ballroom and category:MLKDay
+      solr_query = args[api.PARAM_Q].replace('category:MLKDay', '').replace('( OR )', '').strip()
+      solr_query += (' -feed_providername:meetup AND ('
+                 + ' eventrangestart:[2011-01-08T00:00:00.000Z TO 2011-01-23T23:59:59.999Z]^20'
+                 + ' OR title:(mlk and (\'day on not a day off\'))^20'
+                 + ' OR title:mlk^10'
+                 + ' OR title:mlktech^10'
+                 + ' OR title:(\'ml king\')^10'
+                 + ' OR title:(\'king day\')^10'
+                 + ' OR title:(\'martin luther\')^10'
+                 + ' OR abstract:(mlk and (\'day on not a day off\'))^20'
+                 + ' OR abstract:(\'day on not a day off\')^10'
+                 + ' OR abstract:mlk^10'
+                 + ' OR abstract:mlktech^10'
+                 + ' OR abstract:(\'ml king\')^5'
+                 + ' OR abstract:(\'king day\')^5'
+                 + ' OR abstract:(\'martin luther\')^5'
+                 + ' OR (eventrangestart:[* TO 2011-01-08T00:00:00.000Z]'
+                 + ' AND eventrangeend:[2011-01-23T00:00:00.000Z TO *])'
+                 + ')')
   else:
      solr_query = "" 
   return solr_query
