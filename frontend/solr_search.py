@@ -49,7 +49,6 @@ MAX_RESULTS = 1000
 
 MILES_PER_DEG = 69
 DEFAULT_VOL_DIST = 75
-DEFAULT_SEARCH_FIELDS = ["description", "title", "org_name"]
 
 def default_boosts(args):
   boost = ""
@@ -74,9 +73,9 @@ def default_boosts(args):
     # boost short events
     boost += '+eventduration:[1+TO+10]^10'
     # big boost opps with search terms in title
-    #boost += '&qf=title^20'
+    boost += '&qf=title^20'
     # modest boost opps with search terms in description
-    #boost += '+description^7'
+    boost += '+abstract^7'
   
   return boost
 
@@ -161,11 +160,11 @@ def form_solr_query(args):
     
     if query_boosts:
       solr_query = query_boosts
-    
-    solr_query += rewrite_query('title:' + keyword + '^20 OR description:' + keyword + '^7 OR org_name:' + keyword, api_key)
+    else:      
+      solr_query += rewrite_query('*:* AND ' + keyword, api_key)
   else:
     # Query is empty, search for anything at all.
-    solr_query += '(title:[* TO *]^20 OR description:[* TO *]^7 OR org_name:[* TO *])'
+    solr_query += rewrite_query('*:*', api_key)
     query_is_empty = True
 
   # geo params go in first
@@ -666,6 +665,3 @@ def get_from_ids(ids):
       result_set.results.insert(0, result)
 
   return result_set
-
-
-
