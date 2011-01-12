@@ -29,11 +29,13 @@ PRODUCTION_DOMAINS = ['allforgood.org', 'footprint2009qa.appspot.com']
 
 # pylint: disable-msg=C0301
 MAPS_API_KEYS = {
+  'www.allforgood.org' : 'ABQIAAAAHtEBbyenR4BaYGl54_p0fRQu5fCZl1K7T-61hQb7PrEsg72lpRQbhbBcd0325oSLzGUQxP7Nz9Rquw',
   'allforgood.org' : 'ABQIAAAAHtEBbyenR4BaYGl54_p0fRQu5fCZl1K7T-61hQb7PrEsg72lpRQbhbBcd0325oSLzGUQxP7Nz9Rquw',
   'footprint2009qa.appspot.com' : 'ABQIAAAA1sNtdnui_8Lmt75VBAosOhRSEEb9tdSIuCkRNLnpLNbLMSh74BRy7tIEe3Z6GgLCRLUFTTQ45vQ3mg',
   'footprint-loadtest.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxSWKH9akPVZO-6F_G0PvWoeHNZVdRSifDQCrd-osJFuWDqR3Oh0nKDgbw',
   'footprint2009dev.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxTpeCj-9ism2i6Mt7fLlVoN6HsfDBSOZjcyagWjKTMT32rzg71rFenopA',
   'mt1955.latest.servicefootprint.appspot.com' : 'ABQIAAAAienQr37mEiFBwlgibJ1JcxR1KvS2SINSTEhx6KwLmvTr3pfveRSjY7BvkzTo44hCktsrLKU800bN1g',
+  'r2.latest.servicefootprint.appspot.com' : 'ABQIAAAAienQr37mEiFBwlgibJ1JcxR1KvS2SINSTEhx6KwLmvTr3pfveRSjY7BvkzTo44hCktsrLKU800bN1g',
   'staging.latest.footprint2009dev.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxTpeCj-9ism2i6Mt7fLlVoN6HsfDBSOZjcyagWjKTMT32rzg71rFenopA'
 }
 # pylint: enable-msg=C0301
@@ -41,6 +43,7 @@ MAPS_API_KEYS = {
 # Google Analytics keys - only needed for dev, qa, and production
 # we don't want to track in other instances
 GA_KEYS = {
+  'www.allforgood.org' : 'UA-8689219-2',
   'allforgood.org' : 'UA-8689219-2',
   'footprint2009dev.appspot.com' : 'UA-8689219-3',
   'footprint2009qa.appspot.com' : 'UA-8689219-4'
@@ -97,11 +100,11 @@ def load_keys():
   # no default for maps api-- has to match
   http_host = host_sans_www()
   MAPS_API_KEY = MAPS_API_KEYS.get(http_host, 'unknown')
-  logging.debug("host=" + http_host + "  maps api key=" + MAPS_API_KEY)
+  logging.info("host=" + http_host + "  maps api key=" + MAPS_API_KEY)
 
   # no default for ga key
   GA_KEY = GA_KEYS.get(http_host, 'unknown')
-  logging.debug("host=" + http_host + "  ga key=" + GA_KEY)
+  logging.info("host=" + http_host + "  ga key=" + GA_KEY)
 
   # facebook API has default key
   FACEBOOK_API_KEY = FACEBOOK_API_KEYS.get(http_host, DEFAULT_FACEBOOK_API_KEY)
