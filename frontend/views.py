@@ -82,6 +82,7 @@ NOT_FOUND_TEMPLATE = 'not_found.html'
 SPEC_TEMPLATE = 'spec.html'
 COS_TEMPLATE = 'cos.html'
 MLKDAYOFSERVICE_TEMPLATE = 'mlkdayofservice.html'
+STRATEGICPARTNERS_TEMPLATE = 'strategicpartners.html'
 APPS_TEMPLATE = 'apps.html'
 
 DATAHUB_LOG = private_keys.DASHBOARD_BASE_URL + "load_gbase.log.bz2"
@@ -319,6 +320,18 @@ class mlkdayofservice_view(webapp.RequestHandler):
                                             template_values))
     except DeadlineExceededError:
       deadline_exceeded(self, "mlkdayofservice_handler")
+
+
+class strategicpartners_view(webapp.RequestHandler):
+  @expires(0)
+  def get(self):
+    try:
+      template_values = get_default_template_values(self.request, 'STRATEGICPARTNERS')
+      self.response.out.write(render_template(STRATEGICPARTNERS_TEMPLATE,
+                                            template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "mlkdayofservice_handler")
+
 
 		
 class consumer_ui_search_redir_view(webapp.RequestHandler):

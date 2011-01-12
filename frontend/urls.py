@@ -38,6 +38,7 @@ URL_SHORT_NAMES = '/s/.*'
 URL_APPS = '/apps'
 URL_COS = '/golocal'
 URL_MLKDAYOFSERVICE = '/MLKDayOfService'
+URL_STRATEGICPARTNERS = '/StrategicPartners'
 URL_HOME4HOLIDAYS = '/home4holidays'
 
 STATIC_CONTENT_LOCATION = 'http://allforgood.googlecode.com/svn/trunk/frontend/html/'
