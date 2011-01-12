@@ -49,6 +49,7 @@ APPLICATION = webapp.WSGIApplication(
      (urls.URL_APPS, views.apps_view),
      (urls.URL_COS, views.cos_view),
      (urls.URL_MLKDAYOFSERVICE, views.mlkdayofservice_view),
+     (urls.URL_STRATEGICPARTNERS, views.strategicpartners_view),
      (urls.URL_HOME4HOLIDAYS, views.home4holidays_redir_view)
     ] +
     [ (url, views.static_content) for url in
