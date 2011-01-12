@@ -72,7 +72,7 @@ LOCATIONLESS_LATLNG = LOCATIONLESS_LAT + "," + LOCATIONLESS_LNG
 HEADER_ALREADY_OUTPUT = False
 
 #BASE_PUB_URL = "http://change.gov/"
-BASE_PUB_URL = "http://adamsah.net/"
+#BASE_PUB_URL = "http://adamsah.net/"
 
 SEARCHFIELDS = {
   # required
@@ -566,7 +566,7 @@ def get_event_reqd_fields(opp):
   used by the FP app."""
   outstr = get_title(opp)
   outstr += FIELDSEP + output_tag_value(opp, "description")
-  outstr += FIELDSEP + output_field("link", BASE_PUB_URL)
+  #outstr += FIELDSEP + output_field("link", BASE_PUB_URL)
   return outstr
 
 def get_feed_fields(feedinfo):
