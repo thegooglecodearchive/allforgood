@@ -24,6 +24,7 @@ import hashlib
 import logging
 
 from xml.sax.saxutils import escape
+from django.utils.html import strip_tags
 
 from fastpageviews import pagecount
 import models
@@ -47,7 +48,7 @@ def get_rfc2822_datetime(when = None):
   if not when:
     when = time.gmtime()
   return time.strftime("%a, %d %b %Y %H:%M:%S", when) + " +0000"
-
+  
 def js_escape(string):
   """quote characters appropriately for javascript.
   TODO: This escape method is overly agressive and is messing some snippets
@@ -56,7 +57,7 @@ def js_escape(string):
   
 def purge_quotes(string):
     """removes double quotes from string"""
-    return string.replace('"', "")
+    return strip_tags(string.replace('"', ""))
 
 class SearchResult(object):
   """class to hold the results of a search to the backend."""
