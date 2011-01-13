@@ -673,11 +673,13 @@ def update_solr_index(filename):
   f_in.close()
   
   solr_filename = solr_retransform(filename)
-  if solr_filename:
-    for solr_url in OPTIONS.solr_urls:
-      print_progress('Uploading %s to %s' % (solr_filename, solr_url))
-      # HTTP POST an index update command to Solr and commit changes.
-      upload_solr_file(solr_filename, solr_url)
+  #TODO: now we do this after all the processing is complete
+  #      so remove this section later
+  #if solr_filename:
+  #  for solr_url in OPTIONS.solr_urls:
+  #    print_progress('Uploading %s to %s' % (solr_filename, solr_url))
+  #    # HTTP POST an index update command to Solr and commit changes.
+  #    upload_solr_file(solr_filename, solr_url)
 
 
 class TimeoutAlarm(Exception):
