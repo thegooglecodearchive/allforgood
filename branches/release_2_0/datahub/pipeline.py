@@ -412,7 +412,6 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
   if do_processing:
     stdout, stderr, retcode = run_shell(["./footprint_lib.py",
                                          "--progress",
-                                         "--inputfmt", "fpxml",
                                          "--output", tsv_filename, url,
                                          "--compress_output" ],
                                         silent_ok=True, print_output=False)
