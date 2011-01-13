@@ -23,6 +23,8 @@ import template_helpers
 import api
 from fastpageviews import pagecount
 from templatetags.dateutils_tags import custom_date_format
+from django.utils.html import strip_tags
+from HTMLParser import HTMLParser
 
 SEARCH_RESULTS_DEBUG_TEMPLATE = 'search_results_debug.html'
 
@@ -35,6 +37,20 @@ def get_writer(output):
   else:
     #default to Debug HTML
     return DebugHtmlApiWriter('text/html')
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ''.join(self.fed)
+    
+def strip_tags(html):
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()    
 
 class ApiWriter:
   """Base class for all ApiWriter classes."""
@@ -326,7 +342,8 @@ class RssApiWriter(ApiWriter):
         item.appendChild(self.doc.createComment(comment))
       subitem = self.doc.createElement(name)
       if content:
-        text = self.doc.createTextNode(content)
+        text = strip_tags(strip_tags(content.replace('""', '"')))
+        text = self.doc.createTextNode(text.replace('"', '').strip())
         subitem.appendChild(text)
       item.appendChild(subitem)
 
