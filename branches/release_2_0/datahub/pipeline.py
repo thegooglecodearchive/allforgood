@@ -26,17 +26,15 @@ from datetime import datetime
 import footprint_lib
 import xml_helpers as xmlh
 
-#LOGPATH = "/home/footprint/public_html/datahub/dashboard.ing/"
-#HOMEDIR = "/home/footprint/allforgood-read-only/datahub"
-LOGPATH = "/home/footprint/release_2_0/datahub/dashboard.ing/"
-HOMEDIR = "/home/footprint/release_2_0/datahub"
+HOMEDIR = "/home/footprint/allforgood-read-only/datahub"
+LOGPATH = HOMEDIR + "/dashboard.ing/"
 
-# rename these-- but remember that the dashboard has to be updated first...
+# if you rename these remember that the dashboard has to be updated first...
 LOG_FN = "load_gbase.log"
 LOG_FN_BZ2 = "load_gbase.log.bz2"
 DETAILED_LOG_FN = "load_gbase_detail.log"
 
-# this file needs to be copied over to frontend/autocomplete/
+# TODO: this file needs to be copied over to frontend/autocomplete/
 POPULAR_WORDS_FN = "popular_words.txt"
 FIELD_STATS_FN = "field_stats.txt"
 FIELD_HISTOGRAMS_FN = "field_histograms.txt"
@@ -410,8 +408,7 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
     print_progress('Feed file missing: ' + url)
     return
   if do_processing:
-    stdout, stderr, retcode = run_shell(["./footprint_lib.py",
-                                         "--progress",
+    stdout, stderr, retcode = run_shell(["./footprint_lib.py", "--progress", #"--inputfmt", "fpxml",
                                          "--output", tsv_filename, url,
                                          "--compress_output" ],
                                         silent_ok=True, print_output=False)
@@ -673,8 +670,6 @@ def update_solr_index(filename):
   f_in.close()
   
   solr_filename = solr_retransform(filename)
-  #TODO: now we do this after all the processing is complete
-  #      so remove this section later
   #if solr_filename:
   #  for solr_url in OPTIONS.solr_urls:
   #    print_progress('Uploading %s to %s' % (solr_filename, solr_url))

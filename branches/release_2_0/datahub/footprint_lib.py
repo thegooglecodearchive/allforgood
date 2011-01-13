@@ -595,9 +595,15 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
     return totrecs, ""
   org_id = xmlh.get_tag_val(opp, "sponsoringOrganizationID")
   if (org_id not in known_orgs):
-    print_progress("unknown sponsoringOrganizationID: " +\
+    """
+<volunteerHubOrganizationIDs><volunteerHubOrganizationID>653</volunteerHubOrganizationID></volunteerHubOrganizationIDs>
+    """
+    org_id = xmlh.get_tag_val(opp, "volunteerHubOrganizationID")
+    if (org_id not in known_orgs):
+      print_progress("unknown sponsoringOrganizationID: " +\
           org_id + ".  skipping opportunity " + opp_id)
-    return totrecs, ""
+      return totrecs, ""
+
   org = known_orgs[org_id]
   opp_locations = opp.getElementsByTagName("location")
   opp_times = opp.getElementsByTagName("dateTimeDuration")
@@ -804,6 +810,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
   example_org = None
   known_orgs = {}
   if fastparse:
+
     known_elnames = [
       'FeedInfo', 'FootprintFeed', 'Organization', 'Organizations',
       'VolunteerOpportunities', 'VolunteerOpportunity', 'abstract',
@@ -826,10 +833,15 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       ]
     numopps = 0
 
+    feedinfo = None
     for match in re.finditer(re.compile('<FeedInfo>.+?</FeedInfo>',
                                         re.DOTALL), instr):
       print_progress("found FeedInfo.", progress=progress)
       feedinfo = xmlh.simple_parser(match.group(0), known_elnames, False)
+
+    if not feedinfo:
+      print_progress("no FeedInfo.", progress=progress)
+      return "", 0, 0
 
     for match in re.finditer(re.compile('<Organization>.+?</Organization>',
                                         re.DOTALL), instr):
