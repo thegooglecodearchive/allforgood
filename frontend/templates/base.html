@@ -54,14 +54,14 @@
 
     var currentPageName = '{{ current_page|escape }}';
 
-    var popularSearches = [ ['MLK Day', 'mlk'],                             
-                            ['Education', 'education'],                            
-                            ['Hunger', 'hunger'],
-							['Animals', 'animals'],
-                            ['Health', 'health'], 
-							['Seniors', 'seniors'], 
-							['Technology', 'technology'], 
-							['Poverty', 'poverty'] ];    
+    var popularSearches = [ ['MLK Day', 'category:MLKDay'],                             
+                            ['Education', 'category:education'],                            
+                            ['Hunger', 'category:hunger'],
+							['Animals', 'category:animals'],
+                            ['Health', 'category:health'], 
+							['Seniors', 'category:seniors'], 
+							['Technology', 'category:technology'], 
+							['Poverty', 'category:poverty'] ];    
   </script>
   		   
 {% block js_files %}{% endblock %}
