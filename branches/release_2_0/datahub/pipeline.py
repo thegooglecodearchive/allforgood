@@ -460,8 +460,8 @@ def loaders():
     run_pipeline("gspreadsheets",
                  "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
 
-  for name in ["unitedway", "volunteermatch", "handsonnetwork", "idealist", "meetup", "mentorpro", 
-               "aarp", "911dayofservice", "americanredcross", "americansolutions",
+  for name in ["unitedway", "volunteermatch", "handsonnetwork", "idealist", # "meetup", 
+               "mentorpro", "aarp", "911dayofservice", "americanredcross", "americansolutions",
                "americorps", "christianvolunteering", "1sky",
                "citizencorps", "extraordinaries", "givingdupage",
                "greentheblock", "habitat", "mlk_day", "mybarackobama",
