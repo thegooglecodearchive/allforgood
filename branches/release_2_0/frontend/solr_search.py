@@ -529,14 +529,14 @@ def query(query_url, args, cache, dumping = False):
         if enddate < res.enddate:
           res.enddate = enddate
 
-    openended = "openended" in entry and entry["openended"]
+    """openended = "openended" in entry and entry["openended"]
     if openended and "ical_recurrence" in entry:
       ical_recurrence = entry["ical_recurrence"]
       query_startdate = args[api.PARAM_VOL_STARTDATE] if api.PARAM_VOL_STARTDATE in args else None
       query_enddate = args[api.PARAM_VOL_ENDDATE] if api.PARAM_VOL_ENDDATE in args else None
       if not ical_filter.match(ical_recurrence, query_startdate, query_enddate):
         logging.warning("skipping SOLR record %d: failed the iCal filter" % i)
-        continue
+        continue"""
 
     # posting.py currently has an authoritative list of fields in "argnames"
     # that are available to submitted events which may later appear in GBase
