@@ -22,6 +22,9 @@ import gzip
 import hashlib
 import urllib2
 import re
+import htmlentitydefs
+import xml.sax.saxutils as saxutils
+
 from datetime import datetime
 import geocoder
 import parse_footprint
@@ -36,6 +39,7 @@ import subprocess
 import sys
 import xml_helpers as xmlh
 from optparse import OptionParser
+from BeautifulSoup import BeautifulSoup
 
 import dateutil
 import dateutil.tz
@@ -521,37 +525,35 @@ def get_base_other_fields(opp, org):
   return outstr
 
 
+html_tag_rx = re.compile(r'<.*?>')
 sent_start_rx = re.compile(r'((^\s*|[.]\s+)[A-Z])([A-Z0-9 ,;-]{13,})')
 def cleanse_snippet(instr):
 
-  instr_was = None
-  while instr and instr_was != instr:
-    instr_was = instr
-    # convert known XML/XHTML chars
-    instr = re.sub(r'&nbsp;', ' ', instr)
-    instr = re.sub(r'&quot;', '"', instr)
+  if instr:
+    # replace some common entities with their ascii equivalents
     instr = re.sub(r'&(uml|middot|ndash|bull|mdash|hellip);', '-', instr)
+    # unescape always replaces &amp; &lt; and &gt; then we add &nbsp;
+    instr = saxutils.unescape(instr, {'&nbsp;':' '})
+    # best chance to handle malformed html and still get contents
+    instr = ''.join(BeautifulSoup(instr).findAll(text=True))
+    # TODO: only ascii allowed but will need to accomdate i8n eventually
+    instr = "".join(i for i in instr if ord(i)<128)
+    # strip any remaining html entities
+    instr = re.sub(r'&([a-z]+|#[0-9]+);', '', instr)
+    # last resort - whatever it is, it will not be html
+    instr = html_tag_rx.sub('', instr)
+    instr = re.sub(r'>', '', instr)
+    instr = re.sub(r'<', '', instr)
     # strip \n and \b
     instr = re.sub(r'(\\[bn])+', ' ', instr)
-    # doubly-escaped HTML
-    instr = re.sub(r'&amp;lt;.+?&amp;gt;', '', instr)
-    instr = re.sub(r'&(amp;)+([a-z]+);', r'&\2;', instr)
-    instr = re.sub(r'&amp;#\d+;', '', instr)
-    # singly-escaped HTML
-    # </p>, <br/>
-    instr = re.sub(r'&lt;/?[a-zA-Z]+?/?&gt;', '', instr)
-    # <a href=...>, <font ...>
-    instr = re.sub(r'&lt;?(font|a|p|img)[^&]*/?&gt;', '', instr, re.IGNORECASE)
-    # strip leftover XML escaped chars
-    instr = re.sub(r'&([a-z]+|#[0-9]+);', '', instr)
     # strip repeated spaces, so maxlen works
     instr = re.sub(r'\s+', ' ', instr)
-
     # fix obnoxious all caps titles and snippets
     for str in re.finditer(sent_start_rx, instr):
       instr = re.sub(sent_start_rx, str.group(1)+str.group(3).lower(), instr, 1)
 
   return instr
+
 
 def get_title(opp):
   """compute a clean title.  TODO: do this once and cache/memoize it"""
@@ -1019,6 +1021,8 @@ def guess_shortname(filename):
     return "seniorcorps"
   if re.search(r'(volunteermatch|cfef12bf527d2ec1acccba6c4c159687)', filename):
     return "volunteermatch"
+  if re.search(r"vm-20101027", filename):
+    return "volunteermatch"
   if re.search(r'vm-nat', filename):
     return "vm-nat"
   if re.search("christianvol", filename):
@@ -1052,7 +1056,7 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '103', 'idealist', 'idealist', 'http://www.idealist.org/',
       'Idealist')
-  if shortname == "volunteermatch":
+  if shortname == "volunteermatch" or shortname == "vm-20101027":
     return "fpxml", fp.parser(
       '104', 'volunteermatch', 'volunteermatch',
       'http://www.volunteermatch.org/', 'Volunteer Match')
