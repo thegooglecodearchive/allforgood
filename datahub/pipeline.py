@@ -469,7 +469,7 @@ def loaders():
                "rockthevote", "threefiftyorg", "catchafire",
                "seniorcorps", "servenet", "servicenation",
                "universalgiving", "volunteergov", "up2us",
-               "volunteertwo", "washoecounty", "ymca", "vm-nat"]:
+               "volunteertwo", "washoecounty", "ymca", "vm-nat", "vm-20101027"]:
     if not FILENAMES or name in FILENAMES:
       run_pipeline(name, name+".xml")
 
@@ -582,9 +582,14 @@ def solr_retransform(fname):
       else:
         rows["c:eventrangeend:dateTime"] = rows["c:eventrangestart:dateTime"]
 
-    rows["c:aggregatefield:string"] = ' '.join([rows["description"],
+    rows["c:aggregatefield:string"] = footprint_lib.cleanse_snippet(' '.join([rows["description"],
                                                rows["c:org_name:string"],
-                                               rows["title"]])
+                                               rows["title"]]))
+    rows["c:org_missionStatement:string"] = footprint_lib.cleanse_snippet(
+                                               rows["c:org_missionStatement:string"])
+    rows["c:org_description:string"] = footprint_lib.cleanse_snippet(
+                                               rows["c:org_description:string"])
+
     for key in rows.keys():
       # Fix to the "double semicolons instead of commas" Base hack.
       rows[key] = rows[key].replace(';;', ',')
