@@ -25,7 +25,7 @@ def query_time_boosts(args):
   logging.info("boosts.query_time_boosts enter")
   if args[api.PARAM_Q].find('category:IAMS') >= 0:
       solr_query = solr_search.rewrite_query('%s' %
-        '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster) AND category:Animals)')
+        '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))')
   
   else:
      solr_query = "" 
