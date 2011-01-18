@@ -28,7 +28,6 @@ from google.appengine.api import urlfetch
 from copy import deepcopy
 
 import api
-
 import geocode
 import ical_filter
 import models
@@ -207,12 +206,6 @@ def form_solr_query(args):
 
   # set the solr instance we need to use if not given as an arg
   if api.PARAM_BACKEND_URL not in args:
-    #import random
-    #if random.choice([1, 2]) == 1:
-    #  args[api.PARAM_BACKEND_URL] = "http://li169-139.members.linode.com:8983/solr/select/"
-    #else:
-    #  args[api.PARAM_BACKEND_URL] = "http://li67-22.members.linode.com:8983/solr/select/"
-
     try:
       args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
     except:

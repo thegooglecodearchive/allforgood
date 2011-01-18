@@ -24,9 +24,8 @@ import hashlib
 import logging
 
 from xml.sax.saxutils import escape
-from django.utils.html import strip_tags
-
 from fastpageviews import pagecount
+
 import models
 import modelutils
 import utils
@@ -57,7 +56,7 @@ def js_escape(string):
   
 def purge_quotes(string):
     """removes double quotes from string"""
-    return strip_tags(string.replace('"', ""))
+    return string.replace('"', "")
 
 class SearchResult(object):
   """class to hold the results of a search to the backend."""
