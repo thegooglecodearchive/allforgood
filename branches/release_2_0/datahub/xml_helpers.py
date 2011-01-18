@@ -120,7 +120,9 @@ def get_tag_val(entity, tag):
       outstr += xml.sax.saxutils.unescape(node.data.strip()).encode('UTF-8')
     elif node.nodeType == node.CDATA_SECTION_NODE:
       outstr += node.data.strip().encode('UTF-8')
-  outstr = re.sub(r'\n', r'\\n', outstr)
+  #outstr = re.sub(r'\n', r'\\n', outstr)
+  outstr = re.sub(r'\n', ' ', outstr)
+  outstr = "".join(i for i in outstr if ord(i)<128 and ord(i)>31)
   return outstr
 
 def get_tag_attr(entity, tag, attribute):
@@ -135,7 +137,9 @@ def get_tag_attr(entity, tag, attribute):
     return ""
   outstr = nodes[0].getAttribute(attribute)
   outstr = xml.sax.saxutils.escape(outstr).encode('UTF-8')
-  outstr = re.sub(r'\n', r'\\n', outstr)
+  #outstr = re.sub(r'\n', r'\\n', outstr)
+  outstr = re.sub(r'\n', ' ', outstr)
+  outstr = "".join(i for i in outstr if ord(i)<128 and ord(i)>31)
   return outstr
 
 def set_default_value(parent, entity, tagname, default_value):
