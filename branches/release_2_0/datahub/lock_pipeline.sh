@@ -45,9 +45,8 @@ then
                 exit 1
         fi
 
-	./notify_michael.sh pipeline uploading
-
         # upload the opps to solr
+	./notify_michael.sh pipeline uploading
 	if [ "$*" = "" ]
 	then
 		./upload.sh

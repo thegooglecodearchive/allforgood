@@ -530,6 +530,10 @@ sent_start_rx = re.compile(r'((^\s*|[.]\s+)[A-Z])([A-Z0-9 ,;-]{13,})')
 def cleanse_snippet(instr):
 
   if instr:
+    # strip \n and \b
+    instr = re.sub(r'(\\[bn])+', ' ', instr)
+    instr = re.sub(r'\\n', ' ', instr)
+    instr = re.sub(r'\n', ' ', instr)
     # replace some common entities with their ascii equivalents
     instr = re.sub(r'&(uml|middot|ndash|bull|mdash|hellip);', '-', instr)
     # unescape always replaces &amp; &lt; and &gt; then we add &nbsp;
@@ -540,12 +544,12 @@ def cleanse_snippet(instr):
     instr = "".join(i for i in instr if ord(i)<128)
     # strip any remaining html entities
     instr = re.sub(r'&([a-z]+|#[0-9]+);', '', instr)
-    # last resort - whatever it is, it will not be html
     instr = html_tag_rx.sub('', instr)
+    # last resort - whatever it is, it will not be html
+    instr = re.sub(r'<.', '', instr)
+    instr = re.sub(r'.>', '', instr)
     instr = re.sub(r'>', '', instr)
     instr = re.sub(r'<', '', instr)
-    # strip \n and \b
-    instr = re.sub(r'(\\[bn])+', ' ', instr)
     # strip repeated spaces, so maxlen works
     instr = re.sub(r'\s+', ' ', instr)
     # fix obnoxious all caps titles and snippets
@@ -694,6 +698,10 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       outstr_list.append(time_fields)
       outstr_list.append(loc_fields)
       outstr_list.append(RECORDSEP)
+
+  for idx, outstr in enumerate(outstr_list):
+    outstr_list[idx] = "".join(i for i in outstr_list[idx] if ord(i)<128)
+   
   return totrecs, "".join(outstr_list)
 
 def get_time_fields(openended, duration, hrs_per_week, event_date_range, ical_recurrence):
@@ -1045,6 +1053,8 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", parse_footprint.parse_fast
 
   shortname = guess_shortname(filename)
+  if shortname == "idealist":
+    return "idealist", parse_idealist.parse
 
   # FPXML providers
   fp = parse_footprint
@@ -1052,10 +1062,10 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '102', 'handsonnetwork', 'handsonnetwork', 'http://handsonnetwork.org/',
       'HandsOn Network')
-  if shortname == "idealist":
-    return "fpxml", fp.parser(
-      '103', 'idealist', 'idealist', 'http://www.idealist.org/',
-      'Idealist')
+  #if shortname == "idealist":
+  #  return "fpxml", fp.parser(
+  #    '103', 'idealist', 'idealist', 'http://www.idealist.org/',
+  #    'Idealist')
   if shortname == "volunteermatch" or shortname == "vm-20101027":
     return "fpxml", fp.parser(
       '104', 'volunteermatch', 'volunteermatch',
