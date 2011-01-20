@@ -178,6 +178,8 @@ def form_solr_query(args):
       solr_query += " AND virtual:true"
     elif args[api.PARAM_TYPE] == "micro":
       solr_query += " AND micro:true"
+  else:
+      solr_query += " AND self_directed:false AND virtual:false AND micro:false"    
   
   added_categories = False
   # Category
@@ -457,9 +459,7 @@ def query(query_url, args, cache, dumping = False):
       continue
     latstr = entry["latitude"]
     longstr = entry["longitude"]
-    virtual = (entry.get('virtual') == 'true' or 
-               not latstr and not longstr or
-               latstr and longstr and latstr == '0.0' and longstr == '0.0')
+    virtual = entry.get('virtual')
     self_directed = entry.get("self_directed")
     micro = entry.get("micro")
     volunteers_needed = entry.get("volunteersneeded")
