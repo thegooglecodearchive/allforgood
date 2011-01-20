@@ -176,6 +176,8 @@ def form_solr_query(args):
       solr_query += " AND self_directed:true"    
     elif args[api.PARAM_TYPE] == "virtual":
       solr_query += " AND virtual:true"
+    elif args[api.PARAM_TYPE] == "micro":
+      solr_query += " AND micro:true"
   
   added_categories = False
   # Category
@@ -459,10 +461,11 @@ def query(query_url, args, cache, dumping = False):
                not latstr and not longstr or
                latstr and longstr and latstr == '0.0' and longstr == '0.0')
     self_directed = entry.get("self_directed")
+    micro = entry.get("micro")
     volunteers_needed = entry.get("volunteersneeded")
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
                                     base_url, volunteers_needed, virtual,
-                                    self_directed, categories, org_name)
+                                    self_directed, micro, categories, org_name)
 
     # TODO: escape?
     res.provider = entry["feed_providername"]
