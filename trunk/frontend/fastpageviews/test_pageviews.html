@@ -1,0 +1,22 @@
+<html>
+<body>
+<div>
+<pre>
+page '{{ pagename|escape }}' has been seen {{ pageviews|escape }} times.
+(use &amp;pagename=NAME to set the pagename)
+
+memcache stats:
+ - hits: {{ hits|escape }}
+ - misses: {{ misses|escape }}
+ - byte_hits: {{ byte_hits|escape }}
+ - items: {{ items|escape }}
+ - bytes: {{ bytes|escape }}
+ - oldest_item_age: {{ oldest_item_age|escape }}
+pageview counter stats:
+ - pc_loads: {{ pc_loads|escape }}
+ - pc_writebacks: {{ pc_writebacks|escape }}
+</pre>
+</div>
+
+</body>
+</html>

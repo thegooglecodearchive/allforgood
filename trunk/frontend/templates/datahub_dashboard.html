@@ -1,0 +1,121 @@
+{% extends "base_min.html" %}
+{% block head %}
+  <link href='/zx{{version}}/css/main.css' rel='stylesheet'/>
+  {% block css_files %}{% endblock %}
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+
+<style>
+h1 {
+  color: white;
+}
+h2 {
+  color: black;
+  font-size: 14px;
+}
+h3 {
+  color: black;
+  fot-weight:bold;
+  font-size: 18px;
+}
+p {
+  color: white;
+  font-size: 14px;
+}
+.dash_column {
+  text-align: center;
+  background: #eee;
+}
+.details {
+  padding-left:8px;
+  background: #ffffff;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<body>
+    <div id='header_top_spacer'></div>
+    <div>
+      <a class='no_underline' href='/'><img class='logo' src='/zx{{version}}/images/logo.png'/>
+      <span class='header_title noselect pointer' style='vertical-align: middle;'><img class='logo' src='/zx{{version}}/images/title-transp.png' alt='All for Good'/></span></a>
+    </div>
+  {# % include 'header.html' % #}
+
+<br/>
+<h1>Datahub Dashboard  (Confidential!)</h1>
+<div id="contents">
+<div style="width:1280px;min-height:500px;background:#eee;padding:10px;text-align:left">
+<a href="https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw">list of spreadsheet providers</a>
+<p/>
+  <table style="background:#eee;width=100%">
+    <tr>
+    <td class="dash_column">Provider</td>
+    <td class="dash_column">Last Loaded</td>
+    <td class="dash_column"># of Listings</td>
+    <td class="dash_column"># of Organizations</td>
+    <td class="dash_column">Feed Size (KB)</td>
+    <td class="dash_column">Load Times (minutes)</td>
+    </tr>
+    <tr>
+      <td><div style="width:170px" id="provider_names"></div></td>
+      <td><div style="width:160px" id="lastloaded"></div></td>
+      <td><div style="width:210px" id="listings_chart"></div></td>
+      <td><div style="width:210px" id="organizations_chart"></div></td>
+      <td><div style="width:210px" id="kbytes_chart"></div></td>
+      <td><div style="width:210px" id="loadtimes_chart"></div></td>
+    </tr>
+  </table>
+</div>
+{{ datahub_dashboard_history }}
+</div>
+<script type="text/javascript">
+var provider_chart = null;
+function selectHandler() {
+  var selection = provider_chart.getSelection();
+  for (var i = 0; i < selection.length; i++) {
+    var item = selection[i];
+    if (item.column != null) {
+      var url = location.href;
+      var ar = url.split('?');
+      location.href = ar[0] + '?provider_idx=' + item.column + '#anchor' + item.column;
+      break;
+    }
+    /*
+    // please leave this here a while for ref - mt1955
+    var message = '';
+    if (item.row != null && item.column != null) {
+      message += '{row:' + item.row + ',column:' + item.column + '}';
+    } else if (item.row != null) {
+      message += '{row:' + item.row + '}';
+    } else if (item.column != null) {
+      message += '{column:' + item.column + '}';
+    }
+    alert(message);
+    */
+  }
+  provider_chart.setSelection(null);
+  var it = document.getElementById('contents');
+  if (it) {
+    it.innerHTML = 'Loading...';
+  }
+}
+
+  google.load("visualization", "1", {packages:["imagesparkline"]});
+  google.setOnLoadCallback(drawChart);
+  var data;
+  function drawChart() {
+    {# django can't unpack complex data structures, and it would be too slow #}
+    {{ datahub_dashboard_js_data }}
+    google.visualization.events.addListener(provider_chart, 'select', selectHandler);
+    setTimeout(function(){
+      var it = document.getElementById('anchor' + location.hash.substr(1));
+      if (it) {
+        it.scrollIntoView(true);
+      }
+    }, 1000);
+
+  }
+</script>
+</body>
+{% endblock %}
+
