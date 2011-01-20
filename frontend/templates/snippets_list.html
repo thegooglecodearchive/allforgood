@@ -1,0 +1,242 @@
+{% if not has_results %}
+{% include 'no_results.html' %}
+{% else %}
+
+<script type='text/javascript'>
+  asyncLoadManager.addCallback('map', function(){
+      map.clearMarkers();
+  });
+
+  var friendsByEventId = {{friends_by_event_id_js|default:"{}"}};
+
+  var friendsInfo = {};
+{% for friend in friends %}
+  friendsInfo['{{friend.user_id|escape }}'] = {
+    'thumbnail_url': '{{friend.thumbnail_url|escape }}',
+    'name': '{{friend.display_name|escape }}'
+  };
+{% endfor %}
+
+  var searchResults = [];
+{% for result in result_set.clipped_results %}
+  {# TODO(asah): URLESCAPE result.url?  currently, we're going unescaped and filtering scary characters in searchresult.py #}
+  searchResults.push(new SearchResult('{{result.url}}', '{{result.url_sig|escape}}', '{{result.js_escaped_title|escape}}', '{{result.location|escape}}', '{{result.js_escaped_snippet|escape}}', new Date('{{ result.startdate|date:"r" }}'), new Date('{{ result.enddate|date:"r" }}'), '{{result.item_id|escape}}', '{{result.base_url|escape}}', {{result.interest|yesno:"1,0"}}, {{result.interest_count|default:0}}, '{{result.host_website|escape}}'));
+  updateInterestInfoDisplay({{forloop.counter0}});
+{% endfor %}
+</script>
+
+{% ifequal current_page "MY_EVENTS" %}
+  <script type="text/javascript">
+    /* The like count is only available once this snippets list has been
+	loaded through AJAX, so in order to display it in the blue profile box 
+	above (which cannot be rendered in this template because this template 
+	is only the right column), we have to set it with JS */
+    setTextContent(el('like_count'), {{ like_count|escape }} );
+  </script>
+<h1 class='snippets_list_header'>Your Activities</h1>
+{% endifequal %}
+
+{% if not campaign_id and result_set.estimated_merged_results %}
+<div class="top_search">
+	<div class="sort_filter">
+		<label for="sort">Sort by:</label>
+		<select id="sort" name="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+			<option value="score">Relevance</option>
+			<option value="eventrangeend">Date</option>
+		</select>
+	</div>
+	<!--<div class="approximate_results">About {{ result_set.estimated_merged_results|add_commas }} results</div>-->
+</div>
+  {% endif %}
+
+{% for result in result_set.clipped_results %}
+  <div class='snippet'>
+    <table class='snippet_table'>
+    <tr>
+    <td valign='top' class='snippet_number'>
+      {% if result.latlong %}
+        <img src='http://www.google.com/mapfiles/marker_midblue{{ forloop.counter0|as_letter }}.png' />
+      {% endif %}
+    </td>
+
+    <td valign='top'>
+    <div>
+      {# TODO(paul): ESCAPE THE LOCATION FIELD AGAINST QUOTES #}
+      {% if result.latlong %}
+        <script type='text/javascript'>
+          asyncLoadManager.addCallback('map', function() {
+            var coords = '{{result.latlong}}'.split(',');
+            map.addMarker(
+                coords[0], coords[1], '{{ forloop.counter0|as_letter }}');
+          });
+        </script>
+      {% endif %}
+
+      <div class='snippet_title'>
+        {# note: id comes after sig to reduce risk of truncation dropping sig #}
+        <a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title|escape|bold_query:query_param_q }}</a>
+      </div>
+      {% if result.location or result.startdate or result.interest_count %}
+        <div class='snippet_sub_text'>
+          {{ result.location|escape}}
+          {% if result.location %}-{% endif %}
+          {{ result|custom_date_range_format }}
+        </div>
+      {% endif %}
+      {% if result.have_more %}
+<div class="snippet_sub_text" style="display:inline">
+      {% endif %}
+      {% for entry in result.less_list %}{{ entry }}{% endfor %}
+      {% if result.have_more %}
+<div id="{{ result.more_id|escape}}" style="display:none;">
+      {% for entry in result.more_list %}{{ entry }}{% endfor %}
+<div onclick="showLessDuplicates('{{ result.more_id|escape }}')" class="more_link"> show fewer locations and times...</div>
+</div>
+<span id="s{{ result.more_id|escape}}" onclick="showMoreDuplicates('{{ result.more_id|escape}}')" class="more_link"> more locations and times...</span>
+</div>
+      {% endif %}
+      <div class='snippet_text'>
+        {{ result.purged_snippet|truncate_chars:285|escape|bold_query:query_param_q }}
+      </div>
+
+      <div class='snippet_bottom'>
+        <a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
+        -
+        <div class='interest_links'>
+          <span style='display:{{result.interest|yesno:"none,"}};' id='like_{{forloop.counter0}}'><a href='javascript:void(0)' onclick='toggleInterest({{forloop.counter0}});return false;'>Like</a> -</span>
+          
+          <a id='share_{{forloop.counter0}}' class='sharelink'>Share</a>
+          <script type="text/javascript">
+addthis.button('#share_{{forloop.counter0}}', { username: "footprint2009dev", services_compact: "email, twitter, facebook, myspace, friendfeed, bebo", ui_click: true }, { title: "{{ result.title|escape }}", url: "{{ result.url }}", templates: {twitter: '\{\{url\}\} via www.allforgood.org'} });
+</script>
+
+<!--          <span style='position: relative;' class='pointer'
+               onclick='popupModalElement("add_to_calendar{{ forloop.counter0 }}");return false;'>
+            <div id='add_to_calendar{{ forloop.counter0 }}'
+                 class='add_to_calendar_floating'>
+              <div class='pointer popup_text'
+                   onclick='addToCalendar(this, "GOOGLE", searchResults[{{ forloop.counter0 }}])'>
+                <a href='javascript:void(0)'>Add to Google Calendar</a>
+              </div>
+              <div class='pointer popup_text'
+                   onclick='addToCalendar(this, "YAHOO", searchResults[{{ forloop.counter0 }}])'>
+                <a href='javascript:void(0)'>Add to Yahoo Calendar</a>
+              </div>
+            </div>
+            <a href='javascript:void(0);'>Add to calendar</a>
+          </span>
+-->
+{% if moderator %}
+          - <a href='/moderateblacklist?action=blacklist&key={{result.merge_key|urlencode}}'>blacklist</a>
+{% endif %}
+        </div>
+        {{ result.categories_str }}
+        <div class='snippet_interest_info' id='interest_info_{{forloop.counter0}}'></div>
+
+      </div>
+
+    </div>
+
+    {% if not forloop.last %}
+    <div class='snippet_bottom_border'></div>
+    {% endif %}
+
+    </td>
+    </tr>
+    </table>
+  </div>
+{% endfor %}
+
+<script language="text/javascript">
+
+var query = createQueryFromUrlParams();
+
+function makeFilterWidgetArray(defaultValuesArray, dataArray, labelsArray)
+{
+	var fwArr = Array();
+	var totalCount = 0;
+	for (var i = 1; i < dataArray.length; i+=2)
+	{
+		totalCount += parseInt(dataArray[i]);
+	}
+	if (defaultValuesArray.length >= 2)
+	{
+		fwArr.push(Array(defaultValuesArray[0], defaultValuesArray[1]));
+	}
+	for (var i = 0; i < dataArray.length; i+=2)
+	{
+		if (dataArray[i] in labelsArray)
+		{
+			fwArr.push(
+				Array(
+					labelsArray[dataArray[i]],
+					dataArray[i],
+					dataArray[i+1])
+				);
+		}
+	}
+	return fwArr;
+}
+
+{% for facet_count in result_set.facet_counts %}
+	{{facet_count}}_data = Array();
+	{% for info in result_set.facet_counts|getkey:facet_count %}
+		{{facet_count}}_data.push('{{info}}');
+	{% endfor %}
+{% endfor %}
+
+	var sort = getHashParam('sort', '');
+	if (sort == "eventrangeend") {
+		$("#sort").attr('selectedIndex', 1);
+	}		
+	else {
+		$("#sort").attr('selectedIndex', 0);
+	}
+
+</script>
+
+<span id='loading-bottom' style='display:none;float:right;'><span id='loading'>Loading...</span></span>
+<div id='paginator'>
+</div>
+<script>
+function stripTags(s){
+  var rtn = '';  
+  s = (s || '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/<([^>]+)>/g,'');
+  var n = s.length;  
+  var intag = false;  
+  for (var i = 0; i < n; i++) {
+    if (s.charAt(i) == '<') {
+      intag = true;
+    } else if (s.charAt(i) == '>') {
+      intag = false;    
+    } else if (!intag) {
+      rtn += s.charAt(i);    
+    }  
+  }
+  return rtn;
+}
+function cleanSnippets() {
+  var ar = document.getElementsByTagName('div');
+  for (var i in ar) {
+    if (ar[i] && ar[i].className == 'snippet_text') {
+      ar[i].innerHTML = stripTags(ar[i].innerHTML).replace(/""/g,'"');
+    }
+	else if (ar[i] && ar[i].className == 'snippet_title') {
+	  ar[i].innerHTML = ar[i].innerHTML.replace(/""/g,'"');
+	}
+  }
+}
+cleanSnippets();
+
+  renderPaginator(el('paginator'), {{last_result_index|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
+  initMap();
+</script>
+
+<script>
+if (false) {
+  el('debug_snippets').style.display = '';
+  el('debug_snippets').innerHTML = "DEBUG INFO:<br> FP query=<a href='{{ view_url }}'>{{ view_url|escape }}<\/a><br> Base query= <a href='{{ result_set.query_url_encoded }}'>{{ result_set.query_url_unencoded|escape }}<\/a><br> num results: backend-estimated={{result_set.estimated_results|escape}}  merged-estimated={{result_set.estimated_merged_results|escape}}  backend={{result_set.num_results|escape}}   merged={{result_set.num_merged_results|escape}}";
+}
+</script>
+
+{% endif %}

@@ -1,0 +1,48 @@
+{% ifnotequal campaign_id None %}
+    {% include 'campaign_branding_snippet.html' %}
+{% endifnotequal %}
+<!--<div id='filter_results' class='filterwidget'></div>
+<div id='category_filter_widget' class='filterwidget'></div>
+<div id='distance_filter_widget' class='filterwidget'></div>
+<div id='type_filter_widget' class='filterwidget'></div>
+<div id='source_filter_widget' class='filterwidget'>-->
+<form class="facets">
+	{% ifequal current_page "SEARCH" %}
+		<div class="filterwidget_title">
+			Enter your location
+		</div>
+	{% endifequal %}
+	<div style='margin-bottom: 4px;'>
+	  <div class='valign'>
+	    <table style='width:100%;'>
+	     <tr>
+	      <td valign='middle'>
+	        <input id='location' name='your location'
+	               class='valign' type='text' size='60' value='{{ location|escape }}'/>        
+	      </td>
+	     </tr>
+	    </table>
+	  <script>setInputFieldValue(el('location'), '');</script>
+	  </div>
+	</div>
+	<div id='distance_filter_widget' class='filterwidget'>
+		<div class="filterwidget_title">
+			Within a <span id="location_distance"></span> mile range
+		</div>
+		<div id="location_slider"></div>	
+	</div>
+	<div id='when_filter_widget' class='filterwidget'>
+		<div class="filterwidget_title">
+			Filter by date range
+		</div>	
+		<div class="date_inputs">
+			<input id="startdate" type="text" value="Start Date"> to	
+			<input id="enddate" type="text" value="End Date">
+		</div>		
+	</div>	
+	<div id="submit_button">
+		<a href="#" id="facet_submit">Update Search</a>
+	</div>
+</form>
+<div id='map'></div>
+</div>

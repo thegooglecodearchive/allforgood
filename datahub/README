@@ -1,0 +1,89 @@
+What is the Data Hub?
+
+The data hub is a background job and web service which crawls
+data feeds and accepts feed submissions from providers of
+volunteerism opportunities.
+
+The hub parses these feeds, aggregates them into a single feed
+with a common format, and sends it (makes it available) to the
+search engine for indexing and serving.  Currently, this SE is
+Google Base, but by design it could be another search engine,
+as long as it met the requirements of the site-- availability,
+scalability, ranking function controls, etc.  (these aren't
+that bad for footprint-- but Base sure is convenient)
+
+
+Other requirements: flexibility
+
+ - new providers need to be able to test their feeds with the
+   hub and get feedback about errors in their feeds.
+
+ - feeds must be either pull-able (crawled) or push-able
+   (uploaded) from providers.
+
+ - a common feed format is preferred, but for unusual cases,
+   the hub must handle large providers that need custom 
+   adapters within the data hub.   
+
+
+Other requirements: speeds and feeds
+
+ - there are 10-20 providers total, i.e. tiny.  Someday, we
+   may support direct input of new volunteer opportunities
+   into footprint, but if/when that happens, we'll treat this
+   as a new feed for this crawler.
+
+ - end-to-end data loading should happen in under 24 hours.
+   We'd like faster over time, which may mean switching from
+   Base if it doesn't decrease its indexing time, which is
+   currently ~12 hours.
+
+ - reliability needs to be 99% or less: the data hub can be
+   down for 12-24hours and that's OK.  The ability to delete
+   records must be highly available however-- but this can
+   be implemented in the frontend, rather than the data hub.
+
+
+Other requirements: hygeine
+
+ - as with everything, the data hub must be open source and
+   built with standards-compliant technologies that are easily
+   hosted in multiple cloud platform providers.
+
+ - the data hub needs to support US and English only, although
+   some fields may contain some amount of non-English, e.g.
+   Spanish.  Thus, we standardize on UTF-8 as a compromise,
+   and the system must be tested with various languages, so
+   we can someday support international listings and users.
+
+
+Design
+
+ - platform is Linux.  We run a small Python daemon which
+   crawls registered feeds.  In addition, feeds can be
+   uploaded by providers into [webserver + CGI ?], which
+   is then stored in that webserver's datastore-- this then
+   becomes a regular feed for the above-mentioned crawler.
+
+ - a Python feed parser is provided and run after the crawl
+   completes for each feed.  This same parser is available
+   to providers (as a CGI script?) so they can test feeds
+   and get feedback about syntax errors.
+
+ - monitoring is all provided off-site by HTTP monitoring
+   systems, such as http://www.host-tracker.com/
+   For the webserver/CGI, we monitor by regular GET/POST
+   requests.  For the crawl daemon, we monitor by an extra
+   CGI script which we ping, and which checks the daemon
+   (e.g. looks at the tail of its log to see that it's
+   running).  For monitoring the upload, we check the
+   freshness of the search engine data from SE queries.
+
+ - testing is provided by test feeds sent through the system
+   in both push and pull.
+
+ - to avoid random third parties submitting data, the list
+   of feed-URLs to crawl is stored in appengine and hosted
+   on a well-known URL, and hand-approved by the team.  The
+   crawler downloads this list each crawl-cycle.
+
