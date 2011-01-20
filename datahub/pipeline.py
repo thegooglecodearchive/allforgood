@@ -429,9 +429,10 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
 
   print "processing field stats..."
   process_field_stats(tsv_data)
-
-  print "processing popular words..."
-  process_popular_words(tsv_data)
+  
+  #Removing this because Solr has this functionality built in
+  #print "processing popular words..."
+  #process_popular_words(tsv_data)
 
   if OPTIONS.use_base and do_ftp:
     print_progress("ftp'ing to base")
