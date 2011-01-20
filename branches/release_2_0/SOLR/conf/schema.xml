@@ -364,6 +364,7 @@
 <field name="org_name_str" type="string" indexed="true" stored="true"/>
 <field name="virtual" type="boolean" indexed="true" stored="true" default="false"/>
 <field name="self_directed" type="boolean" indexed="true" stored="true" default="false"/>
+<field name="micro" type="boolean" indexed="true" stored="true" default="false"/>
 <field name="ical_recurrence" type="string" indexed="true" stored="true"/>
 <field name="longitude" type="double" indexed="true" stored="true"/>
 <field name="latitude" type="double" indexed="true" stored="true"/>

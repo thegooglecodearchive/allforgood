@@ -90,6 +90,7 @@ SEARCHFIELDS = {
   "longitude":"float",
   "virtual":"boolean",
   "self_directed":"boolean",
+  "micro":"boolean",
   # needed for query by time-of-day
   "startTime":"integer",
   "endTime":"integer",
@@ -127,6 +128,7 @@ FIELDTYPES = {
   "longitude":"float",
   "virtual":"boolean",
   "self_directed":"boolean",
+  "micro":"boolean",
 
   "providerURL":"URL",
   "detailURL":"URL",
@@ -473,7 +475,13 @@ def get_direct_mapped_fields(opp, org):
     self_directed = "False"
   else:
     self_directed = "True"
-  outstr += FIELDSEP + output_field("self_directed", self_directed)
+  outstr += FIELDSEP + output_field("self_directed", self_directed)  
+  micro = xmlh.get_tag_val(opp, "micro")
+  if (micro == "" or micro.lower()[0] != "y"):
+    micro = "False"
+  else:
+    micro = "True"
+  outstr += FIELDSEP + output_field("micro", micro)  
   detailURL = xmlh.get_tag_val(opp, "detailURL")
   outstr += FIELDSEP + output_field("detailURL", detailURL)
 
@@ -831,7 +839,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       'detailURL', 'directions', 'donateURL', 'duration', 'email',
       'endDate', 'endTime', 'expires', 'fax', 'feedID', 'guidestarID',
       'iCalRecurrence', 'language', 'latitude', 'lastUpdated', 'location',
-      'locationType', 'locations', 'logoURL', 'longitude', 'minimumAge',
+      'locationType', 'locations', 'logoURL', 'longitude', 'micro', 'minimumAge',
       'missionStatement', 'name', 'nationalEIN', 'openEnded',
       'organizationID', 'organizationURL', 'paid', 'phone', 'postalCode',
       'providerID', 'providerName', 'providerURL', 'region',
