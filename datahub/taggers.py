@@ -397,14 +397,14 @@ def get_taggers():
   # categories are displayed in the consumer UI next to each result.
   taggers = [
     # vetted/UGC
-    vetted_tagger
+    vetted_tagger,
     # topics
     #earthday_tagger,
     #mlk_tagger, mlk_date_tagger,
     #mom_tagger,
     #hunger_tagger,
     #nature_tagger, education_tagger, animals_tagger, health_tagger,
-    #seniors_tagger, technology_tagger, hph_tagger, tutoring_tagger,
+    ##seniors_tagger, technology_tagger, hph_tagger, tutoring_tagger,
     #gardening_tagger,
     # skills
     #artist_tagger, lawyer_tagger, doctor_tagger, programmer_tagger,
