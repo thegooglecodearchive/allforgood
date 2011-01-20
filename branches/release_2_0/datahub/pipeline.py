@@ -582,6 +582,10 @@ def solr_retransform(fname):
       else:
         rows["c:eventrangeend:dateTime"] = rows["c:eventrangestart:dateTime"]
 
+    # in case we somehow got here without already doing this
+    rows["title"] = footprint_lib.cleanse_snippet(rows["title"])
+    rows["description"] = footprint_lib.cleanse_snippet(rows["description"])
+
     rows["c:aggregatefield:string"] = footprint_lib.cleanse_snippet(' '.join([rows["description"],
                                                rows["c:org_name:string"],
                                                rows["title"]]))

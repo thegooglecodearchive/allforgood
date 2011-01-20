@@ -49,6 +49,27 @@ then
 	./notify_michael.sh pipeline uploading
 	if [ "$*" = "" ]
 	then
+		# evaluate processing results before uploading
+                for FILE in `ls -1 *.transformed`
+                do
+                        NAME=`basename $FILE`
+                        CFILE="current/$NAME"
+                        if [ ! -s $CFILE ]  
+                        then
+                                cp $FILE $CFILE
+                        else
+                                NEWSZ=`stat -c %s $FILE`
+                                OLDSZ=`stat -c %s $CFILE`
+                                RATIO=`echo "100 * $NEWSZ / $OLDSZ" | bc`
+                                if [ $RATIO -lt 70 ]
+                                then
+                                        ./notify_team.sh manually check $FILE
+                                else
+                                        cp $FILE $CFILE
+                                fi
+                        fi
+                done
+
 		./upload.sh
 	else
 		for IT in $*
