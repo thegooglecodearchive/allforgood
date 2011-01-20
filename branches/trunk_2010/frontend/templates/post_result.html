@@ -1,0 +1,97 @@
+{% extends "base_min.html" %}
+
+{% block title %}
+All for Good - Posting results
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+<body>
+
+<a href="{{ geturl|urlencode }}">geturl</a>
+
+<p>
+
+<pre>
+{% ifequal respcode "200" %}
+post successful!<br/>
+
+note: this is a placeholder for the real template.
+note: postings pipeline is under construction, i.e. this posting does not go live-- sorry!!
+
+{% comment %}
+  looks like Django isn't 1.0 or just sucks at for..loops with dicts
+  e.g. this doesn't work:
+  {% for key,value in vals.items %}{{ key }} = {{ value }}{% endfor %}
+{% endcomment %} 
+
+title = {{ val_title|escape}}
+description = {{ val_description|escape}}
+skills = {{ val_skills|escape}}
+virtual = {{ val_virtual|escape}}
+addr1 = {{ val_addr1|escape}}
+addrname1 = {{ val_addrname1|escape}}
+sponsoringOrganizationsName = {{ val_sponsoringOrganizationsName|escape}}
+openEnded = {{ val_openEnded|escape}}
+startDate = {{ val_startDate|escape}}
+startTime = {{ val_startTime|escape}}
+endTime = {{ val_endTime|escape}}
+endDate = {{ val_endDate|escape}}
+contactNoneNeeded = {{ val_contactNoneNeeded|escape}}
+contactEmail = {{ val_contactEmail|escape}}
+contactPhone = {{ val_contactPhone|escape}}
+contactName = {{ val_contactName|escape}}
+detailURL = {{ val_detailURL|escape}}
+weeklySun = {{ val_weeklySun|escape}}
+weeklyMon = {{ val_weeklyMon|escape}}
+weeklyTue = {{ val_weeklyTue|escape}}
+weeklyWed = {{ val_weeklyWed|escape}}
+weeklyThu = {{ val_weeklyThu|escape}}
+weeklyFri = {{ val_weeklyFri|escape}}
+weeklySat = {{ val_weeklySat|escape}}
+biweeklySun = {{ val_biweeklySun|escape}}
+biweeklyMon = {{ val_biweeklyMon|escape}}
+biweeklyTue = {{ val_biweeklyTue|escape}}
+biweeklyWed = {{ val_biweeklyWed|escape}}
+biweeklyThu = {{ val_biweeklyThu|escape}}
+biweeklyFri = {{ val_biweeklyFri|escape}}
+biweeklySat = {{ val_biweeklySat|escape}}
+recurrence = {{ val_recurrence|escape}}
+audienceAll = {{ val_audienceAll|escape}}
+audienceAge = {{ val_audienceAge|escape}}
+minAge = {{ val_minAge|escape}}
+audienceSexRestricted = {{ val_audienceSexRestricted|escape}}
+sexRestrictedTo = {{ val_sexRestrictedTo|escape}}
+commitmentHoursPerWeek = {{ val_commitmentHoursPerWeek|escape}}
+test_submit = {{ val_test_submit|escape}}
+city = {{ val_city|escape}}
+region = {{ val_region|escape}}
+postalCode = {{ val_postalCode|escape}}
+country = {{ val_country|escape}}
+street1 = {{ val_street1|escape}}
+street2 = {{ val_street2|escape}}
+recaptcha_response = {{ val_recaptcha_response|escape}}
+
+parsedStartDate = {{ val_parsedStartDate|escape}}
+parsedStartTime = {{ val_parsedStartTime|escape}}
+parsedEndDate = {{ val_parsedEndDate|escape}}
+parsedEndTime = {{ val_parsedEndTime|escape}}
+latitude = {{ val_latitude|escape}}
+longitude = {{ val_longitude|escape}}
+
+{% else %}{% ifequal respcode ""  %}
+captcha failed
+
+{% else %}
+post failed:
+respcode = {{ respcode|escape}}
+message = {{ content|escape }}
+
+{% endifequal %}{% endifequal %}
+</pre>
+
+
+</body>
+{% endblock %}

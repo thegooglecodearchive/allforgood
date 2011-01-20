@@ -1,0 +1,14 @@
+{% extends "layout_full.html" %}
+
+{% block content %}
+<h1>Page Not Found</h1>
+<p>The page <strong>{{ view_url|escape }}</strong> could not be found.</p>
+<p class="not_found_text">&raquo; If you typed in this URL directly, please check for typos and try again.<br />
+  &raquo; Return to the All for Good <a href="/">home page</a>.<br />
+  &raquo; Go back to the <a href="javascript:history.back();">previous page</a>.<br />
+  &raquo; Search for volunteer activities using the box above.<br />
+  &raquo; If you believe you reached this page in error, please
+  <a href="http://spreadsheets.google.com/viewform?hl=en&formkey=clZQWHN5Rzg4cTVMTG1jYWxfMTJRRFE6MA">
+  let us know</a>.
+</p>
+{% endblock %}
