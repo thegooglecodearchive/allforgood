@@ -28,7 +28,6 @@ from google.appengine.api import urlfetch
 from copy import deepcopy
 
 import api
-
 import geocode
 import ical_filter
 import models
@@ -207,15 +206,10 @@ def form_solr_query(args):
 
   # set the solr instance we need to use if not given as an arg
   if api.PARAM_BACKEND_URL not in args:
-    today = datetime.date.today()
-    weekday = datetime.date.today().weekday()
     try:
-      if weekday in [0,2,4,6]:
-        args[api.PARAM_BACKEND_URL] = private_keys.NODE1_DEFAULT_BACKEND_URL
-      else:
-        args[api.PARAM_BACKEND_URL] = private_keys.NODE2_DEFAULT_BACKEND_URL
+      args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
     except:
-      raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- " +
+      raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- "+
                       "please install correct private_keys.py file")
 
   # field list
@@ -340,7 +334,7 @@ def search(args, dumping = False):
   if start_datetime_str:
     query_url += "&fq=((eventrangeend:[" + start_datetime_str + "+TO+*]+AND+eventrangestart:[*+TO+" + end_datetime_str + "])+OR+(eventrangeend:+" +'"1971-01-01T00:00:000Z"' "+AND+eventrangestart:"+'"1971-01-01T00:00:000Z"'+"))"
   else:
-    query_url += "&fq=(eventrangeend:[NOW-3DAYS%20TO%20*]+OR+expires:[NOW-3DAYS%20TO%20*])"
+    query_url += "&fq=(eventrangeend:[NOW-1DAYS%20TO%20*]+OR+expires:[NOW-1DAYS%20TO%20*])"
 
   #num_to_fetch = int(args[api.PARAM_NUM]) + 1
   num_to_fetch = 100
