@@ -7,29 +7,31 @@
 <div id='type_filter_widget' class='filterwidget'></div>
 <div id='source_filter_widget' class='filterwidget'>-->
 <form class="facets">
-	{% ifequal current_page "SEARCH" %}
-		<div class="filterwidget_title">
-			Enter your location
+	<div id="location_box">
+		{% ifequal current_page "SEARCH" %}
+			<div class="filterwidget_title">
+				Enter your location
+			</div>
+		{% endifequal %}
+		<div style='margin-bottom: 4px;'>
+		  <div class='valign'>
+		    <table style='width:100%;'>
+		     <tr>
+		      <td valign='middle'>
+		        <input id='location' name='your location'
+		               class='valign' type='text' size='60' value='{{ location|escape }}'/>        
+		      </td>
+		     </tr>
+		    </table>
+		  <script>setInputFieldValue(el('location'), '');</script>
+		  </div>	
 		</div>
-	{% endifequal %}
-	<div style='margin-bottom: 4px;'>
-	  <div class='valign'>
-	    <table style='width:100%;'>
-	     <tr>
-	      <td valign='middle'>
-	        <input id='location' name='your location'
-	               class='valign' type='text' size='60' value='{{ location|escape }}'/>        
-	      </td>
-	     </tr>
-	    </table>
-	  <script>setInputFieldValue(el('location'), '');</script>
-	  </div>
-	</div>
-	<div id='distance_filter_widget' class='filterwidget'>
-		<div class="filterwidget_title">
-			Within a <span id="location_distance"></span> mile range
+		<div id='distance_filter_widget' class='filterwidget'>
+			<div class="filterwidget_title">
+				Within a <span id="location_distance"></span> mile range
+			</div>
+			<div id="location_slider"></div>	
 		</div>
-		<div id="location_slider"></div>	
 	</div>
 	<div id='when_filter_widget' class='filterwidget'>
 		<div class="filterwidget_title">

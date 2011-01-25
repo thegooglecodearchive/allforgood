@@ -71,10 +71,12 @@ def default_boosts(args):
     boost += '+-feed_providername:meetup^2'
     # boost short events
     boost += '+eventduration:[1+TO+10]^10'
-    # big boost opps with search terms in title
-    boost += '&qf=title^20'
-    # modest boost opps with search terms in description
-    boost += '+abstract^7'
+    
+    if api.PARAM_TYPE not in args:
+        # big boost opps with search terms in title
+        boost += '&qf=title^20'
+        # modest boost opps with search terms in description
+        boost += '+abstract^7'
   
   return boost
 
@@ -173,13 +175,11 @@ def form_solr_query(args):
   # Type
   if api.PARAM_TYPE in args:
     if args[api.PARAM_TYPE] == "self_directed":
-      solr_query += " AND self_directed:true"    
+      solr_query = "self_directed:true"    
     elif args[api.PARAM_TYPE] == "virtual":
-      solr_query += " AND virtual:true"
+      solr_query = "virtual:true"
     elif args[api.PARAM_TYPE] == "micro":
-      solr_query += " AND micro:true"
-  else:
-      solr_query += " AND self_directed:false AND virtual:false AND micro:false"    
+      solr_query = "micro:true"     
   
   added_categories = False
   # Category

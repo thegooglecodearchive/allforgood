@@ -278,7 +278,6 @@ Query.prototype.getUrlQuery = function() {
 	//addFacetField('categories');
 	//addFacetField('virtual');
 	//addFacetField('self_directed');
-	//addFacetField('micro');
   }
   
   // Use Cache
