@@ -399,9 +399,9 @@ input.hasDatepicker {
   width: 130px; 
   float: right;
 }
-.top_search {overflow:hidden; margin-bottom:10px;}
+.top_search {overflow:hidden; margin:20px 0 5px 0;}
 .sort_filter {float:left;}
-
+#tabs {border:none;}
 #when_filter_widget {margin-bottom:10px !important; }
 
 #paginator {

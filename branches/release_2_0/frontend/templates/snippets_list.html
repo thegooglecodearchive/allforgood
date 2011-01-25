@@ -1,7 +1,3 @@
-{% if not has_results %}
-{% include 'no_results.html' %}
-{% else %}
-
 <script type='text/javascript'>
   asyncLoadManager.addCallback('map', function(){
       map.clearMarkers();
@@ -36,119 +32,158 @@
 <h1 class='snippets_list_header'>Your Activities</h1>
 {% endifequal %}
 
-{% if not campaign_id and result_set.estimated_merged_results %}
-<div class="top_search">
-	<div class="sort_filter">
-		<label for="sort">Sort by:</label>
-		<select id="sort" name="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
-			<option value="score">Relevance</option>
-			<option value="eventrangeend">Date</option>
-		</select>
+{% if not campaign_id %}
+<div id="tabs">
+	<ul>
+		<li><a href="#tabs-1">All</a></li>
+		<li><a href="#tabs-1">Virtual</a></li>
+		<li><a href="#tabs-1">Self-Directed</a></li>
+		<li><a href="#tabs-1">Micro</a></li>
+	</ul>
+	<div class="top_search">	
+		<div class="sort_filter">
+			<label for="sort">Sort by:</label>
+			<select id="sort" name="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+				<option value="score">Relevance</option>
+				<option value="eventrangeend">Date</option>
+			</select>
+		</div>
+		<!--<div class="approximate_results">About {{ result_set.estimated_merged_results|add_commas }} results</div>-->
 	</div>
-	<!--<div class="approximate_results">About {{ result_set.estimated_merged_results|add_commas }} results</div>-->
+	  {% endif %}
+	<div id="tabs-1">
+	{% if not has_results %}
+		{% include 'no_results.html' %}
+	{% else %}
+	{% for result in result_set.clipped_results %}
+	  <div class='snippet'>
+	    <table class='snippet_table'>
+	    <tr>
+	    <td valign='top' class='snippet_number'>
+	      {% if result.latlong %}
+	        <img src='http://www.google.com/mapfiles/marker_midblue{{ forloop.counter0|as_letter }}.png' />
+	      {% endif %}
+	    </td>
+	
+	    <td valign='top'>
+	    <div>
+	      {# TODO(paul): ESCAPE THE LOCATION FIELD AGAINST QUOTES #}
+	      {% if result.latlong %}
+	        <script type='text/javascript'>
+	          asyncLoadManager.addCallback('map', function() {
+	            var coords = '{{result.latlong}}'.split(',');
+	            map.addMarker(
+	                coords[0], coords[1], '{{ forloop.counter0|as_letter }}');
+	          });
+	        </script>
+	      {% endif %}
+	
+	      <div class='snippet_title'>
+	        {# note: id comes after sig to reduce risk of truncation dropping sig #}
+	        <a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title|escape|bold_query:query_param_q }}</a>
+	      </div>
+	      {% if result.location or result.startdate or result.interest_count %}
+	        <div class='snippet_sub_text'>
+	          {{ result.location|escape}}
+	          {% if result.location %}-{% endif %}
+	          {{ result|custom_date_range_format }}
+	        </div>
+	      {% endif %}
+	      {% if result.have_more %}
+	<div class="snippet_sub_text" style="display:inline">
+	      {% endif %}
+	      {% for entry in result.less_list %}{{ entry }}{% endfor %}
+	      {% if result.have_more %}
+	<div id="{{ result.more_id|escape}}" style="display:none;">
+	      {% for entry in result.more_list %}{{ entry }}{% endfor %}
+	<div onclick="showLessDuplicates('{{ result.more_id|escape }}')" class="more_link"> show fewer locations and times...</div>
+	</div>
+	<span id="s{{ result.more_id|escape}}" onclick="showMoreDuplicates('{{ result.more_id|escape}}')" class="more_link"> more locations and times...</span>
+	</div>
+	      {% endif %}
+	      <div class='snippet_text'>
+	        {{ result.purged_snippet|truncate_chars:285|escape|bold_query:query_param_q }}
+	      </div>
+	
+	      <div class='snippet_bottom'>
+	        <a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
+	        -
+	        <div class='interest_links'>
+	          <span style='display:{{result.interest|yesno:"none,"}};' id='like_{{forloop.counter0}}'><a href='javascript:void(0)' onclick='toggleInterest({{forloop.counter0}});return false;'>Like</a> -</span>
+	          
+	          <a id='share_{{forloop.counter0}}' class='sharelink'>Share</a>
+	          <script type="text/javascript">
+	addthis.button('#share_{{forloop.counter0}}', { username: "footprint2009dev", services_compact: "email, twitter, facebook, myspace, friendfeed, bebo", ui_click: true }, { title: "{{ result.title|escape }}", url: "{{ result.url }}", templates: {twitter: '\{\{url\}\} via www.allforgood.org'} });
+	</script>
+	
+	<!--          <span style='position: relative;' class='pointer'
+	               onclick='popupModalElement("add_to_calendar{{ forloop.counter0 }}");return false;'>
+	            <div id='add_to_calendar{{ forloop.counter0 }}'
+	                 class='add_to_calendar_floating'>
+	              <div class='pointer popup_text'
+	                   onclick='addToCalendar(this, "GOOGLE", searchResults[{{ forloop.counter0 }}])'>
+	                <a href='javascript:void(0)'>Add to Google Calendar</a>
+	              </div>
+	              <div class='pointer popup_text'
+	                   onclick='addToCalendar(this, "YAHOO", searchResults[{{ forloop.counter0 }}])'>
+	                <a href='javascript:void(0)'>Add to Yahoo Calendar</a>
+	              </div>
+	            </div>
+	            <a href='javascript:void(0);'>Add to calendar</a>
+	          </span>
+	-->
+	{% if moderator %}
+	          - <a href='/moderateblacklist?action=blacklist&key={{result.merge_key|urlencode}}'>blacklist</a>
+	{% endif %}
+	        </div>
+	        {{ result.categories_str }}
+	        <div class='snippet_interest_info' id='interest_info_{{forloop.counter0}}'></div>
+	
+	      </div>
+	
+	    </div>
+	
+	    {% if not forloop.last %}
+	    <div class='snippet_bottom_border'></div>
+	    {% endif %}
+	
+	    </td>
+	    </tr>
+	    </table>
+	  </div>  
+	{% endfor %}
+	{% endif %}
 </div>
-  {% endif %}
-
-{% for result in result_set.clipped_results %}
-  <div class='snippet'>
-    <table class='snippet_table'>
-    <tr>
-    <td valign='top' class='snippet_number'>
-      {% if result.latlong %}
-        <img src='http://www.google.com/mapfiles/marker_midblue{{ forloop.counter0|as_letter }}.png' />
-      {% endif %}
-    </td>
-
-    <td valign='top'>
-    <div>
-      {# TODO(paul): ESCAPE THE LOCATION FIELD AGAINST QUOTES #}
-      {% if result.latlong %}
-        <script type='text/javascript'>
-          asyncLoadManager.addCallback('map', function() {
-            var coords = '{{result.latlong}}'.split(',');
-            map.addMarker(
-                coords[0], coords[1], '{{ forloop.counter0|as_letter }}');
-          });
-        </script>
-      {% endif %}
-
-      <div class='snippet_title'>
-        {# note: id comes after sig to reduce risk of truncation dropping sig #}
-        <a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title|escape|bold_query:query_param_q }}</a>
-      </div>
-      {% if result.location or result.startdate or result.interest_count %}
-        <div class='snippet_sub_text'>
-          {{ result.location|escape}}
-          {% if result.location %}-{% endif %}
-          {{ result|custom_date_range_format }}
-        </div>
-      {% endif %}
-      {% if result.have_more %}
-<div class="snippet_sub_text" style="display:inline">
-      {% endif %}
-      {% for entry in result.less_list %}{{ entry }}{% endfor %}
-      {% if result.have_more %}
-<div id="{{ result.more_id|escape}}" style="display:none;">
-      {% for entry in result.more_list %}{{ entry }}{% endfor %}
-<div onclick="showLessDuplicates('{{ result.more_id|escape }}')" class="more_link"> show fewer locations and times...</div>
 </div>
-<span id="s{{ result.more_id|escape}}" onclick="showMoreDuplicates('{{ result.more_id|escape}}')" class="more_link"> more locations and times...</span>
-</div>
-      {% endif %}
-      <div class='snippet_text'>
-        {{ result.purged_snippet|truncate_chars:285|escape|bold_query:query_param_q }}
-      </div>
-
-      <div class='snippet_bottom'>
-        <a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
-        -
-        <div class='interest_links'>
-          <span style='display:{{result.interest|yesno:"none,"}};' id='like_{{forloop.counter0}}'><a href='javascript:void(0)' onclick='toggleInterest({{forloop.counter0}});return false;'>Like</a> -</span>
-          
-          <a id='share_{{forloop.counter0}}' class='sharelink'>Share</a>
-          <script type="text/javascript">
-addthis.button('#share_{{forloop.counter0}}', { username: "footprint2009dev", services_compact: "email, twitter, facebook, myspace, friendfeed, bebo", ui_click: true }, { title: "{{ result.title|escape }}", url: "{{ result.url }}", templates: {twitter: '\{\{url\}\} via www.allforgood.org'} });
-</script>
-
-<!--          <span style='position: relative;' class='pointer'
-               onclick='popupModalElement("add_to_calendar{{ forloop.counter0 }}");return false;'>
-            <div id='add_to_calendar{{ forloop.counter0 }}'
-                 class='add_to_calendar_floating'>
-              <div class='pointer popup_text'
-                   onclick='addToCalendar(this, "GOOGLE", searchResults[{{ forloop.counter0 }}])'>
-                <a href='javascript:void(0)'>Add to Google Calendar</a>
-              </div>
-              <div class='pointer popup_text'
-                   onclick='addToCalendar(this, "YAHOO", searchResults[{{ forloop.counter0 }}])'>
-                <a href='javascript:void(0)'>Add to Yahoo Calendar</a>
-              </div>
-            </div>
-            <a href='javascript:void(0);'>Add to calendar</a>
-          </span>
--->
-{% if moderator %}
-          - <a href='/moderateblacklist?action=blacklist&key={{result.merge_key|urlencode}}'>blacklist</a>
-{% endif %}
-        </div>
-        {{ result.categories_str }}
-        <div class='snippet_interest_info' id='interest_info_{{forloop.counter0}}'></div>
-
-      </div>
-
-    </div>
-
-    {% if not forloop.last %}
-    <div class='snippet_bottom_border'></div>
-    {% endif %}
-
-    </td>
-    </tr>
-    </table>
-  </div>
-{% endfor %}
 
 <script language="text/javascript">
-
+	$(function() {
+		var type = getHashParam('type', '');
+		var index = 0;
+		
+		if (type == "virtual")
+			index = 1;
+		else if (type == "self_directed")
+			index = 2;
+		else if (type == "micro")
+			index = 3;
+		else
+			index = 0;
+		$("#tabs").tabs({
+			create: function(event, ui) {
+				if (index == 0) {
+					$("#location_box").show();
+					$("#map").css("visibility", "visible");
+				}
+				else {
+					$("#location_box").hide();
+					$("#map").css("visibility", "hidden");
+				}
+			},
+			select: function(event, ui) { submitForm('oppType', ui.index); },
+			selected: index
+		});		
+	});
 var query = createQueryFromUrlParams();
 
 function makeFilterWidgetArray(defaultValuesArray, dataArray, labelsArray)
@@ -238,5 +273,3 @@ if (false) {
   el('debug_snippets').innerHTML = "DEBUG INFO:<br> FP query=<a href='{{ view_url }}'>{{ view_url|escape }}<\/a><br> Base query= <a href='{{ result_set.query_url_encoded }}'>{{ result_set.query_url_unencoded|escape }}<\/a><br> num results: backend-estimated={{result_set.estimated_results|escape}}  merged-estimated={{result_set.estimated_merged_results|escape}}  backend={{result_set.num_results|escape}}   merged={{result_set.num_merged_results|escape}}";
 }
 </script>
-
-{% endif %}
