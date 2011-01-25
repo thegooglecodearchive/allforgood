@@ -175,11 +175,13 @@ def form_solr_query(args):
   # Type
   if api.PARAM_TYPE in args:
     if args[api.PARAM_TYPE] == "self_directed":
-      solr_query = "self_directed:true"    
+      boost_params += "+self_directed:true"    
     elif args[api.PARAM_TYPE] == "virtual":
-      solr_query = "virtual:true"
+      boost_params += "+virtual:true"
     elif args[api.PARAM_TYPE] == "micro":
-      solr_query = "micro:true"     
+      boost_params += "+micro:true"
+  else:
+    boost_params += "+self_directed:false+virtual:false+micro:false"
   
   added_categories = False
   # Category
