@@ -72,11 +72,11 @@ def default_boosts(args):
     # boost short events
     boost += '+eventduration:[1+TO+10]^10'
     
-    if api.PARAM_TYPE not in args:
-        # big boost opps with search terms in title
-        boost += '&qf=title^20'
-        # modest boost opps with search terms in description
-        boost += '+abstract^7'
+  if api.PARAM_Q in args and args[api.PARAM_Q] != "":
+    # big boost opps with search terms in title
+    boost += '&qf=title^20'
+    # modest boost opps with search terms in description
+    boost += '+abstract^7'
   
   return boost
 
@@ -181,7 +181,7 @@ def form_solr_query(args):
     elif args[api.PARAM_TYPE] == "micro":
       solr_query += " AND micro:true"
   else:
-    solr_query += " AND self_directed:false AND virtual:false AND micro:false"
+      solr_query += "+AND+self_directed:false+AND+virtual:false+AND+micro:false"
   
   added_categories = False
   # Category
