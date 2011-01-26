@@ -296,6 +296,10 @@ input.hasDatepicker {
 .starred {
 }
 
+#loading-bottom {
+	margin-top:10px;
+}
+
 
 /** Search results - map **/
 #map {

@@ -70,13 +70,13 @@ $(document).ready(function() {
  * @param {Object} opt_filters Filters for this query.
  *      Maps 'filtername':value.
  */
-function Query(keywords, location, distance, pageNum, sort, useCache, get_facet_counts, opt_timePeriodStart, opt_timePeriodEnd, opt_filters) {
+function Query(keywords, location, distance, type, pageNum, sort, useCache, get_facet_counts, opt_timePeriodStart, opt_timePeriodEnd, opt_filters) {
   var me = this;
   me.keywords_ = keywords;
   me.location_ = location;
   //me.category_ = category || 'all';
   me.distance_ = distance || '25';
-  //me.type_ = type || 'all';
+  me.type_ = type || 'all';
   //me.source_ = source || 'all';
   me.pageNum_ = pageNum;
   me.sort_ = sort;
@@ -154,7 +154,14 @@ Query.prototype.getDistance = function() {
 };
 
 Query.prototype.setType = function(type) {
-  this.type_ = type;
+  if (type == "1")
+  	this.type_ = "virtual";
+  else if (type == "2")
+  	this.type_ = "self_directed";
+  else if (type == "3")
+    this.type_ = "micro";
+  else
+    this.type_ = "all";	
 };
 
 Query.prototype.getType = function() {
@@ -245,6 +252,12 @@ Query.prototype.getUrlQuery = function() {
     addQueryParam('distance', distance);
   }
   
+   // Type
+  var type = me.getType();
+  if (type && type.length > 0) {
+    addQueryParam('type', type);
+  }
+  
   // Sort
   var sort = me.getSort();
   if (sort && sort.length > 0) {
@@ -328,7 +341,7 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('vol_enddate'); 
   getNamedFilterFromUrl('key');
 
-  return new Query(keywords, location, distance, pageNum, sort, use_cache, get_facet_counts, timePeriodStart, timePeriodEnd, filters);
+  return new Query(keywords, location, distance, type, pageNum, sort, use_cache, get_facet_counts, timePeriodStart, timePeriodEnd, filters);
 }
 
 /**
@@ -627,16 +640,19 @@ function submitForm(invoker, value) {
 
   var timePeriodStart = getStartDate();
   var timePeriodEnd = getEndDate();
-  var distance = getDistance();  
+  var distance = getDistance();
   var sort = getInputFieldValue(el('sort'));
   if (location == '') {
     location = getDefaultLocation().displayLong;
-  }
+  }  
   
   var query = lastSearchQuery.clone();
   query.setKeywords(keywords);
   query.setLocation(location);
-  query.setDistance(distance);
+  query.setDistance(distance);  
+  if (invoker == "oppType") {
+  	query.setType(value);
+  }
   query.setPageNum(0);
   query.setSort(sort);
   query.setTimePeriodStart(timePeriodStart);
