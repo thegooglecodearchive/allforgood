@@ -75,7 +75,8 @@ def default_boosts(args):
     boost += '&qf=title^20'
     # modest boost opps with search terms in description
     boost += '+abstract^7'
-    boost += '+location_string:^100'
+    # big boost opps with location in location_string
+    boost += '+location_string:^25'
   
   return boost
 
