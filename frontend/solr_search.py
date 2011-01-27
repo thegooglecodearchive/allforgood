@@ -444,7 +444,7 @@ def query(query_url, args, cache, dumping = False):
     item_id = entry["id"]
     # Base URL is the url of the item in base. For Solr we just use the ID hash
     base_url = item_id
-    snippet = entry.get('abstract', '')
+    snippet = entry.get('description', '')
     title = entry.get('title', '')
     location = entry.get('location_string', '')
 

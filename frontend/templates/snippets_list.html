@@ -102,7 +102,7 @@
 	</div>
 	      {% endif %}
 	      <div class='snippet_text'>
-	        {{ result.purged_snippet|truncate_chars:285|escape|bold_query:query_param_q }}
+	        {{ result.purged_snippet|escape|bold_query:query_param_q }}
 	      </div>
 	
 	      <div class='snippet_bottom'>
@@ -261,10 +261,9 @@ function cleanSnippets() {
 	}
   }
 }
-cleanSnippets();
-
   renderPaginator(el('paginator'), {{last_result_index|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
   initMap();
+  $('.snippet_text').expand();
 </script>
 
 <script>
