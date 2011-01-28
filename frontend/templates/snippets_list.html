@@ -1,4 +1,20 @@
 <script type='text/javascript'>
+  $(function() {
+		var type = getHashParam('type', '');
+		var index = 0;		
+		if (type == "virtual")
+			index = 1;
+		else if (type == "self_directed")
+			index = 2;
+		else if (type == "micro")
+			index = 3;
+		else
+			index = 0;
+		$("#tabs").tabs({			
+			select: function(event, ui) { submitForm('oppType', ui.index); },
+			selected: index
+		});		
+	});
   asyncLoadManager.addCallback('map', function(){
       map.clearMarkers();
   });
@@ -33,13 +49,6 @@
 {% endifequal %}
 
 {% if not campaign_id %}
-<div id="tabs">
-	<ul>
-		<li><a href="#tabs-1">In your area</a></li>
-		<li><a href="#tabs-1">Virtual</a></li>
-		<li><a href="#tabs-1">Self-Directed</a></li>
-		<li><a href="#tabs-1">Micro</a></li>
-	</ul>
 	<div class="top_search">	
 		<div class="sort_filter">
 			<label for="sort">Sort by:</label>
@@ -79,7 +88,7 @@
 	      {% endif %}
 	
 	      <div class='snippet_title'>
-	        {# note: id comes after sig to reduce risk of truncation dropping sig #}
+			{# note: id comes after sig to reduce risk of truncation dropping sig #}
 	        <a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title|escape|bold_query:query_param_q }}</a>
 	      </div>
 	      {% if result.location or result.startdate or result.interest_count %}
@@ -137,10 +146,8 @@
 	{% endif %}
 	        </div>
 	        {{ result.categories_str }}
-	        <div class='snippet_interest_info' id='interest_info_{{forloop.counter0}}'></div>
-	
-	      </div>
-	
+	        <div class='snippet_interest_info' id='interest_info_{{forloop.counter0}}'></div>	
+	      </div>	
 	    </div>
 	
 	    {% if not forloop.last %}
@@ -154,80 +161,21 @@
 	{% endfor %}
 	{% endif %}
 </div>
-</div>
 
-<script language="text/javascript">
-	$(function() {
-		var type = getHashParam('type', '');
-		var index = 0;
-		
-		if (type == "virtual")
-			index = 1;
-		else if (type == "self_directed")
-			index = 2;
-		else if (type == "micro")
-			index = 3;
-		else
-			index = 0;
-		$("#tabs").tabs({
-			create: function(event, ui) {
-				if (index == 0) {
-					$("#location_box").show();
-					$("#map").css("visibility", "visible");
-				}
-				else {
-					$("#location_box").hide();
-					$("#map").css("visibility", "hidden");
-				}
-			},
-			select: function(event, ui) { submitForm('oppType', ui.index); },
-			selected: index
-		});		
-	});
-var query = createQueryFromUrlParams();
-
-function makeFilterWidgetArray(defaultValuesArray, dataArray, labelsArray)
-{
-	var fwArr = Array();
-	var totalCount = 0;
-	for (var i = 1; i < dataArray.length; i+=2)
-	{
-		totalCount += parseInt(dataArray[i]);
-	}
-	if (defaultValuesArray.length >= 2)
-	{
-		fwArr.push(Array(defaultValuesArray[0], defaultValuesArray[1]));
-	}
-	for (var i = 0; i < dataArray.length; i+=2)
-	{
-		if (dataArray[i] in labelsArray)
-		{
-			fwArr.push(
-				Array(
-					labelsArray[dataArray[i]],
-					dataArray[i],
-					dataArray[i+1])
-				);
-		}
-	}
-	return fwArr;
-}
-
-{% for facet_count in result_set.facet_counts %}
-	{{facet_count}}_data = Array();
-	{% for info in result_set.facet_counts|getkey:facet_count %}
-		{{facet_count}}_data.push('{{info}}');
-	{% endfor %}
-{% endfor %}
-
+<script language="text/javascript">		
+	var query = createQueryFromUrlParams();
 	var sort = getHashParam('sort', '');
-	if (sort == "eventrangeend") {
+	if (sort == "eventrangeend")
 		$("#sort").attr('selectedIndex', 1);
-	}		
-	else {
+	else
 		$("#sort").attr('selectedIndex', 0);
+	function setFacetCounts() {		
+		$('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");
+		$('#virtual').html("(" + {{result_set.facet_counts.virtual}} + ")");
+		$('#self_directed').html("(" + {{result_set.facet_counts.self_directed}} + ")");
+		$('#micro').html("(" + {{result_set.facet_counts.micro}} + ")");
 	}
-
+	setFacetCounts();
 </script>
 
 <span id='loading-bottom' style='display:none;float:right;'><span id='loading'>Loading...</span></span>
@@ -263,7 +211,7 @@ function cleanSnippets() {
 }
   renderPaginator(el('paginator'), {{last_result_index|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
   initMap();
-  $('.snippet_text').expand();
+  $('.snippet_text').expand();  
 </script>
 
 <script>

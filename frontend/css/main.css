@@ -212,9 +212,10 @@ input.hasDatepicker {
 
 .facets {
 	background: #EDF4F7;
-	border:1px solid #C0C0C0; 
-	padding:10px 0 15px 25px; 
-	margin-bottom:15px;
+	border: 1px solid #C0C0C0;	 
+	padding: 20px 0 15px 25px; 
+	margin-bottom: 15px;
+	margin: 5px 0 15px 0;	
 }
 
 .facets input {
@@ -407,6 +408,8 @@ input.hasDatepicker {
 .sort_filter {float:left;}
 #tabs {border:none;}
 #when_filter_widget {margin-bottom:10px !important; }
+#tab_list {background:#EDF4F7; border:1px solid #C0C0C0; margin-left:2px;}
+#tab_list span {width:100px;}
 
 #paginator {
   font-size: 14px;

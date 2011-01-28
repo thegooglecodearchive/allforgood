@@ -33,9 +33,12 @@ $(document).ready(function() {
 			min: 5,
 			max: 100,
 			step: 5,
-			slide: function( event, ui ) {
+			slide: function(event, ui) {
 				$("#location_distance").html(ui.value);
-			}			
+			},
+			stop: function(event, ui) {
+				submitForm("all");
+			}
 	});	
 	$("#location_distance").html($("#location_slider").slider("value"));	
 	$("#facet_submit").click(function() {
@@ -652,6 +655,20 @@ function submitForm(invoker, value) {
   query.setDistance(distance);  
   if (invoker == "oppType") {
   	query.setType(value);
+	var type = query.getType();
+	if (type == "all") {
+        $(".facets").css("visibility", "visible");
+		$("#location_box").show();
+        $("#map").css("visibility", "visible");
+    }
+    else {
+        $(".facets").css("visibility", "visible");
+		$("#location_box").hide();
+        $("#map").css("visibility", "hidden");		
+		if (type == "self_directed") {
+			$(".facets").css("visibility", "hidden");
+		}
+    }
   }
   query.setPageNum(0);
   query.setSort(sort);
