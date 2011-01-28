@@ -71,12 +71,12 @@ def default_boosts(args):
     boost += '+-feed_providername:meetup^2'
     # boost short events
     boost += '+eventduration:[1+TO+10]^10'
+  
+  if api.PARAM_Q in args and args[api.PARAM_Q] != "":    
     # big boost opps with search terms in title
     boost += '&qf=title^20'
     # modest boost opps with search terms in description
     boost += '+abstract^7'
-    # big boost opps with location in location_string
-    boost += '+location_string:^25'
   
   return boost
 
@@ -149,7 +149,9 @@ def form_solr_query(args):
     max_dist = float(args[api.PARAM_VOL_DIST])
   
   boost_params = default_boosts(args);
-  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1}'   
+  geo_params = ""
+  if api.PARAM_TYPE not in args or api.PARAM_TYPE in args and args[api.PARAM_TYPE] == "all":
+    geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1}'   
 
   # keyword
   query_is_empty = False
@@ -229,7 +231,7 @@ def form_solr_query(args):
       solr_query += '*' 
 
   #facet counts
-  solr_query += '&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&facet.query=self_directed:false+AND+virtual:false'    
+  solr_query += '&facet=on&facet.limit=2&facet.query=self_directed:false+AND+virtual:false'    
           
   return solr_query + boost_params
 
@@ -404,19 +406,10 @@ def query(query_url, args, cache, dumping = False):
   result = simplejson.loads(result_content)
   
   #facet_counts
-  if "facet_counts" in result:
-    facet_fields = result["facet_counts"]["facet_fields"]
+  if "facet_counts" in result:    
     facet_counts = dict()
-    for k, v in facet_fields.iteritems():
-        if "true" in v:
-          index = v.index("true")
-        else:
-          index = -1        
-        if index >= 0:
-          facet_counts[k] = v[index + 1]
-        else:
-          facet_counts[k] = 0
     facet_counts["all"] = result["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false"]
+    facet_counts.update(get_facet_counts())    
     result_set.facet_counts = facet_counts
     
   else:
@@ -668,3 +661,33 @@ def get_from_ids(ids):
       result_set.results.insert(0, result)
 
   return result_set
+
+def get_facet_counts():
+  try:
+    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=*:*&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=1'
+  except:
+    raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
+  try:
+    fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
+  except:
+      logging.info('error receiving solr facet counts')
+  
+  result_content = fetch_result.content  
+  # undo comma encoding -- see datahub/footprint_lib.py
+  result_content = re.sub(r';;', ',', result_content)
+  result = simplejson.loads(result_content)
+  #facet_counts
+  if "facet_counts" in result:
+    logging.info(result["facet_counts"]["facet_fields"])
+    facet_fields = result["facet_counts"]["facet_fields"]
+    facet_counts = dict()
+    for k, v in facet_fields.iteritems():
+        if "true" in v:
+          index = v.index("true")
+        else:
+          index = -1        
+        if index >= 0:
+          facet_counts[k] = v[index + 1]
+        else:
+          facet_counts[k] = 0    
+  return facet_counts

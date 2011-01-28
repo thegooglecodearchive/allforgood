@@ -170,7 +170,9 @@
 	else
 		$("#sort").attr('selectedIndex', 0);
 	function setFacetCounts() {		
-		$('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");
+		{% if result_set.facet_counts.all %}
+		    $('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");
+		{% endif %}		
 		$('#virtual').html("(" + {{result_set.facet_counts.virtual}} + ")");
 		$('#self_directed').html("(" + {{result_set.facet_counts.self_directed}} + ")");
 		$('#micro').html("(" + {{result_set.facet_counts.micro}} + ")");
