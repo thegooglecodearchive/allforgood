@@ -229,20 +229,7 @@ def form_solr_query(args):
       solr_query += '*' 
 
   #facet counts
-  if api.PARAM_FACET in args:
-      solr_query += '&facet=' + args[api.PARAM_FACET]
-      if api.PARAM_FACET_LIMIT in args:
-          solr_query += '&facet.limit=' + args[api.PARAM_FACET_LIMIT]
-      #if api.PARAM_FACET_MINCNT in args:
-      #    solr_query += '&facet.mincount=' + args[api.PARAM_FACET_MINCNT]
-      facet_field = 0
-      while True:
-          facet_field_str = api.PARAM_FACET_FIELD + str(facet_field)
-          facet_field = facet_field + 1
-          if facet_field_str in args:
-              solr_query += '&facet.field=' + args[facet_field_str]
-          else:
-              break
+  solr_query += '&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&facet.query=self_directed:false+AND+virtual:false'    
           
   return solr_query + boost_params
 
@@ -418,8 +405,20 @@ def query(query_url, args, cache, dumping = False):
   
   #facet_counts
   if "facet_counts" in result:
-    facet_counts = result["facet_counts"]["facet_fields"]
-    result_set.facet_counts = deepcopy(facet_counts)
+    facet_fields = result["facet_counts"]["facet_fields"]
+    facet_counts = dict()
+    for k, v in facet_fields.iteritems():
+        if "true" in v:
+          index = v.index("true")
+        else:
+          index = -1        
+        if index >= 0:
+          facet_counts[k] = v[index + 1]
+        else:
+          facet_counts[k] = 0
+    facet_counts["all"] = result["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false"]
+    result_set.facet_counts = facet_counts
+    
   else:
       result_set.facet_counts = None
 
