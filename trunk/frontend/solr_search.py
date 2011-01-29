@@ -152,7 +152,22 @@ def form_solr_query(args):
 
   # keyword
   query_is_empty = False
-  if (api.PARAM_Q in args and args[api.PARAM_Q] != "") or (api.PARAM_CATEGORY in args and args[api.PARAM_CATEGORY] != "all") or (api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all"):
+  if ((api.PARAM_Q in args and args[api.PARAM_Q] != "") or 
+      (api.PARAM_CATEGORY in args and args[api.PARAM_CATEGORY] != "all") or 
+      (api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all")):
+
+    qwords = args[api.PARAM_Q].split(" ")
+    for qi, qw in enumerate(qwords):
+      # it is common practice to use a substr of a url eg, volunteermatch 
+      # here we transform that to http://*volunteermatch* 
+      if qw.find("detailurl:") >= 0 and qw.find("*") < 0:
+        ar = qw.split(":")
+        if len(ar) > 1:
+          ar[1] = "http*" + ar[1] + "*"
+          qw = ":".join(ar)
+          qwords[qi] = qw
+          args[api.PARAM_Q] = ' '.join(qwords)
+
     query_boosts = boosts.query_time_boosts(args)
     
     # Gross Hack for MLK Day    

@@ -84,7 +84,8 @@ function renderHomepage() {
 
   //el('home_video_placeholder2').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/iams.jpg" alt="Home 4 the Holidays" />';
   //el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/bnfClMe8_kw&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/bnfClMe8_kw&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
-  el('home_video_placeholder').innerHTML = '<div id="MLKVideo" style="width:290px;height:188px;background-image:url(http://www.allforgood.org/gadget/mlk.png);"><img onclick="goMLK();" style="margin-left:30px;margin-top:120px;cursor:pointer;opacity:0.8;filter:alpha(opacity=80);" src="http://www.allforgood.org/gadget/play.png" alt="Play video" title="Play video"></div>';
+  //el('home_video_placeholder').innerHTML = '<div id="MLKVideo" style="width:290px;height:188px;background-image:url(http://www.allforgood.org/gadget/mlk.png);"><img onclick="goMLK();" style="margin-left:30px;margin-top:120px;cursor:pointer;opacity:0.8;filter:alpha(opacity=80);" src="http://www.allforgood.org/gadget/play.png" alt="Play video" title="Play video"></div>';
+  el('home_video_placeholder').innerHTML = '<div><a href="/search#q=military%20families"><img border="0" width="300" height="250" src="/gadget/uws_military_350x200_anim_01.gif" alt="United We Serve - Veterans and Military Families" title="United We Serve - Veterans and Military Families"></a></div>';
 
   el('home_video_placeholder2').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/pointsoflight.jpg" alt="Points of Light Institute" />';
 
