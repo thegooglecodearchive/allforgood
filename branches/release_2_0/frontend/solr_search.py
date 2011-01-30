@@ -231,7 +231,7 @@ def form_solr_query(args):
       solr_query += '*' 
 
   #facet counts
-  solr_query += '&facet=on&facet.limit=2&facet.query=self_directed:false+AND+virtual:false'    
+  solr_query += '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false'    
           
   return solr_query + boost_params
 
@@ -407,8 +407,14 @@ def query(query_url, args, cache, dumping = False):
   
   #facet_counts
   if "facet_counts" in result:    
+    collapse_count = 0
+    facet_fields = result["facet_counts"]["facet_fields"]["signature"]
     facet_counts = dict()
-    facet_counts["all"] = result["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false"]
+    for facet in facet_fields:
+        if type(facet).__name__ == 'int':
+          collapse_count += (facet - 1)   
+    
+    facet_counts["all"] = str(int(result["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false"]) - collapse_count)    
     facet_counts.update(get_facet_counts())    
     result_set.facet_counts = facet_counts
     
@@ -678,7 +684,6 @@ def get_facet_counts():
   result = simplejson.loads(result_content)
   #facet_counts
   if "facet_counts" in result:
-    logging.info(result["facet_counts"]["facet_fields"])
     facet_fields = result["facet_counts"]["facet_fields"]
     facet_counts = dict()
     for k, v in facet_fields.iteritems():

@@ -1,20 +1,4 @@
 <script type='text/javascript'>
-  $(function() {
-		var type = getHashParam('type', '');
-		var index = 0;		
-		if (type == "virtual")
-			index = 1;
-		else if (type == "self_directed")
-			index = 2;
-		else if (type == "micro")
-			index = 3;
-		else
-			index = 0;
-		$("#tabs").tabs({			
-			select: function(event, ui) { submitForm('oppType', ui.index); },
-			selected: index
-		});		
-	});
   asyncLoadManager.addCallback('map', function(){
       map.clearMarkers();
   });
@@ -211,7 +195,7 @@ function cleanSnippets() {
 	}
   }
 }
-  renderPaginator(el('paginator'), {{last_result_index|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
+  renderPaginator(el('paginator'), {{result_set.facet_counts.all|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
   initMap();
   $('.snippet_text').expand();  
 </script>
