@@ -14,11 +14,25 @@ limitations under the License.
 */
 
 var map;
-var NUM_PER_PAGE = 10;
+var NUM_PER_PAGE = 1000;
 var searchResults = [];
 var filters = [];
 
 $(document).ready(function() {    
+	var type = getHashParam('type', '');
+	var index = 0;		
+	if (type == "virtual")
+		index = 1;
+	else if (type == "self_directed")
+		index = 2;
+	else if (type == "micro")
+		index = 3;
+	else
+		index = 0;
+	$("#tabs").tabs({			
+		select: function(event, ui) { submitForm('oppType', ui.index); },
+		selected: index
+	});	
 	$("#startdate").datepicker({
 		minDate: new Date(),
 		onSelect: function(dateText, inst) {
@@ -793,7 +807,7 @@ function renderPaginator(div, totalNum, forceShowNextLink) {
   }
 
   var numPages = parseInt(Math.ceil(totalNum / NUM_PER_PAGE));
-  if (numPages == 1 && !forceShowNextLink) {
+  if (numPages == 1) {
     return;
   }
   if (numPages > 20) {
@@ -824,7 +838,7 @@ function renderPaginator(div, totalNum, forceShowNextLink) {
   }
   */
 
-  if (currentPageNum != numPages - 1 || forceShowNextLink) {
+  if (currentPageNum != numPages - 1) {
     html.push('&nbsp;&nbsp;&nbsp;');
     renderLink(currentPageNum + 1, 'Next Page &raquo;');
   }
@@ -833,9 +847,7 @@ function renderPaginator(div, totalNum, forceShowNextLink) {
   // pagination debugging
   //div.innerHTML += "<br/>totalNum="+totalNum
   //div.innerHTML += "<br/>currentPageNum="+currentPageNum;
-  //div.innerHTML += "<br/>numPages="+numPages;
-  //div.innerHTML += "<br/>forceShowNextLink="+forceShowNextLink;
-  
+  //div.innerHTML += "<br/>numPages="+numPages;  
 }
 
 /** Loads the Maps API asynchronously and notifies the asynchronous load
