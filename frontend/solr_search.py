@@ -429,7 +429,7 @@ def query(query_url, args, cache, dumping = False):
         if type(facet).__name__ == 'int':
           collapse_count += (facet - 1)   
     
-    facet_counts["all"] = str(int(result["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false"]) - collapse_count)    
+    facet_counts["all"] = int(result["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false"]) - collapse_count    
     facet_counts.update(get_facet_counts())    
     result_set.facet_counts = facet_counts
     
