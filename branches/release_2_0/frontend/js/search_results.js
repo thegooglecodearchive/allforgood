@@ -14,25 +14,19 @@ limitations under the License.
 */
 
 var map;
-var NUM_PER_PAGE = 1000;
+var NUM_PER_PAGE = 10;
 var searchResults = [];
 var filters = [];
 
 $(document).ready(function() {    
-	var type = getHashParam('type', '');
-	var index = 0;		
-	if (type == "virtual")
-		index = 1;
-	else if (type == "self_directed")
-		index = 2;
-	else if (type == "micro")
-		index = 3;
-	else
-		index = 0;
+	var index = getSelectedTab();
 	$("#tabs").tabs({			
-		select: function(event, ui) { submitForm('oppType', ui.index); },
-		selected: index
-	});	
+		select: function(event, ui) {			
+			submitForm('oppType', ui.index);								 
+		},
+		selected: index,
+		collapsible: true
+	});
 	$("#startdate").datepicker({
 		minDate: new Date(),
 		onSelect: function(dateText, inst) {
@@ -73,8 +67,22 @@ $(document).ready(function() {
 	}
 	if (end != "everything") {
 		getInputFieldValue(el('enddate')).value = end;
-	}		
+	}
   });
+  
+  function getSelectedTab() {
+  	var type = getHashParam('type', '');
+	var index = 0;		
+	if (type == "virtual")
+		index = 1;
+	else if (type == "self_directed")
+		index = 2;
+	else if (type == "micro")
+		index = 3;
+	else
+		index = 0;
+	return index;
+  }
   
   /** Query params for backend search, based on frontend parameters.
  *

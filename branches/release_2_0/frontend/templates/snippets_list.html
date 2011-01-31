@@ -146,7 +146,9 @@
 	{% endif %}
 </div>
 
-<script language="text/javascript">		
+<script language="text/javascript">
+	$("#tabs").tabs("option", "collapsible", true);
+	$("#tabs").tabs("option", "selected", getSelectedTab());
 	var query = createQueryFromUrlParams();
 	var sort = getHashParam('sort', '');
 	if (sort == "eventrangeend")
