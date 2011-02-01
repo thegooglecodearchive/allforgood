@@ -678,16 +678,17 @@ function submitForm(invoker, value) {
   if (invoker == "oppType") {
   	query.setType(value);
 	var type = query.getType();
-	if (type == "all") {
-        $(".facets").css("visibility", "visible");
+	$(".facets").css("visibility", "visible");
+	$(".top_search").css("visibility", "visible");
+	if (type == "all") {		
 		$("#location_box").show();
         $("#map").css("visibility", "visible");
     }
-    else {
-        $(".facets").css("visibility", "visible");
+    else {        
 		$("#location_box").hide();
         $("#map").css("visibility", "hidden");		
-		if (type == "self_directed") {
+		if (type == "self_directed") {			
+			$(".top_search").css("visibility", "hidden");
 			$(".facets").css("visibility", "hidden");
 		}
     }
