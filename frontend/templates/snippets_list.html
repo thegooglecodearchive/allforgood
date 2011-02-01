@@ -155,6 +155,11 @@
 		$("#sort").attr('selectedIndex', 1);
 	else
 		$("#sort").attr('selectedIndex', 0);
+	
+	if (getSelectedTab() == 2) {			
+		$(".top_search").css("visibility", "hidden");
+	}
+	
 	function setFacetCounts() {		
 		{% if result_set.facet_counts.all %}
 		    $('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");
