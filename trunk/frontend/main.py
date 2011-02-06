@@ -47,8 +47,11 @@ APPLICATION = webapp.WSGIApplication(
      (urls.URL_SPEC, views.spec_view),
      (urls.URL_SHORT_NAMES, views.short_name_view),
      (urls.URL_APPS, views.apps_view),
+     (urls.URL_APITOS, views.apitos_view),
+     (urls.URL_APIDOCS, views.apidocs_view),
      (urls.URL_COS, views.cos_view),
      (urls.URL_MLKDAYOFSERVICE, views.mlkdayofservice_view),
+     (urls.URL_APIPARTNERS, views.apipartners_view),
      (urls.URL_STRATEGICPARTNERS, views.strategicpartners_view),
      (urls.URL_HOME4HOLIDAYS, views.home4holidays_redir_view)
     ] +

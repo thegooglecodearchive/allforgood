@@ -36,9 +36,12 @@ URL_PSA = '/psa' # Redirect to home page for tracking adsense psas
 URL_SPEC = '/spec'
 URL_SHORT_NAMES = '/s/.*'
 URL_APPS = '/apps'
+URL_APITOS = '/api_tos'
+URL_APIDOCS='/docs/api.html'
 URL_COS = '/golocal'
 URL_MLKDAYOFSERVICE = '/MLKDayOfService'
 URL_STRATEGICPARTNERS = '/StrategicPartners'
+URL_APIPARTNERS = '/APIPartners'
 URL_HOME4HOLIDAYS = '/home4holidays'
 
 STATIC_CONTENT_LOCATION = 'http://allforgood.googlecode.com/svn/trunk/frontend/html/'
@@ -56,7 +59,7 @@ STATIC_CONTENT_FILES = {
   '/help' : 'help.html',
   '/faq' : 'faq.html',
   '/tos' : 'tos.html',
-  '/api_tos' : 'api_tos.html',
+  #'/api_tos' : 'api_tos.html',
   #'/apps' : 'apps.html',
   '/dmca' : 'dmca.html',
   '/docs/api.html' : 'api.html',
