@@ -83,7 +83,10 @@ SPEC_TEMPLATE = 'spec.html'
 COS_TEMPLATE = 'cos.html'
 MLKDAYOFSERVICE_TEMPLATE = 'mlkdayofservice.html'
 STRATEGICPARTNERS_TEMPLATE = 'strategicpartners.html'
+APIPARTNERS_TEMPLATE = 'apipartners.html'
 APPS_TEMPLATE = 'apps.html'
+APITOS_TEMPLATE = 'api_tos.html'
+APIDOCS_TEMPLATE = 'api.html'
 
 DATAHUB_LOG = private_keys.DASHBOARD_BASE_URL + "load_gbase.log.bz2"
 
@@ -301,6 +304,30 @@ class apps_view(webapp.RequestHandler):
     except DeadlineExceededError:
       deadline_exceeded(self, "apps_handler")
 
+
+class apitos_view(webapp.RequestHandler):
+  @expires(0)
+  def get(self):
+    try:
+      template_values = get_default_template_values(self.request, 'APITOS')
+      self.response.out.write(render_template(APITOS_TEMPLATE,
+                                            template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "apitos_handler")
+
+
+class apidocs_view(webapp.RequestHandler):
+  @expires(0)
+  def get(self):
+    try:
+      template_values = get_default_template_values(self.request, 'APIDOCS')
+      self.response.out.write(render_template(APIDOCS_TEMPLATE,
+                                            template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "apidocs_handler")
+
+
+
 class cos_view(webapp.RequestHandler):
   @expires(0)
   def get(self):
@@ -330,7 +357,18 @@ class strategicpartners_view(webapp.RequestHandler):
       self.response.out.write(render_template(STRATEGICPARTNERS_TEMPLATE,
                                             template_values))
     except DeadlineExceededError:
-      deadline_exceeded(self, "mlkdayofservice_handler")
+      deadline_exceeded(self, "strategicepartners_handler")
+
+
+class apipartners_view(webapp.RequestHandler):
+  @expires(0)
+  def get(self):
+    try:
+      template_values = get_default_template_values(self.request, 'APIPARTNERS')
+      self.response.out.write(render_template(APIPARTNERS_TEMPLATE,
+                                            template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "apipartners_handler")
 
 
 		
