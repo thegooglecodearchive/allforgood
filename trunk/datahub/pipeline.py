@@ -407,11 +407,12 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
   if not re.search(r'^https?://', url) and not os.path.exists(url):
     print_progress('Feed file missing: ' + url)
     return
+
   if do_processing:
-    stdout, stderr, retcode = run_shell(["./footprint_lib.py", "--progress", #"--inputfmt", "fpxml",
-                                         "--output", tsv_filename, url,
-                                         "--compress_output" ],
-                                        silent_ok=True, print_output=False)
+    cmd_list = ["./footprint_lib.py", "--progress", "--output", tsv_filename, url, "--compress_output"]
+    if name == "diy":
+      cmd_list.append("--noclean")
+    stdout, stderr, retcode = run_shell(cmd_list, silent_ok=True, print_output=False)
     print stdout,
     if stderr and stderr != "":
       print name+":STDERR: ", re.sub(r'\n', '\n'+name+':STDERR: ', stderr)
@@ -460,16 +461,19 @@ def loaders():
     run_pipeline("gspreadsheets",
                  "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
 
+  if not FILENAMES or "diy" in FILENAMES:
+    run_pipeline("diy", "diy.tsv")
+
   for name in ["unitedway", "volunteermatch", "handsonnetwork", "idealist", # "meetup", 
                "mentorpro", "aarp", "911dayofservice", "americanredcross", "americansolutions",
-               "americorps", "christianvolunteering", "1sky",
+               "americorps", "christianvolunteering", "1sky", "sparked", 
                "citizencorps", "extraordinaries", "givingdupage",
-               "greentheblock", "habitat", "mlk_day", "mybarackobama",
+               "greentheblock", "habitat", "mlk_day", #"mybarackobama",
                "myproj_servegov", "newyorkcares", 
                "rockthevote", "threefiftyorg", "catchafire",
                "seniorcorps", "servenet", "servicenation",
                "universalgiving", "volunteergov", "up2us",
-               "volunteertwo", "washoecounty", "ymca", "vm-nat", "vm-20101027"]:
+               "volunteertwo", "washoecounty", "ymca", "vm-nat"]:
     if not FILENAMES or name in FILENAMES:
       run_pipeline(name, name+".xml")
 

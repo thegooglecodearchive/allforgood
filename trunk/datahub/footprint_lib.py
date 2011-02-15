@@ -34,6 +34,8 @@ import parse_networkforgood
 import parse_idealist
 import parse_craigslist
 import parse_350org
+import parse_sparked
+import parse_diy
 import parse_volunteermatch
 import subprocess
 import sys
@@ -962,6 +964,10 @@ def guess_shortname(filename):
   """from the input filename, guess which feed this is."""
   if re.search(r'rockthevote', filename):
     return "rockthevote"
+  if re.search(r'sparked', filename):
+    return "sparked"
+  if re.search(r'diy', filename):
+    return "diy"
   if re.search(r'350org', filename):
     return "350org"
   if re.search(r'1sky', filename):
@@ -1220,6 +1226,12 @@ def guess_parse_func(inputfmt, filename):
   if shortname == "craigslist" or shortname == "cl":
     return "craigslist", parse_craigslist.parse
 
+  if shortname == "sparked":
+    return "sparked", parse_sparked.parse
+
+  if shortname == "diy":
+    return "diy", parse_diy.parse
+
   if shortname == "350org":
     return "350org", parse_350org.parse
 
@@ -1382,10 +1394,13 @@ def process_file(filename, options, providerName="", providerID="",
                  feedID="", providerURL=""):
   shortname = guess_shortname(filename)
   inputfmt, parsefunc = guess_parse_func(options.inputfmt, filename)
-  infh = open_input_filename(filename)
-  if not infh:
+
+  try:
+    infh = open_input_filename(filename)
+  except:
     print_progress("could not open %s" % filename)
     return 0, 0, 0, ""
+
   print_progress("reading data...")
   # don't put this inside open_input_filename() because it could be large
   instr = infh.read()
@@ -1393,6 +1408,7 @@ def process_file(filename, options, providerName="", providerID="",
 
   # remove bad encodings etc.
   if options.clean:
+    print_progress("cleaning input.")
     instr = clean_input_string(instr)
 
   # split nasty XML inputs, to help isolate problems
