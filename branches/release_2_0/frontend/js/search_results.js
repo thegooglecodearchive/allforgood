@@ -18,7 +18,7 @@ var NUM_PER_PAGE = 10;
 var searchResults = [];
 var filters = [];
 
-$(document).ready(function() {    
+$(document).ready(function() {	
 	var index = getSelectedTab();
 	$("#tabs").tabs({			
 		select: function(event, ui) {			
@@ -67,21 +67,7 @@ $(document).ready(function() {
 	}
 	if (end != "everything") {
 		getInputFieldValue(el('enddate')).value = end;
-	}
-	
-	var type = getHashParam('type', '');
-	if (type == "all") {		
-		$("#location_box").show();
-        $("#map").css("visibility", "visible");
-    }
-    else {        
-		$("#location_box").hide();
-        $("#map").css("visibility", "hidden");		
-		if (type == "self_directed") {			
-			$(".top_search").css("visibility", "hidden");
-			$(".facets").css("visibility", "hidden");
-		}
-    }
+	}	
   });
   
   function getSelectedTab() {
