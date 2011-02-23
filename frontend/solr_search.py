@@ -39,6 +39,8 @@ import searchresult
 
 RESULT_CACHE_TIME = 900 # seconds
 RESULT_CACHE_KEY = 'searchresult:'
+KEYWORD_GLOBAL = ""
+GEO_GLOBAL = ""
 
 # Date format pattern used in date ranges.
 DATE_FORMAT_PATTERN = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
@@ -72,7 +74,7 @@ def default_boosts(args):
     # boost short events
     boost += '+eventduration:[1+TO+10]^10'
   
-  if api.PARAM_Q in args and args[api.PARAM_Q] != "":    
+  if api.PARAM_Q in args and args[api.PARAM_Q] != "" and api.PARAM_TYPE not in args:    
     # big boost opps with search terms in title
     boost += '&qf=title^20'
     # modest boost opps with search terms in description
@@ -149,9 +151,13 @@ def form_solr_query(args):
     max_dist = float(args[api.PARAM_VOL_DIST])
   
   boost_params = default_boosts(args);
-  geo_params = ""
-  if api.PARAM_TYPE not in args or api.PARAM_TYPE in args and args[api.PARAM_TYPE] == "all":
-    geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1}'   
+  
+  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1}'
+  global GEO_GLOBAL
+  GEO_GLOBAL = urllib.quote_plus(geo_params)
+  if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
+      geo_params = ""
+       
 
   # keyword
   query_is_empty = False
@@ -186,6 +192,8 @@ def form_solr_query(args):
     query_is_empty = True
 
   # geo params go in first
+  global KEYWORD_GLOBAL
+  KEYWORD_GLOBAL = urllib.quote_plus(solr_query)
   solr_query = geo_params + solr_query
   solr_query = urllib.quote_plus(solr_query)
   
@@ -245,9 +253,6 @@ def form_solr_query(args):
     else:
       solr_query += '*' 
 
-  #facet counts
-  solr_query += '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false'    
-          
   return solr_query + boost_params
 
 def parseLatLng(val):
@@ -421,16 +426,30 @@ def query(query_url, args, cache, dumping = False):
   result = simplejson.loads(result_content)
   
   #facet_counts
-  if "facet_counts" in result:    
+  all_facets = get_facet_counts_all()
+  if "facet_counts" in all_facets:
     collapse_count = 0
-    facet_fields = result["facet_counts"]["facet_fields"]["signature"]
+    facet_fields = all_facets["facet_counts"]["facet_fields"]["signature"]
     facet_counts = dict()
     for facet in facet_fields:
         if type(facet).__name__ == 'int':
           collapse_count += (facet - 1)   
     
-    facet_counts["all"] = int(result["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false"]) - collapse_count    
-    facet_counts.update(get_facet_counts())    
+    facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false"]) - collapse_count
+    facet_counts.update(get_facet_counts_type())    
+    
+    count = 0;
+    if args[api.PARAM_TYPE] == "virtual":
+        count = facet_counts["virtual"]
+    elif args[api.PARAM_TYPE] == "self_directed":
+        count = facet_counts["self_directed"]
+    elif args[api.PARAM_TYPE] == "micro":
+        count = facet_counts["micro"]
+    else:
+        count = facet_counts["all"]
+    
+    facet_counts["count"] = count
+    
     result_set.facet_counts = facet_counts
     
   else:
@@ -683,9 +702,27 @@ def get_from_ids(ids):
 
   return result_set
 
-def get_facet_counts():
+def get_facet_counts_all():
   try:
-    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=*:*&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=1'
+    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false&rows=1'
+    logging.info("all: " + query_url)
+  except:
+    raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
+  try:
+    fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
+  except:
+      logging.info('error receiving solr facet counts')
+  
+  result_content = fetch_result.content  
+  # undo comma encoding -- see datahub/footprint_lib.py
+  result_content = re.sub(r';;', ',', result_content)
+  return simplejson.loads(result_content)
+
+
+def get_facet_counts_type():
+  try:
+    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + KEYWORD_GLOBAL + '&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=1'
+    logging.info("type: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
   try:

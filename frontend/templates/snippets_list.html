@@ -161,9 +161,7 @@
 	}
 	
 	function setFacetCounts() {		
-		{% if result_set.facet_counts.all %}
-		    $('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");
-		{% endif %}		
+		$('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");	
 		$('#virtual').html("(" + {{result_set.facet_counts.virtual}} + ")");
 		$('#self_directed').html("(" + {{result_set.facet_counts.self_directed}} + ")");
 		$('#micro').html("(" + {{result_set.facet_counts.micro}} + ")");
@@ -202,7 +200,7 @@ function cleanSnippets() {
 	}
   }
 }
-  renderPaginator(el('paginator'), {{result_set.facet_counts.all|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
+  renderPaginator(el('paginator'), {{result_set.facet_counts.count|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
   initMap();
   $('.snippet_text').expand();  
 </script>
