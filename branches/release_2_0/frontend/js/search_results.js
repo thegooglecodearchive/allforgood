@@ -68,6 +68,20 @@ $(document).ready(function() {
 	if (end != "everything") {
 		getInputFieldValue(el('enddate')).value = end;
 	}
+	
+	var type = getHashParam('type', '');
+	if (type == "all") {		
+		$("#location_box").show();
+        $("#map").css("visibility", "visible");
+    }
+    else {        
+		$("#location_box").hide();
+        $("#map").css("visibility", "hidden");		
+		if (type == "self_directed") {			
+			$(".top_search").css("visibility", "hidden");
+			$(".facets").css("visibility", "hidden");
+		}
+    }
   });
   
   function getSelectedTab() {
