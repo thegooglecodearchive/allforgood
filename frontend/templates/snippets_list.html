@@ -147,7 +147,20 @@
 </div>
 
 <script language="text/javascript">
-	$("#tabs").tabs("option", "collapsible", true);
+	var type = getHashParam('type', '');
+	if (type == "all") {		
+		$("#location_box").show();
+        $("#map").css("visibility", "visible");
+    }
+    else {        
+		$("#location_box").hide();
+        $("#map").css("visibility", "hidden");		
+		if (type == "self_directed") {			
+			$(".top_search").css("visibility", "hidden");
+			$(".facets").css("visibility", "hidden");
+		}
+    }	
+$("#tabs").tabs("option", "collapsible", true);
 	$("#tabs").tabs("option", "selected", getSelectedTab());
 	var query = createQueryFromUrlParams();
 	var sort = getHashParam('sort', '');
@@ -161,7 +174,9 @@
 	}
 	
 	function setFacetCounts() {		
-		$('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");	
+		{% if result_set.facet_counts.all %}
+		    $('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");
+		{% endif %}		
 		$('#virtual').html("(" + {{result_set.facet_counts.virtual}} + ")");
 		$('#self_directed').html("(" + {{result_set.facet_counts.self_directed}} + ")");
 		$('#micro').html("(" + {{result_set.facet_counts.micro}} + ")");

@@ -439,14 +439,15 @@ def query(query_url, args, cache, dumping = False):
     facet_counts.update(get_facet_counts_type())    
     
     count = 0;
-    if args[api.PARAM_TYPE] == "virtual":
-        count = facet_counts["virtual"]
-    elif args[api.PARAM_TYPE] == "self_directed":
-        count = facet_counts["self_directed"]
-    elif args[api.PARAM_TYPE] == "micro":
-        count = facet_counts["micro"]
-    else:
-        count = facet_counts["all"]
+    if api.PARAM_TYPE in args:
+        if args[api.PARAM_TYPE] == "virtual":
+            count = facet_counts["virtual"]
+        elif args[api.PARAM_TYPE] == "self_directed":
+            count = facet_counts["self_directed"]
+        elif args[api.PARAM_TYPE] == "micro":
+            count = facet_counts["micro"]
+        else:
+            count = facet_counts["all"]
     
     facet_counts["count"] = count
     
