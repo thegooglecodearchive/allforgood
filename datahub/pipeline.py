@@ -19,7 +19,6 @@ import os
 import pipeline_keys
 import random
 import subprocess
-import signal
 import time
 from csv import DictReader, DictWriter, excel_tab, register_dialect, QUOTE_NONE
 from datetime import datetime
@@ -407,11 +406,13 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
   if not re.search(r'^https?://', url) and not os.path.exists(url):
     print_progress('Feed file missing: ' + url)
     return
+
   if do_processing:
-    stdout, stderr, retcode = run_shell(["./footprint_lib.py", "--progress", #"--inputfmt", "fpxml",
-                                         "--output", tsv_filename, url,
-                                         "--compress_output" ],
-                                        silent_ok=True, print_output=False)
+    cmd_list = ["./footprint_lib.py", "--progress", "--output", tsv_filename, url, "--compress_output"]
+    if name == "diy":
+      cmd_list.append("--noclean")
+    print ' '.join(cmd_list)
+    stdout, stderr, retcode = run_shell(cmd_list, silent_ok=True, print_output=False)
     print stdout,
     if stderr and stderr != "":
       print name+":STDERR: ", re.sub(r'\n', '\n'+name+':STDERR: ', stderr)
@@ -424,15 +425,14 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
   gzip_fh.close()
 
   if len(tsv_data) == 0:
-    print_progress("Warning: TSV file is empty. Aborting upload.")
+    print_progress("Warning: TSV file is empty.")
     return
 
   print "processing field stats..."
   process_field_stats(tsv_data)
-  
-  #Removing this because Solr has this functionality built in
-  #print "processing popular words..."
-  #process_popular_words(tsv_data)
+
+  print "processing popular words..."
+  process_popular_words(tsv_data)
 
   if OPTIONS.use_base and do_ftp:
     print_progress("ftp'ing to base")
@@ -443,7 +443,7 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
     print_progress("pipeline: done.")
   if OPTIONS.use_solr:
     print_progress('Commencing Solr index updates')
-    update_solr_index(name+'1')
+    create_solr_TSV(name+'1')
 
 def test_loaders():
   """for testing, read from local disk as much as possible."""
@@ -461,16 +461,19 @@ def loaders():
     run_pipeline("gspreadsheets",
                  "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
 
+  if not FILENAMES or "diy" in FILENAMES:
+    run_pipeline("diy", "diy.tsv")
+
   for name in ["unitedway", "volunteermatch", "handsonnetwork", "idealist", # "meetup", 
                "mentorpro", "aarp", "911dayofservice", "americanredcross", "americansolutions",
-               "americorps", "christianvolunteering", "1sky",
+               "americorps", "christianvolunteering", "1sky", "sparked", 
                "citizencorps", "extraordinaries", "givingdupage",
-               "greentheblock", "habitat", "mlk_day", "mybarackobama",
+               "greentheblock", "habitat", "mlk_day", #"mybarackobama",
                "myproj_servegov", "newyorkcares", 
                "rockthevote", "threefiftyorg", "catchafire",
                "seniorcorps", "servenet", "servicenation",
                "universalgiving", "volunteergov", "up2us",
-               "volunteertwo", "washoecounty", "ymca", "vm-nat", "vm-20101027"]:
+               "volunteertwo", "washoecounty", "ymca", "vm-nat"]:
     if not FILENAMES or name in FILENAMES:
       run_pipeline(name, name+".xml")
 
@@ -669,8 +672,8 @@ def solr_retransform(fname):
   return out_filename
 
   
-def update_solr_index(filename):
-  """Transform a datafile and update the specified backend's index"""
+def create_solr_TSV(filename):
+  """ Transform FPXML to SOLR TSV """
   in_fname = filename + '.gz'
   f_out = open(filename, 'wb')
   f_in = gzip.open(in_fname, 'rb')
@@ -680,42 +683,10 @@ def update_solr_index(filename):
   f_in.close()
   
   solr_filename = solr_retransform(filename)
-  #if solr_filename:
-  #  for solr_url in OPTIONS.solr_urls:
-  #    print_progress('Uploading %s to %s' % (solr_filename, solr_url))
-  #    # HTTP POST an index update command to Solr and commit changes.
-  #    upload_solr_file(solr_filename, solr_url)
-
-
-class TimeoutAlarm(Exception):
-    pass
-
-
-def timeout_alarm_handler(signum, frame):
-    raise TimeoutAlarm
-
-
-def upload_solr_file(filename, url):
-  """ Updates the Solr index with a CSV file """
-  return
-  cmd = 'curl -s -u \'' + OPTIONS.solr_user + ':' + OPTIONS.solr_pass + \
-        '\' \'' + url + \
-        'update/csv?commit=true&separator=%09&escape=%10\' --data-binary @' + \
-        filename + \
-        ' -H \'Content-type:text/plain; charset=utf-8\';'
-
-  signal.signal(signal.SIGALRM, timeout_alarm_handler)
-  signal.alarm(60 * 60) # wait up to one hour 
-  try:
-    subprocess.call(cmd, shell=True)
-    signal.alarm(0)  # reset the alarm
-  except TimeoutAlarm:
-    print_progress('timed out uploading ' + filename)
-    subprocess.call(HOMEDIR + '/notify_michael.sh timed out uploading ' + filename, shell=True)
 
 
 def main():
-  """shutup pylint."""
+  """ program starts here """
   get_options()
 
   if OPTIONS.test_mode:
