@@ -14,206 +14,143 @@
 # limitations under the License.
 
 """
-parser for idealist, which (IIRC) originates from Base?
+parser for idealist custom feed -- not FPXML
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:g="http://base.google.com/ns/1.0" xmlns:awb="http://base.google.com/cns/1.0">
+  <title>Idealist.org - Volunteer Opportunities</title>
+  <subtitle>
+    Volunteer Opportunities that were posted to idealist.org in English
+  </subtitle>
+  <updated>2011-02-25T00:43:24Z</updated>
+  <id>http://www.idealist.org/search</id>
+  <link rel="self" type="application/atom+xml" href="http://www.idealist.org/search?search_type=volop&amp;search_language=en"/>
+  <icon>http://www.idealist.org/facvicon.ico</icon>
+  <logo>http://www.idealist.org/images/wrapper/idealistLogo-en.gif</logo>
+  <author>
+    <name>Action Without Borders - idealist.org</name>
+    <uri>http://www.idealist.org/</uri>
+    <email>feeds@idealist.org</email>
+  </author>
+  <rights>1995-2010, Action Without Borders</rights>
+  <entry xmlns="http://www.w3.org/2005/Atom">
+    <title>Regional Director - San Jose</title>
+    <link rel="alternate" type="text/html" hreflang="en" href="http://www.idealist.org/view/volop/pStJKz83W9h4/"/>
+    <id>http://www.idealist.org/view/volop/pStJKz83W9h4/</id>
+    <published>2011-02-23T21:59:44Z</published>
+    <g:publish_date>2011-02-23</g:publish_date>
+    <updated>2011-02-23T21:59:44Z</updated>
+    <category term="Politics" label="Politics" scheme="http://www.idealist.org/atom/namespace/aof-Org"/><category term="International relations" label="International relations" scheme="http://www.idealist.org/atom/namespace/aof-Org"/><category term="Poverty and hunger" label="Poverty and hunger" scheme="http://www.idealist.org/atom/namespace/aof-Org"/>
+    <summary>http://www.borgenproject.org/
+THE BORGEN PROJECT
+The Borgen Project believes that leaders of the most powerful nation on earth should be doing more to address global poverty. We're the innovative, national campaign that is working to make poverty a focus </summary>
+    <content type="html">...</content>
+        <awb:city type="string">New York</awb:city>
+        <awb:state type="string">US_NY</awb:state>
+        <awb:postal_code type="string">10007</awb:postal_code>
+        <awb:country type="string">US</awb:country>
+        <g:location>1 Centre St., New York, NY, 10007, US</g:location>
+    <awb:posted_by type="string">Big Apple Greeter</awb:posted_by>
+    <awb:poster_ein type="string">13-3733413</awb:poster_ein>
+  <g:id>dD4Bmh2jKCcp</g:id>
+      <g:employer>Big Apple Greeter</g:employer>
+      <g:job_function>Volunteer Greeter</g:job_function>
+      <g:job_type>Volunteer</g:job_type>
+      <g:job_industry>Nonprofit</g:job_industry>
+  </entry>
+</feed>
 """
-import xml_helpers as xmlh
+import sys
 import re
-from datetime import datetime
 import xml.sax.saxutils
-
+import xml_helpers as xmlh
+from datetime import datetime
 import dateutil.parser
-import footprint_lib 
-
-# xml parser chokes on namespaces, and since we don't need them,
-# just replace them for simplicity-- note that this also affects
-# the code below
-def remove_g_namespace(s, progress):
-  if progress:
-    print datetime.now(), "removing g: namespace..."
-  s = re.sub(r'<(/?)g:', r'<\1gg_', s)
-  if progress:
-    print datetime.now(), "removing awb: namespace..."
-  s = re.sub(r'<(/?)awb:', r'<\1awb_', s)
-  return s
-
-def addCdataToContent(s, progress):
-  # what if CDATA is already used?!
-  if progress:
-    print datetime.now(), "adding CDATA to <content>..."
-  ## yuck: this caused a RAM explosion...
-  #rx = re.compile(r'<content( *?[^>]*?)>(.+?)</content>', re.DOTALL)
-  #s = re.sub(rx, r'<content\1><![CDATA[\2]]></content>', s)
-
-  s = re.sub(r'<content([^>]+)>', r'<content\1><![CDATA[', s)
-  if progress:
-    print datetime.now(), "adding ]]> to </content>..."
-  s = re.sub(r'</content>', r']]></content>', s)
-  if progress:
-    print datetime.now(), "done: ", len(s), " bytes"
-  return s
-
-def removeContentWrapperDiv(s):
-  return re.sub(r'(.*?&lt;div.*?&gt;|&lt;/div&gt;)', '', s).strip()
-
-# frees memory for main parse
-def ParseHelper(instr, maxrecs, progress):
-  # TODO: progress
-  #known_elnames = ['feed', 'title', 'subtitle', 'div', 'span', 'updated', 'id', 'link', 'icon', 'logo', 'author', 'name', 'uri', 'email', 'rights', 'entry', 'published', 'gg_publish_date', 'gg_expiration_date', 'gg_event_date_range', 'gg_start', 'gg_end', 'updated', 'category', 'summary', 'content', 'awb_city', 'awb_country', 'awb_state', 'awb_postalcode', 'gg_location', 'gg_age_range', 'gg_employer', 'gg_job_type', 'gg_job_industry', 'awb_paid', ]
-  known_elnames = ['feed', 'title', 'subtitle', 'div', 'span', 'updated', 'id', 'link', 'icon', 'logo', 'author', 'name', 'uri', 'email', 'rights', 'entry', 'published', 'updated', 'category', 'summary', 'content', 'awb_city', 'awb_country', 'awb_state', 'awb_postalcode', 'awb_paid', ]
-  # takes forever
-  #xmldoc = xmlh.simple_parser(s, known_elnames, progress)
-
-  # convert to footprint format
-  s = '<?xml version="1.0" ?>'
-  s += '<FootprintFeed schemaVersion="0.1">'
-  s += '<FeedInfo>'
-  # TODO: assign provider IDs?
-  s += '<feedID>1</feedID>'
-  s += '<providerID>103</providerID>'
-  s += '<providerName>idealist</providerName>'
-  s += '<providerURL>http://www.idealist.org/</providerURL>'
-  match = re.search(r'<title>(.+?)</title>', instr, re.DOTALL)
-  if match:
-    s += '<description><![CDATA[%s]]></description>' % (match.group(1))
-  s += '<createdDateTime>%s</createdDateTime>' % xmlh.current_ts()
-  s += '</FeedInfo>'
-
-  numorgs = numopps = 0
-
-  # hardcoded: Organization
-  s += '<Organizations>'
-  #authors = xmldoc.getElementsByTagName("author")
-  organizations = {}
-  authors = re.findall(r'<author>.+?</author>', instr, re.DOTALL)
-  for i, orgstr in enumerate(authors):
-    if progress and i > 0 and i % 250 == 0:
-      print datetime.now(), ": ", i, " orgs processed."
-    org = xmlh.simple_parser(orgstr, known_elnames, False)
-    s += '<Organization>'
-    s += '<organizationID>%d</organizationID>' % (i+1)
-    s += '<nationalEIN></nationalEIN>'
-    s += '<guidestarID></guidestarID>'
-    name = xmlh.get_tag_val(org, "name")
-    organizations[name] = i+1
-    s += '<name><![CDATA[%s]]></name>' % (organizations[name])
-    s += '<missionStatement></missionStatement>'
-    s += '<description></description>'
-    s += '<location><city></city><region></region><postalCode></postalCode></location>'
-    s += '<organizationURL>%s</organizationURL>' % (xmlh.get_tag_val(org, "uri"))
-    s += '<donateURL></donateURL>'
-    s += '<logoURL></logoURL>'
-    s += '<detailURL></detailURL>'
-    s += '</Organization>'
-    numorgs += 1
-  s += '</Organizations>'
-    
-  s += '<VolunteerOpportunities>'
-  entries = re.findall(r'<entry>.+?</entry>', instr, re.DOTALL)
-  #entries = xmldoc.getElementsByTagName("entry")
-  #if (maxrecs > entries.length):
-  #  maxrecs = entries.length
-  #for opp in entries[0:maxrecs-1]:
-  for i, oppstr in enumerate(entries):
-    if (maxrecs>0 and i>maxrecs):
-      break
-    xmlh.print_rps_progress("opps", progress, i, maxrecs)
-    opp = xmlh.simple_parser(oppstr, known_elnames, False)
-    # unmapped: db:rsvp  (seems to be same as link, but with #rsvp at end of url?)
-    # unmapped: db:host  (no equivalent?)
-    # unmapped: db:county  (seems to be empty)
-    # unmapped: attendee_count
-    # unmapped: guest_total
-    # unmapped: db:title   (dup of title, above)
-    # unmapped: contactName
-    s += '<VolunteerOpportunity>'
-    id_link = xmlh.get_tag_val(opp, "id")
-    s += '<volunteerOpportunityID>%s</volunteerOpportunityID>' % (id_link)
-    orgname = xmlh.get_tag_val(org, "name")  # ok to be lazy-- no other 'name's in this feed
-    s += '<sponsoringOrganizationIDs>'
-    s += '<sponsoringOrganizationID><![CDATA[%s]]></sponsoringOrganizationID>' % (organizations[orgname])
-    s += '</sponsoringOrganizationIDs>' 
-    # hardcoded: volunteerHubOrganizationID
-    s += '<volunteerHubOrganizationIDs>'
-    s += '<volunteerHubOrganizationID>0</volunteerHubOrganizationID>'
-    s += '</volunteerHubOrganizationIDs>'
-    s += '<title><![CDATA[%s]]></title>' % (xmlh.get_tag_val(opp, "title"))
-    # lazy: id is the same as the link field...
-    s += '<detailURL>%s</detailURL>' % (id_link)
-    # lazy: idealist stuffs a div in the content...
-    entry_content = xmlh.get_tag_val(opp, 'content')
-    s += '<description><![CDATA[%s]]></description>' % removeContentWrapperDiv(entry_content)
-    s += '<abstract><![CDATA[%s]]></abstract>' % (xmlh.get_tag_val(opp, "summary"))
-    pubdate = xmlh.get_tag_val(opp, "published")
-    ts = dateutil.parser.parse(pubdate)
-    pubdate = ts.strftime("%Y-%m-%dT%H:%M:%S")
-    s += '<lastUpdated>%s</lastUpdated>' % (pubdate)
-    #s += '<expires>%sT23:59:59</expires>' % (xmlh.get_tag_val(opp, "gg_expiration_date"))
-    s += '<expires>%s</expires>' % (xmlh.current_ts(footprint_lib.DEFAULT_EXPIRES))
-    #dbevents = opp.getElementsByTagName("gg_event_date_range")
-    #if (dbevents.length != 1):
-    #  print datetime.now(), "parse_idealist: only 1 db:event supported."
-    #  return None
-    s += '<locations><location>'
-    # yucko: idealist is stored in Google Base, which only has 'location'
-    # so we stuff it into the city field, knowing that it'll just get
-    # concatenated down the line...
-    #s += '<city>%s</city>' % (xmlh.get_tag_val(opp, "gg_location"))
-    s += '<city><![CDATA[%s]]></city>' % (xmlh.get_tag_val(opp, "awb_city"))
-    s += '<state><![CDATA[%s]]></state>' % (xmlh.get_tag_val(opp, "awb_state"))
-    s += '<postal_code><![CDATA[%s]]></postal_code>' % (xmlh.get_tag_val(opp, "awb_postal_code"))
-    s += '</location></locations>'
-    #dbscheduledTimes = opp.getElementsByTagName("gg_event_date_range")
-    #if (dbscheduledTimes.length != 1):
-    #  print datetime.now(), "parse_idealistt: only 1 gg_event_date_range supported."
-    #  return None
-    #dbscheduledTime = dbscheduledTimes[0]
-    s += '<dateTimeDurations><dateTimeDuration>'
-    s += '<openEnded>Yes</openEnded>'
-    # ignore duration
-    # ignore commitmentHoursPerWeek
-    #tempdate = xmlh.get_tag_val(dbscheduledTime, "gg_start")
-    #ts = dateutil.parser.parse(tempdate)
-    #tempdate = ts.strftime("%Y-%m-%d")
-    #s += '<startDate>%s</startDate>' % (tempdate)
-    #tempdate = xmlh.get_tag_val(dbscheduledTime, "gg_end")
-    #ts = dateutil.parser.parse(tempdate)
-    #tempdate = ts.strftime("%Y-%m-%d")
-    #s += '<endDate>%s</endDate>' % (tempdate)
-    # TODO: timezone???
-    s += '</dateTimeDuration></dateTimeDurations>'
-    #s += '<categoryTags>'
-    # proper way is too slow...
-    #cats = opp.getElementsByTagName("category")
-    #for i,cat in enumerate(cats):
-    #  s += '<categoryTag>%s</categoryTag>' % (cat.attributes["label"].value)
-    #catstrs = re.findall(r'<category term=(["][^"]+["])', oppstr, re.DOTALL)
-    #for cat in catstrs:
-    #  s += "<categoryTag>" + xml.sax.saxutils.escape(cat) + "</categoryTag>"
-    #s += '</categoryTags>'
-    s += '<minimumAge>0</minimumAge>'
-    #age_range = xmlh.get_tag_val(opp, "gg_age_range")
-    #if re.match(r'and under|Families', age_range):
-    #  s += '<minimumAge>0</minimumAge>'
-    #elif re.match(r'Teens', age_range):
-    #  s += '<minimumAge>13</minimumAge>'
-    #elif re.match(r'Adults', age_range):
-    #  s += '<minimumAge>18</minimumAge>'
-    #elif re.match(r'Seniors', age_range):
-    #  s += '<minimumAge>65</minimumAge>'
-    s += '</VolunteerOpportunity>'
-    numopps += 1
-  s += '</VolunteerOpportunities>'
-  s += '</FootprintFeed>'
-
-  #s = re.sub(r'><([^/])', r'>\n<\1', s)
-  #print s
-  return s, numorgs, numopps
 
 # pylint: disable-msg=R0915
-def parse(s, maxrecs, progress):
-  """return FPXML given idealist data"""
-  #s = addCdataToContent(s, progress)
-  s = remove_g_namespace(s, progress)
-  s = ParseHelper(s, maxrecs, progress)
-  return s
+def parse(instr, maxrec, progress):
+  """return FPXML given sparked feed data"""
+  from xml.dom import minidom
+  feed = minidom.parseString(instr.encode('utf-8'))
 
+  org_id = str(103)
+  mission_statement = "Idealist connects people, organizations, and resources to help build a world where all people can live free and dignified lives.  Idealist is independent of any government, political ideology, or religious creed. Our work is guided by the common desire of our members and supporters to find practical solutions to social and environmental problems, in a spirit of generosity and mutual respect."
+
+  org_desc = "Volunteer Opportunities that were posted to idealist.org in English"
+
+  today = datetime.now()
+  last_updated = today.strftime("%Y-%m-%dT%H:%M:%S")
+  start_date = last_updated
+
+  numorgs = 1
+  numopps = 0
+  xmlh.print_progress("loading idealist.xml custom XML...")
+
+  # convert to footprint format
+  outstr = '<?xml version="1.0" ?>'
+  outstr += '<FootprintFeed schemaVersion="0.1">'
+  outstr += '<FeedInfo>'
+  outstr += xmlh.output_val('providerID', org_id)
+  outstr += xmlh.output_val('providerName', "idealist")
+  outstr += xmlh.output_val('feedID', "idealist")
+  outstr += xmlh.output_val('createdDateTime', xmlh.current_ts())
+  outstr += xmlh.output_val('providerURL', "http://www.idealist.org/")
+  outstr += '</FeedInfo>'
+  # 1 "organization" in idealist.org postings
+  outstr += '<Organizations><Organization>'
+  outstr += xmlh.output_val('organizationID', org_id)
+  outstr += '<nationalEIN></nationalEIN>'
+  outstr += '<name>idealist.org</name>'
+  outstr += xmlh.output_val('missionStatement', mission_statement)
+  outstr += xmlh.output_val('description', org_desc)
+  outstr += '<location>'
+  outstr += xmlh.output_val("city", "New York")
+  outstr += xmlh.output_val("region", "NY")
+  outstr += xmlh.output_val("postalCode", "10001")
+  outstr += '</location>'
+  outstr += '<organizationURL>http://www.idealist.org/</organizationURL>'
+  outstr += '<donateURL>http://www.idealist.org/</donateURL>'
+  outstr += '<logoURL>http://www.idealist.org/css/skin02/images/logoBG.png</logoURL>'
+  outstr += '<detailURL>http://www.idealist.org/</detailURL>'
+  outstr += '</Organization></Organizations>'
+
+  outstr += '\n<VolunteerOpportunities>\n'
+  nodes = feed.getElementsByTagName('entry')
+  for i, node in enumerate(nodes):
+    if maxrec > 0 and i > maxrec:
+       break
+    title = '<![CDATA[' + xmlh.get_tag_val(node, "title") + ']]>'
+    desc = '<![CDATA[' + xmlh.get_tag_val(node, "summary") + ']]>'
+    url = xmlh.get_tag_val(node, "id")
+
+    start_date = last_updated
+    open_ended = True
+    outstr += '<VolunteerOpportunity>'
+    outstr += '<volunteerOpportunityID>%s</volunteerOpportunityID>' % (str(i))
+    outstr += '<sponsoringOrganizationIDs><sponsoringOrganizationID>'
+    outstr += org_id
+    outstr += '</sponsoringOrganizationID></sponsoringOrganizationIDs>'
+    outstr += '<volunteerHubOrganizationIDs><volunteerHubOrganizationID>'
+    outstr += org_id 
+    outstr += '</volunteerHubOrganizationID></volunteerHubOrganizationIDs>'
+    outstr += '<title>%s</title>' % (title)
+    outstr += '<detailURL>%s</detailURL>' % (url)
+    outstr += '<description>%s</description>' % (desc)
+    outstr += '<abstract>%s</abstract>' % (desc)
+    outstr += '<lastUpdated>%s</lastUpdated>' %(last_updated)
+    outstr += '<dateTimeDurations><dateTimeDuration>'
+    outstr += '<startDate>%s</startDate>' % (start_date)
+    outstr += '<openEnded>Yes</openEnded>'
+    outstr += '</dateTimeDuration></dateTimeDurations>'
+    outstr += '<locations><location>'
+    outstr += '<virtual>no</virtual>'
+    outstr += '<streetAddress1><![CDATA[' +xmlh.get_tag_val(node, "g:location") + ']]></streetAddress1>'
+    outstr += '<city><![CDATA[' + xmlh.get_tag_val(node, "awb:city") + ']]></city>'
+    outstr += '<region><![CDATA[' + xmlh.get_tag_val(node, "awb:state") + ']]></region>'
+    outstr += '<postalCode><![CDATA[' + xmlh.get_tag_val(node, "awb:postal_code") + ']]></postalCode>'
+    outstr += '</location></locations>'
+    outstr += '</VolunteerOpportunity>\n'
+    numopps += 1
+  outstr += '</VolunteerOpportunities>'
+  outstr += '</FootprintFeed>'
+
+  return outstr, numorgs, numopps
