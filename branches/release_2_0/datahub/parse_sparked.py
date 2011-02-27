@@ -123,7 +123,7 @@ def parse(instr, maxrec, progress):
     mdy = xmlh.get_tag_val(node, "deadline")
     if mdy:
       try:
-        end_date = str(2000 + int(mdy[6:])) + "-" + mdy[0:2] + "-" + mdy[3:2]
+        end_date = str(2000 + int(mdy[6:])) + "-" + mdy[0:2] + "-" + mdy[3:5]
         open_ended = False
       except:
         pass
