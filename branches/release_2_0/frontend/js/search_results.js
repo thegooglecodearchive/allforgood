@@ -67,7 +67,15 @@ $(document).ready(function() {
 	}
 	if (end != "everything") {
 		getInputFieldValue(el('enddate')).value = end;
-	}	
+	}
+	
+	$("#category_list a").click(function(event) {
+		var value = $(this).html();
+		setInputFieldValue(el('keywords'), value.toLowerCase());
+		hideShowCategories(value);
+		submitForm('keywords');
+		return false;
+	})
   });
   
   function getSelectedTab() {
@@ -82,6 +90,18 @@ $(document).ready(function() {
 	else
 		index = 0;
 	return index;
+  }
+  
+  function hideShowCategories(value) {
+	  if (value) {
+		  $("#category_list").hide();
+		  $("#category_item").html("<li>" + value + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>");
+	  } else {
+		  $("#category_item").html("");
+		  $("#category_list").show();		  
+		  setInputFieldValue(el('keywords'), "");
+		  submitForm('keywords');
+	  }
   }
   
   /** Query params for backend search, based on frontend parameters.
