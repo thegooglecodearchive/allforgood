@@ -180,6 +180,18 @@ $("#tabs").tabs("option", "collapsible", true);
 		$('#micro').html("(" + {{result_set.facet_counts.micro}} + ")");
 	}
 	setFacetCounts();
+	function capitalize(str) { 
+	   var words = str.split(" "); 
+	   for (var i=0 ; i < words.length ; i++){ 
+	      var testwd = words[i]; 
+	      var firLet = testwd.substr(0,1); 
+	      var rest = testwd.substr(1, testwd.length -1) 
+	      words[i] = firLet.toUpperCase() + rest 
+	   } 
+	   return words.join(" "); 
+	}
+	
+	hideShowCategories(capitalize(getHashParam('q', '')));
 </script>
 
 <span id='loading-bottom' style='display:none;float:right;'><span id='loading'>Loading...</span></span>

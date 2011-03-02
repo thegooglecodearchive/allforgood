@@ -206,7 +206,7 @@ def form_solr_query(args):
     elif args[api.PARAM_TYPE] == "micro":
       solr_query += "+AND+micro:true"
   else:
-      solr_query += "&fq=self_directed:false+AND+virtual:false"
+      solr_query += "&fq=self_directed:false+AND+virtual:false+AND+micro:false"
   
   added_categories = False
   # Category
