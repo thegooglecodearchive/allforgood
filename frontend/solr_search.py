@@ -202,7 +202,7 @@ def form_solr_query(args):
     if args[api.PARAM_TYPE] == "self_directed":
       solr_query += "+AND+self_directed:true"    
     elif args[api.PARAM_TYPE] == "virtual":
-      solr_query += "+AND+virtual:true"
+      solr_query += "+AND+virtual:true+AND+micro:false"
     elif args[api.PARAM_TYPE] == "micro":
       solr_query += "+AND+micro:true"
   else:
@@ -435,7 +435,7 @@ def query(query_url, args, cache, dumping = False):
         if type(facet).__name__ == 'int':
           collapse_count += (facet - 1)   
     
-    facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false"]) - collapse_count
+    facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false"]) - collapse_count
     facet_counts.update(get_facet_counts_type())    
     
     count = 0;
@@ -448,7 +448,7 @@ def query(query_url, args, cache, dumping = False):
             count = facet_counts["micro"]
         else:
             count = facet_counts["all"]
-    
+
     facet_counts["count"] = count
     
     result_set.facet_counts = facet_counts
@@ -705,7 +705,7 @@ def get_from_ids(ids):
 
 def get_facet_counts_all():
   try:
-    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false&rows=1'
+    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=1'
     logging.info("all: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -747,5 +747,6 @@ def get_facet_counts_type():
         if index >= 0:
           facet_counts[k] = v[index + 1]
         else:
-          facet_counts[k] = 0    
+          facet_counts[k] = 0
+    facet_counts["virtual"] -= facet_counts["micro"] #hack to remove micro counts because they were incorrectly tagged as virtual
   return facet_counts

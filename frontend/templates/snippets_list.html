@@ -102,7 +102,7 @@
 	        <a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
 	        -
 	        <div class='interest_links'>
-	          <span style='display:{{result.interest|yesno:"none,"}};' id='like_{{forloop.counter0}}'><a href='javascript:void(0)' onclick='toggleInterest({{forloop.counter0}});return false;'>Like</a> -</span>
+	          <!-- <span style='display:{{result.interest|yesno:"none,"}};' id='like_{{forloop.counter0}}'><a href='javascript:void(0)' onclick='toggleInterest({{forloop.counter0}});return false;'>Like</a> -</span> -->
 	          
 	          <a id='share_{{forloop.counter0}}' class='sharelink'>Share</a>
 	          <script type="text/javascript">
