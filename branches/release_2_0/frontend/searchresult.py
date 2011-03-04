@@ -124,7 +124,7 @@ class SearchResult(object):
     self.pubdate = get_rfc2822_datetime()
     self.score = 0.0
     self.score_notes = ""
-    self.score_str = ""
+    self.score_str = ""    
  
   def set_score(self, score, notes):
     """assign score value-- TODO: consider moving scoring code to this class."""
@@ -190,6 +190,7 @@ class SearchResultSet(object):
     self.merged_results = []
     self.clipped_results = []
     self.facet_counts = dict()
+    self.providers = []
     self.clip_start_index = 0  # Index at which clipped_results begins.
     self.has_more_results = False  # After clipping, are there more results?
     self.estimated_merged_results = 0

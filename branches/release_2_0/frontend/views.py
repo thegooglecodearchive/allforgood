@@ -361,6 +361,7 @@ class consumer_ui_search_view(webapp.RequestHandler):
       template_values = get_default_template_values(self.request, 'SEARCH')
       template_values['result_set'] = {}
       template_values['is_main_page'] = True
+      template_values['private_keys'] = private_keys
       self.handle_sponsored(template_values)
       self.response.out.write(render_template(SEARCH_RESULTS_TEMPLATE,
                                             template_values))

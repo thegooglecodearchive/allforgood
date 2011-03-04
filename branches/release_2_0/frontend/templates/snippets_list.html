@@ -157,7 +157,7 @@
         $("#map").css("visibility", "hidden");		
 		if (type == "self_directed") {			
 			$(".top_search").css("visibility", "hidden");
-			$(".facets").css("visibility", "hidden");
+			$("#location_distance_date").css("visibility", "hidden");
 		}
     }	
 $("#tabs").tabs("option", "collapsible", true);
@@ -173,25 +173,47 @@ $("#tabs").tabs("option", "collapsible", true);
 		$(".top_search").css("visibility", "hidden");
 	}
 	
-	function setFacetCounts() {		
+	setFacetCounts = function() {		
 		$('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");		
 		$('#virtual').html("(" + {{result_set.facet_counts.virtual}} + ")");
 		$('#self_directed').html("(" + {{result_set.facet_counts.self_directed}} + ")");
 		$('#micro').html("(" + {{result_set.facet_counts.micro}} + ")");
-	}
-	setFacetCounts();
+	}();
+
+	setProviders = function() {
+		var providers = "";
+		{% for k in result_set.providers %}
+			providers += '<li><a href="{{k}}">' + arProviderNames[{{ k }}] + '</a></li>';
+		{% endfor %}	
+		$("#provider_list").html(providers);
+	}();
+
+	$("#provider_list a").click(function(event) {
+		var value = $(this).attr("href");
+		$('#provider_input').val(value);
+		hideShowProviders(value);		
+		submitForm();
+		return false;
+	})		
+
 	function capitalize(str) { 
-	   var words = str.split(" "); 
-	   for (var i=0 ; i < words.length ; i++){ 
-	      var testwd = words[i]; 
-	      var firLet = testwd.substr(0,1); 
-	      var rest = testwd.substr(1, testwd.length -1) 
-	      words[i] = firLet.toUpperCase() + rest 
-	   } 
-	   return words.join(" "); 
+	if (str) {
+			var words = str.split(" "); 
+	   		for (var i=0 ; i < words.length ; i++){ 
+	      		var testwd = words[i]; 
+	      		var firLet = testwd.substr(0,1); 
+	      		var rest = testwd.substr(1, testwd.length -1) 
+	      		words[i] = firLet.toUpperCase() + rest 
+	   		} 
+	   		return words.join(" ");
+		}
 	}
-	
-	hideShowCategories(capitalize(getHashParam('q', '')));
+
+	if (getHashParam('category', ''))
+		hideShowCategories(capitalize(getHashParam('category', '')));
+	if (getHashParam('source', ''))
+		hideShowProviders(getHashParam('source', ''));
+	populateActiveFacets();
 </script>
 
 <span id='loading-bottom' style='display:none;float:right;'><span id='loading'>Loading...</span></span>
