@@ -190,6 +190,8 @@ input.hasDatepicker {
 	font-size:11px;
 }
 
+#facets_container, #category_list, #provider_list {display:none;}
+#show_categories:hover, #show_providers:hover {text-decoration:none;}
 
 #startdate, #enddate {
 	padding: 2px 0;

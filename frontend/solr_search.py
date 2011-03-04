@@ -41,6 +41,8 @@ RESULT_CACHE_TIME = 900 # seconds
 RESULT_CACHE_KEY = 'searchresult:'
 KEYWORD_GLOBAL = ""
 GEO_GLOBAL = ""
+PROVIDER_GLOBAL = ""
+FULL_QUERY_GLOBAL = ""
 
 # Date format pattern used in date ranges.
 DATE_FORMAT_PATTERN = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
@@ -156,15 +158,11 @@ def form_solr_query(args):
   global GEO_GLOBAL
   GEO_GLOBAL = urllib.quote_plus(geo_params)
   if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
-      geo_params = ""
-       
+      geo_params = ""       
 
   # keyword
   query_is_empty = False
-  if ((api.PARAM_Q in args and args[api.PARAM_Q] != "") or 
-      (api.PARAM_CATEGORY in args and args[api.PARAM_CATEGORY] != "all") or 
-      (api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all")):
-
+  if (api.PARAM_Q in args and args[api.PARAM_Q] != ""):
     qwords = args[api.PARAM_Q].split(" ")
     for qi, qw in enumerate(qwords):
       # it is common practice to use a substr of a url eg, volunteermatch 
@@ -179,13 +177,15 @@ def form_solr_query(args):
 
     query_boosts = boosts.query_time_boosts(args)
     
-    # Gross Hack for MLK Day    
-    keyword = args[api.PARAM_Q].replace('category:', '')
+    if api.PARAM_CATEGORY in args:        
+        args[api.PARAM_Q] += (" AND " + args[api.PARAM_CATEGORY])
     
     if query_boosts:
-      solr_query = query_boosts
-    else:      
-      solr_query += rewrite_query('*:* AND ' + keyword, api_key)
+      solr_query = query_boosts    
+    else:
+      solr_query += rewrite_query('*:* AND ' +  args[api.PARAM_Q], api_key)
+  elif api.PARAM_CATEGORY in args:
+      solr_query += rewrite_query('*:* AND ' +  args[api.PARAM_CATEGORY], api_key)
   else:
     # Query is empty, search for anything at all.
     solr_query += rewrite_query('*:*', api_key)
@@ -207,18 +207,16 @@ def form_solr_query(args):
       solr_query += "+AND+micro:true"
   else:
       solr_query += "&fq=self_directed:false+AND+virtual:false+AND+micro:false"
-  
-  added_categories = False
-  # Category
-  if api.PARAM_CATEGORY in args and args[api.PARAM_CATEGORY] != "all":
-    solr_query += "categories:(" + args[api.PARAM_CATEGORY] + ")"
-    added_categories = True
+  global FULL_QUERY_GLOBAL
+  FULL_QUERY_GLOBAL =  solr_query
     
   # Source
-  if api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all":
-    if added_categories:
-      solr_query += "+AND+"
-    solr_query += "feed_providername:" + args[api.PARAM_SOURCE]
+  global PROVIDER_GLOBAL
+  if api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all":    
+    PROVIDER_GLOBAL = "+AND+provider_proper_name:" + args[api.PARAM_SOURCE]
+    solr_query += PROVIDER_GLOBAL
+  else:
+    PROVIDER_GLOBAL = ""  
       
   # for ad campaigns
   if api.PARAM_CAMPAIGN_ID in args:
@@ -452,6 +450,7 @@ def query(query_url, args, cache, dumping = False):
     facet_counts["count"] = count
     
     result_set.facet_counts = facet_counts
+    result_set.providers = get_providers_facet()
     
   else:
       result_set.facet_counts = None
@@ -703,9 +702,33 @@ def get_from_ids(ids):
 
   return result_set
 
+def get_providers_facet():
+  try:
+    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + FULL_QUERY_GLOBAL + '&facet=on&facet.mincount=2&facet.field=provider_proper_name&rows=0'
+    logging.info("providers: " + query_url)
+  except:
+    raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
+  try:
+    fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
+  except:
+      logging.info('error receiving solr facet counts')
+  
+  result_content = fetch_result.content  
+  # undo comma encoding -- see datahub/footprint_lib.py
+  result_content = re.sub(r';;', ',', result_content)
+  fields = []
+  json = simplejson.loads(result_content)["facet_counts"]["facet_fields"]["provider_proper_name"]
+    
+  for k, v in enumerate(json):
+      if int(k) % 2 == 1:
+        continue;
+      else:
+        fields.append(v)
+  return fields
+
 def get_facet_counts_all():
   try:
-    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=1'
+    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0'
     logging.info("all: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -722,7 +745,7 @@ def get_facet_counts_all():
 
 def get_facet_counts_type():
   try:
-    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + KEYWORD_GLOBAL + '&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=1'
+    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0'
     logging.info("type: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")

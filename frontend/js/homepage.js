@@ -55,7 +55,6 @@ function renderHomepage() {
     el('mini_without_location').style.display = '';
     el('location_form').style.display = '';
   }
-
   el('more_link').href = 'javascript:submitForm("");void(0);';
 
   if (el('popular_list')) {

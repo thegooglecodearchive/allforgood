@@ -82,7 +82,6 @@ function explode(obj) {
   for (i in obj) {
     s += i + ':' + obj[i] + ' . . . ';
   }
-  alert(s);
 }
 
 function forEach(array, fn) {

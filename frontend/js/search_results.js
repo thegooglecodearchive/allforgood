@@ -71,11 +71,37 @@ $(document).ready(function() {
 	
 	$("#category_list a").click(function(event) {
 		var value = $(this).html();
-		setInputFieldValue(el('keywords'), value.toLowerCase());
-		hideShowCategories(value);
-		submitForm('keywords');
+		$('#category_input').val(value);
+		hideShowCategories(value);		
+		submitForm();
 		return false;
 	})
+	
+	$("#show_categories").click(function(event) {
+		var value = $(this);
+		if (value.html() == "+" ) {
+			$("#category_list").show();
+			value.html("-");
+		} else {
+			$("#category_list").hide();
+			value.html("+");
+		}
+		return false;
+	})
+	
+	$("#show_providers").click(function(event) {
+		var value = $(this);
+		if (value.html() == "+" ) {
+			$("#provider_list").show();
+			value.html("-");
+		} else {
+			$("#provider_list").hide();
+			value.html("+");
+		}
+		return false;
+	})
+	
+	
   });
   
   function getSelectedTab() {
@@ -94,14 +120,39 @@ $(document).ready(function() {
   
   function hideShowCategories(value) {
 	  if (value) {
+		  populateActiveFacets();
+		  $("#show_categories").hide();
 		  $("#category_list").hide();
 		  $("#category_item").html("<li>" + value + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>");
-	  } else {
+	  } else {		  
+		  $("#show_categories").show();
 		  $("#category_item").html("");
-		  $("#category_list").show();		  
-		  setInputFieldValue(el('keywords'), "");
-		  submitForm('keywords');
+		  $("#category_list").show();
+		  $("#category_input").val("");
+		  populateActiveFacets();
+		  submitForm();
 	  }
+  }
+  
+  function hideShowProviders(value) {
+	  if (value) {
+		  populateActiveFacets();
+		  $("#show_providers").hide();
+		  $("#provider_list").hide();
+		  $("#provider_item").html("<li>" + arProviderNames[value] + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>");
+	  } else {		  
+		  $("#show_providers").show();
+		  $("#provider_item").html("");
+		  $("#provider_list").show();
+		  $("#provider_input").val("");
+		  populateActiveFacets();
+		  submitForm();
+	  }
+  }
+  
+  function removeKeyword() {
+	  setInputFieldValue(el('keywords'), "");
+	  submitForm();
   }
   
   /** Query params for backend search, based on frontend parameters.
@@ -115,14 +166,14 @@ $(document).ready(function() {
  * @param {Object} opt_filters Filters for this query.
  *      Maps 'filtername':value.
  */
-function Query(keywords, location, distance, type, pageNum, sort, useCache, get_facet_counts, opt_timePeriodStart, opt_timePeriodEnd, opt_filters) {
+function Query(keywords, location, distance, type, pageNum, sort, useCache, get_facet_counts, opt_timePeriodStart, opt_timePeriodEnd, opt_filters, category, source) {
   var me = this;
   me.keywords_ = keywords;
   me.location_ = location;
-  //me.category_ = category || 'all';
+  me.category_ = category || '';
   me.distance_ = distance || '25';
   me.type_ = type || 'all';
-  //me.source_ = source || 'all';
+  me.source_ = source || '';
   me.pageNum_ = pageNum;
   me.sort_ = sort;
   me.use_cache_ = useCache;
@@ -268,13 +319,7 @@ Query.prototype.getUrlQuery = function() {
     }
     urlQuery += name + '=' + escape(value);
   }
-  function addFacetField(value) {
-    addQueryParam('facet.field' + facet_fields_added++, value);
-  }
-  function addFacetQuery(value) {
-	addQueryParam('facet.query' + facet_queries_added++, value);
-  }
-
+  
   // Keyword search
   var keywords = me.getKeywords();
   if (keywords && keywords.length > 0) {
@@ -308,6 +353,18 @@ Query.prototype.getUrlQuery = function() {
   if (sort && sort.length > 0) {
     addQueryParam('sort', sort);
   }
+  
+  //Category
+  var category = me.getCategory();
+  if (category && category.length > 0) {
+    addQueryParam('category', category);
+  }
+  
+  //Source
+  var source = me.getSource();
+  if (source && source.length > 0) {
+    addQueryParam('source', source);
+  }
 
   // Time period
   var periodStart = me.getTimePeriodStart();
@@ -325,18 +382,7 @@ Query.prototype.getUrlQuery = function() {
     if (value) {
       addQueryParam(name, value);
     }
-  }
-  if (me.getFacetCounts())
-  {
-    var facetFieldCount = 0;
-    //addQueryParam('facet', 'true');
-    //addQueryParam('facet.limit', '-1');
-	//addQueryParam('facet.mincount', '1');
-    //addFacetField('feed_providername');
-	//addFacetField('categories');
-	//addFacetField('virtual');
-	//addFacetField('self_directed');
-  }
+  }  
   
   // Use Cache
   var use_cache = me.getUseCache();
@@ -385,8 +431,8 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('vol_startdate');
   getNamedFilterFromUrl('vol_enddate'); 
   getNamedFilterFromUrl('key');
-
-  return new Query(keywords, location, distance, type, pageNum, sort, use_cache, get_facet_counts, timePeriodStart, timePeriodEnd, filters);
+  
+  return new Query(keywords, location, distance, type, pageNum, sort, use_cache, get_facet_counts, timePeriodStart, timePeriodEnd, filters, category, source);
 }
 
 /**
@@ -636,21 +682,28 @@ executeSearchFromHashParams = function(currentLocation) {
   };
 }(); // executed inline to close over the 'currentXhr' variable.
 
-function getStartDate()
-{
+function getStartDate() {
   var start = getInputFieldValue(el('startdate')).toString();
   if (!start || start == "Start Date") {
 	start = "";
   }  
   return start;
 }
-function getEndDate()
-{
+
+function getEndDate() {
   var end = getInputFieldValue(el('enddate')).toString();
   if (!end || end == "End Date") {
   	end = "";
   }  
   return end;
+}
+
+function getCategoryInput() {
+	return $("#category_input").val().toString();
+}
+
+function getSourceInput() {	
+	return $("#provider_input").val().toString();
 }
 
 function getDistance() {
@@ -663,9 +716,9 @@ function getDistance() {
  *                         ['keywords', 'when_widget', 'map'].
  */
 function submitForm(invoker, value) {  
-  var keywords = getInputFieldValue(el('keywords'));
-
-  // If the keywords search form is invoked from non-search page,
+  var keywords = getInputFieldValue(el('keywords'));  
+  
+  //If the keywords search form is invoked from non-search page,
   // redirect to search page.
   if (invoker == 'category' && currentPageName != 'SEARCH') {
     // TODO: Incorporate current 'when' filter?
@@ -677,7 +730,6 @@ function submitForm(invoker, value) {
   	window.location = '/search#sort=' + value;
     return;
   }
-
   var location = getInputFieldValue(el('location'));	
   if (invoker == 'map') {
     setSessionCookie('user_vol_loc', location);
@@ -689,7 +741,10 @@ function submitForm(invoker, value) {
   var sort = getInputFieldValue(el('sort'));
   if (location == '') {
     location = getDefaultLocation().displayLong;
-  }  
+  }
+  
+  var category = getCategoryInput();
+  var source = getSourceInput();
   
   var query = lastSearchQuery.clone();
   query.setKeywords(keywords);
@@ -709,12 +764,14 @@ function submitForm(invoker, value) {
         $("#map").css("visibility", "hidden");		
 		if (type == "self_directed") {			
 			$(".top_search").css("visibility", "hidden");
-			$(".facets").css("visibility", "hidden");
+			$("#location_distance_date").css("visibility", "hidden");
 		}
     }
   }
   query.setPageNum(0);
   query.setSort(sort);
+  query.setCategory(category);
+  query.setSource(source);
   query.setTimePeriodStart(timePeriodStart);
   query.setTimePeriodEnd(timePeriodEnd);
   query.execute();
@@ -930,7 +987,7 @@ function SearchResult(url, url_sig, title, location, snippet, startdate, enddate
   this.hostWebsite = hostWebsite;
 }
 
-var lastSearchQuery = new Query('', '','', 0, true, {}, 1);
+var lastSearchQuery = new Query('', '','', 0, true, {}, 1, "", "");
 var whenFilterWidget;
 var typeFilterWidget;
 var sourceFilterWidget;
