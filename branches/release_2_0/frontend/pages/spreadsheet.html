@@ -1,0 +1,76 @@
+    <!--#main-->
+    <div id="main" class="clearfix">
+        <!--.content-->
+        <div id="content" class="clearfix">
+            <!--.single-page-->
+            <div class="single-page-full-width">
+                <!--.col-main-->
+                <div class="col-main">
+<h2>Add Opportunities</h2>
+<p>
+There are three different ways to get your volunteer listings into All For Good - through our partner sites, using our spreadsheet template, or via an XML feed.  The best process to use depends on the number of volunteer opportunities being offered.  If you encounter technical difficulties, please send an email to provider-support@allforgood.org and someone will respond as soon as possible.
+</p>
+<ul style="margin-left:48px;">
+    <li> Posting 10 or Fewer Opportunities</li>
+    <li> Posting Between 10 and 500 Opportunities</li>
+    <li> Posting Over 500 Opportunities</li>
+</ul>
+
+<h3>Posting 10 or Fewer Opportunities</h3>
+
+<p>The best method for small organizations to list their opportunities in All For Good is through one of our partner sites.  If you have already posted your opportunities at Idealist.org, Createthegood.org, or one of our other partner sites, they will automatically be added to the All for Good database.  There is no need to cross-post listings to All For Good that have already been listed at one of these sites.  Note that it may take up to 48 hours for your opportunities to appear in All for Good once added to one of our partner sites.</p>
+
+<p>If you want to post a small number of new listings to All For Good we suggest adding them to one of the following partner sites:</p>
+
+<p>Idealist.org<br />Createthegood.org</p>
+
+<h3>Posting Between 10 and 500 Opportunities</h3>
+<p>The easiest way for organizations to list 10-500 opportunities in All for Good is by using our online spreadsheet template.  This template lets you easily share data across multiple staff members and offices in order to better coordinate your organization’s opportunities and listings.  You can control who in your organization has access to the spreadsheet, and the opportunities can be updated as needed.</p>
+
+<p>Go to <a href="http://tinyurl.com/allforgood-submit">http://tinyurl.com/allforgood-submit</a> to access the spreadsheet and refer to the <a href="http://afg.echo3.net/spreadsheets/">illustrated instructions for posting</a>.</p>
+
+<p>Instructions for editing and submitting the sheet:</p>
+<ol>
+   <li>Login to Google using the "Sign In" link in the upper right corner. If you do not have a Google account, you must create one.</li>
+   <li>Copy the spreadsheet linked to above (Go to "File" on the menu, and then go to "Make a Copy").  You MUST be logged in with a Google account to do this. You can name the new copy anything.</li>
+   <li>Delete the example events and add your own events.  Do NOT change the columns or add new ones, because the system won't run properly if you alter these settings.</li>
+   <li>Publish the spreadsheet by clicking on "Share" in the upper right-hand corner, then click on "Change" next to "Private - Only the people listed below can access," then select "Public on the web" and under "Edit Access" select "Allow anyone to edit (no sign-in required)." This lets the system read your spreadsheet accurately and allows the All for Good team to make any edits, if necessary. Click "Save."</li>
+   <li>Find your spreadsheet's URL by going back to the "Share" button’s and selecting “Publish as web page.” Then copy the URL provided to you in the pop-up window. There is no need to change any of the settings on the pop-up window.</li>
+   <li>Visit http://www.allforgood.org/sheetchecker/check, right-click and select "Paste" in the box that says "spreadsheet URL." This will check your spreadsheet for data errors, so that common mistakes don't slip through.</li>
+   <li>Once there are no errors, submit the spreadsheet using the <a href="https://spreadsheets.google.com/viewform?formkey=ck9ZQ2lodDhxMUdRZ0RfVHVFSjJfX0E6MA.">submission form</a>.</li>
+   <li>After you submit your form, you can join the <a href="https://groups.google.com/group/footprint-partners">footprint-partners group</a> so we can keep in touch with you with product and technical updates. Update your spreadsheet as necessary. Once accepted, changes will normally be reflected within 24 to 48 hours.</li>
+</ol>
+<p>Note: We reserve the right to stop displaying any item that doesn't comply with <a href="http://www.allforgood.org/tos">All for Good's terms of service</a>.</p>
+<h3>Tips</h3>
+<p>
+<ul style="margin-left:48px;">
+   <li>Your spreadsheet will be "loaded" (also called "crawled"). And if everything works, your opportunities will be part of All for Good. Be careful when making final edits!</li>
+   <li>Google Spreadsheets makes it easy to import from Excel documents, but we don't recommend doing it.  The template format that the Google Spreadsheet scripts read is fairly exact, and Excel often has a hard time matching to it. Instead of importing, use cut and paste (from Excel to your browser) to move data into the spreadsheet.</li>
+   <li>Changes to the provided spreadsheets automatically go live within 24 hours, so be careful when editing. If you have major changes, feel free to re-submit a new sheet (a copy) for testing.</li>
+   <li>If your organization doesn't have a URL to link back to for volunteer opportunities please link to your website’s home page or contact page so potential volunteers can contact you if necessary.</li>
+   <li>For more information, contact us by email at provider-support@allforgood.org</li>
+</ul>
+
+<h3>Posting 500 or More Opportunities</h3>
+<p>The best way to submit this many activities is using an XML feed. This may require some technical support so feel free to contact us at provider-support@allforgood.org with any questions. Here are the steps to get started:</p>
+
+<ul style="margin-left:48px;">
+   <li>You can find the url spec here: <a href="http://code.google.com/p/allforgood/downloads/list">http://code.google.com/p/allforgood/downloads/list</a></li>
+   <li> Provide a production URL we can crawl with your updated data -- this can be a "live" database query, or a nightly dump. Contact us to submit your feed by emailing <nowrap><a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a></nowrap>.</li>
+         <ul style="margin-left:48px;">
+          <li> The URL can be hosted anywhere. We'd strongly prefer plain HTTP -- no redirects, passwords, HTTPS or FTP.        </li>
+          <li> Please keep the data to N=500,000 records or X=200MB, picking the "best" records to place in this set. If you can't do that (e.g. engineering resources), we may take the first N records and X bytes on our end.</li>
+          <li> Contents of the URL should be updated "atomically" (all at once), otherwise timing bugs can leave us with a partial and/or corrupted file.</li>
+          <li> Reasonable up-time and bandwidth -- the crawler will visit 1-10 times per day, and download the file     as quickly as you let us. If the URL is down at the time we crawl, we may not revisit until the next day.        </li>
+          <li> Please include an operational contact in case we have technical or quality problems with the feed.         </li>
+	 </ul>
+   <li>Please note that all submissions to All for Good are subject to our Content License Agreement. Before we can use any of your submissions, you must indicate your acceptance of the agreement by completing this form.     </li>
+</ul>
+
+                </div>
+                <!--.col-main-->
+            </div>
+            <!--.single-page-->
+        </div>
+        <!--.content-->
+
