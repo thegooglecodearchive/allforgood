@@ -1,0 +1,22 @@
+ul {
+    margin-left: 1.3em;    
+}
+ol {
+    margin-left: 1.8em;
+}
+.search-main .results li {
+    display: block;
+    overflow: hidden;
+    zoom: 1;
+}
+#search-top .search-box form#overlabel input#search-field, 
+.search-aside .box form#overlabel input.text-field,
+.search-aside .box form#overlabel input.hasDatepicker, 
+form#overlabel input.text-field {
+    height: auto;
+    padding: 5px 0 4px 5px;
+}
+    #search-top .search-box form#overlabel input#submit, 
+    form#overlabel input#submit {
+        margin-top: 1px;
+    }
