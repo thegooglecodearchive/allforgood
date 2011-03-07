@@ -3,7 +3,7 @@ application: footprint2009dev
 
 #version: r2
 #version: r2-backup
-version: staging
+version: echoditto
 runtime: python
 api_version: 1
 
@@ -13,6 +13,9 @@ default_expiration: "1000d"
 handlers:
 - url: /css
   static_dir: css
+
+- url: /images
+  static_dir: images
 
 - url: /js
   static_dir: js
