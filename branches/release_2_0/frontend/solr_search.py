@@ -704,7 +704,7 @@ def get_from_ids(ids):
 
 def get_providers_facet():
   try:
-    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + FULL_QUERY_GLOBAL + '&facet=on&facet.mincount=2&facet.field=provider_proper_name&rows=0'
+    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + FULL_QUERY_GLOBAL + '&facet=on&facet.mincount=2&facet.field=provider_proper_name_str&rows=0'
     logging.info("providers: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -717,7 +717,7 @@ def get_providers_facet():
   # undo comma encoding -- see datahub/footprint_lib.py
   result_content = re.sub(r';;', ',', result_content)
   fields = []
-  json = simplejson.loads(result_content)["facet_counts"]["facet_fields"]["provider_proper_name"]
+  json = simplejson.loads(result_content)["facet_counts"]["facet_fields"]["provider_proper_name_str"]
     
   for k, v in enumerate(json):
       if int(k) % 2 == 1:

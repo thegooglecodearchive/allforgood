@@ -183,7 +183,7 @@ $("#tabs").tabs("option", "collapsible", true);
 	setProviders = function() {
 		var providers = "";
 		{% for k in result_set.providers %}
-			providers += '<li><a href="{{k}}">' + arProviderNames[{{ k }}] + '</a></li>';
+			providers += '<li><a href="{{k}}">{{ k }}</a></li>';
 		{% endfor %}	
 		$("#provider_list").html(providers);
 	}();

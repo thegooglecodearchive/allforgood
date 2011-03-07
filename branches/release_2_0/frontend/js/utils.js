@@ -325,6 +325,10 @@ function trimString(string) {
  * @param {string} value Value to set Input field to.
  */
 function setInputFieldValue(input, value) {
+  if (!input) {
+    return;
+  }
+
   function set(valueToSet) {
     valueToSet = trimString(valueToSet || '');
 

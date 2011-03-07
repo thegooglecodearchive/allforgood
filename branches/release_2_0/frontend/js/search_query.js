@@ -44,6 +44,8 @@ function sortResults(value) {
 }
 
 function createExampleSearchText() {
+  return;
+
   // Put categories to receive the "New!" superscript in here
   var new_popular = [] // ["September 11"]
   var html = 'Categories: ';

@@ -37,29 +37,30 @@ URL_SPEC = '/spec'
 URL_SHORT_NAMES = '/s/.*'
 URL_APPS = '/apps'
 URL_COS = '/golocal'
-URL_MLKDAYOFSERVICE = '/MLKDayOfService'
-URL_STRATEGICPARTNERS = '/StrategicPartners'
 URL_HOME4HOLIDAYS = '/home4holidays'
 
-STATIC_CONTENT_LOCATION = 'http://allforgood.googlecode.com/svn/trunk/frontend/html/'
+CONTENT_LOCATION = 'pages/'
 
 # Mappings between appliation URLs (key) and static content
-# files to fetch (STATIC_CONTENT_LOCATION + value).
+# files to fetch (CONTENT_LOCATION + value).
 # So, for example, the application URL '/about' maps to
-# the remote URL 'http://code.google.com/.../trunk/frontend/html/about_us.html'
-STATIC_CONTENT_FILES = {
+# static/about_us.html
+CONTENT_FILES = {
+  '/' : 'home.html',
+  '/home' : 'home.html',
   '/about' : 'about_us.html',
   '/privacypolicy' : 'privacy_policy.html',
   '/contentpolicy' : 'content_policy.html',
   '/spreadsheet' : 'spreadsheet.html',
+  '/strategicpartners' : 'strategicpartners.html',
   '/publishers' : 'publishers.html',
   '/help' : 'help.html',
   '/faq' : 'faq.html',
   '/tos' : 'tos.html',
   '/api_tos' : 'api_tos.html',
-  #'/apps' : 'apps.html',
+  '/apps' : 'apps.html',
   '/dmca' : 'dmca.html',
-  '/docs/api.html' : 'api.html',
+  '/api.html' : 'api.html',
   '/partner_terms' : 'partner_terms.html',
   '/apps/gmail' : 'apps-gmail.html',
   '/apps/typepad' : 'apps-typepad.html',
@@ -70,4 +71,6 @@ STATIC_CONTENT_FILES = {
   '/posting' : 'spreadsheet.html',
   '/guide' : 'tour.html',
   '/cla' : 'cla.html',
+  '/golocal' : 'cos.html',
+  '/mlkdayofservice' : 'mlkdayofservice.html'
 }

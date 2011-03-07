@@ -57,7 +57,7 @@ function renderHomepage() {
   }
   el('more_link').href = 'javascript:submitForm("");void(0);';
 
-  if (el('popular_list')) {
+  if (false && el('popular_list')) {
     // Populate the popular searches list.
     for (var i = 0; i < popularSearches.length; i++) {
       var href = 'javascript:goPopular(' + i + ');void(0);';
