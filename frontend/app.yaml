@@ -11,7 +11,13 @@ api_version: 1
 default_expiration: "1000d"
 
 handlers:
-# NOTE: don't map /js|css|images directly, but instead force the
+- url: /css
+  static_dir: css
+
+- url: /js
+  static_dir: js
+
+# NOTE: these aren't mapped /js|css|images directly, but instead force the
 # use of version numbers to avoid accidental version problems.
 # Unlike ?zx= this works for proxies that refuse to cache urls
 # containing question marks.
