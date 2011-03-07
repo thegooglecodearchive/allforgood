@@ -1,0 +1,40 @@
+        <!--.nav-->
+{% if path in '/search' %}
+        <div id="nav">
+{% else %}
+        <div id="nav" class="withsecondary">
+{% endif %}
+            <!--.primary-->
+            <div class="primary">
+                <ul>
+                    <li class="first"><a href="/">Search Opportunities</a></li>
+                    <li {% ifequal path '/strategicpartners' %}class="active"{% endifequal %}><a href="/strategicpartners">Partners</a></li>
+                    <li {% ifequal path '/posting' %}class="active"{% endifequal %}><a href="/posting">Add Opportunities</a></li>
+                    <li {% ifequal path '/api.html' %}class="active"{% endifequal %}><a href="/api.html">Use Our Data</a></li>
+                    <!-- <li><a href="http://blog.allforgood.org/">Blog</a></li> -->
+                    <li><a href="javascript:void(0)">Blog</a></li>
+                    <li class="last {% if not path in '/posting/api.html/strategicpartners' %}active{% endif %}"><a href="/about">About</a></li>
+                </ul>
+            </div>
+            <!--.primary-->
+{% if not path in '/search' %}
+            <!--.secondary-->
+            <div class="secondary">
+                <ul>
+                    <li class="first {% ifequal path '/about' %}active{% else %}{% endifequal %}"><a href="/about">About</a></li>
+                    <li><a href="javascript:void(0)">Blog</a></li>
+                    <!-- <li><a href="http://blog.allforgood.org/">Blog</a></li> -->
+                    <li {% ifequal path '/help' %}class="active"{% endifequal %}><a href="/help">Help</a></li>
+                    <li {% ifequal path '/faq' %}class="active"{% endifequal %}><a href="/faq">FAQs</a></li>
+                    <li {% ifequal path '/apps' %}class="active"{% endifequal %}><a href="/apps">Apps</a></li>
+                    <li {% ifequal path '/api.html' %}class="active"{% endifequal %}><a href="/api.html">API</a></li>
+                    <li {% ifequal path '/posting' %}class="active"{% endifequal %}><a href="/posting">Posting Listings</a></li>
+                    <li {% ifequal path '/privacypolicy' %}class="active"{% endifequal %}><a href="/privacypolicy">Privacy Policy</a></li>
+                    <li {% ifequal path '/tos' %}class="active"{% else %}{% ifequal path '/api_tos' %}class="active"{% endifequal %}{% endifequal %}><a href="/tos">Terms of Service</a></li>
+                    <li class="last {% ifequal path '/contentpolicy' %}active{% endifequal %}"><a href="/contentpolicy">Content Policy</a></li>
+                </ul>
+            </div>
+            <!--.secondary-->
+{% endif %}
+        </div>
+        <!--.nav-->
