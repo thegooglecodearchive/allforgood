@@ -14,24 +14,14 @@
 	<input type="hidden" name="category_input" id="category_input" value="" />
 	<input type="hidden" name="provider_input" id="provider_input" value="" />
 </div>
-<div class="facets">
+<div class="facets" id="category_facet">
 	<div class="filterwidget_title">
 		Categories <a href="#" id="show_categories">+</a>
 	</div>
 	<ul class="data_list" id="category_item"></ul>
-	<ul class="data_list" id="category_list">
-		<li><a href="#">Military Families</a></li>
-		<li><a href="#">Veterans</a></li>
-		<li><a href="#">Education</a></li>
-		<li><a href="#">Hunger</a></li>
-		<li><a href="#">Animals</a></li>
-		<li><a href="#">Health</a></li>
-		<li><a href="#">Seniors</a></li>
-		<li><a href="#">Technology</a></li>
-		<li><a href="#">Poverty</a></li>
-	</ul>	
+	<ul class="data_list" id="category_list"></ul>	
 </div>
-<div class="facets">
+<div class="facets" id="provider_facet">
 	<div class="filterwidget_title">
 		Providers <a href="#" id="show_providers">+</a>
 	</div>
@@ -85,16 +75,16 @@
 		  var query = getInputFieldValue(el('keywords'));
 		  var category = $("#category_input").val();
 		  var source = $("#provider_input").val();
-		  var facets = "";
+          var facets = "";
 
 		  if (query) { 
-			  facets += "<li>" + query + " (<a href=\"javascript:removeKeyword()\">undo</a>)</li>";
+			  facets += "<li>\"" + query + "\" (<a href=\"javascript:removeKeyword()\">undo</a>)</li>";
 		  }
 		  if (category) { 
 			  facets += "<li>" + category + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>";
 		  }
 		  if (source) { 
-			  facets += "<li>" + arProviderNames[source] + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>";
+			  facets += "<li>" + source + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>";
 		  }
 
 		  if (facets == "") {

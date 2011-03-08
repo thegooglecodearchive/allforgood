@@ -15,11 +15,11 @@ function ensureSubmitForm() {
       }
       var category = $("#category_input");
       if (category.val()) {
-    	  vol_loc += "&category=" + category.val();
+    	  vol_loc += "&category=" + escape(category.val());
       }      
       var source = $("#provider_input");
       if (source.val()) {
-    	  vol_loc += "&source=" + source.val();
+    	  vol_loc += "&source=" + escape(source.val());
       }
 	  var sort = getInputFieldValue(el('sort'));
 	  vol_loc += "&sort=" + (sort || 'score');
@@ -33,8 +33,8 @@ function ensureSubmitForm() {
 function setCategory(category) {
 	var category_input = $("#category_input");
 	if (category_input) {
-		category_input.val(category);
-		submitForm('category');
+		category_input.val(escape(category));
+		submitForm('facet');
 	}	
 }
 

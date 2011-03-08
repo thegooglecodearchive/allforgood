@@ -169,7 +169,7 @@ $("#tabs").tabs("option", "collapsible", true);
 	else
 		$("#sort").attr('selectedIndex', 0);
 	
-	if (getSelectedTab() == 2) {			
+	if (getSelectedTab() == 3) {			
 		$(".top_search").css("visibility", "hidden");
 	}
 	
@@ -182,19 +182,47 @@ $("#tabs").tabs("option", "collapsible", true);
 
 	setProviders = function() {
 		var providers = "";
-		{% for k in result_set.providers %}
-			providers += '<li><a href="{{k}}">{{ k }}</a></li>';
-		{% endfor %}	
-		$("#provider_list").html(providers);
+		{% if result_set.providers %}
+			$("#provider_facet").show();
+			{% for dict in result_set.providers %}
+				{% for k,v in dict.items %}
+					providers += '<li><a href="{{ k }}">{{ k }}</a> <span>({{ v }})</span></li>';
+				{% endfor %}
+			{% endfor %}	
+			$("#provider_list").html(providers);
+		{% else %}
+			$("#provider_facet").hide();
+		{% endif %}
+	}();
+
+	setCategories = function() {
+		var categories = "";
+		{% if result_set.categories %}
+			$("#category_facet").show();
+			{% for cats in result_set.categories %}
+				categories += '<li><a href="{{ cats.0 }}">{{ cats.0 }}</a> <span>({{ cats.1 }})</span></li>';
+			{% endfor %}	
+			$("#category_list").html(categories);
+		{% else %}
+			$("#category_facet").hide();
+		{% endif %}
 	}();
 
 	$("#provider_list a").click(function(event) {
-		var value = $(this).attr("href");
+		var value = $(this).attr("href");		
 		$('#provider_input').val(value);
 		hideShowProviders(value);		
-		submitForm();
+		submitForm("facet");
 		return false;
-	})		
+	})
+
+	$("#category_list a").click(function(event) {
+		var value = $(this).html();
+		$('#category_input').val(value);
+		hideShowCategories(value);		
+		submitForm("facet");
+		return false;
+	})
 
 	function capitalize(str) { 
 	if (str) {

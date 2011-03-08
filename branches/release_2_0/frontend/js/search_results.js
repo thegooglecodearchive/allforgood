@@ -17,6 +17,7 @@ var map;
 var NUM_PER_PAGE = 10;
 var searchResults = [];
 var filters = [];
+var loadNumber = 0;
 
 $(document).ready(function() {	
 	var index = getSelectedTab();
@@ -67,15 +68,7 @@ $(document).ready(function() {
 	}
 	if (end != "everything") {
 		getInputFieldValue(el('enddate')).value = end;
-	}
-	
-	$("#category_list a").click(function(event) {
-		var value = $(this).html();
-		$('#category_input').val(value);
-		hideShowCategories(value);		
-		submitForm();
-		return false;
-	})
+	}	
 	
 	$("#show_categories").click(function(event) {
 		var value = $(this);
@@ -99,9 +92,7 @@ $(document).ready(function() {
 			value.html("+");
 		}
 		return false;
-	})
-	
-	
+	})	
   });
   
   function getSelectedTab() {
@@ -109,17 +100,20 @@ $(document).ready(function() {
 	var index = 0;		
 	if (type == "virtual")
 		index = 1;
-	else if (type == "self_directed")
-		index = 2;
 	else if (type == "micro")
+		index = 2;
+	else if (type == "self_directed")
 		index = 3;
 	else
 		index = 0;
 	return index;
   }
-  
-  function hideShowCategories(value) {
-	  if (value) {
+
+  function hideShowCategories(value, load) {
+	  if (load == null) {
+		load = true;  
+	  }
+	  if (value && value != "") {
 		  populateActiveFacets();
 		  $("#show_categories").hide();
 		  $("#category_list").hide();
@@ -130,29 +124,39 @@ $(document).ready(function() {
 		  $("#category_list").show();
 		  $("#category_input").val("");
 		  populateActiveFacets();
-		  submitForm();
+		  if (load) submitForm();
 	  }
   }
   
-  function hideShowProviders(value) {
-	  if (value) {
+  function hideShowProviders(value, load) {
+	  if (load == null) {
+		load = true;  
+	  }
+	  if (value && value != "") {
 		  populateActiveFacets();
 		  $("#show_providers").hide();
 		  $("#provider_list").hide();
-		  $("#provider_item").html("<li>" + arProviderNames[value] + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>");
+		  $("#provider_item").html("<li>" + value + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>");
 	  } else {		  
 		  $("#show_providers").show();
 		  $("#provider_item").html("");
 		  $("#provider_list").show();
 		  $("#provider_input").val("");
 		  populateActiveFacets();
-		  submitForm();
+		  if (load) submitForm();
 	  }
   }
   
   function removeKeyword() {
 	  setInputFieldValue(el('keywords'), "");
 	  submitForm();
+  }
+  
+  function resetFacets() {
+	  $("#provider_list").hide();
+	  $("#category_list").hide();
+	  $("#show_categories").html("+");
+	  $("#show_providers").html("+");
   }
   
   /** Query params for backend search, based on frontend parameters.
@@ -253,9 +257,9 @@ Query.prototype.setType = function(type) {
   if (type == "1")
   	this.type_ = "virtual";
   else if (type == "2")
-  	this.type_ = "self_directed";
+  	this.type_ = "micro";
   else if (type == "3")
-    this.type_ = "micro";
+    this.type_ = "self_directed";
   else
     this.type_ = "all";	
 };
@@ -716,7 +720,8 @@ function getDistance() {
  *                         ['keywords', 'when_widget', 'map'].
  */
 function submitForm(invoker, value) {  
-  var keywords = getInputFieldValue(el('keywords'));  
+	console.log(arguments.callee.caller.name);
+	var keywords = getInputFieldValue(el('keywords'));  
   
   //If the keywords search form is invoked from non-search page,
   // redirect to search page.
@@ -743,8 +748,19 @@ function submitForm(invoker, value) {
     location = getDefaultLocation().displayLong;
   }
   
-  var category = getCategoryInput();
-  var source = getSourceInput();
+  var category = "";
+  var source = "";
+
+  if ((invoker && invoker != "facet")) {
+	  $("#category_input").val("");
+	  $("#provider_input").val("");
+	  hideShowCategories("", false);
+	  hideShowProviders("", false);
+	  resetFacets();
+  } else {
+	  category = getCategoryInput();
+	  source = getSourceInput();  
+  }  
   
   var query = lastSearchQuery.clone();
   query.setKeywords(keywords);
