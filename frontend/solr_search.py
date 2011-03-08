@@ -26,6 +26,7 @@ from django.utils import simplejson
 from versioned_memcache import memcache
 from google.appengine.api import urlfetch
 from copy import deepcopy
+from operator import itemgetter
 
 import api
 import geocode
@@ -35,6 +36,7 @@ import modelutils
 import posting
 import private_keys
 import boosts
+import categories
 import searchresult
 
 RESULT_CACHE_TIME = 900 # seconds
@@ -213,7 +215,7 @@ def form_solr_query(args):
   # Source
   global PROVIDER_GLOBAL
   if api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all":    
-    PROVIDER_GLOBAL = "+AND+provider_proper_name:" + args[api.PARAM_SOURCE]
+    PROVIDER_GLOBAL = "+AND+provider_proper_name:" + urllib.quote_plus(args[api.PARAM_SOURCE])
     solr_query += PROVIDER_GLOBAL
   else:
     PROVIDER_GLOBAL = ""  
@@ -235,10 +237,15 @@ def form_solr_query(args):
 
   # set the solr instance we need to use if not given as an arg
   if api.PARAM_BACKEND_URL not in args:
+    today = datetime.date.today()
+    weekday = datetime.date.today().weekday()
     try:
-      args[api.PARAM_BACKEND_URL] = private_keys.DEFAULT_BACKEND_URL_SOLR
+      if weekday in [0,2,4,6]:
+        args[api.PARAM_BACKEND_URL] = private_keys.NODE1_DEFAULT_BACKEND_URL
+      else:
+        args[api.PARAM_BACKEND_URL] = private_keys.NODE2_DEFAULT_BACKEND_URL
     except:
-      raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- "+
+      raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- " +
                       "please install correct private_keys.py file")
 
   # field list
@@ -450,6 +457,7 @@ def query(query_url, args, cache, dumping = False):
     facet_counts["count"] = count
     
     result_set.facet_counts = facet_counts
+    result_set.categories = get_categories_facet()
     result_set.providers = get_providers_facet()
     
   else:
@@ -723,8 +731,35 @@ def get_providers_facet():
       if int(k) % 2 == 1:
         continue;
       else:
-        fields.append(v)
+        fields.append({str(v) : str(json[k + 1])})
   return fields
+
+def get_categories_facet():
+  query = []
+  for cat in categories.CATEGORIES:
+      query.append("facet.query=" + urllib.quote_plus(cat))  
+  
+  try:
+    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + FULL_QUERY_GLOBAL + '&facet=on&rows=0&' + "&".join(query)
+    logging.info("categories: " + query_url)
+  except:
+    raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
+  try:
+    fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
+  except:
+      logging.info('error receiving solr facet counts')
+  
+  result_content = fetch_result.content  
+  # undo comma encoding -- see datahub/footprint_lib.py
+  result_content = re.sub(r';;', ',', result_content)
+  fields = dict()
+  json = simplejson.loads(result_content)["facet_counts"]["facet_queries"]
+      
+  for k, v in json.iteritems():
+     if v > 0:
+        fields[k] = v
+     
+  return sorted(fields.iteritems(), key=itemgetter(1), reverse=True)
 
 def get_facet_counts_all():
   try:
