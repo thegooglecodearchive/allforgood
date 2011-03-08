@@ -213,7 +213,7 @@ $("#tabs").tabs("option", "collapsible", true);
 		$('#provider_input').val(value);
 		hideShowProviders(value);		
 		submitForm("facet");
-		return false;
+		event.preventDefault();
 	})
 
 	$("#category_list a").click(function(event) {
@@ -221,7 +221,7 @@ $("#tabs").tabs("option", "collapsible", true);
 		$('#category_input').val(value);
 		hideShowCategories(value);		
 		submitForm("facet");
-		return false;
+		event.preventDefault();
 	})
 
 	function capitalize(str) { 

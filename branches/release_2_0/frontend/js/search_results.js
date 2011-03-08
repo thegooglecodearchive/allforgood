@@ -720,7 +720,6 @@ function getDistance() {
  *                         ['keywords', 'when_widget', 'map'].
  */
 function submitForm(invoker, value) {  
-	console.log(arguments.callee.caller.name);
 	var keywords = getInputFieldValue(el('keywords'));  
   
   //If the keywords search form is invoked from non-search page,
