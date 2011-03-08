@@ -204,7 +204,7 @@ def form_solr_query(args):
     if args[api.PARAM_TYPE] == "self_directed":
       solr_query += "+AND+self_directed:true"    
     elif args[api.PARAM_TYPE] == "virtual":
-      solr_query += "+AND+virtual:true+AND+micro:false"
+      solr_query += "+AND+virtual:true+AND+micro:false+AND+self_directed:false"
     elif args[api.PARAM_TYPE] == "micro":
       solr_query += "+AND+micro:true"
   else:
