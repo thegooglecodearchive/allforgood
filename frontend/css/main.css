@@ -248,6 +248,9 @@ input.hasDatepicker {
 	margin-bottom:12px;
 }
 
+#active_facet_item p {margin:0; font-weight:bold;}
+#active_facet_item .searchterm {margin-bottom:1em;}
+
 /** Search results page **/
 
 .snippet_table {

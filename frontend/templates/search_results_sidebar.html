@@ -7,23 +7,21 @@
 <div id='type_filter_widget' class='filterwidget'></div>
 <div id='source_filter_widget' class='filterwidget'>-->
 <div class="facets" id="facets_container">
-	<div class="filterwidget_title">
-		Active Facets
-	</div>
+	<div class="filterwidget_title"></div>
 	<ul class="data_list" id="active_facet_item"></ul>
 	<input type="hidden" name="category_input" id="category_input" value="" />
 	<input type="hidden" name="provider_input" id="provider_input" value="" />
 </div>
 <div class="facets" id="category_facet">
 	<div class="filterwidget_title">
-		Categories <a href="#" id="show_categories">+</a>
+		Refine by Category <a href="#" id="show_categories">+</a>
 	</div>
 	<ul class="data_list" id="category_item"></ul>
 	<ul class="data_list" id="category_list"></ul>	
 </div>
 <div class="facets" id="provider_facet">
 	<div class="filterwidget_title">
-		Providers <a href="#" id="show_providers">+</a>
+		Refine by Provider <a href="#" id="show_providers">+</a>
 	</div>
 	<ul class="data_list" id="provider_item"></ul>
 	<ul class="data_list" id="provider_list"></ul>	
@@ -72,13 +70,16 @@
 </div>
 <script type="text/javascript">
 	function populateActiveFacets() {
-		  var query = getInputFieldValue(el('keywords'));
-		  var category = $("#category_input").val();
+		  var query = getInputFieldValue(el('keywords'));		  
+		  var category = $("#category_input").val();		  
 		  var source = $("#provider_input").val();
           var facets = "";
 
 		  if (query) { 
-			  facets += "<li>\"" + query + "\" (<a href=\"javascript:removeKeyword()\">undo</a>)</li>";
+			  facets += "<li class=\"searchterm\"><p>Your Search:</p> \"" + query + "\" (<a href=\"javascript:removeKeyword()\">undo</a>)</li>";
+		  }
+		  if (category || source) {
+			  facets += "<li><p>Refine by</p></li>";
 		  }
 		  if (category) { 
 			  facets += "<li>" + category + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>";

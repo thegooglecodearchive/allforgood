@@ -111,7 +111,7 @@ $(document).ready(function() {
 
   function hideShowCategories(value, load) {
 	  if (load == null) {
-		load = true;  
+		  load = true;  
 	  }
 	  if (value && value != "") {
 		  populateActiveFacets();
@@ -124,13 +124,13 @@ $(document).ready(function() {
 		  $("#category_list").show();
 		  $("#category_input").val("");
 		  populateActiveFacets();
-		  if (load) submitForm();
+		  if (load) submitForm("facet");
 	  }
   }
   
   function hideShowProviders(value, load) {
 	  if (load == null) {
-		load = true;  
+		  load = true;  
 	  }
 	  if (value && value != "") {
 		  populateActiveFacets();
@@ -143,7 +143,7 @@ $(document).ready(function() {
 		  $("#provider_list").show();
 		  $("#provider_input").val("");
 		  populateActiveFacets();
-		  if (load) submitForm();
+		  if (load) submitForm("facet");
 	  }
   }
   
@@ -157,6 +157,17 @@ $(document).ready(function() {
 	  $("#category_list").hide();
 	  $("#show_categories").html("+");
 	  $("#show_providers").html("+");
+  }
+  
+  function setVisibility() {
+	 var cat = $("#category_input").is(":visible");
+	 var prov = $("#provider_input").is(":visible");
+	 if (cat) {
+		 $("#show_categories").html("-");
+	 }	 
+	 if (prov) {
+		 $("#show_providers").html("-");
+	 }
   }
   
   /** Query params for backend search, based on frontend parameters.
@@ -750,7 +761,7 @@ function submitForm(invoker, value) {
   var category = "";
   var source = "";
 
-  if ((invoker && invoker != "facet")) {
+  if ((invoker && invoker != "facet") || !invoker) {
 	  $("#category_input").val("");
 	  $("#provider_input").val("");
 	  hideShowCategories("", false);
