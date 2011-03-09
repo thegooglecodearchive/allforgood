@@ -236,12 +236,20 @@ $("#tabs").tabs("option", "collapsible", true);
 	   		return words.join(" ");
 		}
 	}
-
-	if (getHashParam('category', ''))
-		hideShowCategories(capitalize(getHashParam('category', '')));
-	if (getHashParam('source', ''))
-		hideShowProviders(getHashParam('source', ''));
+	
+	var category = getHashParam('category', '');
+	if (category) {
+		$("#category_input").val(category);
+		hideShowCategories(capitalize(category));
+    }
+	
+	var source = getHashParam('source', '');
+	if (source) {
+		$("#provider_input").val(source);		
+		hideShowProviders(source);
+	}
 	populateActiveFacets();
+	setVisibility();
 </script>
 
 <span id='loading-bottom' style='display:none;float:right;'><span id='loading'>Loading...</span></span>
