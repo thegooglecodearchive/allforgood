@@ -178,6 +178,8 @@ def form_solr_query(args):
           qwords[qi] = qw
           args[api.PARAM_Q] = ' '.join(qwords)
 
+    args[api.PARAM_Q] = '(' + args[api.PARAM_Q] + ')' 
+
     query_boosts = boosts.query_time_boosts(args)
     
     if api.PARAM_CATEGORY in args:        
