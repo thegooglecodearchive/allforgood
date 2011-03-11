@@ -45,6 +45,7 @@ KEYWORD_GLOBAL = ""
 GEO_GLOBAL = ""
 PROVIDER_GLOBAL = ""
 FULL_QUERY_GLOBAL = ""
+BACKEND_GLOBAL = ""
 
 # Date format pattern used in date ranges.
 DATE_FORMAT_PATTERN = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
@@ -247,7 +248,9 @@ def form_solr_query(args):
     except:
       raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- " +
                       "please install correct private_keys.py file")
-
+    global BACKEND_GLOBAL
+    BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
+  
   # field list
   solr_query += '&fl='
   if api.PARAM_OUTPUT not in args:
@@ -457,8 +460,9 @@ def query(query_url, args, cache, dumping = False):
     facet_counts["count"] = count
     
     result_set.facet_counts = facet_counts
-    result_set.categories = get_categories_facet()
-    result_set.providers = get_providers_facet()
+    facets = get_facet_counts()
+    result_set.categories = facets['category_fields']
+    result_set.providers = facets['provider_fields']
     
   else:
       result_set.facet_counts = None
@@ -488,12 +492,12 @@ def query(query_url, args, cache, dumping = False):
     title = entry.get('title', '')
     location = entry.get('location_string', '')
 
-    categories = entry.get('categories', '')
-    if type(categories).__name__ != 'list':
+    cat = entry.get('categories', '')
+    if type(cat).__name__ != 'list':
       try:
-        categories = categories.split(',')
+        cat = cat.split(',')
       except:
-        categories = []
+        cat = []
     
     org_name = entry.get('org_name', '')
     if re.search(r'[^a-z]acorn[^a-z]', " "+org_name+" ", re.IGNORECASE):
@@ -507,7 +511,7 @@ def query(query_url, args, cache, dumping = False):
     volunteers_needed = entry.get("volunteersneeded")
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
                                     base_url, volunteers_needed, virtual,
-                                    self_directed, micro, categories, org_name)
+                                    self_directed, micro, cat, org_name)
 
     # TODO: escape?
     res.provider = entry["feed_providername"]
@@ -710,60 +714,45 @@ def get_from_ids(ids):
 
   return result_set
 
-def get_providers_facet():
-  try:
-    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + FULL_QUERY_GLOBAL + '&facet=on&facet.mincount=2&facet.field=provider_proper_name_str&rows=0'
-    logging.info("providers: " + query_url)
-  except:
-    raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
-  try:
-    fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
-  except:
-      logging.info('error receiving solr facet counts')
-  
-  result_content = fetch_result.content  
-  # undo comma encoding -- see datahub/footprint_lib.py
-  result_content = re.sub(r';;', ',', result_content)
-  fields = []
-  json = simplejson.loads(result_content)["facet_counts"]["facet_fields"]["provider_proper_name_str"]
-    
-  for k, v in enumerate(json):
-      if int(k) % 2 == 1:
-        continue;
-      else:
-        fields.append({str(v) : str(json[k + 1])})
-  return fields
-
-def get_categories_facet():
-  query = []
-  for cat in categories.CATEGORIES:
+def get_facet_counts():
+    category_fields = dict()
+    provider_fields = []
+    query = []
+    for cat in categories.CATEGORIES:
       query.append("facet.query=" + urllib.quote_plus(cat))  
-  
-  try:
-    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + FULL_QUERY_GLOBAL + '&facet=on&rows=0&' + "&".join(query)
-    logging.info("categories: " + query_url)
-  except:
-    raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
-  try:
-    fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
-  except:
-      logging.info('error receiving solr facet counts')
-  
-  result_content = fetch_result.content  
-  # undo comma encoding -- see datahub/footprint_lib.py
-  result_content = re.sub(r';;', ',', result_content)
-  fields = dict()
-  json = simplejson.loads(result_content)["facet_counts"]["facet_queries"]
-      
-  for k, v in json.iteritems():
-     if v > 0:
-        fields[k] = v
-     
-  return sorted(fields.iteritems(), key=itemgetter(1), reverse=True)
+
+    try:
+        query_url = BACKEND_GLOBAL + '?wt=json&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + '&facet.mincount=2&facet.field=signature&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query)
+        logging.info("facets: " + query_url)
+    except:
+        raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
+    try:
+        fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
+    except:
+        logging.info('error receiving solr facet counts')
+
+    result_content = fetch_result.content  
+    result_content = re.sub(r';;', ',', result_content)
+    json = simplejson.loads(result_content)["facet_counts"]
+    queries = json["facet_queries"]
+    providers = json["facet_fields"]["provider_proper_name_str"]
+    duplicates = json["facet_fields"]["signature"]
+    
+    for k, v in queries.iteritems():
+        if v > 0:
+            category_fields[k] = v
+    
+    for k, v in enumerate(providers):
+        if int(k) % 2 == 1:
+            continue;
+        else:
+            provider_fields.append({str(v) : str(providers[k + 1])})
+    
+    return {'category_fields': sorted(category_fields.iteritems(), key=itemgetter(1), reverse=True), 'provider_fields': provider_fields}    
 
 def get_facet_counts_all():
   try:
-    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0'
+    query_url = BACKEND_GLOBAL + '?wt=json&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0'
     logging.info("all: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -780,7 +769,7 @@ def get_facet_counts_all():
 
 def get_facet_counts_type():
   try:
-    query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + '?wt=json&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0'
+    query_url = BACKEND_GLOBAL + '?wt=json&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0'
     logging.info("type: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
