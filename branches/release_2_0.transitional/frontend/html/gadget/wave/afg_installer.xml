@@ -1,0 +1,6 @@
+<extension name="All for Good" thumbnailUrl="http://allforgood.googlecode.com/svn/trunk/frontend/html/gadget/wave/content/thumbnail.png" description=" Helps you take up and share volunteer opportunities, thus play a role in improving our communities and country."> 
+  <author name="Rajiv Bammi"/>    
+  <menuHook location="TOOLBAR" text="Add All for Good" iconUrl="http://www.allforgood.org/favicon.ico"> 
+    <insertGadget url="http://www.allforgood.org/gadget/wave/wave_gadget.xml"/> 
+  </menuHook> 
+</extension>

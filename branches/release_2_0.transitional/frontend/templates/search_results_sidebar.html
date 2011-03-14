@@ -1,0 +1,99 @@
+{% ifnotequal campaign_id None %}
+    {% include 'campaign_branding_snippet.html' %}
+{% endifnotequal %}
+<!--<div id='filter_results' class='filterwidget'></div>
+<div id='category_filter_widget' class='filterwidget'></div>
+<div id='distance_filter_widget' class='filterwidget'></div>
+<div id='type_filter_widget' class='filterwidget'></div>
+<div id='source_filter_widget' class='filterwidget'>-->
+<div class="facets" id="facets_container">
+	<div class="filterwidget_title"></div>
+	<ul class="data_list" id="active_facet_item"></ul>
+	<input type="hidden" name="category_input" id="category_input" value="" />
+	<input type="hidden" name="provider_input" id="provider_input" value="" />
+</div>
+<div class="facets" id="category_facet">
+	<div class="filterwidget_title">
+		Refine by Category <a href="#" id="show_categories">+</a>
+	</div>
+	<ul class="data_list" id="category_item"></ul>
+	<ul class="data_list" id="category_list"></ul>	
+</div>
+<div class="facets" id="provider_facet">
+	<div class="filterwidget_title">
+		Refine by Provider <a href="#" id="show_providers">+</a>
+	</div>
+	<ul class="data_list" id="provider_item"></ul>
+	<ul class="data_list" id="provider_list"></ul>	
+</div>
+<form class="facets" id="location_distance_date">
+	<div id="location_box">
+		{% ifequal current_page "SEARCH" %}
+			<div class="filterwidget_title">
+				Enter your location
+			</div>
+		{% endifequal %}
+		<div style='margin-bottom: 4px;'>
+		  <div class='valign'>
+		    <table style='width:100%;'>
+		     <tr>
+		      <td valign='middle'>
+		        <input id='location' name='your location'
+		               class='valign' type='text' size='60' value='{{ location|escape }}'/>        
+		      </td>
+		     </tr>
+		    </table>
+		  <script>setInputFieldValue(el('location'), '');</script>
+		  </div>	
+		</div>
+		<div id='distance_filter_widget' class='filterwidget'>
+			<div class="filterwidget_title">
+				Within a <span id="location_distance"></span> mile range
+			</div>
+			<div id="location_slider"></div>	
+		</div>
+	</div>
+	<div id='when_filter_widget' class='filterwidget'>
+		<div class="filterwidget_title">
+			Filter by date range
+		</div>	
+		<div class="date_inputs">
+			<input id="startdate" type="text" value="Start Date"> to	
+			<input id="enddate" type="text" value="End Date">
+		</div>		
+	</div>	
+	<div id="submit_button">
+		<a href="#" id="facet_submit">Update Search</a>
+	</div>
+</form>
+<div id='map'></div>
+</div>
+<script type="text/javascript">
+	function populateActiveFacets() {
+		  var query = getInputFieldValue(el('keywords'));		  
+		  var category = $("#category_input").val();		  
+		  var source = $("#provider_input").val();
+          var facets = "";
+
+		  if (query) { 
+			  facets += "<li class=\"searchterm\"><p>Your Search:</p> \"" + query + "\" (<a href=\"javascript:removeKeyword()\">undo</a>)</li>";
+		  }
+		  if (category || source) {
+			  facets += "<li><p>Refine by</p></li>";
+		  }
+		  if (category) { 
+			  facets += "<li>" + category + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>";
+		  }
+		  if (source) { 
+			  facets += "<li>" + source + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>";
+		  }
+
+		  if (facets == "") {
+			  $("#facets_container").hide();
+		  }
+		  else	{	  
+			 $("#facets_container").show();
+			 $("#active_facet_item").html(facets);
+		  }
+	}
+</script>
