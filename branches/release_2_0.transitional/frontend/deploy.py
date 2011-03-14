@@ -34,11 +34,7 @@ MAPS_API_KEYS = {
   'footprint2009qa.appspot.com' : 'ABQIAAAA1sNtdnui_8Lmt75VBAosOhRSEEb9tdSIuCkRNLnpLNbLMSh74BRy7tIEe3Z6GgLCRLUFTTQ45vQ3mg',
   'footprint-loadtest.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxSWKH9akPVZO-6F_G0PvWoeHNZVdRSifDQCrd-osJFuWDqR3Oh0nKDgbw',
   'footprint2009dev.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxTpeCj-9ism2i6Mt7fLlVoN6HsfDBSOZjcyagWjKTMT32rzg71rFenopA',
-  'mt1955.latest.servicefootprint.appspot.com' : 'ABQIAAAAienQr37mEiFBwlgibJ1JcxR1KvS2SINSTEhx6KwLmvTr3pfveRSjY7BvkzTo44hCktsrLKU800bN1g',
-  'r2.latest.servicefootprint.appspot.com' : 'ABQIAAAAienQr37mEiFBwlgibJ1JcxR1KvS2SINSTEhx6KwLmvTr3pfveRSjY7BvkzTo44hCktsrLKU800bN1g',
-  'r2-backup.latest.servicefootprint.appspot.com' : 'ABQIAAAAienQr37mEiFBwlgibJ1JcxR1KvS2SINSTEhx6KwLmvTr3pfveRSjY7BvkzTo44hCktsrLKU800bN1g',
   'staging.latest.footprint2009dev.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxTpeCj-9ism2i6Mt7fLlVoN6HsfDBSOZjcyagWjKTMT32rzg71rFenopA',
-  'echoditto.latest.footprint2009dev.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxTpeCj-9ism2i6Mt7fLlVoN6HsfDBSOZjcyagWjKTMT32rzg71rFenopA'
 }
 # pylint: enable-msg=C0301
 
@@ -101,7 +97,9 @@ def load_keys():
 
   # no default for maps api-- has to match
   http_host = host_sans_www()
-  MAPS_API_KEY = MAPS_API_KEYS.get(http_host, 'unknown')
+  MAPS_API_KEY = MAPS_API_KEYS.get(http_host, 
+    'ABQIAAAAienQr37mEiFBwlgibJ1JcxR1KvS2SINSTEhx6KwLmvTr3pfveRSjY7BvkzTo44hCktsrLKU800bN1g')
+
   logging.info("host=" + http_host + "  maps api key=" + MAPS_API_KEY)
 
   # no default for ga key

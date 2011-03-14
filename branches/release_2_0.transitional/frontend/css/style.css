@@ -255,6 +255,12 @@ code,
 dl {
   line-height: 1.5em;
 }
+h1 {
+  color: #1954a4;
+  font-family: Rockwell, 'RockwellStdRegular', Georgia, Times, "Times New Roman", serif;
+  font-size: 18px;
+  font-weight: normal;
+}
 h2 {
   color: #1954a4;
   font-family: Rockwell, 'RockwellStdRegular', Georgia, Times, "Times New Roman", serif;
@@ -486,12 +492,16 @@ body {
 }
 #nav .primary ul li a {
   color: #fff;
+  display: block;
   text-decoration: none;
 }
 #nav .primary ul li.last {
   margin-right: 0;
 }
 #nav .primary ul li.active {
+  background: url(images/primary-li-active.png) bottom center no-repeat;
+}
+#nav .primary ul li:hover {
   background: url(images/primary-li-active.png) bottom center no-repeat;
 }
 #nav .secondary {
@@ -535,6 +545,9 @@ body {
 #nav .secondary ul li.active a {
   color: #ccff66;
 }
+#nav .secondary ul li a:hover {
+  color: #ccff66;
+}
 #nav.withsecondary {
   height: 71px;
 }
@@ -554,8 +567,8 @@ body {
 }
 .single-page-full-width .col-main {
   display: block;
-  margin: 0 20px 0 27px;
   float: none;
+  margin: 0 20px 0 27px;
   width: auto;
 }
 #footer {
@@ -567,7 +580,7 @@ body {
 #footer .footer-nav {
   float: left;
   margin: 11px 0 0 26px;
-  width: 535px;
+  width: 600px;
 }
 #footer .footer-nav ul {
   display: block;
@@ -671,7 +684,7 @@ form#overlabel input#submit:hover {
 }
 /* @group Equal Height Columns */
 #col1, #col2, #col3 {
-  background: #ffffff url(images/home-col-bg-bottom.png) bottom left no-repeat;
+  background: url(images/home-col-bg-bottom.png) bottom left no-repeat;
   display: block;
   float: left;
   padding-bottom: 30px;
@@ -1076,6 +1089,21 @@ form#overlabel input#submit:hover {
 .search-aside .box {
   background: #f1f1e8;
   padding: 13px 10px 10px 10px;
+  margin: 0 0 10px 0;
+}
+.search-aside .box h4 {
+  color: #666633;
+  font-size: 15px;
+  font-weight: bold;
+}
+.search-aside .box ul {
+  list-style-type: none;
+  margin: 0 0 0 32px;
+}
+.search-aside .box a {
+  color: #3399cc;
+  font-weight: bold;
+  text-decoration: none;
 }
 .search-aside .box form#overlabel {
   margin: 0;
@@ -1153,6 +1181,42 @@ form#overlabel input#submit:hover {
 }
 .search-aside .box form#overlabel #submit-btn:hover {
   cursor: pointer;
+}
+.search-aside .box.search-current {
+  font-size: 15px;
+  padding: 3px 0 10px 0;
+}
+.search-aside .box.search-current h4 {
+  margin: 10px 0 0 12px;
+}
+.search-aside .box.search-refine {
+  color: #666;
+  font-size: 15px;
+  padding: 0;
+}
+.search-aside .box.search-refine .header {
+  background: #e0e0c6;
+  height: 26px;
+}
+.search-aside .box.search-refine .header h4 {
+  display: inline;
+  float: left;
+  line-height: 26px;
+  margin: 0;
+  padding: 0 0 0 12px;
+}
+.search-aside .box.search-refine .header .expand, .search-aside .box.search-refine .header .collapse {
+  background: url(images/toggle-sprite.png) 0 0 no-repeat;
+  display: inline;
+  float: right;
+  height: 26px;
+  width: 26px;
+}
+.search-aside .box.search-refine .header .collapse {
+  background-position: -27px 0px;
+}
+.search-aside .box.search-refine ul {
+  padding: 10px 0;
 }
 /* @end */
 /* @group Search Main */
@@ -1249,8 +1313,14 @@ form#overlabel input#submit:hover {
   font-size: 29px;
   margin: 0 0 5px 0;
 }
+.partners-featured a {
+  display: block;
+  float: left;
+}
 .partners-featured img {
-  margin: 0 7px;
+  display: block;
+  float: left;
+  margin: 0 9px;
   vertical-align: middle;
 }
 #main.partners-page {
@@ -1304,6 +1374,7 @@ form#overlabel input#submit:hover {
   overflow: hidden;
   padding: 10px 30px 10px 13px;
   text-transform: uppercase;
+  word-wrap: break-word;
 }
 #main.partners-page .block .block-content ul li .partner-info .partner-info-content {
   background: url(images/partners-info-content.png) 0 0 repeat-y;
@@ -1345,6 +1416,7 @@ form#overlabel input#submit:hover {
 }
 #main.partners-page #col1, #main.partners-page #col2, #main.partners-page #col3 {
   background: url(images/partners-col-bg-content.png) 0 0 repeat-y;
+  padding-bottom: 0px;
 }
 #main.partners-page #col1 {
   margin-left: 0;
@@ -1352,4 +1424,5 @@ form#overlabel input#submit:hover {
 #main.partners-page #col2, #main.partners-page #col3 {
   margin-left: 6px;
 }
+#map {margin-top:10px;width:280px;height:250px;}
 /* @end */

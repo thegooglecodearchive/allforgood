@@ -1,6 +1,11 @@
-{% extends "layout_full.html" %}
-
-{% block content %}
+    <!--#main-->
+    <div id="main" class="clearfix">
+        <!--.content-->
+        <div id="content" class="clearfix">
+            <!--.single-page-->
+            <div class="single-page-full-width">
+                <!--.col-main-->
+                <div class="col-main">
 <h1>Page Not Found</h1>
 <p>The page <strong>{{ view_url|escape }}</strong> could not be found.</p>
 <p class="not_found_text">&raquo; If you typed in this URL directly, please check for typos and try again.<br />
@@ -8,7 +13,11 @@
   &raquo; Go back to the <a href="javascript:history.back();">previous page</a>.<br />
   &raquo; Search for volunteer activities using the box above.<br />
   &raquo; If you believe you reached this page in error, please
-  <a href="http://spreadsheets.google.com/viewform?hl=en&formkey=clZQWHN5Rzg4cTVMTG1jYWxfMTJRRFE6MA">
-  let us know</a>.
+  <a href="/contactus">let us know</a>.
 </p>
-{% endblock %}
+                </div>
+                <!--.col-main-->
+            </div>
+            <!--.single-page-->
+        </div>
+        <!--.content-->

@@ -67,11 +67,15 @@ from template_helpers import get_default_template_values, render_template, load_
 
 CONTENT_TEMPLATE = 'base_content.html'
 HOME_PAGE_TEMPLATE = 'base_home.html'
-SEARCH_RESULTS_TEMPLATE = 'search_results.html'
+PARTNERS_PAGE_TEMPLATE = 'base_partners.html'
+NOT_FOUND_TEMPLATE = 'not_found.html'
+
+SEARCH_RESULTS_TEMPLATE = 'base_serp.html'
 
 TEST_PAGEVIEWS_TEMPLATE = 'test_pageviews.html'
 SEARCH_RESULTS_MISSING_KEY_TEMPLATE = 'search_results_missing_key.html'
-SNIPPETS_LIST_TEMPLATE = 'snippets_list.html'
+#SNIPPETS_LIST_TEMPLATE = 'snippets_list.html'
+SNIPPETS_LIST_TEMPLATE = 'serp_results.html'
 SNIPPETS_LIST_MINI_TEMPLATE = 'snippets_list_home.html'
 MY_EVENTS_TEMPLATE = 'my_events.html'
 POST_TEMPLATE = 'post.html'
@@ -79,8 +83,6 @@ POST_RESULT_TEMPLATE = 'post_result.html'
 ADMIN_TEMPLATE = 'admin.html'
 DATAHUB_DASHBOARD_TEMPLATE = 'datahub_dashboard.html'
 MODERATE_TEMPLATE = 'moderate.html'
-NOT_FOUND_TEMPLATE = 'not_found.html'
-SPEC_TEMPLATE = 'spec.html'
 
 DATAHUB_LOG = private_keys.DASHBOARD_BASE_URL + "load_gbase.log.bz2"
 
@@ -278,25 +280,36 @@ class home_page_redir_view(webapp.RequestHandler):
     self.redirect("/")
 
 
+class partners_page_view(webapp.RequestHandler):
+  """ default homepage for consumer UI."""
+  @expires(0)  # User specific. Maybe we should remove that so it's cacheable.
+  def get(self):
+    """HTTP get method."""
+    try:
+      try:
+        path = os.path.join(os.path.dirname(__file__),  urls.CONTENT_LOCATION +
+                        urls.CONTENT_FILES[self.request.path])
+        fh = open(path, 'r')
+        html = fh.read()
+        fh.close()
+        template_values = get_default_template_values(self.request, 'PARTNERS_PAGE')
+        template_values['static_content'] = html
+        self.response.out.write(render_template(PARTNERS_PAGE_TEMPLATE,
+                                          template_values))
+      except:
+        self.error(404)
+        return
+
+    except DeadlineExceededError:
+      deadline_exceeded(self, "static_content")
+
+
 class home4holidays_redir_view(webapp.RequestHandler):
   """handler for /home4holidays """
   @expires(0)
   def get(self):
     """HTTP get method."""
     self.redirect("http://www.gmodules.com/ig/creator?url=http%3A%2F%2Fhosting.gmodules.com%2Fig%2Fgadgets%2Ffile%2F110804810900731027561%2Fiams.xml")
-
-
-class not_found_handler(webapp.RequestHandler):
-  """ throw 404 """
-  def get(self):
-    """ HTTP GET method """
-    try:
-      self.error(404)
-      template_values = get_default_template_values(self.request, 'STATIC_PAGE')
-      self.response.out.write(render_template(NOT_FOUND_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "not_found_handler")
 
 
 class consumer_ui_search_redir_view(webapp.RequestHandler):
@@ -325,9 +338,10 @@ class consumer_ui_search_view(webapp.RequestHandler):
     try:
       template_values = get_default_template_values(self.request, 'SEARCH')
       template_values['result_set'] = {}
+      template_values['template'] = 'serp.html'
       template_values['is_main_page'] = True
       template_values['private_keys'] = private_keys
-      self.handle_sponsored(template_values)
+      #self.handle_sponsored(template_values)
       self.response.out.write(render_template(SEARCH_RESULTS_TEMPLATE,
                                            template_values))
     except DeadlineExceededError:
@@ -390,21 +404,11 @@ class consumer_ui_search_view(webapp.RequestHandler):
         import traceback
         tb = traceback.format_exc()
         logging.error('views.handle_sponsored campaign: ' + str(tb))
+
     if template_values.has_key('campaign_id'):
       del template_values['campaign_id']
     return False
 
-class spec_view(webapp.RequestHandler):
-  """view fpxml spec documentation"""
-  @expires(0)  # User specific.
-  def get(self):
-    """HTTP get method."""
-    template_values = get_default_template_values(self.request, 'SPEC')
-    try:
-      self.response.out.write(render_template(SPEC_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "spec_view")
 
 class search_view(webapp.RequestHandler):
   """run a search from the API.  note various output formats."""
@@ -485,10 +489,8 @@ class search_view(webapp.RequestHandler):
 
 
 class ui_snippets_view(webapp.RequestHandler):
-  """run a search and return consumer HTML for the results--
-  this awful hack exists for latency reasons: it's super slow to
-  parse things on the client."""
-  @expires(0)  # User specific.
+  """run a search and return consumer HTML for the results """
+  @expires(0) 
   def get(self):
     """HTTP get method."""
     try:
@@ -533,7 +535,6 @@ class ui_snippets_view(webapp.RequestHandler):
           'result_set': result_set,
           'has_results' : (result_set.num_merged_results > 0),  # For django.
           'last_result_index' : result_set.estimated_results,
-          'providers' : result_set.providers,
           'display_nextpage_link' : result_set.has_more_results,
           'friends' : view_data['friends'],
           'friends_by_event_id_js': view_data['friends_by_event_id_js'],
@@ -1170,6 +1171,22 @@ class static_content(webapp.RequestHandler):
       deadline_exceeded(self, "static_content")
 
 
+class not_found_handler(webapp.RequestHandler):
+  """ throw 404 """
+  @expires(0)  # User specific. Maybe we should remove that so it's cacheable.
+  def get(self):
+    """HTTP get method."""
+    try:
+      self.error(404)
+      template_values = get_default_template_values(self.request, 'STATIC_PAGE')
+      template_values['template'] = NOT_FOUND_TEMPLATE
+      self.response.out.write(render_template(CONTENT_TEMPLATE,
+                                          template_values))
+
+    except DeadlineExceededError:
+      deadline_exceeded(self, "not_found_handler")
+
+
 class datahub_dashboard_view(webapp.RequestHandler):
   """stats by provider, on a hidden URL (underlying data is a hidden URL)."""
   @expires(0)
@@ -1375,6 +1392,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
     logging.debug("datahub_dashboard_view: %s" % template_values['msg'])
     self.response.out.write(render_template(DATAHUB_DASHBOARD_TEMPLATE,
                                             template_values))
+
 
 class short_name_view(webapp.RequestHandler):
   """Redirects short name to long URL from spreadsheet."""
