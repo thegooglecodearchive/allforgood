@@ -603,6 +603,12 @@ executeSearchFromHashParams = function(currentLocation) {
    */
   var currentXhr;
 
+  var tab_n = 1 + getSelectedTab();
+  var it = el('tabs-' + tab_n + '-results');
+  if (it) {
+    it.innerHTML = '<div id="snippets_pane"></div>';
+  }
+
   return function(currentLocation) {
     // Try to avoid the annoyance of a useless extra click on Back button.
     // TODO(timman): Find a cleaner way to determine first-rewrite.
@@ -640,7 +646,9 @@ executeSearchFromHashParams = function(currentLocation) {
           setInputFieldValue(el('location'), query.getLocation());
         }
       }
+
       jQuery('#snippets_pane').html(text);
+
       asyncLoadManager.addCallback('map', function() {
         map.autoZoomAndCenter(query.getLocation());
       });
@@ -686,6 +694,12 @@ executeSearchFromHashParams = function(currentLocation) {
       url += '&referrer=' + encodeURIComponent(referrer);
     }
 
+    var tab_n = 1 + getSelectedTab();
+    var it = el('tabs-' + tab_n + '-results');
+    if (it) {
+      it.innerHTML = '<div id="snippets_pane">Loading...</div>';
+    }
+    //el('snippets_pane').innerHTML = 'Loading...';
     currentXhr = jQuery.ajax({
       url: url,
       async: true,

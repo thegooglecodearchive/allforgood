@@ -16,6 +16,7 @@
 paths used in the app
 """
 URL_HOME = '/'
+URL_PARTNERS = '/partners'
 URL_OLD_HOME = '/home'
 URL_CONSUMER_UI_SEARCH = '/search'
 URL_CONSUMER_UI_SEARCH_REDIR = '/search_form'
@@ -51,26 +52,34 @@ CONTENT_FILES = {
   '/about' : 'about_us.html',
   '/privacypolicy' : 'privacy_policy.html',
   '/contentpolicy' : 'content_policy.html',
+  '/team' : 'team.html',
+  '/getinvolved' : 'getinvolved.html',
+  '/contactus' : 'contactus.html',
   '/spreadsheet' : 'spreadsheet.html',
-  '/strategicpartners' : 'strategicpartners.html',
+  '/partners' : 'partners.html',
   '/publishers' : 'publishers.html',
   '/help' : 'help.html',
+  '/gettingstarted' : 'gettingstarted.html',
   '/faq' : 'faq.html',
   '/tos' : 'tos.html',
   '/api_tos' : 'api_tos.html',
   '/apps' : 'apps.html',
-  '/dmca' : 'dmca.html',
+  '/not_found.html' : 'not_found.html',
   '/api.html' : 'api.html',
+  '/guide' : 'tour.html',
+  '/cla' : 'cla.html',
+  '/spec' : 'spec.html',
+  '/posting' : 'spreadsheet.html',
+  '/golocal' : 'cos.html',
+  '/mlkdayofservice' : 'mlkdayofservice.html',
+}
+"""
+  '/code' : 'code.html',
+  '/dmca' : 'dmca.html',
   '/partner_terms' : 'partner_terms.html',
   '/apps/gmail' : 'apps-gmail.html',
   '/apps/typepad' : 'apps-typepad.html',
   '/apps/blogger' : 'apps-blogger.html',
   '/apps/googlesites' : 'apps-googlesites.html',
   '/apps/wordpress' : 'apps-wordpress.html',
-  '/code' : 'code.html',
-  '/posting' : 'spreadsheet.html',
-  '/guide' : 'tour.html',
-  '/cla' : 'cla.html',
-  '/golocal' : 'cos.html',
-  '/mlkdayofservice' : 'mlkdayofservice.html'
-}
+"""
