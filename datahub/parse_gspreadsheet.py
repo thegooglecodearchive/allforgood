@@ -142,6 +142,7 @@ def record_to_fpxml(record):
   fpxml += '</locations>'
   fpxml += xmlh.output_val('paid', recordval(record,'Paid'))
   fpxml += xmlh.output_val('self_directed', recordval(record,'self_directed'))
+  fpxml += xmlh.output_val('micro', recordval(record,'micro'))
   v = recordval(record,'MinimumAge')
   if v:
     try:
@@ -298,6 +299,8 @@ def parse(instr, maxrecs, progress):
       field_name = "Paid"
     elif header_str.find("self_directed") >= 0:
       field_name = "SelfDirected"
+    elif header_str.find("micro") >= 0:
+      field_name = "Micro"
     elif header_str.find("commitment") >= 0 or header_str.find("hours") >= 0:
       field_name = "CommitmentHours"
     elif header_str.find("age") >= 0 and header_str.find("min") >= 0:

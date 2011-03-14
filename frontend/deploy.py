@@ -37,7 +37,8 @@ MAPS_API_KEYS = {
   'mt1955.latest.servicefootprint.appspot.com' : 'ABQIAAAAienQr37mEiFBwlgibJ1JcxR1KvS2SINSTEhx6KwLmvTr3pfveRSjY7BvkzTo44hCktsrLKU800bN1g',
   'r2.latest.servicefootprint.appspot.com' : 'ABQIAAAAienQr37mEiFBwlgibJ1JcxR1KvS2SINSTEhx6KwLmvTr3pfveRSjY7BvkzTo44hCktsrLKU800bN1g',
   'r2-backup.latest.servicefootprint.appspot.com' : 'ABQIAAAAienQr37mEiFBwlgibJ1JcxR1KvS2SINSTEhx6KwLmvTr3pfveRSjY7BvkzTo44hCktsrLKU800bN1g',
-  'staging.latest.footprint2009dev.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxTpeCj-9ism2i6Mt7fLlVoN6HsfDBSOZjcyagWjKTMT32rzg71rFenopA'
+  'staging.latest.footprint2009dev.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxTpeCj-9ism2i6Mt7fLlVoN6HsfDBSOZjcyagWjKTMT32rzg71rFenopA',
+  'echoditto.latest.footprint2009dev.appspot.com' : 'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxTpeCj-9ism2i6Mt7fLlVoN6HsfDBSOZjcyagWjKTMT32rzg71rFenopA'
 }
 # pylint: enable-msg=C0301
 

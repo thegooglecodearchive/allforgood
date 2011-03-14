@@ -167,6 +167,32 @@ input.hasDatepicker {
   height:18px;
 }
 
+.facets .data_list {    
+  padding:0 0 0 2px;		
+}
+
+.facets .data_list li {    
+  list-style-type:none;
+  padding:2px 0;
+}
+
+.facets .data_list li a {
+  color: #039;
+  text-decoration:none;
+  font-size:12px;
+}
+
+.facets .data_list li a:hover {
+  text-decoration: underline;
+}
+
+.facets .data_list li span {    
+	font-size:11px;
+}
+
+#facets_container, #category_list, #provider_list {display:none;}
+#show_categories:hover, #show_providers:hover {text-decoration:none;}
+
 #startdate, #enddate {
 	padding: 2px 0;
     font-size: 14px;
@@ -212,14 +238,18 @@ input.hasDatepicker {
 
 .facets {
 	background: #EDF4F7;
-	border:1px solid #C0C0C0; 
-	padding:10px 0 15px 25px; 
-	margin-bottom:15px;
+	border: 1px solid #C0C0C0;	 
+	padding: 20px 0 15px 25px; 
+	margin-bottom: 15px;
+	margin: 5px 0 15px 0;	
 }
 
 .facets input {
 	margin-bottom:12px;
 }
+
+#active_facet_item p {margin:0; font-weight:bold;}
+#active_facet_item .searchterm {margin-bottom:1em;}
 
 /** Search results page **/
 
@@ -294,6 +324,10 @@ input.hasDatepicker {
 }
 
 .starred {
+}
+
+#loading-bottom {
+	margin-top:10px;
 }
 
 
@@ -399,10 +433,12 @@ input.hasDatepicker {
   width: 130px; 
   float: right;
 }
-.top_search {overflow:hidden; margin-bottom:10px;}
+.top_search {overflow:hidden; margin:20px 0 5px 0;}
 .sort_filter {float:left;}
-
+#tabs {border:none;}
 #when_filter_widget {margin-bottom:10px !important; }
+#tab_list {background:#EDF4F7; border:1px solid #C0C0C0; margin-left:2px;}
+#tab_list span {width:100px;}
 
 #paginator {
   font-size: 14px;

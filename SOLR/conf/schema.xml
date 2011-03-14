@@ -200,28 +200,15 @@
 
     <fieldType name="text_html" class="solr.TextField" positionIncrementGap="100">
         <analyzer type="index">
-            <tokenizer class="solr.HTMLStripStandardTokenizerFactory"/>
-            <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
-            <!-- Case insensitive stop word removal.
-              add enablePositionIncrements=true in both the index and query
-              analyzers to leave a 'gap' for more accurate phrase queries.
-            -->
-            <filter class="solr.StopFilterFactory"
-                    ignoreCase="true"
-                    words="stopwords.txt"
-                    enablePositionIncrements="true"
-                    />
+            <tokenizer class="solr.HTMLStripStandardTokenizerFactory"/>                        
+            <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
             <filter class="solr.LowerCaseFilterFactory"/>
             <filter class="solr.SnowballPorterFilterFactory" language="English" protected="protwords.txt"/>
         </analyzer>
         <analyzer type="query">
             <tokenizer class="solr.StandardTokenizerFactory"/>
             <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
-            <filter class="solr.StopFilterFactory"
-                    ignoreCase="true"
-                    words="stopwords.txt"
-                    enablePositionIncrements="true"
-                    />
+            <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
             <filter class="solr.LowerCaseFilterFactory"/>
             <filter class="solr.SnowballPorterFilterFactory" language="English" protected="protwords.txt"/>
         </analyzer>
@@ -364,6 +351,7 @@
 <field name="org_name_str" type="string" indexed="true" stored="true"/>
 <field name="virtual" type="boolean" indexed="true" stored="true" default="false"/>
 <field name="self_directed" type="boolean" indexed="true" stored="true" default="false"/>
+<field name="micro" type="boolean" indexed="true" stored="true" default="false"/>
 <field name="ical_recurrence" type="string" indexed="true" stored="true"/>
 <field name="longitude" type="double" indexed="true" stored="true"/>
 <field name="latitude" type="double" indexed="true" stored="true"/>

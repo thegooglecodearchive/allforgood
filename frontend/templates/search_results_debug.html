@@ -22,6 +22,7 @@ loc: {% if result.virtual %}**LOCATIONLESS**{% else %}{{result.location|escape}}
 id: {{result.item_id|escape}}     provider: {{result.provider|escape}}
 desc: {{result.snippet|escape}}
 self-directed: {% if result.self_directed %}yes{% else %}no{% endif %}
+micro: {% if result.micro %}yes{% else %}no{% endif %}
 score: {{result.score_str|escape}} (orig result #{{result.orig_idx|escape}}){{result.score_notes|escape}}
 stats: {{result.merged_impressions|escape}} views, {{result.merged_clicks|escape}} clicks  ({{result.merged_ctr|escape}}% CTR)
 {% if result.merged_list %}merged: {% for it in result.merged_debug %}{{it|escape}} {% endfor %}{% if result.have_more %}more_id: {{res.more_id|escape}}{% endif %}{% endif %}

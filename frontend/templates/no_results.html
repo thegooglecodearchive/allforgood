@@ -17,10 +17,7 @@ Liking an activity lets you promote an organization or cause. Simply click "like
 
 {% else %}
 <br><br>
-Your search
-{% if query_param_q %} for &#8220;<b>{{ query_param_q|escape }}</b>&#8221;{% endif %}
-{% if query_param_loc and not query_param_virtual %} near &#8220;<b>{{ query_param_loc|escape }}</b>&#8221;{%endif %}
-did not match any volunteering activities.
+Your search did not match any volunteering activities.
 Suggestions:
 <ul>
   <li>If you're searching for a location, please enter your search above the map to the left.</li>
@@ -34,7 +31,7 @@ Suggestions:
 <div style="font-size:20px;font-weight:bold;">Interested in putting together your own service project?
 <br />
 <br />
-<a href="/StrategicPartners">Click here to learn more.</a></div>
+<a href="/strategicpartners">Click here to learn more.</a></div>
 
 {% endifequal %}
 

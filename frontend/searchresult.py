@@ -62,7 +62,7 @@ class SearchResult(object):
   """class to hold the results of a search to the backend."""
   def __init__(self, url, title, snippet, location, item_id, base_url,
                volunteers_needed = 0, virtual = False, self_directed = False,
-               categories = None, org_name = ''):
+               micro = False, categories = None, org_name = ''):
     # TODO: HACK: workaround for issue 404-- broken servegov links
     # hack added here so the urlsig's come out correctly and the fix
     # applies everywhere including xml_url, API calls, etc.
@@ -87,6 +87,7 @@ class SearchResult(object):
     self.base_url = base_url
     self.virtual = virtual
     self.self_directed = self_directed
+    self.micro = micro
     self.volunteers_needed = volunteers_needed
     self.openEnded = False
     self.all_categories = categories if categories else []
@@ -123,7 +124,7 @@ class SearchResult(object):
     self.pubdate = get_rfc2822_datetime()
     self.score = 0.0
     self.score_notes = ""
-    self.score_str = ""
+    self.score_str = ""    
  
   def set_score(self, score, notes):
     """assign score value-- TODO: consider moving scoring code to this class."""
@@ -189,6 +190,8 @@ class SearchResultSet(object):
     self.merged_results = []
     self.clipped_results = []
     self.facet_counts = dict()
+    self.providers = []
+    self.categories = []
     self.clip_start_index = 0  # Index at which clipped_results begins.
     self.has_more_results = False  # After clipping, are there more results?
     self.estimated_merged_results = 0

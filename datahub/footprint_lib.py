@@ -92,6 +92,7 @@ SEARCHFIELDS = {
   "longitude":"float",
   "virtual":"boolean",
   "self_directed":"boolean",
+  "micro":"boolean",
   # needed for query by time-of-day
   "startTime":"integer",
   "endTime":"integer",
@@ -129,6 +130,7 @@ FIELDTYPES = {
   "longitude":"float",
   "virtual":"boolean",
   "self_directed":"boolean",
+  "micro":"boolean",
 
   "providerURL":"URL",
   "detailURL":"URL",
@@ -180,13 +182,13 @@ FIELDTYPES = {
 def print_progress(msg, filename="", progress=None):
   """print progress indicator."""
   # not allowed to say progress=PROGRESS as a default arg
-  if progress == None:
+  if progress is None:
     progress = PROGRESS
   xmlh.print_progress(msg, filename, progress=progress)
 
 def print_status(msg, filename="", progress=None):
   """print status indicator, for stats collection."""
-  if progress == None:
+  if progress is None:
     progress = PROGRESS
   xmlh.print_status(msg, filename, progress=progress)
 
@@ -470,12 +472,21 @@ def get_direct_mapped_fields(opp, org):
   else:
     paid = "y"
   outstr += FIELDSEP + output_field("paid", paid)
+
   self_directed = xmlh.get_tag_val(opp, "self_directed")
   if (self_directed == "" or self_directed.lower()[0] != "y"):
     self_directed = "False"
   else:
     self_directed = "True"
   outstr += FIELDSEP + output_field("self_directed", self_directed)
+
+  micro = xmlh.get_tag_val(opp, "micro")
+  if (micro == "" or micro.lower()[0] != "y"):
+    micro = "False"
+  else:
+    micro = "True"
+  outstr += FIELDSEP + output_field("micro", micro)
+
   detailURL = xmlh.get_tag_val(opp, "detailURL")
   outstr += FIELDSEP + output_field("detailURL", detailURL)
 
@@ -627,7 +638,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
 
   for opptime in opp_times:
     # unwind multiple dates
-    if opptime == None:
+    if opptime is None:
       startend = convert_dt_to_gbase("1971-01-01", "00:00:00-00:00", "UTC")
       starttime = "0000"
       endtime = "2359"
@@ -665,7 +676,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
 
     for opploc in opp_locations:
       # unwind multiple locations
-      if opploc == None:
+      if opploc is None:
         locstr, latlng, geocoded_loc = ("", "", "")
         loc_fields = get_loc_fields(virtual="No", latitude="0.0", longitude="0.0")
       else:
@@ -857,14 +868,14 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
 
     for match in re.finditer(re.compile('<Organization>.+?</Organization>',
                                         re.DOTALL), instr):
-      if progress and len(known_orgs) % 250 == 0:
-        print_progress(str(len(known_orgs))+" organizations seen.")
       org = xmlh.simple_parser(match.group(0), known_elnames, False)
       org_id = xmlh.get_tag_val(org, "organizationID")
       if (org_id != ""):
         known_orgs[org_id] = org
-      if example_org == None:
+      if example_org is None:
         example_org = org
+      if progress and len(known_orgs) % 250 == 0:
+        print_progress(str(len(known_orgs))+" organizations seen.")
 
     taggers = get_taggers()
     phoneRx = re.compile(
@@ -958,6 +969,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
         outstr += output_header(feedinfo, opp, organizations[0])
       numopps, spiece = output_opportunity(opp, feedinfo, known_orgs, numopps)
       outstr += spiece
+
   return outstr, len(known_orgs), numopps
 
 def guess_shortname(filename):
@@ -1059,8 +1071,6 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", parse_footprint.parse_fast
 
   shortname = guess_shortname(filename)
-  if shortname == "idealist":
-    return "idealist", parse_idealist.parse
 
   # FPXML providers
   fp = parse_footprint
@@ -1068,10 +1078,6 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '102', 'handsonnetwork', 'handsonnetwork', 'http://handsonnetwork.org/',
       'HandsOn Network')
-  #if shortname == "idealist":
-  #  return "fpxml", fp.parser(
-  #    '103', 'idealist', 'idealist', 'http://www.idealist.org/',
-  #    'Idealist')
   if shortname == "volunteermatch" or shortname == "vm-20101027":
     return "fpxml", fp.parser(
       '104', 'volunteermatch', 'volunteermatch',
@@ -1235,11 +1241,8 @@ def guess_parse_func(inputfmt, filename):
   if shortname == "350org":
     return "350org", parse_350org.parse
 
-  # legacy-- to be safe, remove after 9/1/2009
-  #if shortname == "volunteermatch" or shortname == "vm":
-  #  return "volunteermatch", parse_volunteermatch.parse
-  #if shortname == "idealist":
-  #  return "idealist", parse_idealist.parse
+  if shortname == "idealist":
+    return "idealist", parse_idealist.parse
 
   print datetime.now(), "couldn't guess input format-- try --inputfmt"
   sys.exit(1)
@@ -1400,6 +1403,8 @@ def process_file(filename, options, providerName="", providerID="",
   except:
     print_progress("could not open %s" % filename)
     return 0, 0, 0, ""
+  if infh is None:
+    return 0, 0, 0, ""
 
   print_progress("reading data...")
   # don't put this inside open_input_filename() because it could be large
@@ -1448,6 +1453,7 @@ def process_file(filename, options, providerName="", providerID="",
     # free some RAM
     del instr
     test_parse(footprint_xmlstr, options.maxrecs)
+    print "exiting because of options.test"
     sys.exit(0)
 
   fastparse = not options.debug_input
@@ -1455,6 +1461,7 @@ def process_file(filename, options, providerName="", providerID="",
     # TODO: pretty printing option
     print convert_to_footprint_xml(footprint_xmlstr, fastparse,
                                    int(options.maxrecs), PROGRESS)
+    print "exiting because outputfmt = fpxml"
     sys.exit(0)
 
   if OUTPUTFMT != "basetsv":
