@@ -25,8 +25,18 @@ import re
 import htmlentitydefs
 import xml.sax.saxutils as saxutils
 
+import subprocess
+import sys
+import xml_helpers as xmlh
 from datetime import datetime
 import geocoder
+from optparse import OptionParser
+from BeautifulSoup import BeautifulSoup
+
+import dateutil
+import dateutil.tz
+import dateutil.parser
+
 import parse_footprint
 import parse_gspreadsheet as pgs
 import parse_usaservice
@@ -37,15 +47,7 @@ import parse_350org
 import parse_sparked
 import parse_diy
 import parse_volunteermatch
-import subprocess
-import sys
-import xml_helpers as xmlh
-from optparse import OptionParser
-from BeautifulSoup import BeautifulSoup
-
-import dateutil
-import dateutil.tz
-import dateutil.parser
+import providers
 
 from taggers import get_taggers, XMLRecord
 
@@ -92,6 +94,7 @@ SEARCHFIELDS = {
   "longitude":"float",
   "virtual":"boolean",
   "self_directed":"boolean",
+  "micro":"boolean",
   # needed for query by time-of-day
   "startTime":"integer",
   "endTime":"integer",
@@ -101,6 +104,7 @@ SEARCHFIELDS = {
   "abstract":"string",
   "location_string":"string",
   "feed_providerName":"string",
+  "provider_proper_name":"string",
 }  
 
 FIELDTYPES = {
@@ -129,6 +133,7 @@ FIELDTYPES = {
   "longitude":"float",
   "virtual":"boolean",
   "self_directed":"boolean",
+  "micro":"boolean",
 
   "providerURL":"URL",
   "detailURL":"URL",
@@ -175,18 +180,19 @@ FIELDTYPES = {
   "venue_name":"string",
   "location_string":"string",
   "orgLocation":"string",
+  "provider_proper_name":"string",
 }
 
 def print_progress(msg, filename="", progress=None):
   """print progress indicator."""
   # not allowed to say progress=PROGRESS as a default arg
-  if progress == None:
+  if progress is None:
     progress = PROGRESS
   xmlh.print_progress(msg, filename, progress=progress)
 
 def print_status(msg, filename="", progress=None):
   """print status indicator, for stats collection."""
-  if progress == None:
+  if progress is None:
     progress = PROGRESS
   xmlh.print_status(msg, filename, progress=progress)
 
@@ -459,7 +465,7 @@ def get_abstract(opp):
   abstract = cleanse_snippet(abstract)
   return abstract[:MAX_ABSTRACT_LEN]
 
-def get_direct_mapped_fields(opp, org):
+def get_direct_mapped_fields(opp, org, feed_providerName):
   """map a field directly from FPXML to Google Base."""
   outstr = output_field("abstract", get_abstract(opp))
   if ABRIDGED:
@@ -470,12 +476,21 @@ def get_direct_mapped_fields(opp, org):
   else:
     paid = "y"
   outstr += FIELDSEP + output_field("paid", paid)
+
   self_directed = xmlh.get_tag_val(opp, "self_directed")
   if (self_directed == "" or self_directed.lower()[0] != "y"):
     self_directed = "False"
   else:
     self_directed = "True"
   outstr += FIELDSEP + output_field("self_directed", self_directed)
+
+  micro = xmlh.get_tag_val(opp, "micro")
+  if (micro == "" or micro.lower()[0] != "y"):
+    micro = "False"
+  else:
+    micro = "True"
+  outstr += FIELDSEP + output_field("micro", micro)
+
   detailURL = xmlh.get_tag_val(opp, "detailURL")
   outstr += FIELDSEP + output_field("detailURL", detailURL)
 
@@ -509,7 +524,15 @@ def get_direct_mapped_fields(opp, org):
   else:
     outstr += output_field("orgLocation", "")
 
+  # map providerName to provider_proper_name
+  outstr += FIELDSEP
+  ppn = "Other"
+  if providers.ProviderNames.has_key(feed_providerName):
+    ppn = providers.ProviderNames[feed_providerName]["name"]
+  outstr += output_field("provider_proper_name", str(ppn))
+     
   return outstr
+
 
 def get_base_other_fields(opp, org):
   """These are fields that exist in other Base schemas-- for the sake of
@@ -579,10 +602,12 @@ def get_event_reqd_fields(opp):
 
 def get_feed_fields(feedinfo):
   """Fields from the <Feed> portion of FPXML."""
-  outstr = output_tag_value_renamed(feedinfo,
+  feed_providerName = output_tag_value_renamed(feedinfo,
                                     "providerName", "feed_providerName")
+  outstr = feed_providerName
+
   if ABRIDGED:
-    return outstr
+    return outstr, feed_providerName
   outstr += FIELDSEP + output_tag_value(feedinfo, "feedID")
   outstr += FIELDSEP + output_tag_value_renamed(
     feedinfo, "providerID", "feed_providerID")
@@ -592,7 +617,7 @@ def get_feed_fields(feedinfo):
     feedinfo, "description", "feed_description")
   outstr += FIELDSEP + output_tag_value_renamed(
     feedinfo, "createdDateTime", "feed_createdDateTime")
-  return outstr
+  return outstr, feed_providerName
 
 def output_opportunity(opp, feedinfo, known_orgs, totrecs):
   """main function for outputting a complete opportunity."""
@@ -627,7 +652,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
 
   for opptime in opp_times:
     # unwind multiple dates
-    if opptime == None:
+    if opptime is None:
       startend = convert_dt_to_gbase("1971-01-01", "00:00:00-00:00", "UTC")
       starttime = "0000"
       endtime = "2359"
@@ -665,7 +690,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
 
     for opploc in opp_locations:
       # unwind multiple locations
-      if opploc == None:
+      if opploc is None:
         locstr, latlng, geocoded_loc = ("", "", "")
         loc_fields = get_loc_fields(virtual="No", latitude="0.0", longitude="0.0")
       else:
@@ -759,10 +784,13 @@ def get_loc_fields(virtual, location="", latitude="", longitude="", location_str
 
 def get_repeated_fields(feedinfo, opp, org):
   """output all fields that are repeated for each time and location."""
-  repeated_fields = FIELDSEP + get_feed_fields(feedinfo)
+  rsp, feed_providerName = get_feed_fields(feedinfo)
+  #repeated_fields = FIELDSEP + get_feed_fields(feedinfo)
+  repeated_fields = FIELDSEP + rsp
+  
   repeated_fields += FIELDSEP + get_event_reqd_fields(opp)
   repeated_fields += FIELDSEP + get_base_other_fields(opp, org)
-  repeated_fields += FIELDSEP + get_direct_mapped_fields(opp, org)
+  repeated_fields += FIELDSEP + get_direct_mapped_fields(opp, org, feed_providerName)
   return repeated_fields
 
 def output_header(feedinfo, opp, org):
@@ -857,14 +885,14 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
 
     for match in re.finditer(re.compile('<Organization>.+?</Organization>',
                                         re.DOTALL), instr):
-      if progress and len(known_orgs) % 250 == 0:
-        print_progress(str(len(known_orgs))+" organizations seen.")
       org = xmlh.simple_parser(match.group(0), known_elnames, False)
       org_id = xmlh.get_tag_val(org, "organizationID")
       if (org_id != ""):
         known_orgs[org_id] = org
-      if example_org == None:
+      if example_org is None:
         example_org = org
+      if progress and len(known_orgs) % 250 == 0:
+        print_progress(str(len(known_orgs))+" organizations seen.")
 
     taggers = get_taggers()
     phoneRx = re.compile(
@@ -958,6 +986,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
         outstr += output_header(feedinfo, opp, organizations[0])
       numopps, spiece = output_opportunity(opp, feedinfo, known_orgs, numopps)
       outstr += spiece
+
   return outstr, len(known_orgs), numopps
 
 def guess_shortname(filename):
@@ -1059,8 +1088,6 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", parse_footprint.parse_fast
 
   shortname = guess_shortname(filename)
-  if shortname == "idealist":
-    return "idealist", parse_idealist.parse
 
   # FPXML providers
   fp = parse_footprint
@@ -1068,10 +1095,6 @@ def guess_parse_func(inputfmt, filename):
     return "fpxml", fp.parser(
       '102', 'handsonnetwork', 'handsonnetwork', 'http://handsonnetwork.org/',
       'HandsOn Network')
-  #if shortname == "idealist":
-  #  return "fpxml", fp.parser(
-  #    '103', 'idealist', 'idealist', 'http://www.idealist.org/',
-  #    'Idealist')
   if shortname == "volunteermatch" or shortname == "vm-20101027":
     return "fpxml", fp.parser(
       '104', 'volunteermatch', 'volunteermatch',
@@ -1235,11 +1258,8 @@ def guess_parse_func(inputfmt, filename):
   if shortname == "350org":
     return "350org", parse_350org.parse
 
-  # legacy-- to be safe, remove after 9/1/2009
-  #if shortname == "volunteermatch" or shortname == "vm":
-  #  return "volunteermatch", parse_volunteermatch.parse
-  #if shortname == "idealist":
-  #  return "idealist", parse_idealist.parse
+  if shortname == "idealist":
+    return "idealist", parse_idealist.parse
 
   print datetime.now(), "couldn't guess input format-- try --inputfmt"
   sys.exit(1)
@@ -1400,6 +1420,8 @@ def process_file(filename, options, providerName="", providerID="",
   except:
     print_progress("could not open %s" % filename)
     return 0, 0, 0, ""
+  if infh is None:
+    return 0, 0, 0, ""
 
   print_progress("reading data...")
   # don't put this inside open_input_filename() because it could be large
@@ -1448,6 +1470,7 @@ def process_file(filename, options, providerName="", providerID="",
     # free some RAM
     del instr
     test_parse(footprint_xmlstr, options.maxrecs)
+    print "exiting because of options.test"
     sys.exit(0)
 
   fastparse = not options.debug_input
@@ -1455,6 +1478,7 @@ def process_file(filename, options, providerName="", providerID="",
     # TODO: pretty printing option
     print convert_to_footprint_xml(footprint_xmlstr, fastparse,
                                    int(options.maxrecs), PROGRESS)
+    print "exiting because outputfmt = fpxml"
     sys.exit(0)
 
   if OUTPUTFMT != "basetsv":

@@ -310,6 +310,10 @@ def parse(instr, maxrecs, progress):
       field_name = "SexRestrictedTo"
     elif header_str.find("volunteer appeal") >= 0:
       field_name = None
+    elif header_str.find("volunteerOptIn") >= 0:
+      field_name = None
+    elif header_str.find("booksOptIn") >= 0:
+      field_name = None
     else:
       parser_error("couldn't map header '"+header_str+"' to a field name.")
     if field_name != None:
