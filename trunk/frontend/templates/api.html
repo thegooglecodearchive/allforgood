@@ -93,7 +93,8 @@
       <td><code>q</code></td>
       <td>The keyword search string, which offers support for most Google features.</td>
       <td><p>Default value: none</p>
-      <p>Expected values: any string,  including quoted phrases (&quot;some terms&quot;) , and exclusions (-excluded_term)</p></td>
+Expected values: any string, including quoted phrases ("some terms") , and exclusions (-excluded_term).  Not that exclusions can be targeted to any field desired.  For instance, to exclude opportunities that have a detailurl (the destination url) that goes to a specific site such as meetup.com, you could add, “AND –detailurl:meetup” to your query string.
+</p></td>
     </tr>
     <tr>
       <td><code>start</code></td>

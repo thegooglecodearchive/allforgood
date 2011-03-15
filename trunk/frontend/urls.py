@@ -39,6 +39,7 @@ URL_APPS = '/apps'
 URL_APITOS = '/api_tos'
 URL_APIDOCS='/docs/api.html'
 URL_COS = '/golocal'
+URL_POSTING = '/posting'
 URL_MLKDAYOFSERVICE = '/MLKDayOfService'
 URL_STRATEGICPARTNERS = '/StrategicPartners'
 URL_APIPARTNERS = '/APIPartners'
@@ -70,7 +71,7 @@ STATIC_CONTENT_FILES = {
   '/apps/googlesites' : 'apps-googlesites.html',
   '/apps/wordpress' : 'apps-wordpress.html',
   '/code' : 'code.html',
-  '/posting' : 'spreadsheet.html',
+  #'/posting' : 'spreadsheet.html',
   '/guide' : 'tour.html',
   '/cla' : 'cla.html',
 }

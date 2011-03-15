@@ -69,6 +69,7 @@ HOMEPAGE_TEMPLATE = 'homepage.html'
 TEST_PAGEVIEWS_TEMPLATE = 'test_pageviews.html'
 SEARCH_RESULTS_TEMPLATE = 'search_results.html'
 SEARCH_RESULTS_MISSING_KEY_TEMPLATE = 'search_results_missing_key.html'
+SEARCH_RESULTS_INVALID_KEY_TEMPLATE = 'search_results_invalid_key.html'
 SNIPPETS_LIST_TEMPLATE = 'snippets_list.html'
 SNIPPETS_LIST_MINI_TEMPLATE = 'snippets_list_mini.html'
 MY_EVENTS_TEMPLATE = 'my_events.html'
@@ -81,6 +82,7 @@ STATIC_CONTENT_TEMPLATE = 'static_content.html'
 NOT_FOUND_TEMPLATE = 'not_found.html'
 SPEC_TEMPLATE = 'spec.html'
 COS_TEMPLATE = 'cos.html'
+POSTING_TEMPLATE = 'spreadsheet.html'
 MLKDAYOFSERVICE_TEMPLATE = 'mlkdayofservice.html'
 STRATEGICPARTNERS_TEMPLATE = 'strategicpartners.html'
 APIPARTNERS_TEMPLATE = 'apipartners.html'
@@ -338,6 +340,18 @@ class cos_view(webapp.RequestHandler):
     except DeadlineExceededError:
       deadline_exceeded(self, "cos_handler")
 
+
+class posting_view(webapp.RequestHandler):
+  @expires(0)
+  def get(self):
+    try:
+      template_values = get_default_template_values(self.request, 'POSTING')
+      self.response.out.write(render_template(POSTING_TEMPLATE,
+                                            template_values))
+    except DeadlineExceededError:
+      deadline_exceeded(self, "posting_handler")
+
+
 class mlkdayofservice_view(webapp.RequestHandler):
   @expires(0)
   def get(self):
@@ -488,6 +502,12 @@ class search_view(webapp.RequestHandler):
 
       if api.PARAM_KEY not in unique_args:
         tplresult = render_template(SEARCH_RESULTS_MISSING_KEY_TEMPLATE, {})
+        self.response.out.write(tplresult)
+        pagecount.IncrPageCount("key.missing", 1)
+        return
+
+      if private_keys.BAD_KEYS.has_key(unique_args[api.PARAM_KEY]):
+        tplresult = render_template(SEARCH_RESULTS_INVALID_KEY_TEMPLATE, {})
         self.response.out.write(tplresult)
         pagecount.IncrPageCount("key.missing", 1)
         return

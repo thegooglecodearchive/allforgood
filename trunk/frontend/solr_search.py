@@ -108,7 +108,7 @@ def rewrite_query(query_str, api_key = None):
   rewritten_query = re.sub(r'[0-9]z', reupcase, rewritten_query)
   if rewritten_query.find('meetup') < 0 and api_key and api_key in private_keys.MEETUP_EXCLUDERS:
     logging.info('solr_search.rewrite_query api key %s excludes meetup' % api_key)
-    rewritten_query = '(' + rewritten_query + ') AND -feed_providername:meetup'
+    #rewritten_query = '(' + rewritten_query + ') AND -feed_providername:meetup'
 
   # Replace the category filter shortcut with its proper name.
   rewritten_query = rewritten_query.replace('category:', 'categories:')
@@ -167,6 +167,9 @@ def form_solr_query(args):
           qw = ":".join(ar)
           qwords[qi] = qw
           args[api.PARAM_Q] = ' '.join(qwords)
+
+    #if args[api.PARAM_Q].lower().find(' or '):
+    #  args[api.PARAM_Q] = '(' + args[api.PARAM_Q] + ')'
 
     query_boosts = boosts.query_time_boosts(args)
     
