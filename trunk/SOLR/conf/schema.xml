@@ -216,7 +216,6 @@
         </analyzer>
         <analyzer type="query">
             <tokenizer class="solr.StandardTokenizerFactory"/>
-            <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
             <filter class="solr.StopFilterFactory"
                     ignoreCase="true"
                     words="stopwords.txt"
@@ -363,6 +362,7 @@
 <field name="org_name" type="text" indexed="true" stored="true"/>
 <field name="org_name_str" type="string" indexed="true" stored="true"/>
 <field name="virtual" type="boolean" indexed="true" stored="true" default="false"/>
+<field name="micro" type="boolean" indexed="true" stored="true" default="false"/>
 <field name="self_directed" type="boolean" indexed="true" stored="true" default="false"/>
 <field name="ical_recurrence" type="string" indexed="true" stored="true"/>
 <field name="longitude" type="double" indexed="true" stored="true"/>
@@ -382,6 +382,8 @@
 <field name="openended" type="boolean"    indexed="true"  stored="true"/>
 <field name="paid" type="boolean"    indexed="true"  stored="true"/>
 <field name="signature" type="string" stored="true" indexed="true" multiValued="false" />
+<field name="provider_proper_name" type="text" indexed="true" stored="true" />
+<field name="provider_proper_name_str" type="string" indexed="true" stored="true" />
 
 <!--    employer       quantity        image_link      abstract       paid  opportunityID  organizationID volunteersSlots       volunteersFilled      volunteersNeeded      minimumAge    sexRestrictedTo        skills contactName    contactPhone   contactEmail   providerURL       language       lastUpdated  expires      detailURL org_nationalEIN        org_guidestarID        org_name       org_missionStatement   org_description        org_phone      org_fax        org_email      org_organizationURL       org_logoURL       org_providerURL   categories     audiences      orgLocation    event_date_range        startTime     endTime       openended     duration       commitmentHoursPerWeek location        latitude        longitude       location_string        venue_name -->
    <!-- Some sample docs exists solely to demonstrate the spellchecker
@@ -442,6 +444,7 @@
         or to add multiple fields to the same field for easier/faster searching.  -->
 
  <copyField source="org_name" dest="org_name_str"/>
+ <copyField source="provider_proper_name" dest="provider_proper_name_str"/>
 
  <!-- Similarity is the scoring routine for each document vs. a query.
       A custom similarity may be specified here, but the default is fine
