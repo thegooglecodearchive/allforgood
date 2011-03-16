@@ -5,9 +5,9 @@
 				<!--.block-->
 				<div class="block block-volunteer-signup block-action">
 				    <div class="block-content">
-    				    <h3>Looking to <span>volunteer?</span></h3>
+    				    <h3>Looking to <span>serve?</span></h3>
 
-    				    <p>Lorem ipsum dolor sit amet, sed ed eiusmod tempor incieiincid idunt ut and <a href="javascript:void(0)">get started</a>.</p>
+    				    <p>Find service opportunities near you by entering a keyword below.</p>
 <form action="/" method="post" id="overlabel" onsubmit="submitForm('keywords');return false;">
     				         <div class="form-row">
     				             <label for="search-field" class="overlabel">enter search term</label>
@@ -28,7 +28,7 @@ style="font-size:10px;width:96px;"/>
 <a href="javascript:void(0);" onclick="submitForm('');">change location</a>
 </p>
     				    <ul>
-<div id='snippets'></div>
+<div id='snippets' style="background-color:#ffffff;height:500px;"></div>
                                     </ul>
 <p class="more-link" id="more"><a href="javascript:submitForm('');">View more opportunities</a></p>
 				    </div>
@@ -43,7 +43,7 @@ style="font-size:10px;width:96px;"/>
 				<div class="block block-volunteer-add block-action">
 				    <div class="block-content">
     				    <h3>Adding an <span>opportunity?</span></h3>
-    				    <p>Lorem ipsum dolor sit amet, consectetur adipi ipsume dolornt ut and <a href="javascript:void(0)">list it today</a>.</p>
+    				    <p>Listing service opportunities with All For Good is quick and easy - click <a href="/posting">here</a> to get started.</p>
 
 				    </div>
 				</div>
@@ -90,7 +90,7 @@ style="font-size:10px;width:96px;"/>
     				            </div>
     				        </li>
     				    </ul>
-    				    <p class="more-link"><a href="/strategicpartners">View all partners</a></p>
+    				    <p class="more-link"><a href="/partners">View all partners</a></p>
 				    </div>
 
 				    <!-- <div class="block-bottom"></div> -->
@@ -101,17 +101,19 @@ style="font-size:10px;width:96px;"/>
 				<!--.block-->
 				<div class="block block-developers block-action">
 				    <div class="block-content">
-    				    <h3>Lorem ipsum <span>developer?</span></h3>
-
-    				    <p>Lorem psum dolor sit amet, sed eiusmod sando liter idunt ut and <a href="javascript:void(0)">use our API</a>.</p>
+    				    <h3>Want to code for <span>change?</span></h3>
+    				    <p>Join a network of developers using our API to build powerful apps promoting service in our communities. <a href="/gettingstarted">Learn more</a>.</p>
 				    </div>
 				</div>
 				<!--.block-->
 				<!--.block-->
 				<div class="block block-ad">
-				    <a href="javascript:void(0)">
-
-				        <img src="images/placeholder-ad-home.png" height="250" width="300" alt="United We Serve - Veterans and Military Families" />
+				    <a href="http://www1.networkforgood.org/help-survivors-pacific-quake-tsunami">
+				        <img src="/images/JapanQuake2011_AFG_NetworkForGood.jpg" 
+width="300" 
+height="250" 
+alt="Help Survivors of Japan Quake/Tsunami" 
+title="Help Survivors of Japan Quake/Tsunami" />
 				    </a>
 				</div>
 				<!--.block-->
@@ -150,7 +152,7 @@ style="font-size:10px;width:96px;"/>
 				        <li class="last"><a href="javascript:void(0)">All_for_Good:</a> First Lady makes cookies with Marine volunteers 
 				        at White House - slide show <span>20 minutes ago</span></li>
 				    </ul>
-				    <p class="more-link"><a href="javascript:void(0)">View more tweets</a></p>
+				    <p class="more-link"><a href="http://twitter.com/All_for_Good">View more tweets</a></p>
 
 				    </div>
 				    <!-- <div class="block-bottom"></div> -->
@@ -168,7 +170,7 @@ style="font-size:10px;width:96px;"/>
         });
     </script>
 
-   <!-- defined in homepage.js; requires id=snippets and id=more in the DOM -->
+<!-- defined in homepage.js; requires id=snippets and id=more in the DOM -->
 <script>
 runSnippetsQuery();
 $('#location').val(getSessionCookie('user_vol_loc'));
