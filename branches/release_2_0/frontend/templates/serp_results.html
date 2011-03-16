@@ -1,0 +1,82 @@
+
+
+{% if not has_results %}
+  {% include 'no_results.html' %}
+{% else %}
+  {% for result in result_set.clipped_results %}
+    {% if result.latlong %}
+<script type='text/javascript'>
+  asyncLoadManager.addCallback('map', function() {
+    var coords = '{{result.latlong}}'.split(',');
+    map.addMarker(coords[0], coords[1], '{{ forloop.counter0|as_letter }}');
+  });
+</script>
+    {% endif %}
+<li class="{% if forloop.counter0 == 0 %}first{% endif %} result-{{ forloop.counter1 }}">
+<h4>
+    {% if result.latlong %}
+<img style="position:relative;left:-5px;top:8px;" 
+     src='http://www.google.com/mapfiles/marker_midblue{{ forloop.counter0|as_letter }}.png' />
+    {% endif %}
+
+<a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title }}</a></h4>
+     {% if result.location or result.startdate or result.interest_count %}
+<p class='meta'>
+       {{ result.location|escape }}
+       {% if result.location %}-{% endif %}
+       {{ result|custom_date_range_format }}
+</p>
+     {% endif %}
+
+<p id="brief_{{ forloop.counter0 }}B" class="teaser">{{ result.purged_snippet|truncate_chars:285|escape }}</p>
+<p id="brief_{{ forloop.counter0 }}F" class="teaser" style="display:none;">{{ result.purged_snippet|escape }}</p>
+<a id="brief_{{ forloop.counter0 }}" href="javascript:void(0)" onclick="toggleBrief(this)">[more]</a></p>
+<p class="links"><a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
+| 
+
+<a href="javascript:void(0);" id='share_{{ forloop.counter0 }}'>Share</a>
+<script type="text/javascript">
+  addthis.button('#share_{{ forloop.counter0 }}', { username: "footprint2009dev", services_compact: "email, twitter, facebook, myspace, friendfeed, bebo", ui_click: true }, { title: "{{ result.title|escape }}", url: "{{ result.url }}", templates: {twitter: '\{\{url\}\} via www.allforgood.org'} });
+</script>
+</li>
+  {% endfor %}
+<script>
+        setFacetCounts = function() {
+                $('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");
+                $('#virtual').html("(" + {{result_set.facet_counts.virtual}} + ")");
+                $('#self_directed').html("(" + {{result_set.facet_counts.self_directed}} + ")");
+                $('#micro').html("(" + {{result_set.facet_counts.micro}} + ")");
+        }();
+
+        setProviders = function() {
+                var providers = "";
+                {% if result_set.providers %}
+                        $("#provider_facet").show();
+                        {% for dict in result_set.providers %}
+                                {% for k,v in dict.items %}
+                                providers += '<li><a href="{{ k }}">{{ k }}</a> <span>({{ v }})</span></li>';
+                                {% endfor %}
+                        {% endfor %}
+                        $("#provider_list").html(providers);
+                {% else %}
+                        $("#provider_facet").hide();
+                {% endif %}
+        }();
+
+        setCategories = function() {
+                var categories = "";
+                {% if result_set.categories %}
+                        $("#category_facet").show();
+                        {% for cats in result_set.categories %}
+                   categories += '<li><a href="{{ cats.0 }}">{{ cats.0 }}</a> <span>({{ cats.1 }})</span></li>';
+                        {% endfor %}
+                        $("#category_list").html(categories);
+                {% else %}
+                        $("#category_facet").hide();
+                {% endif %}
+        }();
+
+        populateActiveFacets();
+        setVisibility();
+</script>
+{% endif %}

@@ -1,40 +1,88 @@
-        <!--.nav-->
 {% if path in '/search' %}
+        <!--.nav-->
         <div id="nav">
-{% else %}
-        <div id="nav" class="withsecondary">
-{% endif %}
             <!--.primary-->
             <div class="primary">
                 <ul>
-                    <li class="first"><a href="/">Search Opportunities</a></li>
-                    <li {% ifequal path '/strategicpartners' %}class="active"{% endifequal %}><a href="/strategicpartners">Partners</a></li>
-                    <li {% ifequal path '/posting' %}class="active"{% endifequal %}><a href="/posting">Add Opportunities</a></li>
-                    <li {% ifequal path '/api.html' %}class="active"{% endifequal %}><a href="/api.html">Use Our Data</a></li>
-                    <!-- <li><a href="http://blog.allforgood.org/">Blog</a></li> -->
-                    <li><a href="javascript:void(0)">Blog</a></li>
-                    <li class="last {% if not path in '/posting/api.html/strategicpartners' %}active{% endif %}"><a href="/about">About</a></li>
+                    <li class="first active"><a href="/search">Search Opportunities</a></li>
+                    <li><a href="/partners"> Partners</a></li>
+                    <li><a href="/posting">Add Opportunities</a></li>
+                    <li><a href="/gettingstarted">Use Our Data</a></li>
+                    <li><a href="http://blog.allforgood.org/">Blog</a></li>
+                    <li class="last"><a href="/about">About</a></li>
                 </ul>
             </div>
             <!--.primary-->
-{% if not path in '/search' %}
+         </div>
+{% else %}
+  {% if path in '/posting/privacypolicy/cla/partners/getinvolved/gettingstarted/apps/spec/api.html/api_tos/about/faq/team/tos/help/contactus' %}
+        <!--.nav-->
+        <div id="nav" class="withsecondary">
+  {% else %}
+        <!--.nav-->
+        <div id="nav">
+  {% endif %}
+            <!--.primary-->
+            <div class="primary">
+                <ul>
+                    <li class="first"><a href="/search">Search Opportunities</a></li>
+                    <li {% if path in '/partners/getinvolved' %}class="active"{%endif%}><a href="/partners"> Partners</a></li>
+                    <li {% if path in '/posting/privacypolicy/cla' %}class="active"{%endif%}><a href="/posting">Add Opportunities</a></li>
+
+                    <li {% if path in '/gettingstarted/apps/spec/api.html/api_tos' %}class="active"{%endif%}><a href="/gettingstarted">Use Our Data</a></li>
+                    <li><a href="http://blog.allforgood.org/">Blog</a></li>
+                    <li class="last{% if path in '/about/faq/team/tos/help/contactus' %} active{% endif %}"><a href="/about">About</a></li>
+                </ul>
+            </div>
+            <!--.primary-->
+  {% if path in '/posting/privacypolicy/cla' %}
             <!--.secondary-->
             <div class="secondary">
                 <ul>
-                    <li class="first {% ifequal path '/about' %}active{% else %}{% endifequal %}"><a href="/about">About</a></li>
-                    <li><a href="javascript:void(0)">Blog</a></li>
-                    <!-- <li><a href="http://blog.allforgood.org/">Blog</a></li> -->
-                    <li {% ifequal path '/help' %}class="active"{% endifequal %}><a href="/help">Help</a></li>
-                    <li {% ifequal path '/faq' %}class="active"{% endifequal %}><a href="/faq">FAQs</a></li>
-                    <li {% ifequal path '/apps' %}class="active"{% endifequal %}><a href="/apps">Apps</a></li>
-                    <li {% ifequal path '/api.html' %}class="active"{% endifequal %}><a href="/api.html">API</a></li>
-                    <li {% ifequal path '/posting' %}class="active"{% endifequal %}><a href="/posting">Posting Listings</a></li>
-                    <li {% ifequal path '/privacypolicy' %}class="active"{% endifequal %}><a href="/privacypolicy">Privacy Policy</a></li>
-                    <li {% ifequal path '/tos' %}class="active"{% else %}{% ifequal path '/api_tos' %}class="active"{% endifequal %}{% endifequal %}><a href="/tos">Terms of Service</a></li>
-                    <li class="last {% ifequal path '/contentpolicy' %}active{% endifequal %}"><a href="/contentpolicy">Content Policy</a></li>
+                    <li class="first{% if path in '/posting' %} active{% endif %}"><a href="/posting">Posting Instructions</a></li>
+                    <li {% if path in '/privacypolicy' %}class="active"{%endif%}><a href="/privacypolicy">Privacy Policy</a></li>
+                    <li class="last{% if path in '/cla' %} active{% endif %}"><a href="/cla">Content Licensing Agreement</a></li>
                 </ul>
             </div>
             <!--.secondary-->
-{% endif %}
+  {% endif %}
+  {% if path in '/partners/getinvolved' %}
+            <!--.secondary-->
+            <div class="secondary">
+                <ul>
+                    <li class="first{% if path in '/partners' %} active{% endif %}"><a href="/partners">Partners Gallery</a></li>
+                    <li class="last{% if path in '/getinvolved' %} active{% endif %}"><a href="/getinvolved">Get Involved</a></li>
+                </ul>
+            </div>
+            <!--.secondary-->
+  {% endif %}
+  {% if path in '/gettingstarted/apps/spec/api.html/api_tos' %}
+            <!--.secondary-->
+            <div class="secondary">
+                <ul>
+                    <li class="first{% if path in '/gettingstarted' %} active{% endif %}"><a href="/gettingstarted">Getting Started</a></li>
+                    <li {% if path in '/apps' %}class="active"{%endif%}><a href="/apps">Apps</a></li>
+                    <li {% if path in '/api.html' %}class="active"{%endif%}><a href="/api.html">API</a></li>
+                    <li {% if path in '/spec' %}class="active"{%endif%}><a href="/spec">Spec</a></li>
+                    <li class="last{% if path in '/api_tos' %} active{% endif %}"><a href="/api_tos">API Terms of Service</a></li>
+                </ul>
+            </div>
+            <!--.secondary-->
+  {%endif%}
+  {% if path in '/about/faq/team/tos/help/contactus' %}
+            <!--.secondary-->
+            <div class="secondary">
+                <ul>
+                    <li class="first{% if path in '/about' %} active{% endif %}"><a href="/about">Our Story</a></li>
+                    <li {% if path in '/faq' %}class="active"{%endif%}><a href="/faq">FAQ</a></li>
+                    <li {% if path in '/team' %}class="active"{%endif%}><a href="/team">Team</a></li>
+                    <li {% if path in '/tos' %}class="active"{%endif%}><a href="/tos">Terms of Service</a></li>
+                    <li {% if path in '/help' %}class="active"{%endif%}><a href="/help">Help</a></li>
+                    <li class="last{% if path in '/contactus' %} active{% endif %}"><a href="/contactus">Contact Us</a></li>
+                </ul>
+            </div>
+            <!--.secondary-->
+  {%endif%}
         </div>
         <!--.nav-->
+{%endif%}

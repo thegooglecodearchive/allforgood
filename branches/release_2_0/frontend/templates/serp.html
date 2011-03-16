@@ -1,0 +1,301 @@
+        <!--.content-->
+        <div id="content" class="clearfix">
+            <!--.single-page-->
+            <div class="search-page">
+                <!--#search-top-->
+                <div id="search-top">
+                    <div class="search-box">
+                        <h1>Search:</h1>
+                        <form action="/search_form" id="overlabel" 
+  onsubmit="submitForm('keywords');return false;">
+<input type="hidden" value="" id="category_input" name="category_input" />
+<input type="hidden" value="" id="provider_input" name="provider_input" />
+                             <div class="form-row">
+                                 <label for="keywords" class="overlabel">enter search term</label>
+                                 <input id="keywords" class="text-field" type="text" name="search" title="enter search term" value="" />
+                                 <input type="submit" name="submit" id="submit" value="Search" />
+                             </div>
+                         </form>
+                        <div class="pop-search">
+                            <p><strong>popular searches:</strong> Military Families, Veterans, Education, 
+                            Hunger, Animals, Health, Seniors, Technology, Poverty</p>
+                        </div>
+                    </div>
+                    <div class="search-info">
+                        <ul>
+                            <li><strong>In Your Area</strong> Are opportunities that lorem ipsum dolor mit 
+                            veritas <a href="javascript:void(0)">link</a>.</li>
+                            <li><strong>Virtual</strong> Are opportunities that lorem ipsum dolor mit 
+                            veritas <a href="javascript:void(0)">link</a>.</li>
+                            <li><strong>Self-Directed</strong> Are opportunities that lorem ipsum dolor mit 
+                            veritas <a href="javascript:void(0)">link</a>.</li>
+                            <li><strong>Micro</strong> Are opportunities that lorem ipsum dolor mit veritas 
+                            <a href="javascript:void(0)">link</a>.</li>
+                        </ul>
+                    </div>
+                </div>
+                <!--#search-top-->
+                <!--.col-main-->
+                <div class="col-main">
+                    <!--#tabs-->
+                    <div id="tabs">
+                    	<ul>
+<li><a href="#tabs-1" >In Your Area <span id="in_your_area">(0)</span></a></li>
+<li><a href="#tabs-2" >Virtual <span id="virtual">(0)</span></a></li>
+<li><a href="#tabs-3" >Self-Directed <span id="self_directed">(0)</span></a></li>
+<li><a href="#tabs-4" >Micro <span id="micro">(0)</span></a></li>
+                    	</ul>
+                    	<!--#tabs-1-->
+                    	<div id="tabs-1">
+                    	    <div class="search-aside">
+                    	        <div class="box">
+                    	        <div class="box search-current">
+                                    <div id="active_facet_query_wrapper">
+                    	            <h4>Your Search</h4>
+                    	            <ul>
+                    	                <li id="active_facet_query"></li>
+                    	            </ul>
+                                    </div>
+                    	        </div>
+
+                    	        <div id="category_facet" class="box search-refine search-refine-category">
+                    	            <div class="header">
+                    	            	<h4>Refine by Category</h4>
+              <a href="#" id="show_categories" class="placeholder collapse"></a>
+                    	            </div>
+                    	            <ul>
+                    	                <li><a href="javascript:void(0)">Hunger</a> <span>(0)</span></li>
+                    	                <li><a href="javascript:void(0)">Poverty</a> <span>(0)</span></li>
+                    	                <li><a href="javascript:void(0)">Health</a> <span>(0)</span></li>
+                    	                <li><a href="javascript:void(0)">Education</a> <span>(0)</span></li>
+                    	                <li><a href="javascript:void(0)">Seniors</a> <span>(0)</span></li>
+                    	                <li><a href="javascript:void(0)">Technology</a> <span>(0)</span></li>
+                    	                <li><a href="javascript:void(0)">Animals</a> <span>(0)</span></li>
+                    	            </ul>
+                    	        </div>
+
+                    	        <div id="provider_facet" class="box search-refine search-refine-provider">
+                    	            <div class="header">
+                    	            	<h4>Refine by Provider</h4>
+             <a href="#" id="show_providers" class="placeholder collapse"></a>
+                    	            </div>
+                    	            <ul id="provider_list">
+                    	            </ul>
+                    	        </div>
+
+                    	             
+                                    <div id="map"></div>
+                    	            <form action="/search_form" id="overlabel">
+                    	                <strong>Enter your location</strong>
+                    	                <div class="form-row form-row-search-first">
+                    	                     <label for="location" class="overlabel">ny, ny</label>
+                    	                     <input id="location" class="text-field" type="text" name="location" title="ny, ny" value="" />
+                    	                 </div>
+                    	                 <div class="form-row form-search-range">
+                    	                     <strong><label for="location_slider">Within a <span id="location_distance"></span> mile range</label></strong>
+                    	                     <div id="location_slider"></div>
+                    	                 </div>
+                    	                 <div class="form-row form-row-search-last">
+                    	                     <strong>Filter by date range</strong>
+                    	                     <input type="text" id="datepicker-start" value="start date"> <div class="date-sep">to</div> <input type="text" id="datepicker-end" value="end date">
+                    	                 </div>
+                    	                 <input type="submit" value="Update Search" id="submit-btn" />
+                    	             </form>  
+                    	            
+                    	        </div>
+                    	    </div>
+                    	    <div class="search-main">
+                                <div id="loading"></div>
+                    	        <div class="sort">Sort by 
+             	            <select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+                    	                <option>Relevance</option>
+                    	                <option>Date</option>
+                    	            </select>
+                    	        </div>
+                    	        <ul id="tabs-1-results" class="results">
+<div id="snippets_pane"></div>
+                    	        </ul>
+                    	    </div>
+                    	</div>
+                    	<!--#tabs-1-->
+                    	<!--#tabs-2-->
+                    	<div id="tabs-2">
+                    	    <div class="search-aside">
+                    	        <div class="box">
+                    	             <em>Search box</em>
+                    	        </div>
+                    	    </div>
+                    	    <div class="search-main">
+                    	        <div class="sort">Sort by 
+             	            <select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+                    	                <option>Relevance</option>
+                    	                <option>Date</option>
+                    	            </select>
+                    	        </div>
+                    	        <ul id="tabs-2-results" class="results">
+                    	        </ul>
+                    	    </div>
+                    	</div>
+                    	<!--#tabs-2-->
+                    	<!--#tabs-3-->
+                    	<div id="tabs-3">
+                    	    <div class="search-aside">
+                    	        <div class="box">
+                    	             <em>Search box</em>
+                    	        </div>
+                    	    </div>
+                    	    <div class="search-main">
+                    	        <div class="sort">Sort by 
+             	            <select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+                    	                <option>Relevance</option>
+                    	                <option>Date</option>
+                    	            </select>
+                    	        </div>
+                    	        <ul id="tabs-3-results" class="results">
+                    	        </ul>
+                    	    </div>
+                    	</div>
+                    	<!--#tabs-3-->
+                    	<!--#tabs-4-->
+                    	<div id="tabs-4">
+                    	    <div class="search-aside">
+                    	        <div class="box">
+                    	             <em>Search box</em>
+                    	        </div>
+                    	    </div>
+                    	    <div class="search-main">
+                    	        <div class="sort">Sort by 
+             	            <select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+                    	                <option>Relevance</option>
+                    	                <option>Date</option>
+                    	            </select>
+                    	        </div>
+                    	        <ul id="tabs-4-results" class="results">
+                    	        </ul>
+                    	    </div>
+                    	</div>
+                    	<!--#tabs-4-->
+                    </div>
+                    <!--#tabs-->
+                </div>
+                <!--.col-main-->
+            </div>
+            <!--.single-page-->
+        </div>
+        <!--.content-->
+
+
+<script type='text/javascript'>
+
+function populateActiveFacets() {
+  var query = getInputFieldValue(el('keywords'));
+  var category = $("#category_input").val();
+  var source = $("#provider_input").val();
+
+  if (!query) {
+    $("#active_facet_query_wrapper").hide();
+  } else {
+    var html = new Array();
+    html.push('"', query, '"', '(<a href="javascript:removeKeyword()">undo</a>)');
+    $("#active_facet_query").html(html.join(''));
+    $("#active_facet_query_wrapper").show();
+  }
+
+  if (category) {
+    facets += "<li>" + category + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>";
+  }
+
+  if (source) {
+    facets += "<li>" + source + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>";
+  }
+
+  if (!category && !source) {
+    $("#facets_container").hide();
+  } else  {
+    $("#facets_container").show();
+  }
+}
+
+  var ts = getHashParam('type', '');
+  if (!ts || ts == "all") {		
+    $("#location_box").show();
+    $("#map").css("visibility", "visible");
+  } else {        
+    $("#location_box").hide();
+    $("#map").css("visibility", "hidden");		
+    if (ts == "self_directed") {			
+      $(".top_search").css("visibility", "hidden");
+      $("#location_distance_date").css("visibility", "hidden");
+     }
+  }	
+
+  $("#tabs").tabs("option", "collapsible", true);
+  $("#tabs").tabs("option", "selected", getSelectedTab());
+
+
+  var sort = getHashParam('sort', '');
+  if (sort == "eventrangeend") {
+    $("#sort").attr('selectedIndex', 1);
+  } else {
+    $("#sort").attr('selectedIndex', 0);
+  }
+
+  if (getSelectedTab() == 3) {			
+    $(".top_search").css("visibility", "hidden");
+  }
+	
+
+  renderPaginator(el('paginator'), {{result_set.facet_counts.count|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
+
+  initMap();
+  $('.snippet_text').expand();  
+
+        $("#show_providers").click(function(event) {
+                var value = $(this).attr("href");
+                $('#provider_input').val(value);
+                hideShowProviders(value);
+                submitForm("facet");
+                event.preventDefault();
+        })
+
+        $("#show_categories").click(function(event) {
+                var value = $(this).html();
+                $('#category_input').val(value);
+                hideShowCategories(value);
+                submitForm("facet");
+                event.preventDefault();
+        })
+
+        function capitalize(str) {
+        if (str) {
+                        var words = str.split(" ");
+                        for (var i=0 ; i < words.length ; i++){
+                        var testwd = words[i];
+                        var firLet = testwd.substr(0,1);
+                        var rest = testwd.substr(1, testwd.length -1)
+                        words[i] = firLet.toUpperCase() + rest
+                        }
+                        return words.join(" ");
+                }
+        }
+
+        var category = getHashParam('category', '');
+        if (category) {
+                $("#category_input").val(category);
+                hideShowCategories(capitalize(category));
+        }
+
+        var source = getHashParam('source', '');
+        if (source) {
+                $("#provider_input").val(source);
+                hideShowProviders(source);
+        }
+
+
+
+
+if (map) {
+  map.clearMarkers();
+}
+
+</script>
