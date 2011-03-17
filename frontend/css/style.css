@@ -1055,8 +1055,7 @@ form#overlabel input#submit:hover {
   display: block;
   font-size: 13px;
   font-weight: bold;
-  text-decoration: none;
-  text-transform: uppercase;
+  text-decoration: none;  
   padding: 0 20px;
 }
 #tabs ul.ui-tabs-nav li a span {
@@ -1091,6 +1090,9 @@ form#overlabel input#submit:hover {
   padding: 13px 10px 10px 10px;
   margin: 0 0 10px 0;
 }
+
+.no_background {background:none !important;}
+
 .search-aside .box h4 {
   color: #666633;
   font-size: 15px;
@@ -1424,5 +1426,5 @@ form#overlabel input#submit:hover {
 #main.partners-page #col2, #main.partners-page #col3 {
   margin-left: 6px;
 }
-#map {margin-top:10px;width:280px;height:250px;}
+#map {margin-top:10px;width:280px;height:250px; margin:0 0 10px 0;}
 /* @end */
