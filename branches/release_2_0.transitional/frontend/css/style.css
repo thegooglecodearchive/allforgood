@@ -1206,7 +1206,7 @@ form#overlabel input#submit:hover {
   padding: 0 0 0 12px;
 }
 .search-aside .box.search-refine .header .expand, .search-aside .box.search-refine .header .collapse {
-  background: url(images/toggle-sprite.png) 0 0 no-repeat;
+  background: url(../images/toggle-sprite.png) 0 0 no-repeat;
   display: inline;
   float: right;
   height: 26px;

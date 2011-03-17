@@ -20,7 +20,8 @@ var filters = [];
 var loadNumber = 0;
 
 $(document).ready(function() {	
-	var index = getSelectedTab();
+	$.collapsible(".search-refine .header");
+    var index = getSelectedTab();
 	$("#tabs").tabs({			
 		select: function(event, ui) {			
 			submitForm('oppType', ui.index);								 
@@ -69,30 +70,6 @@ $(document).ready(function() {
 	if (end != "everything") {
 		getInputFieldValue(el('enddate')).value = end;
 	}	
-	
-	$("#show_categories").click(function(event) {
-		var value = $(this);
-		if (value.html() == "+" ) {
-			$("#category_list").show();
-			value.html("-");
-		} else {
-			$("#category_list").hide();
-			value.html("+");
-		}
-		return false;
-	})
-	
-	$("#show_providers").click(function(event) {
-		var value = $(this);
-		if (value.html() == "+" ) {
-			$("#provider_list").show();
-			value.html("-");
-		} else {
-			$("#provider_list").hide();
-			value.html("+");
-		}
-		return false;
-	})	
   });
   
   function getSelectedTab() {
@@ -114,12 +91,10 @@ $(document).ready(function() {
 		  load = true;  
 	  }
 	  if (value && value != "") {
-		  populateActiveFacets();
-		  $("#show_categories").hide();
+		  populateActiveFacets();		  
 		  $("#category_list").hide();
 		  $("#category_item").html("<li>" + value + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>");
 	  } else {		  
-		  $("#show_categories").show();
 		  $("#category_item").html("");
 		  $("#category_list").show();
 		  $("#category_input").val("");
@@ -134,11 +109,9 @@ $(document).ready(function() {
 	  }
 	  if (value && value != "") {
 		  populateActiveFacets();
-		  $("#show_providers").hide();
 		  $("#provider_list").hide();
 		  $("#provider_item").html("<li>" + value + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>");
 	  } else {		  
-		  $("#show_providers").show();
 		  $("#provider_item").html("");
 		  $("#provider_list").show();
 		  $("#provider_input").val("");
@@ -154,20 +127,12 @@ $(document).ready(function() {
   
   function resetFacets() {
 	  $("#provider_list").hide();
-	  $("#category_list").hide();
-	  $("#show_categories").html("+");
-	  $("#show_providers").html("+");
+	  $("#category_list").hide();	  
   }
   
   function setVisibility() {
 	 var cat = $("#category_input").is(":visible");
-	 var prov = $("#provider_input").is(":visible");
-	 if (cat) {
-		 $("#show_categories").html("-");
-	 }	 
-	 if (prov) {
-		 $("#show_providers").html("-");
-	 }
+	 var prov = $("#provider_input").is(":visible");	 
   }
   
   /** Query params for backend search, based on frontend parameters.

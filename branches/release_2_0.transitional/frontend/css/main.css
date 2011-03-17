@@ -334,7 +334,7 @@ input.hasDatepicker {
 /** Search results - map **/
 #map {
   border: 1px solid silver;
-  margin-bottom: 10px;
+  margin-bottom: 25px;
   width: 238px;
   height: 238px;
 }
