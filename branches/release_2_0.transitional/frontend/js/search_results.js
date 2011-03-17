@@ -69,7 +69,9 @@ $(document).ready(function() {
 	}
 	if (end != "everything") {
 		getInputFieldValue(el('enddate')).value = end;
-	}	
+	}
+    
+    $("#facets_container").hide();    
   });
   
   function getSelectedTab() {
@@ -128,11 +130,6 @@ $(document).ready(function() {
   function resetFacets() {
 	  $("#provider_list").hide();
 	  $("#category_list").hide();	  
-  }
-  
-  function setVisibility() {
-	 var cat = $("#category_input").is(":visible");
-	 var prov = $("#provider_input").is(":visible");	 
   }
   
   /** Query params for backend search, based on frontend parameters.

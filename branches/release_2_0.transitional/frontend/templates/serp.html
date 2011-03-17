@@ -39,15 +39,15 @@
 			<!--#tabs-->
 			<div id="tabs">
 				<ul>
-					<li><a href="#tabs-1">In your area <span id="in_your_area"></span></a></li>
-                    <li><a href="#tabs-1">Virtual <span id="virtual"></span></a></li>
-                    <li><a href="#tabs-1">Micro <span id="micro"></span></a></li>
-                    <li><a href="#tabs-1">Self-Directed <span id="self_directed"></span></a></li>
+					<li><a href="#tabs-1">IN YOUR AREA <span id="in_your_area"></span></a></li>
+                    <li><a href="#tabs-1">VIRTUAL <span id="virtual"></span></a></li>
+                    <li><a href="#tabs-1">MICRO <span id="micro"></span></a></li>
+                    <li><a href="#tabs-1">SELF-DIRECTED <span id="self_directed"></span></a></li>
 				</ul>
 				<!--#tabs-1-->
 				<div id="tabs-1">
 					<div class="search-aside">
-						<div class="box">                            
+						<div class="box no_background">                            
                             <div class="box search-current facets" id="facets_container">
 								<div id="active_facet_query_wrapper">
 									<ul class="data_list" id="active_facet_item"></ul>                                    
@@ -60,34 +60,34 @@
 									<h4>Refine by Category</h4>									
 								</div>								
                                 <ul id="category_list"></ul>	
-							</div>
-                            <div class="box search-refine search-refine-category facets"><ul id="category_item"></ul></div>
+							</div>                            
 							<div id="provider_facet" class="box search-refine search-refine-provider facets">
 								<div class="header">
 									<h4>Refine by Provider</h4>									
 								</div>								
                                 <ul id="provider_list"></ul>
-							</div>
-                             <div class="box search-refine search-refine-category facets"><ul id="provider_item"></ul></div>
+							</div>                             
 							<div id="map"></div>
-							<form action="/search_form" id="overlabel">
-								<strong>Enter your location</strong>
-								<div class="form-row form-row-search-first">
-									<label for="location" class="overlabel">ny, ny</label>
-									<input id="location" class="text-field" type="text" name="location" title="ny, ny" value="" />
-								</div>
-								<div class="form-row form-search-range">
-									<strong><label for="location_slider">Within a <span id="location_distance"></span> mile range</label></strong>
-									<div id="location_slider"></div>
-								</div>
-								<div class="form-row form-row-search-last">
-									<strong>Filter by date range</strong>
-									<input type="text" id="datepicker-start" value="start date" /> 
-									<div class="date-sep">to</div>
-									 <input type="text" id="datepicker-end" value="end date" />
-								</div>
-								<input type="submit" value="Update Search" id="submit-btn" />
-							</form>
+							<div class="box">
+                                <form action="/search_form" id="overlabel">
+                                    <strong>Enter your location</strong>
+                                    <div class="form-row form-row-search-first">
+                                        <label for="location" class="overlabel">ny, ny</label>
+                                        <input id="location" class="text-field" type="text" name="location" title="ny, ny" value="" />
+                                    </div>
+                                    <div class="form-row form-search-range">
+                                        <strong><label for="location_slider">Within a <span id="location_distance"></span> mile range</label></strong>
+                                        <div id="location_slider"></div>
+                                    </div>
+                                    <div class="form-row form-row-search-last">
+                                        <strong>Filter by date range</strong>
+                                        <input type="text" id="datepicker-start" value="start date" /> 
+                                        <div class="date-sep">to</div>
+                                         <input type="text" id="datepicker-end" value="end date" />
+                                    </div>
+                                    <input type="submit" value="Update Search" id="submit-btn" />
+                                </form>
+                            </div>
 						</div>
 					</div>
 					<div class="search-main">
@@ -103,64 +103,7 @@
 						</ul>
 					</div>
 				</div>
-				<!--#tabs-1-->
-				<!--#tabs-2-->
-				<div id="tabs-2">
-					<div class="search-aside">
-						<div class="box">
-							<em>Search box</em>
-						</div>
-					</div>
-					<div class="search-main">
-						<div class="sort">Sort by 
-							<select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
-								<option>Relevance</option>
-								<option>Date</option>
-							</select>
-						</div>
-						<ul id="tabs-2-results" class="results">
-						</ul>
-					</div>
-				</div>
-				<!--#tabs-2-->
-				<!--#tabs-3-->
-				<div id="tabs-3">
-					<div class="search-aside">
-						<div class="box">
-							<em>Search box</em>
-						</div>
-					</div>
-					<div class="search-main">
-						<div class="sort">Sort by 
-							<select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
-								<option>Relevance</option>
-								<option>Date</option>
-							</select>
-						</div>
-						<ul id="tabs-3-results" class="results">
-						</ul>
-					</div>
-				</div>
-				<!--#tabs-3-->
-				<!--#tabs-4-->
-				<div id="tabs-4">
-					<div class="search-aside">
-						<div class="box">
-							<em>Search box</em>
-						</div>
-					</div>
-					<div class="search-main">
-						<div class="sort">Sort by 
-							<select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
-								<option>Relevance</option>
-								<option>Date</option>
-							</select>
-						</div>
-						<ul id="tabs-4-results" class="results">
-						</ul>
-					</div>
-				</div>
-				<!--#tabs-4-->
+				<!--#tabs-1-->				
 			</div>
 			<!--#tabs-->
 		</div>
