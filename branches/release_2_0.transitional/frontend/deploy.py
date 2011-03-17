@@ -103,7 +103,8 @@ def load_keys():
   logging.info("host=" + http_host + "  maps api key=" + MAPS_API_KEY)
 
   # no default for ga key
-  GA_KEY = GA_KEYS.get(http_host, 'unknown')
+  GA_KEY = GA_KEYS.get(http_host, 
+    'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxTpeCj-9ism2i6Mt7fLlVoN6HsfDBSOZjcyagWjKTMT32rzg71rFenopA')
   logging.info("host=" + http_host + "  ga key=" + GA_KEY)
 
   # facebook API has default key
