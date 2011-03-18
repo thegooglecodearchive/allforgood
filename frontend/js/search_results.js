@@ -912,7 +912,7 @@ function categorySearch(category) {
 }
 
 function renderPaginator(div, totalNum, forceShowNextLink) {
-  if (!lastSearchQuery || searchResults.length == 0 || totalNum == 0) {
+  if (!lastSearchQuery || totalNum == 0) {
     return;
   }
 

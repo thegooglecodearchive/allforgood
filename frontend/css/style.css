@@ -1291,6 +1291,16 @@ form#overlabel input#submit:hover {
 .search-main .results li.result-5 {
   background: url(images/serp-google-pin-d.png) 0 4px no-repeat;
 }
+
+#paginator {margin-top:20px;}
+
+#paginator a {
+  color: #3399cc;
+  font-weight: bold;
+  text-decoration: none;
+  font-size:15px;
+}
+
 /* @end */
 /* @end */
 /* @group Partners Page */
