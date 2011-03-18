@@ -1082,7 +1082,7 @@ form#overlabel input#submit:hover {
 /* @group Search Aside */
 .search-aside {
   float: left;
-  margin: 23px 20px 0 21px;
+  margin: 10px 20px 0 21px;
   width: 300px;
 }
 .search-aside .box {
@@ -1224,7 +1224,7 @@ form#overlabel input#submit:hover {
 /* @group Search Main */
 .search-main {
   float: left;
-  margin-top: 23px;
+  margin-top: 10px;
   width: 640px;
 }
 .search-main .sort {
