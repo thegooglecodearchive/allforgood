@@ -89,50 +89,6 @@
   {% endifnotequal %}
 {% endifequal %}
 
-<script type="text/javascript">
-		$(function(){
-
-			// Tabs
-			$('#tabs').tabs();
-
-			// Datepicker
-			$('#datepicker-start').datepicker({
-				inline: true
-			});
-			$('#datepicker-end').datepicker({
-				inline: true
-			});
-
-			// Slider
-			$( "#slider" ).slider({
-				value:25,
-				min: 0,
-				max: 100,
-				step: 5,
-				slide: function( event, ui ) {
-					$( "#amount" ).val( "" + ui.value );
-				}
-			});
-
-			$( "#amount" ).val( "" + $( "#slider" ).slider( "value" ) );
-		});
-
-</script>
-<script>
-function toggleBrief(it) {
-  if (it) {
-    var brief = el(it.id + 'B');
-    var full = el(it.id + 'F');
-    if (full && brief) {
-      var b = (it.innerHTML == '[more]' ? false : true);
-      full.style.display = (b ? 'none' : 'block');
-      brief.style.display = (b ? 'block' : 'none');
-      it.innerHTML = (b ? '[more]' : '[less]');
-    }
-  }
-}
-</script>
-
 {# setup autocomplete last #}
 <script type='text/javascript' src='/zx{{version}}/js/third_party/jquery.autocomplete.js'></script>
 <script>

@@ -28,12 +28,9 @@
 </p>
      {% endif %}
 
-<p id="brief_{{ forloop.counter0 }}B" class="teaser">{{ result.purged_snippet|truncate_chars:285|escape }}</p>
-<p id="brief_{{ forloop.counter0 }}F" class="teaser" style="display:none;">{{ result.purged_snippet|escape }}</p>
-<a id="brief_{{ forloop.counter0 }}" href="javascript:void(0)" onclick="toggleBrief(this)">[more]</a></p>
+     <p id="brief_{{ forloop.counter0 }}B" class="teaser">{{ result.purged_snippet|escape }}</p>
 <p class="links"><a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
 | 
-
 <a href="javascript:void(0);" id='share_{{ forloop.counter0 }}'>Share</a>
 <script type="text/javascript">
   addthis.button('#share_{{ forloop.counter0 }}', { username: "footprint2009dev", services_compact: "email, twitter, facebook, myspace, friendfeed, bebo", ui_click: true }, { title: "{{ result.title|escape }}", url: "{{ result.url }}", templates: {twitter: '\{\{url\}\} via www.allforgood.org'} });
@@ -83,7 +80,7 @@ $("#tabs").tabs("option", "collapsible", true);
 					providers += '<li><a href="{{ k }}">{{ k }}</a> <span>({{ v }})</span></li>';
 				{% endfor %}
 			{% endfor %}	
-			$("#provider_list").html(providers);
+			$("#provider_list").html("<li id='active_prov'></li>" + providers);
 		{% else %}
 			$("#provider_facet").hide();
 		{% endif %}
@@ -96,24 +93,26 @@ $("#tabs").tabs("option", "collapsible", true);
 			{% for cats in result_set.categories %}
 				categories += '<li><a href="{{ cats.0 }}">{{ cats.0 }}</a> <span>({{ cats.1 }})</span></li>';
 			{% endfor %}	
-			$("#category_list").html(categories);
+			$("#category_list").html("<li id='active_cat'></li>" + categories);
 		{% else %}
 			$("#category_facet").hide();
 		{% endif %}
 	}();
 
 	$("#provider_list a").click(function(event) {
-		var value = $(this).attr("href");		
-		$('#provider_input').val(value);
-		hideShowProviders(value);		
+        var item = $(this);        
+        var href = item.attr("href");        
+		$('#provider_input').val(href);
+		hideShowProviders(href, null);		
 		submitForm("facet");
 		event.preventDefault();
 	})
 
 	$("#category_list a").click(function(event) {
-		var value = $(this).html();
-		$('#category_input').val(value);
-		hideShowCategories(value);		
+		var item = $(this);
+        var html = item.html();
+		$('#category_input').val(html);
+		hideShowCategories(html, null);		
 		submitForm("facet");
 		event.preventDefault();
 	})
@@ -173,6 +172,6 @@ $("#tabs").tabs("option", "collapsible", true);
     }
   renderPaginator(el('paginator'), {{result_set.facet_counts.count|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
   initMap();
-  $('.snippet_text').expand(); 
+  $('.teaser').expand(); 
 </script>
 {% endif %}
