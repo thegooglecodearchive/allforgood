@@ -51,7 +51,7 @@ $(document).ready(function() {
 			}
 	});	
 	$("#location_distance").html($("#location_slider").slider("value"));	
-	$("#facet_submit").click(function() {
+	$("#submit-btn").click(function() {
 		submitForm("all");
 		return false;
 	});
@@ -63,7 +63,8 @@ $(document).ready(function() {
 		}		
 	});
 	var start = getHashParam('timeperiodstart', '');
-	var end = getHashParam('timeperiodend', '');	
+	var end = getHashParam('timeperiodend', '');
+	
 	if (start != "everything") {
 		getInputFieldValue(el('startdate')).value = start;
 	}
@@ -93,43 +94,65 @@ $(document).ready(function() {
 		  load = true;  
 	  }
 	  if (value && value != "") {
-		  populateActiveFacets();		  
-		  $("#category_list").hide();
+          toggleFacetDisplay("category_list", value);          
+          $.cookie($(".search-refine .header").prev().attr("id"), 'hide');
+          populateActiveFacets();          
 		  $("#category_item").html("<li>" + value + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>");
 	  } else {		  
-		  $("#category_item").html("");
-		  $("#category_list").show();
+		  toggleFacetDisplay("category_list");
+          $.cookie($(".search-refine .header").prev().attr("id"), 'show');
+          $("#category_item").html("");		  
 		  $("#category_input").val("");
 		  populateActiveFacets();
 		  if (load) submitForm("facet");
 	  }
-  }
+  } 
   
   function hideShowProviders(value, load) {
-	  if (load == null) {
+      if (load == null) {
 		  load = true;  
 	  }
 	  if (value && value != "") {
-		  populateActiveFacets();
-		  $("#provider_list").hide();
+		  toggleFacetDisplay("provider_list", value);
+          populateActiveFacets();		  
 		  $("#provider_item").html("<li>" + value + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>");
 	  } else {		  
-		  $("#provider_item").html("");
-		  $("#provider_list").show();
+		  toggleFacetDisplay("provider_list");
+          $("#provider_item").html("");		  
 		  $("#provider_input").val("");
 		  populateActiveFacets();
 		  if (load) submitForm("facet");
 	  }
   }
   
+  function toggleFacetDisplay(id, value) {
+      $("#" + id + " li").each(function() {
+          var item = $(this);         
+          if (value) {              
+               item.hide();               
+          } else {
+              item.show();
+          }
+      });
+
+      if (value) {          
+          if (id.indexOf("provider_list") > -1) { 
+               var active = $("#active_prov");
+               active.html("");
+               active.html(value + " (<a href=\"javascript:hideShowProviders()\">undo</a>)");
+               active.show();
+           } else {
+               var active = $("#active_cat");
+               active.html("");
+               active.html(value + " (<a href=\"javascript:hideShowCategories()\">undo</a>)");
+               active.show();
+           }
+      }
+  }
+  
   function removeKeyword() {
 	  setInputFieldValue(el('keywords'), "");
 	  submitForm();
-  }
-  
-  function resetFacets() {
-	  $("#provider_list").hide();
-	  $("#category_list").hide();	  
   }
   
   /** Query params for backend search, based on frontend parameters.
@@ -740,9 +763,8 @@ function submitForm(invoker, value) {
   if ((invoker && invoker != "facet") || !invoker) {
 	  $("#category_input").val("");
 	  $("#provider_input").val("");
-	  hideShowCategories("", false);
-	  hideShowProviders("", false);
-	  resetFacets();
+	  hideShowCategories("", false, null);
+	  hideShowProviders("", false, null);
   } else {
 	  category = getCategoryInput();
 	  source = getSourceInput();  
@@ -801,7 +823,7 @@ function showMoreDuplicates(id) {
 			length: 285,
 			minTrail: 20,
 			moreText: "[more]",
-			lessText: "[less]",
+			lessText: " [less]",
 			ellipsisText: "... ",
 			moreAni: "",
 			lessAni: ""
