@@ -1,11 +1,13 @@
-
-
 {% if not has_results %}
   {% include 'no_results.html' %}
 {% else %}
   {% for result in result_set.clipped_results %}
     {% if result.latlong %}
 <script type='text/javascript'>
+  asyncLoadManager.addCallback('map', function(){
+      map.clearMarkers();
+  });
+  
   asyncLoadManager.addCallback('map', function() {
     var coords = '{{result.latlong}}'.split(',');
     map.addMarker(coords[0], coords[1], '{{ forloop.counter0|as_letter }}');
@@ -27,7 +29,6 @@
        {{ result|custom_date_range_format }}
 </p>
      {% endif %}
-
      <p id="brief_{{ forloop.counter0 }}B" class="teaser">{{ result.purged_snippet|escape }}</p>
 <p class="links"><a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
 | 
@@ -35,8 +36,10 @@
 <script type="text/javascript">
   addthis.button('#share_{{ forloop.counter0 }}', { username: "footprint2009dev", services_compact: "email, twitter, facebook, myspace, friendfeed, bebo", ui_click: true }, { title: "{{ result.title|escape }}", url: "{{ result.url }}", templates: {twitter: '\{\{url\}\} via www.allforgood.org'} });
 </script>
+</p>
 </li>
   {% endfor %}
+  <div id="paginator"></div>
 <script language="text/javascript">
 	var type = getHashParam('type', '');
 	if (type == "all") {		
@@ -170,8 +173,8 @@ $("#tabs").tabs("option", "collapsible", true);
         }
       }
     }
-  renderPaginator(el('paginator'), {{result_set.facet_counts.count|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
-  initMap();
+    initMap();
+    renderPaginator(el('paginator'), {{result_set.facet_counts.count|default:0}}, {{display_nextpage_link|yesno:"true,false"}});    
   $('.teaser').expand(); 
 </script>
 {% endif %}

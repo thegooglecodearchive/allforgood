@@ -172,10 +172,6 @@
     if (getSelectedTab() == 3) {
         $(".top_search").css("visibility", "hidden");
     }
-    
-    renderPaginator(el('paginator'), {{result_set.facet_counts.count|default:0}}, {{display_nextpage_link|yesno:"true,false"}});
-    initMap();
-    
     function capitalize(str) {
         if (str) {
             var words = str.split(" ");
