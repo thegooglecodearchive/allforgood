@@ -777,18 +777,21 @@ function submitForm(invoker, value) {
   if (invoker == "oppType") {
   	query.setType(value);
 	var type = query.getType();
-	$(".facets").css("visibility", "visible");
-	$(".top_search").css("visibility", "visible");
+	//$(".facets").show();
+	$(".top_search").show();
+	$("#location_distance_date").show();
+	
 	if (type == "all") {		
 		$("#location_box").show();
-        $("#map").css("visibility", "visible");
+        $("#map").show();
+        $("#location_distance_date").show();
     }
     else {        
 		$("#location_box").hide();
-        $("#map").css("visibility", "hidden");		
+        $("#map").hide();		
 		if (type == "self_directed") {			
-			$(".top_search").css("visibility", "hidden");
-			$("#location_distance_date").css("visibility", "hidden");
+			$(".top_search").hide();
+			$("#location_distance_date").hide();
 		}
     }
   }

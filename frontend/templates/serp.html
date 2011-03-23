@@ -40,73 +40,76 @@
 			<div id="tabs">
 				<ul>
 					<li><a href="#tabs-1">IN YOUR AREA <span id="in_your_area"></span></a></li>
-                    <li><a href="#tabs-1">VIRTUAL <span id="virtual"></span></a></li>
-                    <li><a href="#tabs-1">MICRO <span id="micro"></span></a></li>
-                    <li><a href="#tabs-1">SELF-DIRECTED <span id="self_directed"></span></a></li>
+					<li><a href="#tabs-1">VIRTUAL <span id="virtual"></span></a></li>
+					<li><a href="#tabs-1">MICRO <span id="micro"></span></a></li>
+					<li><a href="#tabs-1">SELF-DIRECTED <span id="self_directed"></span></a></li>
 				</ul>
 				<!--#tabs-1-->
 				<div id="tabs-1">
 					<div class="search-aside">
-						<div class="box no_background">                            
-                            <div class="box search-current facets" id="facets_container">
+						<div class="box no_background"> 
+							<div class="box search-current facets" id="facets_container">
 								<div id="active_facet_query_wrapper">
-									<ul class="data_list" id="active_facet_item"></ul>                                    
+									<ul class="data_list" id="active_facet_item">
+									</ul>
 								</div>
-                                <input type="hidden" name="category_input" id="category_input" value="" />
-                                <input type="hidden" name="provider_input" id="provider_input" value="" />
-							</div>                            
+								<input type="hidden" name="category_input" id="category_input" value="" />
+								<input type="hidden" name="provider_input" id="provider_input" value="" />
+							</div>
 							<div id="category_facet" class="box search-refine search-refine-category facets">
 								<div class="header collapsed">
-									<h4>Refine by Category</h4>									
-								</div>								
-                                <ul id="category_list"></ul>	
-							</div>                            
+									<h4>Refine by Category</h4>
+								</div>
+								<ul id="category_list">
+								</ul>
+							</div>
 							<div id="provider_facet" class="box search-refine search-refine-provider facets">
 								<div class="header collapsed">
-									<h4>Refine by Provider</h4>									
-								</div>								
-                                <ul id="provider_list"></ul>
-							</div>                             
+									<h4>Refine by Provider</h4>
+								</div>
+								<ul id="provider_list">
+								</ul>
+							</div>
 							<div id="map"></div>
-							<div class="box" id="location_distance_date">
-                                <div id="location_box">
-                                    <form action="/search_form" id="overlabel">
-                                        <strong>Enter your location</strong>
-                                        <div class="form-row form-row-search-first">                                        
-                                            <input id="location" class="text-field" type="text" name="location" value="" />
-                                        </div>
-                                        <div class="form-row form-search-range">
-                                            <strong><label for="location_slider">Within a <span id="location_distance"></span> mile range</label></strong>
-                                            <div id="location_slider"></div>
-                                        </div>
-                                        <div class="form-row form-row-search-last">
-                                            <strong>Filter by date range</strong>
-                                            <input type="text" id="startdate" value="start date" /> 
-                                            <div class="date-sep">to</div>
-                                             <input type="text" id="enddate" value="end date" />
-                                        </div>
-                                        <input type="submit" value="Update Search" id="submit-btn" />
-                                    </form>
-                                </div>
-                            </div>
+							<div class="box" id="location_distance_date"> 
+								<form action="/search_form" id="overlabel">
+									<div id="location_box">
+										<strong>Enter your location</strong>
+										<div class="form-row form-row-search-first"> 
+											<input id="location" class="text-field" type="text" name="location" value="" />
+										</div>
+										<div class="form-row form-search-range">
+											<strong><label for="location_slider">Within a <span id="location_distance"></span> mile range</label></strong>
+											<div id="location_slider"></div>
+										</div>
+									</div>
+									<div class="form-row form-row-search-last">
+										<strong>Filter by date range</strong>
+										<input type="text" id="startdate" value="start date" /> 
+										<div class="date-sep">to</div>
+										<input type="text" id="enddate" value="end date" />
+									</div>
+									<input type="submit" value="Update Search" id="submit-btn" />
+								</form>
+							</div>
 						</div>
 					</div>
 					<div class="search-main">
 						<div id="loading"></div>
 						<div class="top_search">
-                            <div class="sort">Sort by 
-                                <select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
-                                    <option>Relevance</option>
-                                    <option>Date</option>
-                                </select>
-                            </div>
-                        </div>
+							<div class="sort">Sort by 
+								<select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+									<option>Relevance</option>
+									<option>Date</option>
+								</select>
+							</div>
+						</div>
 						<ul id="tabs-1-results" class="results">
 							<div id="snippets_pane"></div>
 						</ul>
 					</div>
 				</div>
-				<!--#tabs-1-->				
+				<!--#tabs-1--> 
 			</div>
 			<!--#tabs-->
 		</div>
@@ -115,27 +118,23 @@
 	<!--.single-page-->
 </div>
 <!--.content--> 
-
-<script type="text/javascript">
-    function populateActiveFacets() {
+<script type="text/javascript">	
+	function populateActiveFacets() {
 		  var query = getInputFieldValue(el('keywords'));		  
 		  var category = $("#category_input").val();		  
 		  var source = $("#provider_input").val();
           var facets = "";
-
 		  if (query) { 
 			  facets += "<div class=\"header\"><h4>Your Search:</h4></div><ul><li>\"" + query + "\" (<a href=\"javascript:removeKeyword()\">undo</a>)</li></ul>";
 		  }
 		  if (category || source) {
 			  facets += "<div class=\"header\"><h4>Refine by</h4></div><ul>";
-              
               if (category) { 
                   facets += "<li>" + category + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>";
               }
               if (source) { 
                   facets += "<li>" + source + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>";
               }
-              
               facets += "</ul>";
 		  }
 		  if (facets == "") {
@@ -146,23 +145,23 @@
 			 $("#active_facet_query_wrapper").html(facets);
 		  }
 	}
-    
+	$(".top_search").show();
     var ts = getHashParam('type', '');
     if (!ts || ts == "all") {
         $("#location_box").show();
-        $("#map").css("visibility", "visible");
+        $("#map").show();
+        $("#location_distance_date").show();
     } else {
         $("#location_box").hide();
-        $("#map").css("visibility", "hidden");
+        $("#map").hide();
+        $("#location_distance_date").show();
         if (ts == "self_directed") {
-            $(".top_search").css("visibility", "hidden");
-            $("#location_distance_date").css("visibility", "hidden");
+            $(".top_search").hide();
+            $("#location_distance_date").hide();
         }
     }
-    
     $("#tabs").tabs("option", "collapsible", true);
     $("#tabs").tabs("option", "selected", getSelectedTab());
-    
     var sort = getHashParam('sort', '');
     if (sort == "eventrangeend") {
         $("#sort").attr('selectedIndex', 1);
@@ -170,7 +169,7 @@
         $("#sort").attr('selectedIndex', 0);
     }
     if (getSelectedTab() == 3) {
-        $(".top_search").css("visibility", "hidden");
+        $(".top_search").hide();
     }
     function capitalize(str) {
         if (str) {
@@ -184,20 +183,17 @@
             return words.join(" ");
         }
     }
-    
     var category = getHashParam('category', '');
     if (category) {
         $("#category_input").val(category);
         hideShowCategories(capitalize(category));
     }
-    
     var source = getHashParam('source', '');
     if (source) {
         $("#provider_input").val(source);
         hideShowProviders(source);
     }
-    
     if (map) {
         map.clearMarkers();
     }
-</script>
+</script> 
