@@ -41,19 +41,6 @@
   {% endfor %}
   <div id="paginator"></div>
 <script language="text/javascript">
-	var type = getHashParam('type', '');
-	if (type == "all") {		
-		$("#location_box").show();
-        $("#map").css("visibility", "visible");
-    }
-    else {        
-		$("#location_box").hide();
-        $("#map").css("visibility", "hidden");		
-		if (type == "self_directed") {			
-			$(".top_search").css("visibility", "hidden");
-			$("#location_distance_date").css("visibility", "hidden");
-		}
-    }	
 $("#tabs").tabs("option", "collapsible", true);
 	$("#tabs").tabs("option", "selected", getSelectedTab());
 	var query = createQueryFromUrlParams();
@@ -64,7 +51,7 @@ $("#tabs").tabs("option", "collapsible", true);
 		$("#sort").attr('selectedIndex', 0);
 	
 	if (getSelectedTab() == 3) {			
-		$(".top_search").css("visibility", "hidden");
+		$(".top_search").hide();
 	}
 	
 	setFacetCounts = function() {		
