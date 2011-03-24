@@ -155,6 +155,11 @@ $(document).ready(function() {
 	  submitForm();
   }
   
+  function submitKeyword(value) {
+	  setInputFieldValue(el('keywords'), value);
+	  submitForm();
+  }
+  
   /** Query params for backend search, based on frontend parameters.
  *
  * @constructor
