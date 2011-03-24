@@ -1,24 +1,22 @@
+<script type='text/javascript'>
+	asyncLoadManager.addCallback('map', function(){
+	    map.clearMarkers();
+	});
+</script>
 {% if not has_results %}
   {% include 'no_results.html' %}
 {% else %}
-  {% for result in result_set.clipped_results %}
-    {% if result.latlong %}
-<script type='text/javascript'>
-  asyncLoadManager.addCallback('map', function(){
-      map.clearMarkers();
-  });
-  
-  asyncLoadManager.addCallback('map', function() {
-    var coords = '{{result.latlong}}'.split(',');
-    map.addMarker(coords[0], coords[1], '{{ forloop.counter0|as_letter }}');
-  });
-</script>
-    {% endif %}
+  {% for result in result_set.clipped_results %}    
 <li class="{% if forloop.counter0 == 0 %}first{% endif %} result-{{ forloop.counter1 }}">
 <h4>
     {% if result.latlong %}
-<img style="position:relative;left:-5px;top:8px;" 
-     src='http://www.google.com/mapfiles/marker_midblue{{ forloop.counter0|as_letter }}.png' />
+	<img style="position:relative;left:-5px;top:8px;" src='http://www.google.com/mapfiles/marker_midblue{{ forloop.counter0|as_letter }}.png' />
+	<script type='text/javascript'>
+		asyncLoadManager.addCallback('map', function() {
+      		var coords = '{{result.latlong}}'.split(',');
+      		map.addMarker(coords[0], coords[1], '{{ forloop.counter0|as_letter }}');
+    	});
+	</script>
     {% endif %}
 
 <a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title }}</a></h4>
@@ -37,7 +35,7 @@
   addthis.button('#share_{{ forloop.counter0 }}', { username: "footprint2009dev", services_compact: "email, twitter, facebook, myspace, friendfeed, bebo", ui_click: true }, { title: "{{ result.title|escape }}", url: "{{ result.url }}", templates: {twitter: '\{\{url\}\} via www.allforgood.org'} });
 </script>
 </p>
-</li>
+</li>	
   {% endfor %}
   <div id="paginator"></div>
 <script language="text/javascript">
