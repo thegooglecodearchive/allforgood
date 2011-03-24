@@ -1002,6 +1002,9 @@ form#overlabel input#submit:hover {
   clear: both;
   margin: 0;
 }
+
+#search-top .search-box .pop-search a {text-decoration:none;}
+
 #search-top .search-info {
   float: left;
   margin-left: 25px;
