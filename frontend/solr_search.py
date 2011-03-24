@@ -796,4 +796,5 @@ def get_facet_counts_type():
         else:
           facet_counts[k] = 0
     facet_counts["virtual"] -= facet_counts["micro"] #hack to remove micro counts because they were incorrectly tagged as virtual
+    facet_counts["virtual"] -= facet_counts["self_directed"] #hack to remove self_directed counts because they were incorrectly tagged as virtual
   return facet_counts
