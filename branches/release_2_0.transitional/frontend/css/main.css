@@ -440,15 +440,13 @@ input.hasDatepicker {
 #tab_list {background:#EDF4F7; border:1px solid #C0C0C0; margin-left:2px;}
 #tab_list span {width:100px;}
 
-#paginator {
-  font-size: 14px;
-  font-weight: bold;
-  color: #aaa;
-}
+#paginator {margin-top:20px;}
 
-#paginator A {
-  color: #039;
+#paginator a {
+  color: #3399cc;
+  font-weight: bold;
   text-decoration: none;
+  font-size:15px;
 }
 
 .interest_links {
