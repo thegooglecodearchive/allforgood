@@ -1075,7 +1075,7 @@
     <bool name="enabled">true</bool>
     <bool name="overwriteDupes">false</bool>
     <str name="signatureField">signature</str>
-    <str name="fields">title,abstract</str>
+    <str name="fields">aggregatefield</str>
     <str name="signatureClass">org.apache.solr.update.processor.Lookup3Signature</str>
   </processor>
 <processor class="solr.LogUpdateProcessorFactory"/>
