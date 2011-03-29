@@ -45,6 +45,7 @@ KEYWORD_GLOBAL = ""
 GEO_GLOBAL = ""
 PROVIDER_GLOBAL = ""
 FULL_QUERY_GLOBAL = ""
+DATE_QUERY_GLOBAL = ""
 BACKEND_GLOBAL = ""
 
 # Date format pattern used in date ranges.
@@ -216,7 +217,7 @@ def form_solr_query(args):
   # Source
   global PROVIDER_GLOBAL
   if api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all":    
-    PROVIDER_GLOBAL = "+AND+provider_proper_name:" + urllib.quote_plus(args[api.PARAM_SOURCE])
+    PROVIDER_GLOBAL = "+AND+provider_proper_name_str:" + urllib.quote_plus(args[api.PARAM_SOURCE])
     solr_query += PROVIDER_GLOBAL
   else:
     PROVIDER_GLOBAL = ""  
@@ -353,11 +354,14 @@ def search(args, dumping = False):
       end_date = start_date
     start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
     end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
-
+  
+  global DATE_QUERY_GLOBAL
   if start_datetime_str:
-    query_url += "&fq=((eventrangeend:[" + start_datetime_str + "+TO+*]+AND+eventrangestart:[*+TO+" + end_datetime_str + "])+OR+(eventrangeend:+" +'"1971-01-01T00:00:000Z"' "+AND+eventrangestart:"+'"1971-01-01T00:00:000Z"'+"))"
+    DATE_QUERY_GLOBAL = "&fq=((eventrangeend:[" + start_datetime_str + "+TO+*]+AND+eventrangestart:[*+TO+" + end_datetime_str + "])+OR+(eventrangeend:+" +'"1971-01-01T00:00:000Z"' "+AND+eventrangestart:"+'"1971-01-01T00:00:000Z"'+"))"
+    query_url += DATE_QUERY_GLOBAL
   else:
-    query_url += "&fq=(eventrangeend:[NOW-1DAYS%20TO%20*]+OR+expires:[NOW-1DAYS%20TO%20*])"
+    DATE_QUERY_GLOBAL = "&fq=(eventrangeend:[NOW-1DAYS%20TO%20*]+OR+expires:[NOW-1DAYS%20TO%20*])"
+    query_url += DATE_QUERY_GLOBAL
 
   #num_to_fetch = int(args[api.PARAM_NUM]) + 1
   num_to_fetch = 100
@@ -722,7 +726,7 @@ def get_facet_counts():
       query.append("facet.query=" + urllib.quote_plus(cat))  
 
     try:
-        query_url = BACKEND_GLOBAL + '?wt=json&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + '&facet.mincount=2&facet.field=signature&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query)
+        query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + '&facet.mincount=2&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query)
         logging.info("facets: " + query_url)
     except:
         raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -736,7 +740,6 @@ def get_facet_counts():
     json = simplejson.loads(result_content)["facet_counts"]
     queries = json["facet_queries"]
     providers = json["facet_fields"]["provider_proper_name_str"]
-    duplicates = json["facet_fields"]["signature"]
     
     for k, v in queries.iteritems():
         if v > 0:
@@ -752,7 +755,7 @@ def get_facet_counts():
 
 def get_facet_counts_all():
   try:
-    query_url = BACKEND_GLOBAL + '?wt=json&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0'
+    query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0'
     logging.info("all: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -769,7 +772,7 @@ def get_facet_counts_all():
 
 def get_facet_counts_type():
   try:
-    query_url = BACKEND_GLOBAL + '?wt=json&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0'
+    query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0'
     logging.info("type: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
