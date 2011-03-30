@@ -438,17 +438,11 @@ def query(query_url, args, cache, dumping = False):
   result = simplejson.loads(result_content)
   
   #facet_counts
-  all_facets = get_facet_counts_all()
-  if "facet_counts" in all_facets:
-    collapse_count = 0
-    facet_fields = all_facets["facet_counts"]["facet_fields"]["signature"]
-    facet_counts = dict()
-    for facet in facet_fields:
-        if type(facet).__name__ == 'int':
-          collapse_count += (facet - 1)   
-    
-    facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false"]) - collapse_count
-    facet_counts.update(get_facet_counts_type())    
+  all_facets = get_geo_counts()
+  if "facet_counts" in all_facets:    
+    facet_counts = dict()    
+    facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false"])
+    facet_counts.update(get_type_counts())    
     
     count = 0;
     if api.PARAM_TYPE in args:
@@ -753,9 +747,9 @@ def get_facet_counts():
     
     return {'category_fields': sorted(category_fields.iteritems(), key=itemgetter(1), reverse=True), 'provider_fields': provider_fields}    
 
-def get_facet_counts_all():
+def get_geo_counts():
   try:
-    query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.mincount=2&facet.field=signature&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0'
+    query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.mincount=2&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0'
     logging.info("all: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -770,7 +764,7 @@ def get_facet_counts_all():
   return simplejson.loads(result_content)
 
 
-def get_facet_counts_type():
+def get_type_counts():
   try:
     query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0'
     logging.info("type: " + query_url)
