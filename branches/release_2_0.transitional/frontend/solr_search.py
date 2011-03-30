@@ -181,6 +181,9 @@ def form_solr_query(args):
 
     query_boosts = boosts.query_time_boosts(args)
     
+    # Remove categories from query parameter    
+    args[api.PARAM_Q] = args[api.PARAM_Q].replace('category:', '')
+    
     if api.PARAM_CATEGORY in args:        
         args[api.PARAM_Q] += (" AND " + args[api.PARAM_CATEGORY])
     
