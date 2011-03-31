@@ -3,6 +3,15 @@
   asyncLoadManager.addCallback('map', function(){
       map.clearMarkers();
   });
+  
+  function resetForm() {
+    setInputFieldValue(el('keywords'), "");    
+    $('#startdate').value = "";
+    $('#enddate').value = "";
+    $("#location_slider").slider("option", "value", 25);
+    $("#location_distance").html($("#location_slider").slider("value"));
+    submitForm('oppType', getSelectedTab());
+  }
 </script>
 
 
@@ -31,7 +40,7 @@ Suggestions:
 <div style="font-size:20px;font-weight:bold;">Interested in putting together your own service project?
 <br />
 <br />
-<a href="/strategicpartners">Click here to learn more.</a></div>
+<a href="javascript:resetForm();">Click here to learn more.</a></div>
 
 {% endifequal %}
 
