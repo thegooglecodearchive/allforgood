@@ -51,14 +51,21 @@ $("#tabs").tabs("option", "collapsible", true);
 	if (getSelectedTab() == 3) {			
 		$(".top_search").hide();
 	}
-	
 	setFacetCounts = function() {		
-		$('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");		
-		$('#virtual').html("(" + {{result_set.facet_counts.virtual}} + ")");
-		$('#self_directed').html("(" + {{result_set.facet_counts.self_directed}} + ")");
-		$('#micro').html("(" + {{result_set.facet_counts.micro}} + ")");
+		if (loadNumber == 0 || getSelectedTab() == 0) {
+			$('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");
+		}
+		if (loadNumber == 0 || getSelectedTab() == 1) {
+			$('#virtual').html("(" + {{result_set.facet_counts.virtual}} + ")");
+		}		
+		if (loadNumber == 0 || getSelectedTab() == 2) {
+			$('#micro').html("(" + {{result_set.facet_counts.micro}} + ")");
+		}		
+		if (loadNumber == 0 || getSelectedTab() == 3) {
+			$('#self_directed').html("(" + {{result_set.facet_counts.self_directed}} + ")");
+		}		
 	}();
-
+	loadNumber = 1;
 	setProviders = function() {
 		var providers = "";
 		{% if result_set.providers %}
