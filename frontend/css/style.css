@@ -1003,7 +1003,7 @@ form#overlabel input#submit:hover {
   margin: 0;
 }
 
-#search-top .search-box .pop-search a {text-decoration:none;}
+#search-top .search-box .pop-search a {text-decoration:none; font-weight:bold; color:#3399CC;}
 
 #search-top .search-info {
   float: left;
@@ -1021,6 +1021,7 @@ form#overlabel input#submit:hover {
 #search-top .search-info ul li a {
   font-weight: bold;
   text-decoration: none;
+  color:#3399CC;
 }
 /* @group Tabs */
 #tabs.ui-widget-content {
@@ -1431,4 +1432,11 @@ form#overlabel input#submit:hover {
   margin-left: 6px;
 }
 #map {margin-top:10px;width:280px;height:250px; margin:0 0 10px 0;}
+
+#paginator a {
+  color: #3399cc;
+  font-weight: bold;
+  text-decoration: none;
+  font-size:15px;
+}
 /* @end */
