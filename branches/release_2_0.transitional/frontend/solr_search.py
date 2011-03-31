@@ -220,7 +220,7 @@ def form_solr_query(args):
   # Source
   global PROVIDER_GLOBAL
   if api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all":    
-    PROVIDER_GLOBAL = "+AND+provider_proper_name_str:" + urllib.quote_plus(args[api.PARAM_SOURCE])
+    PROVIDER_GLOBAL = "+AND+provider_proper_name:" + urllib.quote_plus("(" + args[api.PARAM_SOURCE] + ")")
     solr_query += PROVIDER_GLOBAL
   else:
     PROVIDER_GLOBAL = ""  
