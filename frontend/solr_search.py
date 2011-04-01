@@ -723,7 +723,7 @@ def get_facet_counts():
       query.append("facet.query=" + urllib.quote_plus(cat))  
 
     try:
-        query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + '&facet.mincount=2&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query)
+        query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + '&facet.mincount=1&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query)
         logging.info("facets: " + query_url)
     except:
         raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
