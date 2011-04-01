@@ -17,7 +17,7 @@
 
 ProviderNames = {
   # feed_providerName:{proper_name, idx}
-  "other":{"name":"Other", "idx":0}, 
+  "other":{"name":"Additional Partners", "idx":0}, 
   "911dayofservice":{"name":"911 National Day of Service", "idx":1}, 
   "aarp":{"name":"AARP", "idx":2}, 
   "americanredcross":{"name":"American Red Cross", "idx":3}, 
