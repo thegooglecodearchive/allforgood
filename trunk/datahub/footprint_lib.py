@@ -526,7 +526,7 @@ def get_direct_mapped_fields(opp, org, feed_providerName):
 
   # map providerName to provider_proper_name
   outstr += FIELDSEP
-  ppn = "Other"
+  ppn = "Additional Partners"
   if providers.ProviderNames.has_key(feed_providerName):
     ppn = providers.ProviderNames[feed_providerName]["name"]
   outstr += output_field("provider_proper_name", str(ppn))
