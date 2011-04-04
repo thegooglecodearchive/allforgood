@@ -752,7 +752,7 @@ def get_facet_counts():
 
 def get_geo_counts():
   try:
-    query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.mincount=2&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0'
+    query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.mincount=1&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0'
     logging.info("all: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")

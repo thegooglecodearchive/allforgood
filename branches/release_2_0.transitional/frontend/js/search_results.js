@@ -47,18 +47,18 @@ $(document).ready(function() {
 				$("#location_distance").html(ui.value);
 			},
 			stop: function(event, ui) {
-				submitForm("all");
+				submitForm("reset");
 			}
 	});	
 	$("#location_distance").html($("#location_slider").slider("value"));	
 	$("#submit-btn").click(function() {
-		submitForm("all");
+		submitForm("reset");
 		return false;
 	});
 	$("#location").keypress(function(e) {
 		code = (e.keyCode ? e.keyCode : e.which);
 		if (code == 13) {
-			submitForm("all");
+			submitForm("reset");
 			return false;
 		}		
 	});
@@ -152,12 +152,12 @@ $(document).ready(function() {
   
   function removeKeyword() {
 	  setInputFieldValue(el('keywords'), "");
-	  submitForm();
+	  submitForm("reset");
   }
   
   function submitKeyword(value) {
 	  setInputFieldValue(el('keywords'), value);
-	  submitForm();
+	  submitForm("reset");
   }
   
   /** Query params for backend search, based on frontend parameters.
@@ -752,7 +752,11 @@ function submitForm(invoker, value) {
   var location = getInputFieldValue(el('location'));	
   if (invoker == 'map') {
     setSessionCookie('user_vol_loc', location);
-  } 
+  }
+  
+  if (invoker == "reset") {
+	  loadNumber = 0;
+  }
 
   var timePeriodStart = getStartDate();
   var timePeriodEnd = getEndDate();
