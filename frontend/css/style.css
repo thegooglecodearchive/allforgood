@@ -888,13 +888,13 @@ form#overlabel input#submit:hover {
   /*3rd Column: Ad*/
 
   background: #b9dff6;
-  text-align: center;
+  text-align: left;
   padding-bottom: 16px;
 }
 .block-ad a {
-  display: block;
+  display: inline;
   font-weight: normal;
-  line-height: 0;
+  /* line-height: 0; */
 }
 .block-our-tools {
   /*3rd Column: Our Tools*/
