@@ -30,6 +30,7 @@ function ensureSubmitForm() {
   }
 }
 
+/*
 function setCategory(category) {
 	var category_input = $("#category_input");
 	if (category_input) {
@@ -37,6 +38,13 @@ function setCategory(category) {
 		submitForm('facet');
 	}	
 }
+*/
+
+function submitKeyword(value) {
+        setInputFieldValue(el('keywords'), value);
+        submitForm("reset");
+}
+
 
 function sortResults(value) {
   setInputFieldValue(el('sort'), value);

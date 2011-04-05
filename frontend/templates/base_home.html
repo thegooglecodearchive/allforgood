@@ -3,12 +3,12 @@
 {% block js_files %}
 <script type='text/javascript' src='/zx{{version}}/js/third_party/jquery-1.3.2.min.js'></script>
 <script type='text/javascript' src='/zx{{version}}/js/third_party/jquery.json-1.3.min.js'></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<script type='text/javascript' src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<script type='text/javascript' src="http://s7.addthis.com/js/250/addthis_widget.js"></script>
 <script type='text/javascript' src='/zx{{version}}/js/third_party/rsh.js'></script>
 <script type='text/javascript' src='/zx{{version}}/js/third_party/jquery.simplemodal.js'></script>
 <script type='text/javascript' src='/zx{{version}}/js/utils.js'></script>
 <script type='text/javascript' src='/zx{{version}}/js/search_query.js'></script>
-{# not required for all pages, but harmless and simpler (for development only) #}
 <script type='text/javascript' src='/zx{{version}}/js/homepage.js'></script>
 <script type='text/javascript' src='http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php'></script>
 {# functions for loading google analytics #}
@@ -53,11 +53,13 @@
 
 <div id='debug_snippets' style='display:none;'></div>
 <script type='text/javascript'>
+/*
 ensureSubmitForm();
 if (currentPageName != 'HOMEPAGE') {
   createExampleSearchText();
 }
 setInputFieldValue(el('keywords'), '');
+*/
 </script>
 
 {# setup google analytics on static pages #}

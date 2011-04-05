@@ -8,13 +8,23 @@
     				    <h3>Looking to <span>serve?</span></h3>
 
     				    <p>Find service opportunities near you by entering a keyword below.</p>
-<form action="/" method="post" id="overlabel" onsubmit="submitForm('keywords');return false;">
+<form action="/" method="post" id="overlabel" onsubmit="goKeyword();return false;">
     				         <div class="form-row">
     				             <label for="search-field" class="overlabel">enter search term</label>
 <input id="keywords" class="text-field ac_input" type="text" name="search terms" title="enter search term" value="" autocomplete="off" /><input type="submit" name="submit" id="submit" value="Search" />
     				         </div>
 
-    				    <p class="popular-searches"><strong>popular searches:</strong>lorem ipsum, dolor, mit, veritas secund, lorem, optimas</p>
+    				    <p class="popular-searches"><strong>popular searches:</strong>
+<a href="javascript:void(0)" onclick="goKeyword('military families');return false;">Military Families</a>,
+<a href="javascript:void(0)" onclick="goKeyword('veteran');return false;">Veterans</a>,
+<a href="javascript:void(0)" onclick="goKeyword('education');return false;">Education</a>,
+<a href="javascript:void(0)" onclick="goKeyword('hunger');return false;">Hunger</a>,
+<a href="javascript:void(0)" onclick="goKeyword('animals');return false;">Animals</a>,
+<a href="javascript:void(0)" onclick="goKeyword('health');return false;">Health</a>,
+<a href="javascript:void(0)" onclick="goKeyword('seniors');return false;">Seniors</a>,
+<a href="javascript:void(0)" onclick="goKeyword('technology');return false;">Technology</a>,
+<a href="javascript:void(0)" onclick="goKeyword('poverty');return false;">Poverty</a>
+</p>
 				    </div>
 				</div>
 				<!--.block-->
@@ -25,12 +35,12 @@
     				    <p class="volunteer-zip">
 <input value="" name="enter your location" id="location" class="text-field" 
 style="font-size:10px;width:96px;"/>
-<a href="javascript:void(0);" onclick="submitForm('');">change location</a>
+<a href="javascript:void(0);" onclick="goKeyword();">change location</a>
 </p>
     				    <ul>
-<div id='snippets' style="background-color:#ffffff;height:500px;"></div>
+<div id='snippets' style="background-color:#ffffff;height:500px;">Loading...</div>
                                     </ul>
-<p class="more-link" id="more"><a href="javascript:submitForm('');">View more opportunities</a></p>
+<p class="more-link" id="more"><a href="javascript:goKeyword();">View more opportunities</a></p>
 				    </div>
 				    <!-- <div class="block-bottom"></div> -->
 				</div>
@@ -53,7 +63,17 @@ style="font-size:10px;width:96px;"/>
 				    <div class="block-top"><h3>Featured Partners:</h3></div>
 				    <div class="block-content">
     				    <ul>
+    				        <li class="first">
+<a href="http://www.gapinc.com/"><img border="0" src="/images/partner-gapfoundation.png" width="68" alt="the Gap" /></a>
+    				            <div class="featured-partner-content">
+    				                <h4><a href="http://www.gapinc.com/">The Gap</a></h4>
+    				                <p>
+The Gap Foundation works to create opportunities for people to own their future and fulfill their personal promise, by leveraging the philanthropic giving and community service of the company’s workforce.
+    				                </p>
+    				            </div>
+    				        </li>
 
+<!--
     				        <li class="first">
     				            <img src="images/featured-partner-9-11.png" height="54" width="68" alt="911 Day" />
     				            <div class="featured-partner-content">
@@ -62,6 +82,7 @@ style="font-size:10px;width:96px;"/>
     				                perform good deeds and engage in other service activities in observance of the anniversary of the 9/11 attacks.</p>
     				            </div>
     				        </li>
+-->
     				        <li>
 
     				            <img src="images/featured-partner-aarp.png" height="54" width="68" alt="AARP" />
@@ -101,8 +122,8 @@ style="font-size:10px;width:96px;"/>
 				<!--.block-->
 				<div class="block block-developers block-action">
 				    <div class="block-content">
-    				    <h3>Want to code for <span>change?</span></h3>
-    				    <p>Join a network of developers using our API to build powerful apps promoting service in our communities. <a href="/gettingstarted">Learn more</a>.</p>
+    				    <h3>Want to share the <span>good?</span></h3>
+    				    <p>Learn how to get our gadget or use our API to promote service on your own site and build powerful apps. <a href="/gettingstarted">Learn more</a>.</p>
 				    </div>
 				</div>
 				<!--.block-->
@@ -170,8 +191,24 @@ title="Help Survivors of Japan Quake/Tsunami" />
         });
     </script>
 
-<!-- defined in homepage.js; requires id=snippets and id=more in the DOM -->
+<script type="text/javascript" src="/zx{{version}}/js/third_party/jquery.cookie.js"></script>
 <script>
+function goKeyword(kw) {
+  if (!kw) {
+    kw = $('#keywords').val();
+  } else {
+    $('#keywords').val(kw);
+  }
+  var vol_loc = '';
+  var loc = $('#location').val();
+  if (loc) {
+    vol_loc = '&vol_loc=' + encodeURIComponent(loc);
+  }
+  window.location = '/search#q=' + encodeURIComponent(kw) + vol_loc;
+}
+</script>
+<script language="JavaScript" src="http://www.geoplugin.net/javascript.gp" type="text/javascript"></script>
+<script>
+// defined in homepage.js; requires id=snippets and id=more in the DOM
 runSnippetsQuery();
-$('#location').val(getSessionCookie('user_vol_loc'));
 </script>

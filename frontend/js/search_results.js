@@ -339,6 +339,7 @@ Query.prototype.getUrlQuery = function() {
   var location = me.getLocation();
   if (location && location.length > 0) {
     addQueryParam('vol_loc', location);
+    $.cookie('user_vol_loc', location, {expires: 30});
   } 
   
   // Distance
@@ -750,9 +751,14 @@ function submitForm(invoker, value) {
     return;
   }
   var location = getInputFieldValue(el('location'));	
+  if (location) {
+    setSessionCookie('user_vol_loc', location);
+  }
+  /*
   if (invoker == 'map') {
     setSessionCookie('user_vol_loc', location);
   }
+  */
   
   if (invoker == "reset") {
 	  loadNumber = 0;
