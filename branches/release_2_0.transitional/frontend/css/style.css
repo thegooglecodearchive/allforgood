@@ -886,15 +886,14 @@ form#overlabel input#submit:hover {
 }
 .block-ad {
   /*3rd Column: Ad*/
-
   background: #b9dff6;
-  text-align: left;
+  text-align: center;
   padding-bottom: 16px;
 }
 .block-ad a {
-  display: inline;
+  display: block;
   font-weight: normal;
-  /* line-height: 0; */
+  line-height: 0;
 }
 .block-our-tools {
   /*3rd Column: Our Tools*/
