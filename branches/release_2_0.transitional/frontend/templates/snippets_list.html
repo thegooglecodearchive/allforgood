@@ -108,26 +108,6 @@
 	          <script type="text/javascript">
 	addthis.button('#share_{{forloop.counter0}}', { username: "footprint2009dev", services_compact: "email, twitter, facebook, myspace, friendfeed, bebo", ui_click: true }, { title: "{{ result.title|escape }}", url: "{{ result.url }}", templates: {twitter: '\{\{url\}\} via www.allforgood.org'} });
 	</script>
-	
-	<!--          <span style='position: relative;' class='pointer'
-	               onclick='popupModalElement("add_to_calendar{{ forloop.counter0 }}");return false;'>
-	            <div id='add_to_calendar{{ forloop.counter0 }}'
-	                 class='add_to_calendar_floating'>
-	              <div class='pointer popup_text'
-	                   onclick='addToCalendar(this, "GOOGLE", searchResults[{{ forloop.counter0 }}])'>
-	                <a href='javascript:void(0)'>Add to Google Calendar</a>
-	              </div>
-	              <div class='pointer popup_text'
-	                   onclick='addToCalendar(this, "YAHOO", searchResults[{{ forloop.counter0 }}])'>
-	                <a href='javascript:void(0)'>Add to Yahoo Calendar</a>
-	              </div>
-	            </div>
-	            <a href='javascript:void(0);'>Add to calendar</a>
-	          </span>
-	-->
-	{% if moderator %}
-	          - <a href='/moderateblacklist?action=blacklist&key={{result.merge_key|urlencode}}'>blacklist</a>
-	{% endif %}
 	        </div>
 	        {{ result.categories_str }}
 	        <div class='snippet_interest_info' id='interest_info_{{forloop.counter0}}'></div>	
