@@ -59,7 +59,7 @@ def get_args(request):
 def get_memcache_key(query):
   """ make a key for memcache """
   # we use v=### in the key in case we ever need to reset all items
-  return "%s/%s/v=002" % (PATH, hashlib.md5(query).hexdigest())
+  return "%s/%s/v=003" % (PATH, hashlib.md5(query).hexdigest())
 
 
 def GoFetch(url, cache_life):
