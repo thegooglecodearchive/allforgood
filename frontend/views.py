@@ -67,22 +67,21 @@ from template_helpers import get_default_template_values, render_template, load_
 
 CONTENT_TEMPLATE = 'base_content.html'
 HOME_PAGE_TEMPLATE = 'base_home.html'
-PARTNERS_PAGE_TEMPLATE = 'base_partners.html'
 NOT_FOUND_TEMPLATE = 'not_found.html'
 
 SEARCH_RESULTS_TEMPLATE = 'base_serp.html'
 
 TEST_PAGEVIEWS_TEMPLATE = 'test_pageviews.html'
 SEARCH_RESULTS_MISSING_KEY_TEMPLATE = 'search_results_missing_key.html'
-#SNIPPETS_LIST_TEMPLATE = 'snippets_list.html'
 SNIPPETS_LIST_TEMPLATE = 'serp_results.html'
 SNIPPETS_LIST_MINI_TEMPLATE = 'snippets_list_home.html'
-MY_EVENTS_TEMPLATE = 'my_events.html'
 POST_TEMPLATE = 'post.html'
 POST_RESULT_TEMPLATE = 'post_result.html'
 ADMIN_TEMPLATE = 'admin.html'
 DATAHUB_DASHBOARD_TEMPLATE = 'datahub_dashboard.html'
 MODERATE_TEMPLATE = 'moderate.html'
+
+MY_EVENTS_TEMPLATE = 'my_events.html'
 
 DATAHUB_LOG = private_keys.DASHBOARD_BASE_URL + "load_gbase.log.bz2"
 
@@ -278,30 +277,6 @@ class home_page_redir_view(webapp.RequestHandler):
   def get(self):
     """HTTP get method."""
     self.redirect("/")
-
-
-class partners_page_view(webapp.RequestHandler):
-  """ default homepage for consumer UI."""
-  @expires(0)  # User specific. Maybe we should remove that so it's cacheable.
-  def get(self):
-    """HTTP get method."""
-    try:
-      try:
-        path = os.path.join(os.path.dirname(__file__),  urls.CONTENT_LOCATION +
-                        urls.CONTENT_FILES[self.request.path])
-        fh = open(path, 'r')
-        html = fh.read()
-        fh.close()
-        template_values = get_default_template_values(self.request, 'PARTNERS_PAGE')
-        template_values['static_content'] = html
-        self.response.out.write(render_template(PARTNERS_PAGE_TEMPLATE,
-                                          template_values))
-      except:
-        self.error(404)
-        return
-
-    except DeadlineExceededError:
-      deadline_exceeded(self, "static_content")
 
 
 class home4holidays_redir_view(webapp.RequestHandler):

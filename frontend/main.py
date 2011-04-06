@@ -31,12 +31,11 @@ import deploy
 
 APPLICATION = webapp.WSGIApplication(
     [(urls.URL_HOME, views.home_page_view),
-     (urls.URL_PARTNERS, views.partners_page_view),
+     (urls.URL_OLD_HOME, views.home_page_redir_view),
      (urls.URL_DATAHUB_DASHBOARD, views.datahub_dashboard_view),
      (urls.URL_API_SEARCH, views.search_view),
      (urls.URL_UI_SNIPPETS, views.ui_snippets_view),
 
-     (urls.URL_OLD_HOME, views.home_page_redir_view),
      (urls.URL_REDIRECT, views.redirect_view),
      (urls.URL_HOME4HOLIDAYS, views.home4holidays_redir_view), # this is a redirect
 
@@ -52,10 +51,10 @@ APPLICATION = webapp.WSGIApplication(
      (urls.URL_PSA, views.home_page_view),
      (urls.URL_MODERATE, views.moderate_view),
      (urls.URL_MODERATE_BLACKLIST, views.moderate_blacklist_view),
-    ] +
-    [ (url, views.static_content) for url in
-         urls.CONTENT_FILES.iterkeys() ] + 
-    [ ('/.*', views.not_found_handler) ],
+    ] 
+    + [ (url, views.static_content) for url in
+         urls.CONTENT_FILES.iterkeys() ] 
+    + [ ('/.*', views.not_found_handler) ],
     debug=deploy.is_local_development())
 
 def main():
