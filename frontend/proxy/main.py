@@ -45,8 +45,7 @@ from google.appengine.api import urlfetch
 from google.appengine.api import memcache
 
 PATH = "/proxy"
-# ten minutes
-MAX_CACHE_LIFE = 10 * 60
+MAX_CACHE_LIFE = 15 * 60
 
 def get_args(request):
   """ get arguments that came w/ this request """
@@ -60,7 +59,7 @@ def get_args(request):
 def get_memcache_key(query):
   """ make a key for memcache """
   # we use v=### in the key in case we ever need to reset all items
-  return "%s/%s/v=001" % (PATH, hashlib.md5(query).hexdigest())
+  return "%s/%s/v=002" % (PATH, hashlib.md5(query).hexdigest())
 
 
 def GoFetch(url, cache_life):
@@ -76,7 +75,8 @@ def GoFetch(url, cache_life):
   else:
     logging.info("%s fetching %s" % (PATH, url))
     try:
-      rsp = urlfetch.fetch(url, headers={'User-Agent' : 'Google App Engine'})
+      purl = "http://afg.echo3.net/twitter/?url=" + urllib.quote(url)
+      rsp = urlfetch.fetch(purl, headers={'User-Agent' : 'Google App Engine'})
       rtn = str(rsp.content)
     except:
       logging.warning("%s fetching %s failed" % (PATH, url))

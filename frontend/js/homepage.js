@@ -142,12 +142,18 @@ function processTweets(xml) {
     ar.sort(sort_tweets);
 
     var arAllTweets = new Array();
-    for (var i = 3; i > 0; i--) {
-      arAllTweets.push(ar[ar.length - i]);
-    }
-
-    for (var i = 0; i < ar.length - 3; i++) {
-      arAllTweets.push(ar[i]);
+    if (ar.length <= 3) {
+      for (var i in ar) {
+        arAllTweets.push(ar[i]);
+      }
+    } else {
+      var z = ar.length - 1;
+      for (var i = 3; i > 0; i--) {
+        arAllTweets.push(ar[z - i]);
+      }
+      for (var i = 0; i < z - 3; i++) {
+        arAllTweets.push(ar[i]);
+      }
     }
 
     var html = new Array();
