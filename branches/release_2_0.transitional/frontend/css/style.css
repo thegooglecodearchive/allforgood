@@ -944,9 +944,11 @@ form#overlabel input#submit:hover {
 .block-our-tools ul li.tool-widget h4, .block-our-tools ul li.tool-widget p {
   padding-left: 57px;
 }
+
+#tweets {height:205px;overflow-y:hidden;}
+
 .block-tweets {
   /*3rd Column: Tweets*/
-
 }
 .block-tweets ul li {
   margin-bottom: 15px;
