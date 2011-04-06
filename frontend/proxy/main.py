@@ -45,8 +45,8 @@ from google.appengine.api import urlfetch
 from google.appengine.api import memcache
 
 PATH = "/proxy"
-# one minute
-MAX_CACHE_LIFE = 1 * 60
+# ten minutes
+MAX_CACHE_LIFE = 10 * 60
 
 def get_args(request):
   """ get arguments that came w/ this request """
