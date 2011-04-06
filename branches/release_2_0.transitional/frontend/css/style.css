@@ -1442,4 +1442,10 @@ form#overlabel input#submit:hover {
 .ac_results {background:#fff !important;}
 .ac_results li {list-style-type:none !important; color:#3399CC; cursor:pointer;}
 
+.loading {font-size:16pt;}
+.addlink {text-decoration:none;}
+
+.addlink span {color: #003399;padding-left:6px;position:relative;top:-10px;}
+.addlink a {text-decoration: none;}
+
 /* @end */

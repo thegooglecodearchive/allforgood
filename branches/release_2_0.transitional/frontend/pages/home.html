@@ -48,7 +48,7 @@ style="font-size:10px;width:96px;"/>
 </form>
 			</div>
 
-			<div id="col2" class="center">
+			<div id="col2" class="center" style="500px;">
 				<!--.block-->
 				<div class="block block-volunteer-add block-action">
 				    <div class="block-content">
@@ -111,6 +111,12 @@ The Gap Foundation works to create opportunities for people to own their future 
     				            </div>
     				        </li>
     				    </ul>
+<!-- padd this column so it is the tallest, else the bottom squares off the tallest -->
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
     				    <p class="more-link"><a href="/partners">View all partners</a></p>
 				    </div>
 
@@ -167,16 +173,10 @@ The Gap Foundation works to create opportunities for people to own their future 
 				<div class="block block-tweets" style="position:relative;top:-14px;background-color:#b9dff6;">&nbsp;
 				    <div class="block-top"><h3>Latest Tweets:</h3></div>
 				    <div class="block-content">
-				    <ul>
-				        <li class="first"><a href="javascript:void(0)">All_for_Good:</a> First Lady makes cookies with Marine volunteers 
-				        at White House - slide show <span>20 minutes ago</span></li>
-
-				        <li><a href="javascript:void(0)">All_for_Good:</a> First Lady welcomes Toys for Tots 
-				        <a href="javascript:void(0)">http://ow/ly/3luCq</a> <span>1 hour ago</span></li>
-				        <li class="last"><a href="javascript:void(0)">All_for_Good:</a> First Lady makes cookies with Marine volunteers 
-				        at White House - slide show <span>20 minutes ago</span></li>
+				    <ul id="tweets">
+Loading...
 				    </ul>
-				    <p class="more-link"><a href="http://twitter.com/All_for_Good">View more tweets</a></p>
+				    <p class="more-link"><a target="_blank" href="http://twitter.com/All_for_Good">View more tweets</a></p>
 
 				    </div>
 				    <!-- <div class="block-bottom"></div> -->
@@ -214,4 +214,5 @@ function goKeyword(kw) {
 <script>
 // defined in homepage.js; requires id=snippets and id=more in the DOM
 runSnippetsQuery();
+updateTweets();
 </script>

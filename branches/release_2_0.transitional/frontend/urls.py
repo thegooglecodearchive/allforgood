@@ -36,8 +36,6 @@ URL_ACTION = '/action'  # User actions like starring
 URL_PSA = '/psa' # Redirect to home page for tracking adsense psas
 URL_SPEC = '/spec'
 URL_SHORT_NAMES = '/s/.*'
-URL_APPS = '/apps'
-URL_COS = '/golocal'
 URL_HOME4HOLIDAYS = '/home4holidays'
 
 CONTENT_LOCATION = 'pages/'
@@ -72,14 +70,15 @@ CONTENT_FILES = {
   '/posting' : 'spreadsheet.html',
   '/golocal' : 'cos.html',
   '/mlkdayofservice' : 'mlkdayofservice.html',
-}
-"""
-  '/code' : 'code.html',
-  '/dmca' : 'dmca.html',
-  '/partner_terms' : 'partner_terms.html',
   '/apps/gmail' : 'apps-gmail.html',
   '/apps/typepad' : 'apps-typepad.html',
   '/apps/blogger' : 'apps-blogger.html',
   '/apps/googlesites' : 'apps-googlesites.html',
   '/apps/wordpress' : 'apps-wordpress.html',
+}
+
+"""
+  '/code' : 'code.html',
+  '/dmca' : 'dmca.html',
+  '/partner_terms' : 'partner_terms.html',
 """

@@ -688,7 +688,7 @@ executeSearchFromHashParams = function(currentLocation) {
     var tab_n = 1 + getSelectedTab();
     var it = el('tabs-' + tab_n + '-results');
     if (it) {
-      it.innerHTML = '<div id="snippets_pane">Loading...</div>';
+      it.innerHTML = '<div id="snippets_pane"><span class="loading">Loading...</span></div>';
     }
     //el('snippets_pane').innerHTML = 'Loading...';
     currentXhr = jQuery.ajax({

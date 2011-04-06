@@ -12,6 +12,9 @@ api_version: 1
 default_expiration: "1000d"
 
 handlers:
+- url: /proxy
+  script: proxy/main.py
+
 - url: /css
   static_dir: css
 
