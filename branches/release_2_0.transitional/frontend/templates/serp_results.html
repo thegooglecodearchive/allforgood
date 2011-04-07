@@ -37,9 +37,11 @@
 </p>
 </li>	
   {% endfor %}
+  {% endif %}
   <div id="paginator"></div>
 <script language="text/javascript">
-$("#tabs").tabs("option", "collapsible", true);
+	initMap();
+	$("#tabs").tabs("option", "collapsible", true);
 	$("#tabs").tabs("option", "selected", getSelectedTab());
 	var query = createQueryFromUrlParams();
 	var sort = getHashParam('sort', '');
@@ -164,9 +166,7 @@ $("#tabs").tabs("option", "collapsible", true);
           ar[i].innerHTML = ar[i].innerHTML.replace(/""/g,'"');
         }
       }
-    }
-    initMap();
+    }    
     renderPaginator(el('paginator'), {{result_set.facet_counts.count|default:0}}, {{display_nextpage_link|yesno:"true,false"}});    
   $('.teaser').expand(); 
 </script>
-{% endif %}
