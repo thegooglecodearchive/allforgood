@@ -164,6 +164,12 @@ def form_solr_query(args):
   if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
       geo_params = ""       
 
+  # Running our keyword through our categories dictionary to see if we need to adjust our keyword param   
+  if api.PARAM_CATEGORY in args:
+    for key, val in categories.CATEGORIES.iteritems():
+      if str(args[api.PARAM_CATEGORY]) == val:
+        args[api.PARAM_CATEGORY] = str(key)   
+
   # keyword
   query_is_empty = False
   if (api.PARAM_Q in args and args[api.PARAM_Q] != ""):
@@ -719,8 +725,8 @@ def get_facet_counts():
     category_fields = dict()
     provider_fields = []
     query = []
-    for cat in categories.CATEGORIES:
-      query.append("facet.query=" + urllib.quote_plus(cat))  
+    for key, val in categories.CATEGORIES.iteritems():
+      query.append("facet.query=" + urllib.quote_plus(key))  
 
     try:
         query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + '&facet.mincount=1&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query)
@@ -732,7 +738,7 @@ def get_facet_counts():
     except:
         logging.info('error receiving solr facet counts')
 
-    result_content = fetch_result.content  
+    result_content = fetch_result.content
     result_content = re.sub(r';;', ',', result_content)
     json = simplejson.loads(result_content)["facet_counts"]
     queries = json["facet_queries"]
@@ -740,7 +746,7 @@ def get_facet_counts():
     
     for k, v in queries.iteritems():
         if v > 0:
-            category_fields[k] = v
+            category_fields[categories.CATEGORIES[k]] = v
     
     for k, v in enumerate(providers):
         if int(k) % 2 == 1:

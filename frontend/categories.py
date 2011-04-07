@@ -13,15 +13,16 @@
 # limitations under the License.
 
 """
-A global list of categories for the SERP
+A global list of categories for the SERP in the following format:
+"String used in Solr query" : "String displayed in SERP"
 """
 
-CATEGORIES = ["Military Families", 
-              "Veterans",          
-              "Education",         
-              "Hunger",
-              "Animals",
-              "Health",
-              "Seniors",
-              "Technology",
-              "Poverty"]
+CATEGORIES = {  "military families":  "Military Families",
+                "veterans":           "Veterans",        
+                "education":          "Education",
+                "hunger AND -animal": "Hunger",
+                "animals":            "Animals",
+                "health":             "Health",
+                "seniors":            "Seniors",
+                "technology":         "Technology",
+                "poverty":            "Poverty"}
