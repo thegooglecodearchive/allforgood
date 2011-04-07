@@ -245,8 +245,8 @@ def normalize_query_values(args, dumping = False):
     # MT: 8/26/2010 - in practice that causes a lot of 602 results in geocode, eg "Laywers, USA"
     args[api.PARAM_VOL_LOC] = "USA"
 
-  # First run query_rewriter classes
-  args[api.PARAM_Q] = run_query_rewriters(args[api.PARAM_Q])
+  # Commenting this out now that we Solr synonyms
+  #args[api.PARAM_Q] = run_query_rewriters(args[api.PARAM_Q])
 
   args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
   if api.PARAM_VIRTUAL in args:

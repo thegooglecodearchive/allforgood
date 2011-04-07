@@ -1,101 +1,192 @@
-/* Copyright 2009 Google Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
-function goPopular(index) {
-  //setInputFieldValue(el('keywords'), 'category:'.popularSearches[index]);
-  submitForm('');
-}
-
-/* requires that google /jsapi has been loaded... */
-var defaultLocation = getDefaultLocation().displayLong || '';
 function runSnippetsQuery() {
-  var vol_loc_term;
-  if (defaultLocation != '') {
-    vol_loc_term = '&vol_loc=' + defaultLocation;
-  } else {
-    vol_loc_term = '&vol_loc=USA&vol_dist=1500';
+  var loc = $.cookie('user_vol_loc');
+  if (!loc) {
+    loc = geoplugin_city() + ', ' + geoplugin_region();
   }
-  var url = '/ui_snippets?start=0&num=15&minimal_snippets_list=1' + vol_loc_term;
+
+  var vol_loc = '';
+  if (loc) {
+    $('#location').val(loc);
+    vol_loc = '&vol_loc=' + encodeURIComponent(loc);
+    $.cookie('user_vol_loc', loc, {expires: 30});
+  }
+
+  var url = '/ui_snippets?start=0&num=15&minimal_snippets_list=1' + vol_loc;
   jQuery.ajax({
-        url: url,
-        async: true,
-        dataType: 'html',
-        error: function(){},
-        success: function(data){
-          if (data.length > 10) {  // Check if data is near-empty.
-            el('snippets').innerHTML = data;
-            el('more').style.display = '';
-          }
-          // Load analytics, done here to ensure search is finished first
-          // Only loading for homepage here - loaded in search_resuls.js
-          // for search pages and base.html for static pages
-          loadGA();
+    url: url,
+    async: true,
+    dataType: 'html',
+    error: function(){},
+    success: function(data){
+      el('snippets').innerHTML = data;
+      // set up Share links
+      var i = 0, link = null;
+      while ((link = el('shareable_' + i))) {
+        if (link) {
+          addthis.button('#share_' + i, 
+           {username: 'footprint2009dev', 
+            services_compact: 'email, twitter, facebook, myspace, friendfeed, bebo', 
+            ui_click: true 
+           }, 
+           {title: link.innerHTML, url: link.href, 
+            templates: {twitter: '{{' + link.href + '}} via www.allforgood.org'}
+           });
         }
-      });
+        i++;
+      } 
+
+      // Load analytics, done here to ensure search is finished first
+      // Only loading for homepage here - loaded in search_resuls.js
+      // for search pages and base.html for static pages
+      loadGA();
+      $('#col1, #col2, #col3').equalHeightColumns();
+    }
+  });
 }
 
-function renderHomepage() {
-  // render homepage elements
-  setInputFieldValue(el('location'), defaultLocation);
-  if (defaultLocation != '') {
-    el('mini_with_location').style.display = '';
+var arTwitterResponses = new Array();
+var arTwitterFeeds = new Array(
+  new Array('pointsoflight', 224382700),
+  new Array('HandsOnNetwork', 15728184),
+  new Array('createthegood', 17999296),
+  new Array('servedotgov', 59204932),
+  new Array('live_united', 16506355),
+  new Array('idealist', 15096075),
+  new Array('Habitat_org', 33898911),
+  new Array('BetheChangeInc', 11379362),
+  new Array('UniversalGiving', 17009647),
+  new Array('pamelahawley', 15591578),
+  new Array('communitysvc', 121839819),
+  new Array('huffpostimpact', 80681990),
+  new Array('causecast', 14090017),
+  new Array('All_for_Good', 34344129) //last
+);
+
+function sort_tweets(a, b) {
+  if (a[0] > b[0]) {
+    return -1;
+  } else if (a[0] < b[0]) {
+    return 1;
+  } 
+  return 0;
+}
+
+function processTweets(xml) {
+  if (!xml) {
+    arTwitterResponses.push(null);
   } else {
-    el('mini_without_location').style.display = '';
-    el('location_form').style.display = '';
-  }
+    var arTweetList = new Array();
+    var title_max = 66;
+    var n = 0;
+    $(xml).find('item').each(function(){
+      if ((n++) < 1) {
+        var now = (new Date()).getTime();
+        var html = new Array();
+        var twt = $(this).find('title').text();
+        var ar = twt.split(':');
+        var tweeter = ar.shift();
+        var title = ar.join(':');
+        var link = $(this).find('link').text();
+        var ago = 'a litle while';
+        var when = null;
+        var dt = 0;
+        try {
+          var unit = '';
+          when = (new Date(Date.parse($(this).find('pubDate').text()))).getTime();
+          var dt = Math.round((now - when) / 1000);
+          if (dt < 60) {
+            unit = 'second';
+          } else if (dt < 3600) {
+            dt = Math.round(dt / 60);
+            unit = 'minute';
+          } else if (dt < (24 * 3600)) { 
+            dt = Math.round(dt / 3600);
+            unit = 'hour';
+          } else if (dt < (14 * 24 * 3600)) { 
+            dt = Math.round(dt / (24 * 3600));
+            unit = 'day';
+          } else {
+            dt = Math.round(dt / (7 * 24 * 3600));
+            unit = 'week';
+          }
+          ago = dt + ' ' + unit + (dt == 1 ? '' : 's');
+        } catch(err) {
+        }
+        if (when) {
+          html.push('<li class="rotate">');
+          html.push('<a target="_blank" href="', link, '">', tweeter, ':</a> ');
+          html.push(title.substr(0, title_max), (title.length > title_max ? '...' : ''));
+          html.push(' <span style="white-space:nowrap;">', ago, ' ago</span>');
+          html.push('</li>');
+          arTweetList.push(when, html.join(''));
+        }
+      }
+    });
 
-  el('more_link').href = 'javascript:submitForm("");void(0);';
-
-  if (el('popular_list')) {
-    // Populate the popular searches list.
-    for (var i = 0; i < popularSearches.length; i++) {
-      var href = 'javascript:goPopular(' + i + ');void(0);';
-      var html = '<a href="' + href + '">' +
-          popularSearches[i] + '<' + '\a>';
-      el('popular_list').innerHTML += html + '<br>';
+    if (arTweetList.length > 0) {
+      arTwitterResponses.push(arTweetList);
+    } else {
+      arTwitterResponses.push(null);
     }
   }
-  setTextContent(el('location_text'), defaultLocation);
 
-  //el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/8kfEm7K9fdA&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/8kfEm7K9fdA&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
-  //el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/PZf8MRYasss&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/PZf8MRYasss&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
-  //el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/ikFE2m_I0uY&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/ikFE2m_I0uY&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
-  //el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/sVs5_nbdxVo&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/sVs5_nbdxVo&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
-  //el('home_video_placeholder2').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/sLBkWRQe5Ms&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/sLBkWRQe5Ms&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
-  //el('home_video_placeholder').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/gulf-attrib.jpg" alt="Gulf of Mexico - Image courtesy of Wired.com" />';
-  //el('home_video_placeholder2').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/pakistan.jpg" alt="Pakistan - Image courtesy of New York Times" />';
-  //el('home_video_placeholder').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/waitingforsuperman.jpg" alt="Waiting for Superman" />';
+  if (arTwitterResponses.length == arTwitterFeeds.length) {
+    var ar = new Array();
+    for (var i in arTwitterResponses) {
+      if (arTwitterResponses[i]) {
+        ar.push(arTwitterResponses[i]);
+      }
+    }
 
-  //el('home_video_placeholder').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/mission-serve-logo.png" alt="Mission Serve" />';
+    ar.sort(sort_tweets);
 
-  //el('home_video_placeholder2').innerHTML = '<img width="290" src="http://www.allforgood.org/gadget/waitingforsuperman.jpg" alt="Waiting for Superman" />';
+    var arAllTweets = new Array();
+    if (ar.length <= 3) {
+      for (var i in ar) {
+        arAllTweets.push(ar[i]);
+      }
+    } else {
+      var z = ar.length - 1;
+      for (var i = 3; i > 0; i--) {
+        arAllTweets.push(ar[z - i]);
+      }
+      for (var i = 0; i < z - 3; i++) {
+        arAllTweets.push(ar[i]);
+      }
+    }
 
-  //el('home_video_placeholder2').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/iams.jpg" alt="Home 4 the Holidays" />';
-  //el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/bnfClMe8_kw&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/bnfClMe8_kw&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
-  //el('home_video_placeholder').innerHTML = '<div id="MLKVideo" style="width:290px;height:188px;background-image:url(http://www.allforgood.org/gadget/mlk.png);"><img onclick="goMLK();" style="margin-left:30px;margin-top:120px;cursor:pointer;opacity:0.8;filter:alpha(opacity=80);" src="http://www.allforgood.org/gadget/play.png" alt="Play video" title="Play video"></div>';
-  el('home_video_placeholder').innerHTML = '<div><a href="/search#q=military%20families"><img border="0" width="300" height="250" src="/gadget/uws_military_350x200_anim_01.gif" alt="United We Serve - Veterans and Military Families" title="United We Serve - Veterans and Military Families"></a></div>';
+    var html = new Array();
+    for (var i in arAllTweets) {
+      if (arAllTweets[i]) {
+        html.push(arAllTweets[i][1]);
+      }
+    }
 
-  el('home_video_placeholder2').innerHTML = '<img width="300" src="http://www.allforgood.org/gadget/pointsoflight.jpg" alt="Points of Light Institute" />';
-
+    $('#tweets').html(html.join(''));
+    $('#col1, #col2, #col3').equalHeightColumns();
+    var r = new Rotator({direction:1,move_delay_ms:1, rotate_delay_ms:8 * 1000});
+    r.start(8 * 1000);
+  }
 }
 
-function goMLK() {
-  el('home_video_placeholder').innerHTML = '<object width="290" height="188"><param name="movie" value="http://www.youtube.com/v/bnfClMe8_kw&hl=en&fs=1&rel=0&egm=0&autoplay=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/bnfClMe8_kw&hl=en&fs=1&rel=0&egm=0&autoplay=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="290" height="188"></embed></object>';
+function fetchTweets(twitter_feed) {
+  var url = '/proxy?url=' + encodeURIComponent(twitter_feed);
+  jQuery.ajax({
+    url: url, async: true, dataType: 'xml',
+    error: function(){processTweets(null)},
+    success: function(data){processTweets(data)}
+  });
 }
 
-function doHomepageChangeLocationClick() {
-  el("location_subheader").style.display="none"
-  el("location_form").style.display="";
+function updateTweets() {
+  for (var i in arTwitterFeeds) {
+    if (arTwitterFeeds[i]) {
+      // we can't read from twitter directly because they quota against all of appspot.com
+      //var url = 'http://twitter.com/statuses/user_timeline/' + arTwitterFeeds[i][1] + '.rss';
+      var node = new Array('li169-139', 'li67-22')[Math.floor(2 * Math.random())];
+      var url = 'http://' + node + '.members.linode.com/~footprint/twitter/' + arTwitterFeeds[i][1] + '.rss';
+      fetchTweets(url);
+    }
+  }
 }

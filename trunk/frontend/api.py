@@ -57,7 +57,8 @@ FIELDS_BY_OUTPUT_TYPE = {'html' :
                            'location_string,' + \
                            'longitude,' + \
                            'openended,' + \
-                           'title'
+                           'title,' + \
+                           'description'
                            }
 # Fields to be returned when PARAM_OUTPUT is not set.
 # TODO: remove this once all output types have been specified.

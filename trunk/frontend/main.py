@@ -16,10 +16,13 @@
 appengine main().
 """
 
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from google.appengine.dist import use_library
+use_library('django', '1.2')
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
-import os
 import logging
 
 import views
@@ -28,37 +31,30 @@ import deploy
 
 APPLICATION = webapp.WSGIApplication(
     [(urls.URL_HOME, views.home_page_view),
-     (urls.URL_PSA, views.home_page_view),
-     # TODO: replace with a generic way to redirect all unknown pages to /
      (urls.URL_OLD_HOME, views.home_page_redir_view),
-     (urls.URL_CONSUMER_UI_SEARCH, views.consumer_ui_search_view),
-     (urls.URL_CONSUMER_UI_SEARCH_REDIR, views.consumer_ui_search_redir_view),
+     (urls.URL_DATAHUB_DASHBOARD, views.datahub_dashboard_view),
      (urls.URL_API_SEARCH, views.search_view),
      (urls.URL_UI_SNIPPETS, views.ui_snippets_view),
+
+     (urls.URL_REDIRECT, views.redirect_view),
+     (urls.URL_HOME4HOLIDAYS, views.home4holidays_redir_view), # this is a redirect
+
+     # TODO: replace with a generic way to redirect all unknown pages to /
+     (urls.URL_CONSUMER_UI_SEARCH_REDIR, views.consumer_ui_search_redir_view),
+     (urls.URL_CONSUMER_UI_SEARCH, views.consumer_ui_search_view),
      (urls.URL_UI_MY_SNIPPETS, views.ui_my_snippets_view),
      (urls.URL_MY_EVENTS, views.my_events_view),
+     (urls.URL_POST, views.post_view),
      (urls.URL_ACTION, views.action_view),
      (urls.URL_ADMIN, views.admin_view),
-     (urls.URL_POST, views.post_view),
-     (urls.URL_REDIRECT, views.redirect_view),
+     (urls.URL_SHORT_NAMES, views.short_name_view),
+     (urls.URL_PSA, views.home_page_view),
      (urls.URL_MODERATE, views.moderate_view),
      (urls.URL_MODERATE_BLACKLIST, views.moderate_blacklist_view),
-     (urls.URL_DATAHUB_DASHBOARD, views.datahub_dashboard_view),
-     (urls.URL_SPEC, views.spec_view),
-     (urls.URL_SHORT_NAMES, views.short_name_view),
-     (urls.URL_APPS, views.apps_view),
-     (urls.URL_APITOS, views.apitos_view),
-     (urls.URL_APIDOCS, views.apidocs_view),
-     (urls.URL_COS, views.cos_view),
-     (urls.URL_MLKDAYOFSERVICE, views.mlkdayofservice_view),
-     (urls.URL_APIPARTNERS, views.apipartners_view),
-     (urls.URL_STRATEGICPARTNERS, views.strategicpartners_view),
-     (urls.URL_POSTING, views.posting_view),
-     (urls.URL_HOME4HOLIDAYS, views.home4holidays_redir_view)
-    ] +
-    [ (url, views.static_content) for url in
-         urls.STATIC_CONTENT_FILES.iterkeys() ] + 
-    [ ('/.*', views.not_found_handler) ],
+    ] 
+    + [ (url, views.static_content) for url in
+         urls.CONTENT_FILES.iterkeys() ] 
+    + [ ('/.*', views.not_found_handler) ],
     debug=deploy.is_local_development())
 
 def main():

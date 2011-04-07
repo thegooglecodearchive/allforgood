@@ -1,0 +1,172 @@
+<script type='text/javascript'>
+	asyncLoadManager.addCallback('map', function(){
+	    map.clearMarkers();
+	});
+</script>
+{% if not has_results %}
+  {% include 'no_results.html' %}
+{% else %}
+  {% for result in result_set.clipped_results %}    
+<li class="{% if forloop.counter0 == 0 %}first{% endif %} result-{{ forloop.counter1 }}">
+<h4>
+    {% if result.latlong %}
+	<img style="position:relative;left:-5px;top:8px;" src='http://www.google.com/mapfiles/marker_midblue{{ forloop.counter0|as_letter }}.png' />
+	<script type='text/javascript'>
+		asyncLoadManager.addCallback('map', function() {
+      		var coords = '{{result.latlong}}'.split(',');
+      		map.addMarker(coords[0], coords[1], '{{ forloop.counter0|as_letter }}');
+    	});
+	</script>
+    {% endif %}
+
+<a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title }}</a></h4>
+     {% if result.location or result.startdate or result.interest_count %}
+<p class='meta'>
+       {{ result.location|escape }}
+       {% if result.location %}-{% endif %}
+       {{ result|custom_date_range_format }}
+</p>
+     {% endif %}
+     <p id="brief_{{ forloop.counter0 }}B" class="teaser">{{ result.purged_snippet|escape }}</p>
+<p class="links"><a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
+| 
+<a href="javascript:void(0);" id='share_{{ forloop.counter0 }}'>Share</a>
+<script type="text/javascript">
+  addthis.button('#share_{{ forloop.counter0 }}', { username: "footprint2009dev", services_compact: "email, twitter, facebook, myspace, friendfeed, bebo", ui_click: true }, { title: "{{ result.title|escape }}", url: "{{ result.url }}", templates: {twitter: '\{\{url\}\} via www.allforgood.org'} });
+</script>
+</p>
+</li>	
+  {% endfor %}
+  <div id="paginator"></div>
+<script language="text/javascript">
+$("#tabs").tabs("option", "collapsible", true);
+	$("#tabs").tabs("option", "selected", getSelectedTab());
+	var query = createQueryFromUrlParams();
+	var sort = getHashParam('sort', '');
+	if (sort == "eventrangeend")
+		$("#sort").attr('selectedIndex', 1);
+	else
+		$("#sort").attr('selectedIndex', 0);
+	
+	if (getSelectedTab() == 3) {			
+		$(".top_search").hide();
+	}
+	setFacetCounts = function() {		
+		if (loadNumber == 0 || getSelectedTab() == 0) {
+			$('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");
+		}
+		if (loadNumber == 0 || getSelectedTab() == 1) {
+			$('#virtual').html("(" + {{result_set.facet_counts.virtual}} + ")");
+		}		
+		if (loadNumber == 0 || getSelectedTab() == 2) {
+			$('#micro').html("(" + {{result_set.facet_counts.micro}} + ")");
+		}		
+		if (loadNumber == 0 || getSelectedTab() == 3) {
+			$('#self_directed').html("(" + {{result_set.facet_counts.self_directed}} + ")");
+		}		
+	}();
+	loadNumber = 1;
+	setProviders = function() {
+		var providers = "";
+		{% if result_set.providers %}
+			$("#provider_facet").show();
+			{% for dict in result_set.providers %}
+				{% for k,v in dict.items %}
+					providers += '<li><a href="{{ k }}">{{ k }}</a> <span>({{ v }})</span></li>';
+				{% endfor %}
+			{% endfor %}	
+			$("#provider_list").html("<li id='active_prov'></li>" + providers);
+		{% else %}
+			$("#provider_facet").hide();
+		{% endif %}
+	}();
+
+	setCategories = function() {
+		var categories = "";
+		{% if result_set.categories %}
+			$("#category_facet").show();
+			{% for cats in result_set.categories %}
+				categories += '<li><a href="{{ cats.0 }}">{{ cats.0 }}</a> <span>({{ cats.1 }})</span></li>';
+			{% endfor %}	
+			$("#category_list").html("<li id='active_cat'></li>" + categories);
+		{% else %}
+			$("#category_facet").hide();
+		{% endif %}
+	}();
+
+	$("#provider_list a").click(function(event) {
+        var item = $(this);        
+        var href = item.attr("href");        
+		$('#provider_input').val(href);
+		hideShowProviders(href, null);		
+		submitForm("facet");
+		event.preventDefault();
+	})
+
+	$("#category_list a").click(function(event) {
+		var item = $(this);
+        var html = item.html();
+		$('#category_input').val(html);
+		hideShowCategories(html, null);		
+		submitForm("facet");
+		event.preventDefault();
+	})
+
+	function capitalize(str) { 
+        if (str) {
+			var words = str.split(" "); 
+	   		for (var i=0 ; i < words.length ; i++){ 
+	      		var testwd = words[i]; 
+	      		var firLet = testwd.substr(0,1); 
+	      		var rest = testwd.substr(1, testwd.length -1) 
+	      		words[i] = firLet.toUpperCase() + rest 
+	   		} 
+	   		return words.join(" ");
+		}
+	}
+	
+	var category = getHashParam('category', '');
+	if (category) {
+		$("#category_input").val(category);
+		hideShowCategories(capitalize(category));
+    }
+	
+	var source = getHashParam('source', '');
+	if (source) {
+		$("#provider_input").val(source);		
+		hideShowProviders(source);
+	}
+	populateActiveFacets();	
+    
+    function stripTags(s){
+      var rtn = '';  
+      s = (s || '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/<([^>]+)>/g,'');
+      var n = s.length;  
+      var intag = false;  
+      for (var i = 0; i < n; i++) {
+        if (s.charAt(i) == '<') {
+          intag = true;
+        } else if (s.charAt(i) == '>') {
+          intag = false;    
+        } else if (!intag) {
+          rtn += s.charAt(i);    
+        }  
+      }
+      return rtn;
+    }
+    function cleanSnippets() {
+      var ar = document.getElementsByTagName('div');
+      for (var i in ar) {
+        if (ar[i] && ar[i].className == 'snippet_text') {
+          ar[i].innerHTML = stripTags(ar[i].innerHTML).replace(/""/g,'"');
+        }
+        else if (ar[i] && ar[i].className == 'snippet_title') {
+          ar[i].innerHTML = ar[i].innerHTML.replace(/""/g,'"');
+        }
+      }
+    }
+    initMap();
+    renderPaginator(el('paginator'), {{result_set.facet_counts.count|default:0}}, {{display_nextpage_link|yesno:"true,false"}});    
+  $('.teaser').expand(); 
+</script>
+{% endif %}

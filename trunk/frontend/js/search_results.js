@@ -17,9 +17,19 @@ var map;
 var NUM_PER_PAGE = 10;
 var searchResults = [];
 var filters = [];
+var loadNumber = 0;
 
-$(document).ready(function() {
-    $("#startdate").datepicker({
+$(document).ready(function() {	
+	$.collapsible(".search-refine .header");
+    var index = getSelectedTab();
+	$("#tabs").tabs({			
+		select: function(event, ui) {			
+			submitForm('oppType', ui.index);								 
+		},
+		selected: index,
+		collapsible: true
+	});
+	$("#startdate").datepicker({
 		minDate: new Date(),
 		onSelect: function(dateText, inst) {
 			$("#enddate").datepicker("option", "minDate", dateText);
@@ -33,31 +43,122 @@ $(document).ready(function() {
 			min: 5,
 			max: 100,
 			step: 5,
-			slide: function( event, ui ) {
+			slide: function(event, ui) {
 				$("#location_distance").html(ui.value);
-			}			
+			},
+			stop: function(event, ui) {
+				submitForm("reset");
+			}
 	});	
 	$("#location_distance").html($("#location_slider").slider("value"));	
-	$("#facet_submit").click(function() {
-		submitForm("all");
+	$("#submit-btn").click(function() {
+		submitForm("reset");
 		return false;
 	});
 	$("#location").keypress(function(e) {
 		code = (e.keyCode ? e.keyCode : e.which);
 		if (code == 13) {
-			submitForm("all");
+			submitForm("reset");
 			return false;
 		}		
 	});
 	var start = getHashParam('timeperiodstart', '');
-	var end = getHashParam('timeperiodend', '');	
+	var end = getHashParam('timeperiodend', '');
+	
 	if (start != "everything") {
 		getInputFieldValue(el('startdate')).value = start;
 	}
 	if (end != "everything") {
 		getInputFieldValue(el('enddate')).value = end;
-	}		
+	}
+    
+    $("#facets_container").hide();    
   });
+  
+  function getSelectedTab() {
+  	var type = getHashParam('type', '');
+	var index = 0;		
+	if (type == "virtual")
+		index = 1;
+	else if (type == "micro")
+		index = 2;
+	else if (type == "self_directed")
+		index = 3;
+	else
+		index = 0;
+	return index;
+  }
+
+  function hideShowCategories(value, load) {
+	  if (load == null) {
+		  load = true;  
+	  }
+	  if (value && value != "") {
+          toggleFacetDisplay("category_list", value);          
+          $.cookie($(".search-refine .header").prev().attr("id"), 'hide');
+          populateActiveFacets();          
+		  $("#category_item").html("<li>" + value + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>");
+	  } else {		  
+		  toggleFacetDisplay("category_list");
+          $.cookie($(".search-refine .header").prev().attr("id"), 'show');
+          $("#category_item").html("");		  
+		  $("#category_input").val("");
+		  populateActiveFacets();
+		  if (load) submitForm("facet");
+	  }
+  } 
+  
+  function hideShowProviders(value, load) {
+      if (load == null) {
+		  load = true;  
+	  }
+	  if (value && value != "") {
+		  toggleFacetDisplay("provider_list", value);
+          populateActiveFacets();		  
+		  $("#provider_item").html("<li>" + value + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>");
+	  } else {		  
+		  toggleFacetDisplay("provider_list");
+          $("#provider_item").html("");		  
+		  $("#provider_input").val("");
+		  populateActiveFacets();
+		  if (load) submitForm("facet");
+	  }
+  }
+  
+  function toggleFacetDisplay(id, value) {
+      $("#" + id + " li").each(function() {
+          var item = $(this);         
+          if (value) {              
+               item.hide();               
+          } else {
+              item.show();
+          }
+      });
+
+      if (value) {          
+          if (id.indexOf("provider_list") > -1) { 
+               var active = $("#active_prov");
+               active.html("");
+               active.html(value + " (<a href=\"javascript:hideShowProviders()\">undo</a>)");
+               active.show();
+           } else {
+               var active = $("#active_cat");
+               active.html("");
+               active.html(value + " (<a href=\"javascript:hideShowCategories()\">undo</a>)");
+               active.show();
+           }
+      }
+  }
+  
+  function removeKeyword() {
+	  setInputFieldValue(el('keywords'), "");
+	  submitForm("reset");
+  }
+  
+  function submitKeyword(value) {
+	  setInputFieldValue(el('keywords'), value);
+	  submitForm("reset");
+  }
   
   /** Query params for backend search, based on frontend parameters.
  *
@@ -70,14 +171,14 @@ $(document).ready(function() {
  * @param {Object} opt_filters Filters for this query.
  *      Maps 'filtername':value.
  */
-function Query(keywords, location, distance, pageNum, sort, useCache, get_facet_counts, opt_timePeriodStart, opt_timePeriodEnd, opt_filters) {
+function Query(keywords, location, distance, type, pageNum, sort, useCache, get_facet_counts, opt_timePeriodStart, opt_timePeriodEnd, opt_filters, category, source) {
   var me = this;
   me.keywords_ = keywords;
   me.location_ = location;
-  //me.category_ = category || 'all';
+  me.category_ = category || '';
   me.distance_ = distance || '25';
-  //me.type_ = type || 'all';
-  //me.source_ = source || 'all';
+  me.type_ = type || 'all';
+  me.source_ = source || '';
   me.pageNum_ = pageNum;
   me.sort_ = sort;
   me.use_cache_ = useCache;
@@ -154,7 +255,14 @@ Query.prototype.getDistance = function() {
 };
 
 Query.prototype.setType = function(type) {
-  this.type_ = type;
+  if (type == "1")
+  	this.type_ = "virtual";
+  else if (type == "2")
+  	this.type_ = "micro";
+  else if (type == "3")
+    this.type_ = "self_directed";
+  else
+    this.type_ = "all";	
 };
 
 Query.prototype.getType = function() {
@@ -216,13 +324,7 @@ Query.prototype.getUrlQuery = function() {
     }
     urlQuery += name + '=' + escape(value);
   }
-  function addFacetField(value) {
-    addQueryParam('facet.field' + facet_fields_added++, value);
-  }
-  function addFacetQuery(value) {
-	addQueryParam('facet.query' + facet_queries_added++, value);
-  }
-
+  
   // Keyword search
   var keywords = me.getKeywords();
   if (keywords && keywords.length > 0) {
@@ -237,6 +339,7 @@ Query.prototype.getUrlQuery = function() {
   var location = me.getLocation();
   if (location && location.length > 0) {
     addQueryParam('vol_loc', location);
+    $.cookie('user_vol_loc', location, {expires: 30});
   } 
   
   // Distance
@@ -245,10 +348,28 @@ Query.prototype.getUrlQuery = function() {
     addQueryParam('distance', distance);
   }
   
+   // Type
+  var type = me.getType();
+  if (type && type.length > 0) {
+    addQueryParam('type', type);
+  }
+  
   // Sort
   var sort = me.getSort();
   if (sort && sort.length > 0) {
     addQueryParam('sort', sort);
+  }
+  
+  //Category
+  var category = me.getCategory();
+  if (category && category.length > 0) {
+    addQueryParam('category', category);
+  }
+  
+  //Source
+  var source = me.getSource();
+  if (source && source.length > 0) {
+    addQueryParam('source', source);
   }
 
   // Time period
@@ -267,18 +388,7 @@ Query.prototype.getUrlQuery = function() {
     if (value) {
       addQueryParam(name, value);
     }
-  }
-  if (me.getFacetCounts())
-  {
-    var facetFieldCount = 0;
-    //addQueryParam('facet', 'true');
-    //addQueryParam('facet.limit', '-1');
-	//addQueryParam('facet.mincount', '1');
-    //addFacetField('feed_providername');
-	//addFacetField('categories');
-	//addFacetField('virtual');
-	//addFacetField('self_directed');
-  }
+  }  
   
   // Use Cache
   var use_cache = me.getUseCache();
@@ -327,8 +437,8 @@ function createQueryFromUrlParams() {
   getNamedFilterFromUrl('vol_startdate');
   getNamedFilterFromUrl('vol_enddate'); 
   getNamedFilterFromUrl('key');
-
-  return new Query(keywords, location, distance, pageNum, sort, use_cache, get_facet_counts, timePeriodStart, timePeriodEnd, filters);
+  
+  return new Query(keywords, location, distance, type, pageNum, sort, use_cache, get_facet_counts, timePeriodStart, timePeriodEnd, filters, category, source);
 }
 
 /**
@@ -484,6 +594,12 @@ executeSearchFromHashParams = function(currentLocation) {
    */
   var currentXhr;
 
+  var tab_n = 1 + getSelectedTab();
+  var it = el('tabs-' + tab_n + '-results');
+  if (it) {
+    it.innerHTML = '<div id="snippets_pane"></div>';
+  }
+
   return function(currentLocation) {
     // Try to avoid the annoyance of a useless extra click on Back button.
     // TODO(timman): Find a cleaner way to determine first-rewrite.
@@ -521,7 +637,9 @@ executeSearchFromHashParams = function(currentLocation) {
           setInputFieldValue(el('location'), query.getLocation());
         }
       }
+
       jQuery('#snippets_pane').html(text);
+
       asyncLoadManager.addCallback('map', function() {
         map.autoZoomAndCenter(query.getLocation());
       });
@@ -567,6 +685,12 @@ executeSearchFromHashParams = function(currentLocation) {
       url += '&referrer=' + encodeURIComponent(referrer);
     }
 
+    var tab_n = 1 + getSelectedTab();
+    var it = el('tabs-' + tab_n + '-results');
+    if (it) {
+      it.innerHTML = '<div id="snippets_pane"><span class="loading">Loading...</span></div>';
+    }
+    //el('snippets_pane').innerHTML = 'Loading...';
     currentXhr = jQuery.ajax({
       url: url,
       async: true,
@@ -578,21 +702,28 @@ executeSearchFromHashParams = function(currentLocation) {
   };
 }(); // executed inline to close over the 'currentXhr' variable.
 
-function getStartDate()
-{
+function getStartDate() {
   var start = getInputFieldValue(el('startdate')).toString();
   if (!start || start == "Start Date") {
 	start = "";
   }  
   return start;
 }
-function getEndDate()
-{
+
+function getEndDate() {
   var end = getInputFieldValue(el('enddate')).toString();
   if (!end || end == "End Date") {
   	end = "";
   }  
   return end;
+}
+
+function getCategoryInput() {
+	return $("#category_input").val().toString();
+}
+
+function getSourceInput() {	
+	return $("#provider_input").val().toString();
 }
 
 function getDistance() {
@@ -605,9 +736,9 @@ function getDistance() {
  *                         ['keywords', 'when_widget', 'map'].
  */
 function submitForm(invoker, value) {  
-  var keywords = getInputFieldValue(el('keywords'));
-
-  // If the keywords search form is invoked from non-search page,
+	var keywords = getInputFieldValue(el('keywords'));  
+  
+  //If the keywords search form is invoked from non-search page,
   // redirect to search page.
   if (invoker == 'category' && currentPageName != 'SEARCH') {
     // TODO: Incorporate current 'when' filter?
@@ -619,26 +750,70 @@ function submitForm(invoker, value) {
   	window.location = '/search#sort=' + value;
     return;
   }
-
   var location = getInputFieldValue(el('location'));	
+  if (location) {
+    setSessionCookie('user_vol_loc', location);
+  }
+  /*
   if (invoker == 'map') {
     setSessionCookie('user_vol_loc', location);
-  } 
+  }
+  */
+  
+  if (invoker == "reset") {
+	  loadNumber = 0;
+  }
 
   var timePeriodStart = getStartDate();
   var timePeriodEnd = getEndDate();
-  var distance = getDistance();  
+  var distance = getDistance();
   var sort = getInputFieldValue(el('sort'));
   if (location == '') {
     location = getDefaultLocation().displayLong;
   }
   
+  var category = "";
+  var source = "";
+
+  if ((invoker && invoker != "facet") || !invoker) {
+	  $("#category_input").val("");
+	  $("#provider_input").val("");
+	  hideShowCategories("", false, null);
+	  hideShowProviders("", false, null);
+  } else {
+	  category = getCategoryInput();
+	  source = getSourceInput();  
+  }  
+  
   var query = lastSearchQuery.clone();
   query.setKeywords(keywords);
   query.setLocation(location);
-  query.setDistance(distance);
+  query.setDistance(distance);  
+  if (invoker == "oppType") {
+  	query.setType(value);
+	var type = query.getType();
+	//$(".facets").show();
+	$(".top_search").show();
+	$("#location_distance_date").show();
+	
+	if (type == "all") {		
+		$("#location_box").show();
+        $("#map").show();
+        $("#location_distance_date").show();
+    }
+    else {        
+		$("#location_box").hide();
+        $("#map").hide();		
+		if (type == "self_directed") {			
+			$(".top_search").hide();
+			$("#location_distance_date").hide();
+		}
+    }
+  }
   query.setPageNum(0);
   query.setSort(sort);
+  query.setCategory(category);
+  query.setSource(source);
   query.setTimePeriodStart(timePeriodStart);
   query.setTimePeriodEnd(timePeriodEnd);
   query.execute();
@@ -659,6 +834,62 @@ function showMoreDuplicates(id) {
     it.style.display = 'none';
   }
 }
+
+(function($){
+	$.fn.expand = function(options) {	   
+		var defaults = {
+			length: 285,
+			minTrail: 20,
+			moreText: "[more]",
+			lessText: " [less]",
+			ellipsisText: "... ",
+			moreAni: "",
+			lessAni: ""
+		};		
+		var options = $.extend(defaults, options);	   
+		return this.each(function() {
+			obj = $(this);
+			var body = obj.html();			
+			if (body.length > options.length + options.minTrail) {
+				var splitLocation = body.indexOf(' ', options.length);
+				if (splitLocation != -1) {
+					// truncate tip
+					var splitLocation = body.indexOf(' ', options.length);
+					var str1 = body.substring(0, splitLocation);
+					var str2 = body.substring(splitLocation, body.length - 1);
+					obj.html(str1 + '<span class="truncate_ellipsis">' + options.ellipsisText + 
+						'</span>' + '<span class="truncate_more">' + str2 + '</span>');
+					obj.find('.truncate_more').css("display", "none");
+					
+					// insert more link
+					obj.append(
+						'<span class="clearboth">' +
+							'<a href="#" class="truncate_more_link">' + options.moreText + '</a>' +
+						'</span>'
+					);
+
+					// set onclick event for more/less link
+					var moreLink = $('.truncate_more_link', obj);
+					var moreContent = $('.truncate_more', obj);
+					var ellipsis = $('.truncate_ellipsis', obj);
+					moreLink.click(function() {
+						if (moreLink.text() == options.moreText) {
+							moreContent.show(options.moreAni);
+							moreLink.text(options.lessText);
+							ellipsis.css("display", "none");
+						} else {
+							moreContent.hide(options.lessAni);
+							moreLink.text(options.moreText);
+							ellipsis.css("display", "inline");
+						}
+						return false;
+				  	});
+				}
+			} // end if
+			
+		});
+	};
+})(jQuery);
 
 /** Called from the onclick in the "less" prompt of a snippet
  *
@@ -699,12 +930,12 @@ function categorySearch(category) {
 }
 
 function renderPaginator(div, totalNum, forceShowNextLink) {
-  if (!lastSearchQuery || searchResults.length == 0 || totalNum == 0) {
+  if (!lastSearchQuery || totalNum == 0) {
     return;
   }
 
   var numPages = parseInt(Math.ceil(totalNum / NUM_PER_PAGE));
-  if (numPages == 1 && !forceShowNextLink) {
+  if (numPages == 1) {
     return;
   }
   if (numPages > 20) {
@@ -735,7 +966,7 @@ function renderPaginator(div, totalNum, forceShowNextLink) {
   }
   */
 
-  if (currentPageNum != numPages - 1 || forceShowNextLink) {
+  if (currentPageNum != numPages - 1) {
     html.push('&nbsp;&nbsp;&nbsp;');
     renderLink(currentPageNum + 1, 'Next Page &raquo;');
   }
@@ -744,9 +975,7 @@ function renderPaginator(div, totalNum, forceShowNextLink) {
   // pagination debugging
   //div.innerHTML += "<br/>totalNum="+totalNum
   //div.innerHTML += "<br/>currentPageNum="+currentPageNum;
-  //div.innerHTML += "<br/>numPages="+numPages;
-  //div.innerHTML += "<br/>forceShowNextLink="+forceShowNextLink;
-  
+  //div.innerHTML += "<br/>numPages="+numPages;  
 }
 
 /** Loads the Maps API asynchronously and notifies the asynchronous load
@@ -800,7 +1029,7 @@ function SearchResult(url, url_sig, title, location, snippet, startdate, enddate
   this.hostWebsite = hostWebsite;
 }
 
-var lastSearchQuery = new Query('', '','', 0, true, {}, 1);
+var lastSearchQuery = new Query('', '','', 0, true, {}, 1, "", "");
 var whenFilterWidget;
 var typeFilterWidget;
 var sourceFilterWidget;

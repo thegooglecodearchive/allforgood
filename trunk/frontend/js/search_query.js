@@ -13,8 +13,14 @@ function ensureSubmitForm() {
       if (fromWhere == 'virtual_location') {
         vol_loc += '&virtual=1'
       }
-	  var category = getInputFieldValue(el('categories'));
-	  vol_loc += "&category=" + category;
+      var category = $("#category_input");
+      if (category.val()) {
+    	  vol_loc += "&category=" + category.val();
+      }      
+      var source = $("#provider_input");
+      if (source.val()) {
+    	  vol_loc += "&source=" + source.val();
+      }
 	  var sort = getInputFieldValue(el('sort'));
 	  vol_loc += "&sort=" + (sort || 'score');
       window.location = '/search#q=' +
@@ -24,10 +30,21 @@ function ensureSubmitForm() {
   }
 }
 
+/*
 function setCategory(category) {
-  setInputFieldValue(el('keywords'), category);
-  submitForm('keywords');
+	var category_input = $("#category_input");
+	if (category_input) {
+		category_input.val(category);
+		submitForm('facet');
+	}	
 }
+*/
+
+function submitKeyword(value) {
+        setInputFieldValue(el('keywords'), value);
+        submitForm("reset");
+}
+
 
 function sortResults(value) {
   setInputFieldValue(el('sort'), value);
@@ -35,6 +52,8 @@ function sortResults(value) {
 }
 
 function createExampleSearchText() {
+  return;
+
   // Put categories to receive the "New!" superscript in here
   var new_popular = [] // ["September 11"]
   var html = 'Categories: ';

@@ -65,30 +65,23 @@ import searchresult
 import apiwriter
 from template_helpers import get_default_template_values, render_template, load_userinfo_into_dict
 
-HOMEPAGE_TEMPLATE = 'homepage.html'
+CONTENT_TEMPLATE = 'base_content.html'
+HOME_PAGE_TEMPLATE = 'base_home.html'
+NOT_FOUND_TEMPLATE = 'not_found.html'
+
+SEARCH_RESULTS_TEMPLATE = 'base_serp.html'
+
 TEST_PAGEVIEWS_TEMPLATE = 'test_pageviews.html'
-SEARCH_RESULTS_TEMPLATE = 'search_results.html'
 SEARCH_RESULTS_MISSING_KEY_TEMPLATE = 'search_results_missing_key.html'
-SEARCH_RESULTS_INVALID_KEY_TEMPLATE = 'search_results_invalid_key.html'
-SNIPPETS_LIST_TEMPLATE = 'snippets_list.html'
-SNIPPETS_LIST_MINI_TEMPLATE = 'snippets_list_mini.html'
-MY_EVENTS_TEMPLATE = 'my_events.html'
+SNIPPETS_LIST_TEMPLATE = 'serp_results.html'
+SNIPPETS_LIST_MINI_TEMPLATE = 'snippets_list_home.html'
 POST_TEMPLATE = 'post.html'
 POST_RESULT_TEMPLATE = 'post_result.html'
 ADMIN_TEMPLATE = 'admin.html'
 DATAHUB_DASHBOARD_TEMPLATE = 'datahub_dashboard.html'
 MODERATE_TEMPLATE = 'moderate.html'
-STATIC_CONTENT_TEMPLATE = 'static_content.html'
-NOT_FOUND_TEMPLATE = 'not_found.html'
-SPEC_TEMPLATE = 'spec.html'
-COS_TEMPLATE = 'cos.html'
-POSTING_TEMPLATE = 'spreadsheet.html'
-MLKDAYOFSERVICE_TEMPLATE = 'mlkdayofservice.html'
-STRATEGICPARTNERS_TEMPLATE = 'strategicpartners.html'
-APIPARTNERS_TEMPLATE = 'apipartners.html'
-APPS_TEMPLATE = 'apps.html'
-APITOS_TEMPLATE = 'api_tos.html'
-APIDOCS_TEMPLATE = 'api.html'
+
+MY_EVENTS_TEMPLATE = 'my_events.html'
 
 DATAHUB_LOG = private_keys.DASHBOARD_BASE_URL + "load_gbase.log.bz2"
 
@@ -255,16 +248,27 @@ class test_page_views_view(webapp.RequestHandler):
 
 
 class home_page_view(webapp.RequestHandler):
-  """default homepage for consumer UI."""
-  @expires(0)  # User specific.
+  """ default homepage for consumer UI."""
+  @expires(0)  # User specific. Maybe we should remove that so it's cacheable.
   def get(self):
     """HTTP get method."""
     try:
-      template_values = get_default_template_values(self.request, 'HOMEPAGE')
-      self.response.out.write(render_template(HOMEPAGE_TEMPLATE,
-                                           template_values))
+      try:
+        path = os.path.join(os.path.dirname(__file__),  urls.CONTENT_LOCATION +
+                        urls.CONTENT_FILES[self.request.path])
+        fh = open(path, 'r')
+        html = fh.read()
+        fh.close()
+        template_values = get_default_template_values(self.request, 'HOME_PAGE')
+        template_values['static_content'] = html
+        self.response.out.write(render_template(HOME_PAGE_TEMPLATE,
+                                          template_values))
+      except:
+        self.error(404)
+        return
+
     except DeadlineExceededError:
-      deadline_exceeded(self, "home_page_view")
+      deadline_exceeded(self, "static_content")
 
 
 class home_page_redir_view(webapp.RequestHandler):
@@ -283,109 +287,6 @@ class home4holidays_redir_view(webapp.RequestHandler):
     self.redirect("http://www.gmodules.com/ig/creator?url=http%3A%2F%2Fhosting.gmodules.com%2Fig%2Fgadgets%2Ffile%2F110804810900731027561%2Fiams.xml")
 
 
-class not_found_handler(webapp.RequestHandler):
-  """ throw 404 """
-  def get(self):
-    """ HTTP GET method """
-    try:
-      self.error(404)
-      template_values = get_default_template_values(self.request, 'STATIC_PAGE')
-      self.response.out.write(render_template(NOT_FOUND_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "not_found_handler")
-
-
-class apps_view(webapp.RequestHandler):
-  @expires(0)
-  def get(self):
-    try:
-      template_values = get_default_template_values(self.request, 'APPS')
-      self.response.out.write(render_template(APPS_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "apps_handler")
-
-
-class apitos_view(webapp.RequestHandler):
-  @expires(0)
-  def get(self):
-    try:
-      template_values = get_default_template_values(self.request, 'APITOS')
-      self.response.out.write(render_template(APITOS_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "apitos_handler")
-
-
-class apidocs_view(webapp.RequestHandler):
-  @expires(0)
-  def get(self):
-    try:
-      template_values = get_default_template_values(self.request, 'APIDOCS')
-      self.response.out.write(render_template(APIDOCS_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "apidocs_handler")
-
-
-
-class cos_view(webapp.RequestHandler):
-  @expires(0)
-  def get(self):
-    try:
-      template_values = get_default_template_values(self.request, 'COS')
-      self.response.out.write(render_template(COS_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "cos_handler")
-
-
-class posting_view(webapp.RequestHandler):
-  @expires(0)
-  def get(self):
-    try:
-      template_values = get_default_template_values(self.request, 'POSTING')
-      self.response.out.write(render_template(POSTING_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "posting_handler")
-
-
-class mlkdayofservice_view(webapp.RequestHandler):
-  @expires(0)
-  def get(self):
-    try:
-      template_values = get_default_template_values(self.request, 'MLKDAYOFSERVICE')
-      self.response.out.write(render_template(MLKDAYOFSERVICE_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "mlkdayofservice_handler")
-
-
-class strategicpartners_view(webapp.RequestHandler):
-  @expires(0)
-  def get(self):
-    try:
-      template_values = get_default_template_values(self.request, 'STRATEGICPARTNERS')
-      self.response.out.write(render_template(STRATEGICPARTNERS_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "strategicepartners_handler")
-
-
-class apipartners_view(webapp.RequestHandler):
-  @expires(0)
-  def get(self):
-    try:
-      template_values = get_default_template_values(self.request, 'APIPARTNERS')
-      self.response.out.write(render_template(APIPARTNERS_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "apipartners_handler")
-
-
-		
 class consumer_ui_search_redir_view(webapp.RequestHandler):
   """handler for embedded HTML forms, which can't form queries
      with query params to the right of the # (hash)."""
@@ -412,13 +313,15 @@ class consumer_ui_search_view(webapp.RequestHandler):
     try:
       template_values = get_default_template_values(self.request, 'SEARCH')
       template_values['result_set'] = {}
+      template_values['template'] = 'serp.html'
       template_values['is_main_page'] = True
-      self.handle_sponsored(template_values)
+      template_values['private_keys'] = private_keys
+      #self.handle_sponsored(template_values)
       self.response.out.write(render_template(SEARCH_RESULTS_TEMPLATE,
-                                            template_values))
+                                           template_values))
     except DeadlineExceededError:
-      deadline_exceeded(self, "consumer_ui_search_view")
-    
+      deadline_exceeded(self, "static_content")
+
   def handle_sponsored(self, template_values):
     #temp hack, need to find best way to pass campaign_id
     campaign_id = template_values.get('campaign_id', None)
@@ -476,21 +379,11 @@ class consumer_ui_search_view(webapp.RequestHandler):
         import traceback
         tb = traceback.format_exc()
         logging.error('views.handle_sponsored campaign: ' + str(tb))
+
     if template_values.has_key('campaign_id'):
       del template_values['campaign_id']
     return False
 
-class spec_view(webapp.RequestHandler):
-  """view fpxml spec documentation"""
-  @expires(0)  # User specific.
-  def get(self):
-    """HTTP get method."""
-    template_values = get_default_template_values(self.request, 'SPEC')
-    try:
-      self.response.out.write(render_template(SPEC_TEMPLATE,
-                                            template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "spec_view")
 
 class search_view(webapp.RequestHandler):
   """run a search from the API.  note various output formats."""
@@ -502,12 +395,6 @@ class search_view(webapp.RequestHandler):
 
       if api.PARAM_KEY not in unique_args:
         tplresult = render_template(SEARCH_RESULTS_MISSING_KEY_TEMPLATE, {})
-        self.response.out.write(tplresult)
-        pagecount.IncrPageCount("key.missing", 1)
-        return
-
-      if private_keys.BAD_KEYS.has_key(unique_args[api.PARAM_KEY]):
-        tplresult = render_template(SEARCH_RESULTS_INVALID_KEY_TEMPLATE, {})
         self.response.out.write(tplresult)
         pagecount.IncrPageCount("key.missing", 1)
         return
@@ -577,10 +464,8 @@ class search_view(webapp.RequestHandler):
 
 
 class ui_snippets_view(webapp.RequestHandler):
-  """run a search and return consumer HTML for the results--
-  this awful hack exists for latency reasons: it's super slow to
-  parse things on the client."""
-  @expires(0)  # User specific.
+  """run a search and return consumer HTML for the results """
+  @expires(0) 
   def get(self):
     """HTTP get method."""
     try:
@@ -620,7 +505,7 @@ class ui_snippets_view(webapp.RequestHandler):
       if virtual:
         template_values['query_param_virtual'] = True
 
-      hp_num = min(6, len(result_set.clipped_results))
+      hp_num = min(3, len(result_set.clipped_results))
       template_values.update({
           'result_set': result_set,
           'has_results' : (result_set.num_merged_results > 0),  # For django.
@@ -1115,7 +1000,7 @@ class moderate_blacklist_view(webapp.RequestHandler):
         'path' : self.request.path,
         'static_content' : text,
     }
-    self.response.out.write(render_template(STATIC_CONTENT_TEMPLATE,
+    self.response.out.write(render_template(urls.CONTENT_TEMPLATE,
                                             template_values))
 
   @require_moderator
@@ -1159,7 +1044,7 @@ class moderate_blacklist_view(webapp.RequestHandler):
         'path' : self.request.path,
         'static_content' : text,
     }
-    self.response.out.write(render_template(STATIC_CONTENT_TEMPLATE,
+    self.response.out.write(render_template(CONTENT_TEMPLATE,
                                             template_values))
 
 
@@ -1238,63 +1123,44 @@ class action_view(webapp.RequestHandler):
 
 
 class static_content(webapp.RequestHandler):
-  """Handles static content like privacy policy and 'About Us'
-
-  The static content files are checked in SVN under /frontend/html.
-  We want to be able to update these files without having to push the
-  entire website.  The code here fetches the content directly from SVN,
-  memcaches it, and serves that.  So once a static content file is
-  submitted into SVN, it will go live on the site automatically (as soon
-  as memcache entry expires) without requiring a full site push.
-  """
-  STATIC_CONTENT_MEMCACHE_TIME = 60 * 60  # One hour.
-  STATIC_CONTENT_MEMCACHE_KEY = 'static_content:'
-
+  """Handles static content like privacy policy and 'About Us'"""
   @expires(0)  # User specific. Maybe we should remove that so it's cacheable.
   def get(self):
     """HTTP get method."""
     try:
-      if urls.STATIC_CONTENT_FILES[self.request.path] == "app.html":
-      	remote_url = ("http://www.allforgood.org/" +
-          urls.STATIC_CONTENT_FILES[self.request.path])
-      else:
-      	remote_url = (urls.STATIC_CONTENT_LOCATION +
-          urls.STATIC_CONTENT_FILES[self.request.path])
-
-      # &debug=1 reads from local files rather than the repository for debugging
-      text = None
-      debug = self.request.get('debug') or '0'
-      if debug == '1':
-        path = os.path.join(os.path.dirname(__file__), 'html/'+
-                          urls.STATIC_CONTENT_FILES[self.request.path])
-        logging.debug("debug: reading html from "+path)
+      try:
+        path = os.path.join(os.path.dirname(__file__), urls.CONTENT_LOCATION +
+                        urls.CONTENT_FILES[self.request.path])
         fh = open(path, 'r')
-        text = fh.read()
-        logging.debug("read %d bytes." % len(text))
-
-      if not text:
-        text = memcache.get(self.STATIC_CONTENT_MEMCACHE_KEY + remote_url)
-      if not text:
-        # Content is not in memcache.  Fetch from remote location.
-        # We have to append ?zx= to URL to avoid urlfetch's cache.
-        result = urlfetch.fetch("%s?zx=%d" % (remote_url,
-                                            datetime.now().microsecond))
-        if result.status_code == 200:
-          text = result.content
-          memcache.set(self.STATIC_CONTENT_MEMCACHE_KEY + remote_url,
-                     text,
-                     self.STATIC_CONTENT_MEMCACHE_TIME)
-
-      if not text:
+        html = fh.read()
+        fh.close()
+        template_values = get_default_template_values(self.request, 'STATIC_PAGE')
+        template_values['static_content'] = html
+        self.response.out.write(render_template(CONTENT_TEMPLATE,
+                                          template_values))
+      except:
         self.error(404)
         return
 
-      template_values = get_default_template_values(self.request, 'STATIC_PAGE')
-      template_values['static_content'] = text
-      self.response.out.write(render_template(STATIC_CONTENT_TEMPLATE,
-                                            template_values))
-    except DeadlineExceeded:
+    except DeadlineExceededError:
       deadline_exceeded(self, "static_content")
+
+
+class not_found_handler(webapp.RequestHandler):
+  """ throw 404 """
+  @expires(0)  # User specific. Maybe we should remove that so it's cacheable.
+  def get(self):
+    """HTTP get method."""
+    try:
+      self.error(404)
+      template_values = get_default_template_values(self.request, 'STATIC_PAGE')
+      template_values['template'] = NOT_FOUND_TEMPLATE
+      self.response.out.write(render_template(CONTENT_TEMPLATE,
+                                          template_values))
+
+    except DeadlineExceededError:
+      deadline_exceeded(self, "not_found_handler")
+
 
 class datahub_dashboard_view(webapp.RequestHandler):
   """stats by provider, on a hidden URL (underlying data is a hidden URL)."""
@@ -1501,6 +1367,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
     logging.debug("datahub_dashboard_view: %s" % template_values['msg'])
     self.response.out.write(render_template(DATAHUB_DASHBOARD_TEMPLATE,
                                             template_values))
+
 
 class short_name_view(webapp.RequestHandler):
   """Redirects short name to long URL from spreadsheet."""

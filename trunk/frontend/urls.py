@@ -16,6 +16,7 @@
 paths used in the app
 """
 URL_HOME = '/'
+URL_PARTNERS = '/partners'
 URL_OLD_HOME = '/home'
 URL_CONSUMER_UI_SEARCH = '/search'
 URL_CONSUMER_UI_SEARCH_REDIR = '/search_form'
@@ -35,43 +36,49 @@ URL_ACTION = '/action'  # User actions like starring
 URL_PSA = '/psa' # Redirect to home page for tracking adsense psas
 URL_SPEC = '/spec'
 URL_SHORT_NAMES = '/s/.*'
-URL_APPS = '/apps'
-URL_APITOS = '/api_tos'
-URL_APIDOCS='/docs/api.html'
-URL_COS = '/golocal'
-URL_POSTING = '/posting'
-URL_MLKDAYOFSERVICE = '/MLKDayOfService'
-URL_STRATEGICPARTNERS = '/StrategicPartners'
-URL_APIPARTNERS = '/APIPartners'
 URL_HOME4HOLIDAYS = '/home4holidays'
 
-STATIC_CONTENT_LOCATION = 'http://allforgood.googlecode.com/svn/trunk/frontend/html/'
+CONTENT_LOCATION = 'pages/'
 
 # Mappings between appliation URLs (key) and static content
-# files to fetch (STATIC_CONTENT_LOCATION + value).
+# files to fetch (CONTENT_LOCATION + value).
 # So, for example, the application URL '/about' maps to
-# the remote URL 'http://code.google.com/.../trunk/frontend/html/about_us.html'
-STATIC_CONTENT_FILES = {
+# static/about_us.html
+CONTENT_FILES = {
+  '/' : 'home.html',
+  '/home' : 'home.html',
   '/about' : 'about_us.html',
   '/privacypolicy' : 'privacy_policy.html',
   '/contentpolicy' : 'content_policy.html',
+  '/team' : 'team.html',
+  '/getinvolved' : 'getinvolved.html',
+  '/contactus' : 'contactus.html',
   '/spreadsheet' : 'spreadsheet.html',
+  '/partners' : 'partners.html',
   '/publishers' : 'publishers.html',
   '/help' : 'help.html',
+  '/gettingstarted' : 'gettingstarted.html',
   '/faq' : 'faq.html',
   '/tos' : 'tos.html',
-  #'/api_tos' : 'api_tos.html',
-  #'/apps' : 'apps.html',
-  '/dmca' : 'dmca.html',
-  '/docs/api.html' : 'api.html',
-  '/partner_terms' : 'partner_terms.html',
+  '/api_tos' : 'api_tos.html',
+  '/apps' : 'apps.html',
+  '/not_found.html' : 'not_found.html',
+  '/api.html' : 'api.html',
+  '/guide' : 'tour.html',
+  '/cla' : 'cla.html',
+  '/spec' : 'spec.html',
+  '/posting' : 'spreadsheet.html',
+  '/golocal' : 'cos.html',
+  '/mlkdayofservice' : 'mlkdayofservice.html',
   '/apps/gmail' : 'apps-gmail.html',
   '/apps/typepad' : 'apps-typepad.html',
   '/apps/blogger' : 'apps-blogger.html',
   '/apps/googlesites' : 'apps-googlesites.html',
   '/apps/wordpress' : 'apps-wordpress.html',
-  '/code' : 'code.html',
-  #'/posting' : 'spreadsheet.html',
-  '/guide' : 'tour.html',
-  '/cla' : 'cla.html',
 }
+
+"""
+  '/code' : 'code.html',
+  '/dmca' : 'dmca.html',
+  '/partner_terms' : 'partner_terms.html',
+"""
