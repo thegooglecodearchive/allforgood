@@ -54,7 +54,7 @@ def parse(instr, maxrec, progress):
     return None, 0, 0
   """
 
-  org_id = str(138)
+  org_id = str(139)
   mission_statement = "350.org is an international campaign that's building a movement to unite the world around solutions to the climate crisis--the solutions that science and justice demand."
   org_desc = "On October 10 we'll be helping host a Global Work Party, with thousands of communities setting up solar panels or digging community gardens or laying out bike paths."
 

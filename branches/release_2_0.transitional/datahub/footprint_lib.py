@@ -25,8 +25,18 @@ import re
 import htmlentitydefs
 import xml.sax.saxutils as saxutils
 
+import subprocess
+import sys
+import xml_helpers as xmlh
 from datetime import datetime
 import geocoder
+from optparse import OptionParser
+from BeautifulSoup import BeautifulSoup
+
+import dateutil
+import dateutil.tz
+import dateutil.parser
+
 import parse_footprint
 import parse_gspreadsheet as pgs
 import parse_usaservice
@@ -37,15 +47,7 @@ import parse_350org
 import parse_sparked
 import parse_diy
 import parse_volunteermatch
-import subprocess
-import sys
-import xml_helpers as xmlh
-from optparse import OptionParser
-from BeautifulSoup import BeautifulSoup
-
-import dateutil
-import dateutil.tz
-import dateutil.parser
+import providers
 
 from taggers import get_taggers, XMLRecord
 
@@ -102,6 +104,7 @@ SEARCHFIELDS = {
   "abstract":"string",
   "location_string":"string",
   "feed_providerName":"string",
+  "provider_proper_name":"string",
 }  
 
 FIELDTYPES = {
@@ -177,6 +180,7 @@ FIELDTYPES = {
   "venue_name":"string",
   "location_string":"string",
   "orgLocation":"string",
+  "provider_proper_name":"string",
 }
 
 def print_progress(msg, filename="", progress=None):
@@ -461,7 +465,7 @@ def get_abstract(opp):
   abstract = cleanse_snippet(abstract)
   return abstract[:MAX_ABSTRACT_LEN]
 
-def get_direct_mapped_fields(opp, org):
+def get_direct_mapped_fields(opp, org, feed_providerName):
   """map a field directly from FPXML to Google Base."""
   outstr = output_field("abstract", get_abstract(opp))
   if ABRIDGED:
@@ -520,7 +524,15 @@ def get_direct_mapped_fields(opp, org):
   else:
     outstr += output_field("orgLocation", "")
 
+  # map providerName to provider_proper_name
+  outstr += FIELDSEP
+  ppn = "Additional Partners"
+  if providers.ProviderNames.has_key(feed_providerName):
+    ppn = providers.ProviderNames[feed_providerName]["name"]
+  outstr += output_field("provider_proper_name", str(ppn))
+     
   return outstr
+
 
 def get_base_other_fields(opp, org):
   """These are fields that exist in other Base schemas-- for the sake of
@@ -590,10 +602,12 @@ def get_event_reqd_fields(opp):
 
 def get_feed_fields(feedinfo):
   """Fields from the <Feed> portion of FPXML."""
-  outstr = output_tag_value_renamed(feedinfo,
+  feed_providerName = output_tag_value_renamed(feedinfo,
                                     "providerName", "feed_providerName")
+  outstr = feed_providerName
+
   if ABRIDGED:
-    return outstr
+    return outstr, feed_providerName
   outstr += FIELDSEP + output_tag_value(feedinfo, "feedID")
   outstr += FIELDSEP + output_tag_value_renamed(
     feedinfo, "providerID", "feed_providerID")
@@ -603,7 +617,7 @@ def get_feed_fields(feedinfo):
     feedinfo, "description", "feed_description")
   outstr += FIELDSEP + output_tag_value_renamed(
     feedinfo, "createdDateTime", "feed_createdDateTime")
-  return outstr
+  return outstr, feed_providerName
 
 def output_opportunity(opp, feedinfo, known_orgs, totrecs):
   """main function for outputting a complete opportunity."""
@@ -770,10 +784,13 @@ def get_loc_fields(virtual, location="", latitude="", longitude="", location_str
 
 def get_repeated_fields(feedinfo, opp, org):
   """output all fields that are repeated for each time and location."""
-  repeated_fields = FIELDSEP + get_feed_fields(feedinfo)
+  rsp, feed_providerName = get_feed_fields(feedinfo)
+  #repeated_fields = FIELDSEP + get_feed_fields(feedinfo)
+  repeated_fields = FIELDSEP + rsp
+  
   repeated_fields += FIELDSEP + get_event_reqd_fields(opp)
   repeated_fields += FIELDSEP + get_base_other_fields(opp, org)
-  repeated_fields += FIELDSEP + get_direct_mapped_fields(opp, org)
+  repeated_fields += FIELDSEP + get_direct_mapped_fields(opp, org, feed_providerName)
   return repeated_fields
 
 def output_header(feedinfo, opp, org):

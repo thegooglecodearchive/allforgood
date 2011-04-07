@@ -37,7 +37,7 @@ KNOWN_ELNAMES = [
   'dateTimeDurations', 'description', 'detailURL', 'directions', 'donateURL',
   'duration', 'email', 'endDate', 'endTime', 'expires', 'fax', 'feedID',
   'guidestarID', 'iCalRecurrence', 'language', 'latitude', 'lastUpdated',
-  'location', 'locationType', 'locations', 'logoURL', 'longitude', 'micro', 'minimumAge',
+  'location', 'locationType', 'locations', 'logoURL', 'longitude', 'minimumAge',
   'missionStatement', 'name', 'nationalEIN', 'openEnded', 'organizationID',
   'organizationURL', 'paid', 'phone', 'postalCode', 'providerID', 'self_directed',
   'providerName', 'providerURL', 'region', 'schemaVersion', 'sexRestrictedEnum',
