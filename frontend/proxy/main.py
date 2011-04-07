@@ -75,8 +75,7 @@ def GoFetch(url, cache_life):
   else:
     logging.info("%s fetching %s" % (PATH, url))
     try:
-      purl = "http://afg.echo3.net/twitter/?url=" + urllib.quote(url)
-      rsp = urlfetch.fetch(purl, headers={'User-Agent' : 'Google App Engine'})
+      rsp = urlfetch.fetch(url, headers={'User-Agent' : 'Google App Engine'})
       rtn = str(rsp.content)
     except:
       logging.warning("%s fetching %s failed" % (PATH, url))

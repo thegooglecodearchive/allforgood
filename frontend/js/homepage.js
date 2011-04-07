@@ -165,8 +165,8 @@ function processTweets(xml) {
 
     $('#tweets').html(html.join(''));
     $('#col1, #col2, #col3').equalHeightColumns();
-    var r = new Rotator({direction:1,move_delay_ms:1, rotate_delay_ms:7 * 1000});
-    r.start(7 * 1000);
+    var r = new Rotator({direction:1,move_delay_ms:1, rotate_delay_ms:8 * 1000});
+    r.start(8 * 1000);
   }
 }
 
@@ -182,7 +182,10 @@ function fetchTweets(twitter_feed) {
 function updateTweets() {
   for (var i in arTwitterFeeds) {
     if (arTwitterFeeds[i]) {
-      var url = 'http://twitter.com/statuses/user_timeline/' + arTwitterFeeds[i][1] + '.rss';
+      // we can't read from twitter directly because they quota against all of appspot.com
+      //var url = 'http://twitter.com/statuses/user_timeline/' + arTwitterFeeds[i][1] + '.rss';
+      var node = new Array('li169-139', 'li67-22')[Math.floor(2 * Math.random())];
+      var url = 'http://' + node + '.members.linode.com/~footprint/twitter/' + arTwitterFeeds[i][1] + '.rss';
       fetchTweets(url);
     }
   }

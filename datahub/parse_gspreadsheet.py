@@ -142,7 +142,6 @@ def record_to_fpxml(record):
   fpxml += '</locations>'
   fpxml += xmlh.output_val('paid', recordval(record,'Paid'))
   fpxml += xmlh.output_val('self_directed', recordval(record,'self_directed'))
-  fpxml += xmlh.output_val('micro', recordval(record,'micro'))
   v = recordval(record,'MinimumAge')
   if v:
     try:
@@ -299,8 +298,6 @@ def parse(instr, maxrecs, progress):
       field_name = "Paid"
     elif header_str.find("self_directed") >= 0:
       field_name = "SelfDirected"
-    elif header_str.find("micro") >= 0:
-      field_name = "Micro"
     elif header_str.find("commitment") >= 0 or header_str.find("hours") >= 0:
       field_name = "CommitmentHours"
     elif header_str.find("age") >= 0 and header_str.find("min") >= 0:
@@ -312,6 +309,10 @@ def parse(instr, maxrecs, progress):
     elif header_str.find("sex") >= 0 or header_str.find("gender") >= 0:
       field_name = "SexRestrictedTo"
     elif header_str.find("volunteer appeal") >= 0:
+      field_name = None
+    elif header_str.find("volunteerOptIn") >= 0:
+      field_name = None
+    elif header_str.find("booksOptIn") >= 0:
       field_name = None
     else:
       parser_error("couldn't map header '"+header_str+"' to a field name.")
