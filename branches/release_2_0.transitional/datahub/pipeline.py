@@ -385,6 +385,7 @@ def run_shell_with_retcode(command, print_output=False,
 def run_shell(command, silent_ok=False, universal_newlines=True,
               print_output=False):
   """run a shell command."""
+  print command
   stdout, stderr, retcode = run_shell_with_retcode(command, print_output,
                                                    universal_newlines)
   #if retcode and retcode != 0:
@@ -464,18 +465,24 @@ def loaders():
   if not FILENAMES or "diy" in FILENAMES:
     run_pipeline("diy", "diy.tsv")
 
-  for name in ["unitedway", "volunteermatch", "handsonnetwork", "idealist", # "meetup", 
-               "mentorpro", "aarp", "911dayofservice", "americanredcross", "americansolutions",
+  for name in ["handsonnetwork", "unitedway", "volunteermatch", "idealist", 
+               "mentorpro", "aarp", 
+               "americanredcross", "americansolutions",
                "americorps", "christianvolunteering", "1sky", "sparked", 
                "citizencorps", "extraordinaries", "givingdupage",
-               "greentheblock", "habitat", "mlk_day", #"mybarackobama",
+               "greentheblock", "habitat", "mlk_day", 
                "myproj_servegov", "newyorkcares", 
                "rockthevote", "threefiftyorg", "catchafire",
                "seniorcorps", "servenet", "servicenation",
                "universalgiving", "volunteergov", "up2us",
-               "volunteertwo", "washoecounty", "ymca", "vm-nat"]:
+               "volunteertwo", "washoecounty", "ymca", 
+               #"meetup", 
+               #"911dayofservice", 
+               #"mybarackobama",
+               #"vm-nat"
+               ]:
     if not FILENAMES or name in FILENAMES:
-      run_pipeline(name, name+".xml")
+      run_pipeline(name, name + ".xml")
 
   # note: craiglist crawler is run asynchronously, hence the local file
   if not FILENAMES or "craigslist" in FILENAMES:
