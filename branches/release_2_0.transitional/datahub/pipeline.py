@@ -465,7 +465,8 @@ def loaders():
   if not FILENAMES or "diy" in FILENAMES:
     run_pipeline("diy", "diy.tsv")
 
-  for name in ["handsonnetwork", "unitedway", "volunteermatch", "idealist", 
+  for name in ["handsonnetwork", "unitedway", 
+               "idealist", 
                "mentorpro", "aarp", 
                "americanredcross", "americansolutions",
                "americorps", "christianvolunteering", "1sky", "sparked", 
@@ -473,9 +474,11 @@ def loaders():
                "greentheblock", "habitat", "mlk_day", 
                "myproj_servegov", "newyorkcares", 
                "rockthevote", "threefiftyorg", "catchafire",
-               "seniorcorps", "servenet", "servicenation",
+               "servenet", "servicenation",
                "universalgiving", "volunteergov", "up2us",
                "volunteertwo", "washoecounty", "ymca", 
+               "seniorcorps", 
+               #"volunteermatch", 
                #"meetup", 
                #"911dayofservice", 
                #"mybarackobama",
