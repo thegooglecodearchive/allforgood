@@ -62,7 +62,7 @@ def default_boosts(args):
   
   if api.PARAM_Q in args and args[api.PARAM_Q] == "":    
     # boosting vetted categories
-    boost += '&bq=categories:vetted^15'    
+    boost += '&bq=categories:vetted^15'
     # big penalty for events starting in the far future
     boost += '+eventrangestart:[*+TO+NOW%2B6MONTHS]^15'    
     # big boost for events starting in the near future
@@ -77,6 +77,8 @@ def default_boosts(args):
     boost += '+eventrangeend:[NOW+TO+NOW%2B1MONTHS]^10'
     # slight penalty for meetup events
     boost += '+-feed_providername:meetup^2'
+    # slight penalty for girl scout events
+    boost += '+-feed_providername:girlscouts^2'
     # boost short events
     boost += '+eventduration:[1+TO+10]^10'
   
@@ -334,7 +336,7 @@ def search(args, dumping = False):
   query_url += "&wt=json"
   
   # Sort
-  if api.PARAM_SORT in args:
+  if False and api.PARAM_SORT in args:
     sortVal = "desc"
     if args[api.PARAM_SORT] == "eventrangeend":
        sortVal = "asc"
