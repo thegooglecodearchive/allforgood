@@ -57,39 +57,30 @@ MAX_RESULTS = 1000
 MILES_PER_DEG = 69
 DEFAULT_VOL_DIST = 75
 
-def default_boosts(args):
-  boost = ""
-  
-  if api.PARAM_Q in args and args[api.PARAM_Q] == "":    
-    # boosting vetted categories
-    boost += '&bq=categories:vetted^15'
-    # big penalty for events starting in the far future
-    boost += '+eventrangestart:[*+TO+NOW%2B6MONTHS]^15'    
-    # big boost for events starting in the near future
-    boost += '+eventrangestart:[NOW+TO+NOW%2B1MONTHS]^10'    
-    # slight penalty for events started recently
-    boost += '+eventrangestart:[NOW+TO+*]^5'    
-    # modest penalty for events started long ago
-    boost += '+eventrangestart:[NOW-6MONTHS+TO+*]^7'    
-    # modest penalty for events ending in the far future
-    boost += '+eventrangeend:[*+TO+NOW%2B6MONTHS]^7'     
-    # big boost for events ending in the near future
-    boost += '+eventrangeend:[NOW+TO+NOW%2B1MONTHS]^10'
-    # slight penalty for meetup events
-    boost += '+-feed_providername:meetup^2'
-    # slight penalty for girl scout events
-    boost += '+%28*:*+-feed_providername:girlscouts%29^200'
-    '
-    # boost short events
-    boost += '+eventduration:[0+TO+10]^10'
-  
-  #if api.PARAM_Q in args and args[api.PARAM_Q] != "" and api.PARAM_TYPE not in args:    
-    # big boost opps with search terms in title
-    #boost += '&qf=title^20'
-    # modest boost opps with search terms in description
-    #boost += '+abstract^7'
+def default_boosts():
+  # boosting vetted categories
+  boost = '&bq=categories:vetted^15'
+  # big penalty for events starting in the far future
+  boost += '+eventrangestart:[*+TO+NOW%2B6MONTHS]^15'    
+  # big boost for events starting in the near future
+  boost += '+eventrangestart:[NOW+TO+NOW%2B1MONTHS]^10'    
+  # slight penalty for events started recently
+  boost += '+eventrangestart:[NOW+TO+*]^5'    
+  # modest penalty for events started long ago
+  boost += '+eventrangestart:[NOW-6MONTHS+TO+*]^7'    
+  # modest penalty for events ending in the far future
+  boost += '+eventrangeend:[*+TO+NOW%2B6MONTHS]^7'     
+  # big boost for events ending in the near future
+  boost += '+eventrangeend:[NOW+TO+NOW%2B1MONTHS]^10'
+  # slight penalty for meetup events
+  boost += '+-feed_providername:meetup^2'
+  # slight penalty for girl scout events
+  boost += '+%28*:*+-feed_providername:girlscouts%29^200'
+  # boost short events
+  boost += '+eventduration:[0+TO+10]^10'
   
   return boost
+
 
 def add_range_filter(field, min_val, max_val):
   """ Convert colons in the field name and build a range specifier
@@ -159,9 +150,8 @@ def form_solr_query(args):
       args[api.PARAM_VOL_DIST] = DEFAULT_VOL_DIST
     max_dist = float(args[api.PARAM_VOL_DIST])
   
-  boost_params = default_boosts(args);
   
-  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1}'
+  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,150,10)^1}'
   global GEO_GLOBAL
   GEO_GLOBAL = urllib.quote_plus(geo_params)
   if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
@@ -264,6 +254,8 @@ def form_solr_query(args):
     global BACKEND_GLOBAL
     BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
   
+  solr_query += default_boosts();
+
   # field list
   solr_query += '&fl='
   if api.PARAM_OUTPUT not in args:
@@ -274,7 +266,8 @@ def form_solr_query(args):
     else:
       solr_query += '*' 
 
-  return solr_query + boost_params
+  return solr_query
+
 
 def parseLatLng(val):
   """ return precisely zero if a lat|lng value is very nearly zero."""
@@ -337,7 +330,7 @@ def search(args, dumping = False):
   query_url += "&wt=json"
   
   # Sort
-  if False and api.PARAM_SORT in args:
+  if api.PARAM_SORT in args:
     sortVal = "desc"
     if args[api.PARAM_SORT] == "eventrangeend":
        sortVal = "asc"
