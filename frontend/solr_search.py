@@ -78,9 +78,10 @@ def default_boosts(args):
     # slight penalty for meetup events
     boost += '+-feed_providername:meetup^2'
     # slight penalty for girl scout events
-    boost += '+-feed_providername:girlscouts^2'
+    boost += '+%28*:*+-feed_providername:girlscouts%29^200'
+    '
     # boost short events
-    boost += '+eventduration:[1+TO+10]^10'
+    boost += '+eventduration:[0+TO+10]^10'
   
   #if api.PARAM_Q in args and args[api.PARAM_Q] != "" and api.PARAM_TYPE not in args:    
     # big boost opps with search terms in title
@@ -368,10 +369,10 @@ def search(args, dumping = False):
   
   global DATE_QUERY_GLOBAL
   if start_datetime_str:
-    DATE_QUERY_GLOBAL = "&fq=((eventrangeend:[" + start_datetime_str + "+TO+*]+AND+eventrangestart:[*+TO+" + end_datetime_str + "])+OR+(eventrangeend:+" +'"1971-01-01T00:00:000Z"' "+AND+eventrangestart:"+'"1971-01-01T00:00:000Z"'+"))"
+    DATE_QUERY_GLOBAL = "&fq=(eventrangeend:[" + start_datetime_str + "+TO+*]+AND+eventrangestart:[*+TO+" + end_datetime_str + "])"
     query_url += DATE_QUERY_GLOBAL
   else:
-    DATE_QUERY_GLOBAL = "&fq=(eventrangeend:[NOW-3DAYS%20TO%20*]+OR+expires:[NOW-3DAYS%20TO%20*])"
+    DATE_QUERY_GLOBAL = "&fq=(eventrangeend:[NOW-1DAYS%20TO%20*]+OR+expires:[NOW-1DAYS%20TO%20*])"
     query_url += DATE_QUERY_GLOBAL
 
   #num_to_fetch = int(args[api.PARAM_NUM]) + 1
