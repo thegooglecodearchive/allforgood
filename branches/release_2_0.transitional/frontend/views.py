@@ -394,11 +394,12 @@ class search_view(webapp.RequestHandler):
     try:
       unique_args = get_unique_args_from_request(self.request)
 
-      if api.PARAM_KEY not in unique_args:
+      if api.PARAM_KEY not in unique_args or unique_args[api.PARAM_KEY] in private_keys.BAD_KEYS:
         tplresult = render_template(SEARCH_RESULTS_MISSING_KEY_TEMPLATE, {})
         self.response.out.write(tplresult)
         pagecount.IncrPageCount("key.missing", 1)
         return
+
 
       pagecount.IncrPageCount("key.%s.searches" % unique_args[api.PARAM_KEY], 1)
       ga.track("API", "search", unique_args[api.PARAM_KEY])
