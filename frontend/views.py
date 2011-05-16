@@ -64,6 +64,7 @@ import view_helper
 import searchresult
 import apiwriter
 from template_helpers import get_default_template_values, render_template, load_userinfo_into_dict
+import ga
 
 CONTENT_TEMPLATE = 'base_content.html'
 HOME_PAGE_TEMPLATE = 'base_home.html'
@@ -400,6 +401,7 @@ class search_view(webapp.RequestHandler):
         return
 
       pagecount.IncrPageCount("key.%s.searches" % unique_args[api.PARAM_KEY], 1)
+      ga.track("API", "search", unique_args[api.PARAM_KEY])
 
       dumping = False
       if api.PARAM_DUMP in unique_args and unique_args[api.PARAM_DUMP] == '1':

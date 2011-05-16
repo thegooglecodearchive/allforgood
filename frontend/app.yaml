@@ -24,6 +24,13 @@ handlers:
 - url: /js
   static_dir: js
 
+# this is for the opp spreadsheet
+- url: /online/(get|put|clear|list|xml|geo)
+  script: online/main.py
+
+- url: /online
+  static_dir: online/html
+
 # NOTE: these aren't mapped /js|css|images directly, but instead force the
 # use of version numbers to avoid accidental version problems.
 # Unlike ?zx= this works for proxies that refuse to cache urls

@@ -87,6 +87,12 @@
 <script>
   $("#keywords").autocomplete("/autocomplete/query");
 </script>
+<script type="text/javascript">
+  // Load analytics on static pages only, done in homepage.js for
+  // the homepage and search_results.js for search pages.
+  loadGA();
+</script>
+
 {# setup google analytics on static pages #}
 {% ifequal current_page 'STATIC_PAGE' %}
   {% ifnotequal ga_key 'unknown' %}
@@ -97,6 +103,7 @@
     </script>
   {% endifnotequal %}
 {% endifequal %}
+
 </body>
 
 {% endblock %}

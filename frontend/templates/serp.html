@@ -1,4 +1,4 @@
- <!--.content-->
+<!--.content-->
 <div id="content" class="clearfix">
 	<!--.single-page-->
 	<div class="search-page">
@@ -99,18 +99,46 @@
 						</div>
 					</div>
 					<div class="search-main">
+<div style="position:relative;">
+<!-- ad code -->
+<script type="text/javascript">
+function recordAdClick(category, action) {
+  try {
+    if (typeof(pageTracker) != 'object') {
+      pageTracker = _gat._getTracker('UA-8689219-2');
+      pageTracker._trackPageview();
+    }
+    pageTracker._trackEvent(category, action);
+  }catch(err){}
+}
+try {
+  if (typeof(pageTracker) != 'object') {
+    pageTracker = _gat._getTracker('UA-8689219-2');
+    pageTracker._trackPageview();
+  }
+  pageTracker._trackEvent('/SearchResultAd', '/Impression');
+}catch(err){}
+</script>
+<div id="search_results_adspace"><a 
+  target="_blank" alt="Champions of Service" title="Champions of Service"
+  onclick="recordAdClick('/SearchResultAd', '/Click')"
+  href="http://www.volunteeringandservice.org/"><div id="ad_wrapper"><img 
+  src="images/120x50-SERP-POLI.png" alt="Champions of Service" title="Champions of Service" /></div></a>
+</div>
 						<div id="loading"></div>
 						<div class="top_search">
 							<div class="sort">Sort by 
-								<select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
-									<option>Relevance</option>
-									<option>Date</option>
-								</select>
+		<select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+                      <option value="score">Relevance</option>
+                      <option value="eventrangeend">Date</option>
+		</select>
 							</div>
 						</div>
+<div style="height:22px;width:1px;"> </div>
 						<ul id="tabs-1-results" class="results">
 							<div id="snippets_pane"></div>
 						</ul>
+</div>
 					</div>
 				</div>
 				<!--#tabs-1--> 
