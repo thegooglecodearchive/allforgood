@@ -72,8 +72,6 @@ def default_boosts():
   boost += '+eventrangeend:[*+TO+NOW%2B6MONTHS]^7'     
   # big boost for events ending in the near future
   boost += '+eventrangeend:[NOW+TO+NOW%2B1MONTHS]^10'
-  # slight penalty for meetup events
-  boost += '+-feed_providername:meetup^2'
   # slight penalty for girl scout events
   boost += '+%28*:*+-feed_providername:girlscouts%29^200'
   # boost short events
