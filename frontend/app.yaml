@@ -1,10 +1,8 @@
 application: footprint2009dev
 #application: servicefootprint
 
-#version: jennifer
-#version: r2-backup
-version: echoditto
-#version: staging
+version: r3
+#version: jennifer-test
 runtime: python
 api_version: 1
 

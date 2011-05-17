@@ -135,10 +135,38 @@ The Gap Foundation works to create opportunities for people to own their future 
 				<!--.block-->
 				<!--.block-->
 				<div class="block block-ad">
+<!-- ad code -->
+<script type="text/javascript">
+function recordAdClick(category, action) {
+  try {
+    if (typeof(pageTracker) != 'object') {
+      pageTracker = _gat._getTracker('UA-8689219-2');
+      pageTracker._trackPageview();
+    }
+    pageTracker._trackEvent(category, action);
+  }catch(err){}
+}
+try {
+  if (typeof(pageTracker) != 'object') {
+    pageTracker = _gat._getTracker('UA-8689219-2');
+    pageTracker._trackPageview();
+  }
+  pageTracker._trackEvent('/HomePageAd', '/Impression');
+}catch(err){}
+</script>
+<a target="_blank"
+  href="http://www.volunteeringandservice.org/" onclick="recordAdClick('/HomePageAd', '/Click')"><img 
+  style="position:relative;left:-10px;"
+  src="images/300x250-champions-of-service.jpg"" width="300" height="250" 
+  alt="Champions of Service" title="Champions of Service" /></a>
+				</div>
+<!--
+				<div class="block block-ad">
 <a href="/search#q=military%20families"><img style="position:relative;left:-10px;"
   src="/images/uws_military_350x200_anim_01.gif" width="300" height="250" 
   alt="Military families" title="Military families" /></a>
 				</div>
+-->
 <!--
 				<div class="block block-ad">
 <a href="http://www1.networkforgood.org/help-survivors-pacific-quake-tsunami"><img 
