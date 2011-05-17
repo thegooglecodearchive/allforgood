@@ -8,7 +8,7 @@
 {% else %}
   {% for result in result_set.clipped_results %}    
 <li class="{% if forloop.counter0 == 0 %}first{% endif %} result-{{ forloop.counter1 }}">
-<h4>
+<h4 {% if forloop.counter0 == 0 %} style="width:480px"{% endif %}>
     {% if result.latlong %}
 	<img style="position:relative;left:-5px;top:8px;" src='http://www.google.com/mapfiles/marker_midblue{{ forloop.counter0|as_letter }}.png' />
 	<script type='text/javascript'>
