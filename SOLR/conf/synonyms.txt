@@ -14,13 +14,13 @@
 # AFG Synonyms
 MLK,mlk,martin luther,mlktech,king day,day on not a day off,ml king,MLKDay
 OilSpill,oil spill,bp,gulf cleanup,oil cleanup,spill cleanup
-EarthDay,environment,nature,environmental,outdoors,gardening,garden,park,wetlands,forest,forests,tree,trees,green,trail,trails,sierra club
+EarthDay,environment,nature,environmental,outdoors,gardening,garden,wetlands,forest,forests,tree,trees,sierra club
 Moms,mom,mother,family,families,kids,children
-Hunger,anti-hunger,childhood hunger,dinner,feeding america,food,food bank,food pantry,food programs,free lunch,healthy meals,hunger,hungry,hungry children,impoverished,lunch,meal programs,meals,meals on wheels,nutritious,reduced lunch,school lunches,share our strength,starvation,starving,underfed,underprivileged,thanksgiving,soup kitchen,poverty,poor nutrition,frac,malnourished,foodbank,dinner
-Nature,environment,environmental,outdoors,gardening,garden,park,wetlands,forest,forests,tree,trees,green,trail,trails,sierra club
+Hunger,anti-hunger,childhood hunger,feeding america,food bank,food pantry,food programs,free lunch,healthy meals,hungry,hungry children,meal programs,meals on wheels,nutritious,reduced lunch,school lunches,share our strength,starvation,starving,underfed,soup kitchen,poor nutrition,malnourished,foodbank
+Nature,environment,environmental,outdoors,gardening,wetlands,forest,forests,green
 Education,reading,teaching,teacher,teach,books,book,library,literacy,school,schools,libraries
 Animals,animal,animals,dog,dogs,cat,cats,zoo,bird,birds,zoos,puppies,puppy,kitten,kitty,critter,critters,frog,frogs,turtle,turtles,kittens
-Health,,health,hospital,hospitals,medical,healthcare,mental,hospice,nursing,cancer,nurse,nurses,doctor,doctors
+Health,hospital,hospitals,medical,healthcare,mental,hospice,nursing,cancer,nurse,nurses,doctor,doctors
 Seniors,senior,seniors,elderly
 Technology,website,computer,computers,technology,web,internet
 Poverty,homeless,poverty,poor
