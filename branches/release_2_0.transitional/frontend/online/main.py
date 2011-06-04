@@ -17,7 +17,6 @@ from django.utils import simplejson
 
 import geocode
 
-
 DEFAULT_LIST_LIMIT = 100
 MAX_LIST_LIMIT = 1000
 
@@ -45,7 +44,7 @@ XML_WRAPPER = """<?xml version="1.0" ?>
 XML_ROW = """<VolunteerOpportunity>
    <volunteerOpportunityID>%s</volunteerOpportunityID>
    <title>%s</title>
-   <organizationID>%s</organizationID>
+   <sponsoringOrganizationID>%s</sponsoringOrganizationID>
    <dateTimeDurations>
     %s
    </dateTimeDurations>
@@ -54,19 +53,19 @@ XML_ROW = """<VolunteerOpportunity>
   </locations>
   <contactName>%s</contactName>
   <detailURL>%s</detailURL>
-  <description>%s></description>
+  <description>%s</description>
   <lastUpdated>%s</lastUpdated>
 </VolunteerOpportunity>
 """
 
 BLANK_RSP = """
 {"Response":
-  {"sponsor":"My Organization",
+  {"sponsor":"",
    "tos":"0",
    "committed":"0",
    "contact_email":"%s",
-   "contact_name":"My Name",
-   "contact_phone":"My Phone",
+   "contact_name":"",
+   "contact_phone":"",
    "Results":[%s]
   }
 }
@@ -96,6 +95,24 @@ class VolOpps(db.Model):
   created = db.DateTimeProperty(auto_now_add=True)
   email = db.TextProperty()
   json = db.BlobProperty()
+  feed_providername = db.IntegerProperty()
+
+
+class VolOpps_metadata(db.Model):
+  last_feed_providername = db.IntegerProperty()
+  
+
+def get_next_feedprovidername():
+  record = VolOpps_metadata.get_by_key_name('master_record')
+  if not record:
+    record = VolOpps_metadata(key_name = 'master_record')
+    record.last_feed_providername = 6000
+
+  rtn = record.last_feed_providername + 1
+  record.last_feed_providername = rtn
+  record.put()
+
+  return rtn
 
 
 def get_args(request):
@@ -114,18 +131,21 @@ def make_key(email):
 
 def put_record_json(email, json):
   """ """
-  rtn = False
+  rtn = ""
   key = make_key(email)
   record = VolOpps.get_by_key_name(key)
   if not record:
     record = VolOpps(key_name = key)
+
+  if not record.feed_providername:
+    record.feed_providername = get_next_feedprovidername()
 
   record.email = email
   record.json = str(json)
 
   try:
     record.put()
-    rtn = True
+    rtn = str(record.feed_providername)
   except CapabilityDisabledError:
     logging.warning(key + " set in datastore failed")
   
@@ -165,11 +185,13 @@ class ClearRecords(webapp.RequestHandler):
   """ """
   def post(self):
 
-      #try:
+    try:
       email = self.request.get("email")
       if email:
         json = get_record_json(email)
-        if json:
+        if not json:
+          json = BLANK_RSP % (email, blank_row(20))
+        else:
           del_rows = self.request.get("rows").strip().split(",")
           if del_rows:
             keep_rows = []
@@ -190,11 +212,14 @@ class ClearRecords(webapp.RequestHandler):
               json = simplejson.dumps(jo)
               put_record_json(email, json)
           
-          self.response.headers['Content-Type'] = 'text/html'
-          self.response.out.write(json)
+          if not json:
+            json = BLANK_RSP % (email, blank_row(20))
 
-      #except:
-      #self.error(500)
+        self.response.headers['Content-Type'] = 'text/html'
+        self.response.out.write(json)
+
+    except:
+      self.error(500)
 
 
 class GetRecord(webapp.RequestHandler):
@@ -224,8 +249,11 @@ class PutRecord(webapp.RequestHandler):
       email = self.request.get("email")
       json = self.request.get("json")
       if email and json:
-        if not put_record_json(email, json):
+        rsp = put_record_json(email, json)
+        if not rsp:
           self.error(503)
+        else:
+          self.response.out.write(rsp)
       else:
         self.error(400)
 
@@ -263,7 +291,11 @@ class ListRecords(webapp.RequestHandler):
     keys = query.fetch(limit, start)
     list = []
     for key in keys:
-      list.append(str(key))
+      record = VolOpps.get(key)
+      if not record.feed_providername:
+        record.feed_providername = get_next_feedprovidername()
+        record.put()
+      list.append(str(key) + ',' + str(record.feed_providername))
 
     self.response.headers['Content-Type'] = 'text/html'
     self.response.out.write("\n".join(list))
@@ -306,6 +338,8 @@ def yymmdd(jsds = None, dflt = "9999-11-31"):
       rtn = time.strftime("%Y-%m-%d", dt)
     except:
       pass
+
+  rtn += "T00:00:00+0000"
 
   return rtn
 
@@ -372,14 +406,13 @@ def xml_rows(jo, orgID):
   return "\n".join(rtn)
 
 
-def xml_result(jo):
+def xml_result(jo, providerID):
   """ """
-  providerID = "online spreadsheet"
   providerName = "online spreadsheet"
   feedID = "online spreadsheet"
   createdDateTime = yymmdd()
   providerURL = "http://www.allforgood.org/online/spreadsheet.html"
-  orgID = "9000"
+  orgID = "6000"
   orgName = cdata(jo['Response']['sponsor'])
 
   return (providerID, providerName, feedID, createdDateTime, 
@@ -399,13 +432,30 @@ class FetchRecordAsXML(webapp.RequestHandler):
     elif 'email' in args:
       record = VolOpps.get_by_key_name(make_key(args['email']))
 
-    if record and record.json:
-      jo = simplejson.loads(str(record.json))
-      if jo and jo['Response'] and jo['Response']['committed'] == '1':
-        xml = XML_WRAPPER % xml_result(jo)
-        self.response.headers['Content-Type'] = 'text/xml'
-        self.response.out.write(xml)
-
+    if record:
+      providerID = '6000'
+      if 'id' in args:
+        providerID = args['id']
+      else:
+        if record.feed_providername:
+          providerID = str(record.feed_providername)
+        else:
+          providerID = str(get_next_feedprovidername())
+  
+      if record and record.json:
+        if not record.feed_providername:
+          try:
+            record.feed_providername = int(providerID)
+            record.put()
+          except:
+            pass
+  
+        jo = simplejson.loads(str(record.json))
+        if jo and jo['Response'] and jo['Response']['committed'] == '1':
+          xml = XML_WRAPPER % xml_result(jo, providerID)
+          self.response.headers['Content-Type'] = 'text/xml'
+          self.response.out.write(xml)
+  
 
 APP = webapp.WSGIApplication(
     [ ("/online/put", PutRecord),
