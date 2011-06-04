@@ -82,7 +82,7 @@ def GoFetch(url, cache_life):
 
     if rtn:
       if cache_life > 0:
-        if not memcache.set(mkey, rtn):
+        if not memcache.set(mkey, rtn, cache_life):
           logging.warning("%s memcaching %s failed at %s" % (PATH, url, mkey))
         else:
           logging.info("%s set in cache %s for %s" % (PATH, url, cache_life))

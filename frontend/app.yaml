@@ -1,8 +1,7 @@
-application: footprint2009dev
-#application: servicefootprint
+#application: footprint2009dev
+application: servicefootprint
 
 version: r3
-#version: jennifer-test
 runtime: python
 api_version: 1
 
@@ -27,6 +26,7 @@ handlers:
   script: online/main.py
 
 - url: /online
+  expiration: "1h"
   static_dir: online/html
 
 # NOTE: these aren't mapped /js|css|images directly, but instead force the
