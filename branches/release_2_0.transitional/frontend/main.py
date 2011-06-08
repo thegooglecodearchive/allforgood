@@ -32,6 +32,7 @@ import deploy
 
 APPLICATION = webapp.WSGIApplication(
     [(urls.URL_HOME, views.home_page_view),
+     (urls.URL_PARTNERS, views.partner_page_view),
      (urls.URL_OLD_HOME, views.home_page_redir_view),
      (urls.URL_DATAHUB_DASHBOARD, views.datahub_dashboard_view),
      (urls.URL_API_SEARCH, views.search_view),
