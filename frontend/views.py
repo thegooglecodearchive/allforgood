@@ -68,6 +68,7 @@ import ga
 
 CONTENT_TEMPLATE = 'base_content.html'
 HOME_PAGE_TEMPLATE = 'base_home.html'
+PARTNER_PAGE_TEMPLATE = 'base_partners.html'
 NOT_FOUND_TEMPLATE = 'not_found.html'
 
 SEARCH_RESULTS_TEMPLATE = 'base_serp.html'
@@ -270,6 +271,31 @@ class home_page_view(webapp.RequestHandler):
 
     except DeadlineExceededError:
       deadline_exceeded(self, "static_content")
+
+
+class partner_page_view(webapp.RequestHandler):
+  """ default homepage for consumer UI."""
+  @expires(0)  # User specific. Maybe we should remove that so it's cacheable.
+  def get(self):
+    """HTTP get method."""
+    try:
+      try:
+        path = os.path.join(os.path.dirname(__file__),  urls.CONTENT_LOCATION +
+                        urls.CONTENT_FILES[self.request.path])
+        fh = open(path, 'r')
+        html = fh.read()
+        fh.close()
+        template_values = get_default_template_values(self.request, 'PARTNER_PAGE')
+        template_values['static_content'] = html
+        self.response.out.write(render_template(PARTNER_PAGE_TEMPLATE,
+                                          template_values))
+      except:
+        self.error(404)
+        return
+
+    except DeadlineExceededError:
+      deadline_exceeded(self, "static_content")
+
 
 
 class home_page_redir_view(webapp.RequestHandler):
