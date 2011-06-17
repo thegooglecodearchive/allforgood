@@ -20,10 +20,9 @@ Dad,dads,father,fathers
 Kids,kid,children 
 Hunger,anti-hunger,childhood hunger,feeding america,food bank,food pantry,food programs,free lunch,healthy meals,hungry,hungry children,meal programs,meals on wheels,nutritious,reduced lunch,school lunches,share our strength,starvation,starving,underfed,soup kitchen,poor nutrition,malnourished,foodbank
 Nature,environment,environmental,outdoors,gardening,wetlands,forest,forests
-Education,read,reading,book drive,literacy,academic,math
-Teacher
-Tech 
-Teaching
+Education,read,reading,book drive,literacy,academic,math,homework
+Teacher
+Teach,teaching
 Student, students
 Animals,animal,animals,dog,dogs,cat,cats,zoo,bird,birds,zoos,puppies,puppy,kitten,kitty,critter,critters,frog,frogs,turtle,turtles,kittens
 Health,hospital,hospitals,medical,healthcare,mental,hospice,nursing,cancer,nurse,nurses,doctor,doctors
