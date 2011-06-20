@@ -11,7 +11,7 @@ ul {
   padding: 0;
 }
 body {
-  font-family: arial, sans-serif;
+  font-family: "Trebuchet MS",Helvetica,"Lucida Sans Unicode","Lucida Grande",Arial,sans-serif;
   font-size: 12px;
 }
 img {
@@ -79,7 +79,7 @@ a:hover {
 }
 /* Page layout. */
 #afg-header-region {
-  background-color: #1155a0;
+  background-color: #2A0186;
   overflow: hidden; /* hasLayout trigger */
   width: 100%;
 }
@@ -87,7 +87,7 @@ a:hover {
   padding: 5px;
 }
 #afg-footer-region {
-  background-color: #1155a0;
+  background-color: #2A0186;
   overflow: hidden; /* hasLayout trigger */
   width: 100%; /* IE6 hasLayout trigger */
 }
