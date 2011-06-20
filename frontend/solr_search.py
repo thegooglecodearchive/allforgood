@@ -57,7 +57,7 @@ MAX_RESULTS = 1000
 MILES_PER_DEG = 69
 DEFAULT_VOL_DIST = 75
 
-def default_boosts():
+def default_boosts(args):
   # boosting vetted categories
   boost = '&bq=categories:vetted^15'
   # big penalty for events starting in the far future
@@ -76,6 +76,10 @@ def default_boosts():
   boost += '+%28*:*+-feed_providername:girlscouts%29^200'
   # boost short events
   boost += '+eventduration:[0+TO+10]^10'
+
+  if api.PARAM_KEY in args:
+    if  args[api.PARAM_KEY] == 'liveunited':
+      boost += '+feed_providername:unitedway^200'
   
   return boost
 
@@ -107,9 +111,9 @@ def rewrite_query(query_str, api_key = None):
 
   rewritten_query = re.sub(r'[0-9]t[0-9]', reupcase, rewritten_query)
   rewritten_query = re.sub(r'[0-9]z', reupcase, rewritten_query)
-  if rewritten_query.find('meetup') < 0 and api_key and api_key in private_keys.MEETUP_EXCLUDERS:
-    logging.info('solr_search.rewrite_query api key %s excludes meetup' % api_key)
-    rewritten_query = '(' + rewritten_query + ') AND -feed_providername:meetup'
+  #if rewritten_query.find('meetup') < 0 and api_key and api_key in private_keys.MEETUP_EXCLUDERS:
+  #  logging.info('solr_search.rewrite_query api key %s excludes meetup' % api_key)
+  #  rewritten_query = '(' + rewritten_query + ') AND -feed_providername:meetup'
 
   # Replace the category filter shortcut with its proper name.
   rewritten_query = rewritten_query.replace('category:', 'categories:')
@@ -163,6 +167,7 @@ def form_solr_query(args):
 
   # keyword
   query_is_empty = False
+  boost_fq = None
   if (api.PARAM_Q in args and args[api.PARAM_Q] != ""):
     qwords = args[api.PARAM_Q].split(" ")
     for qi, qw in enumerate(qwords):
@@ -176,7 +181,7 @@ def form_solr_query(args):
           qwords[qi] = qw
           args[api.PARAM_Q] = ' '.join(qwords)
 
-    query_boosts = boosts.query_time_boosts(args)
+    query_boosts, boost_fq = boosts.query_time_boosts(args)
     
     # Remove categories from query parameter    
     args[api.PARAM_Q] = args[api.PARAM_Q].replace('category:', '')
@@ -211,6 +216,10 @@ def form_solr_query(args):
       solr_query += "+AND+micro:true"
   else:
       solr_query += "&fq=self_directed:false+AND+virtual:false+AND+micro:false"
+
+  if boost_fq:
+    solr_query += "&fq=" + boost_fq
+
   global FULL_QUERY_GLOBAL
   FULL_QUERY_GLOBAL =  solr_query
     
@@ -252,7 +261,7 @@ def form_solr_query(args):
     global BACKEND_GLOBAL
     BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
   
-  solr_query += default_boosts();
+  solr_query += default_boosts(args);
 
   # field list
   solr_query += '&fl='

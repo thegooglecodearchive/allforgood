@@ -23,10 +23,17 @@ import api
 
 def query_time_boosts(args):
   logging.info("boosts.query_time_boosts enter")
+
+  solr_query = ""
+  fq = ""
   if args[api.PARAM_Q].find('category:IAMS') >= 0:
       solr_query = solr_search.rewrite_query('%s' %
         '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))')
-  
-  else:
-     solr_query = "" 
-  return solr_query
+  elif args[api.PARAM_Q].lower().find('category:education') >= 0:
+     solr_query = '*:*'
+     fq = solr_search.rewrite_query('(%s)' % 
+        'education OR tutoring'
+      + ' -feed_providername:girlscouts OR -"adult education"'
+      + ' OR -"adult basic education" OR -prison -prisoner OR -"girl scouts"')
+
+  return solr_query.replace(' ', '+'), fq.replace(' ', '+')
