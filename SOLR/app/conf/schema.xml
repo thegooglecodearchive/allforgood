@@ -216,7 +216,6 @@
         </analyzer>
         <analyzer type="query">
             <tokenizer class="solr.StandardTokenizerFactory"/>
-            <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
             <filter class="solr.StopFilterFactory"
                     ignoreCase="true"
                     words="stopwords.txt"
@@ -354,22 +353,21 @@
 <field name="feed_providerurl" type="string" indexed="true" stored="false"/>
 <field name="feed_description" type="string" indexed="true" stored="false"/>
 <field name="title" type="text" indexed="true" stored="true"/>
-<field name="description" type="text" indexed="true" stored="true"/>
+<field name="description" type="text_html" indexed="true" stored="true"/>
+<field name="abstract" type="text_html" indexed="true" stored="true"/>
 <field name="categories" type="text_keyword" indexed="true" stored="true" multiValued="true"/>
 <field name="aggregatefield" type="text_html" indexed="true" stored="true"/>
-
 <field name="link" type="string" indexed="true" stored="true"/>
 <field name="detailurl" type="string" indexed="true" stored="true"/>
-
 <field name="org_name" type="text" indexed="true" stored="true"/>
 <field name="org_name_str" type="string" indexed="true" stored="true"/>
-
+<field name="virtual" type="boolean" indexed="true" stored="true" default="false"/>
+<field name="micro" type="boolean" indexed="true" stored="true" default="false"/>
+<field name="self_directed" type="boolean" indexed="true" stored="true" default="false"/>
+<field name="ical_recurrence" type="string" indexed="true" stored="true"/>
 <field name="longitude" type="double" indexed="true" stored="true"/>
 <field name="latitude" type="double" indexed="true" stored="true"/>
-<dynamicField name="_tier_*" type="string" indexed="true" stored="true"/>
-
 <field name="randomsalt" type="double" indexed="true" stored="true"/>
-
 <field name="volunteersslots"  type="tint"    indexed="true"  stored="true"/>
 <field name="volunteersfilled"  type="tint"    indexed="true"  stored="true"/>
 <field name="volunteersneeded"  type="tint"    indexed="true"  stored="true"/>
@@ -377,37 +375,35 @@
 <field name="starttime"  type="tint"    indexed="true"  stored="true"/>
 <field name="endtime"  type="tint"    indexed="true"  stored="true"/>
 <field name="eventduration"  type="tint"    indexed="true"  stored="true"/>
-
-
 <field name="lastupdated" type="tdate"    indexed="true"  stored="true"/>
 <field name="expires" type="tdate"    indexed="true"  stored="true"/>
 <field name="eventrangestart" type="tdate"    indexed="true"  stored="true"/>
 <field name="eventrangeend" type="tdate"    indexed="true"  stored="true"/>
-
 <field name="openended" type="boolean"    indexed="true"  stored="true"/>
 <field name="paid" type="boolean"    indexed="true"  stored="true"/>
 <field name="signature" type="string" stored="true" indexed="true" multiValued="false" />
+<field name="provider_proper_name" type="text" indexed="true" stored="true" />
+<field name="provider_proper_name_str" type="string" indexed="true" stored="true" />
 
 <!--    employer       quantity        image_link      abstract       paid  opportunityID  organizationID volunteersSlots       volunteersFilled      volunteersNeeded      minimumAge    sexRestrictedTo        skills contactName    contactPhone   contactEmail   providerURL       language       lastUpdated  expires      detailURL org_nationalEIN        org_guidestarID        org_name       org_missionStatement   org_description        org_phone      org_fax        org_email      org_organizationURL       org_logoURL       org_providerURL   categories     audiences      orgLocation    event_date_range        startTime     endTime       openended     duration       commitmentHoursPerWeek location        latitude        longitude       location_string        venue_name -->
    <!-- Some sample docs exists solely to demonstrate the spellchecker
-        functionality, this is the only field they container.
+        functionality, this   is the only field they container.
         Typically you might build the spellchecker of "catchall" type field
         containing all of the text in each document
      -->
    <field name="word" type="string" indexed="true" stored="true"/>
-
    
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
    <field name="text" type="text" indexed="true" stored="false" multiValued="true"/>
 
-
-   <!-- Here, default is used to create a "timestamp" field indicating
+   <!-- Here, default is used to create a "timestamp" field indicating 
         When each document was indexed.
      -->
    <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>
    
    <dynamicField name="_local*" type="double" indexed="true" stored="true"/>
+   <dynamicField name="_tier_*" type="string" indexed="true" stored="true"/>
    <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
         will be used if the name matches any of the patterns.
         RESTRICTION: the glob-like pattern in the name attribute must have
@@ -421,7 +417,6 @@
    <dynamicField name="*_b"  type="boolean" indexed="true"  stored="true"/>
    <dynamicField name="*_f"  type="float"  indexed="true"  stored="true"/>
    <dynamicField name="*_d"  type="double" indexed="true"  stored="true"/>
-
    <dynamicField name="random*" type="random" />
 
    <!-- uncomment the following to ignore any fields that don't already match an existing 
@@ -429,6 +424,7 @@
         alternately, change the type="ignored" to some other type e.g. "text" if you want 
         unknown fields indexed and/or stored by default --> 
    <dynamicField name="*" type="text" indexed="true" stored="true"/>
+   
    
  </fields>
 
@@ -448,6 +444,7 @@
         or to add multiple fields to the same field for easier/faster searching.  -->
 
  <copyField source="org_name" dest="org_name_str"/>
+ <copyField source="provider_proper_name" dest="provider_proper_name_str"/>
 
  <!-- Similarity is the scoring routine for each document vs. a query.
       A custom similarity may be specified here, but the default is fine
