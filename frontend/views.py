@@ -421,6 +421,11 @@ class search_view(webapp.RequestHandler):
       unique_args = get_unique_args_from_request(self.request)
 
       if api.PARAM_KEY not in unique_args or unique_args[api.PARAM_KEY] in private_keys.BAD_KEYS:
+        if api.PARAM_KEY not in unique_args:
+          logging.info('no key given')
+        elif unique_args[api.PARAM_KEY] in private_keys.BAD_KEYS:
+          logging.info('bad key given %s' % private_keys.BAD_KEYS)
+
         tplresult = render_template(SEARCH_RESULTS_MISSING_KEY_TEMPLATE, {})
         self.response.out.write(tplresult)
         pagecount.IncrPageCount("key.missing", 1)
