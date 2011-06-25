@@ -9,12 +9,6 @@
   if (empty($label)) {
     $label = $_GET["label"];
   }
-  $logfile = "log/" . date("Ymd") . ".txt";
-  if (($fh = fopen($logfile, 'a'))) {
-    $when = date("Y-m-d\tH:i:s");
-    fwrite($fh, "$when\t$category\t$action\t$label\n");
-    fclose($fh);
-  }
   
 
   #$GA_DOMAIN = "http://" . $_SERVER["SERVER_NAME"];
@@ -51,7 +45,8 @@
     $url .= "&label=$label";
     #$url .= "&utmdebug=1";
 
-    return str_replace("&", "&amp;", $url);
+    #return str_replace("&", "&amp;", $url);
+    return $url;
   }
 
   $googleAnalyticsImageUrl = googleAnalyticsGetImageUrl();
