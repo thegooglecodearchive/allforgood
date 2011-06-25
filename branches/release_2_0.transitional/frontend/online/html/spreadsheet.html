@@ -17,6 +17,8 @@ LABEL.ci {display:block;}
 .rq {color:red;font-weight:bold;}
 .yui-skin-sam .yui-dt-col-Description pre {font-family:arial;font-size:100%; }
 .yui-skin-sam .yui-dt-liner { } 
+TD.instructions {font-size:10px;vertical-align:top;}
+.friendly {font-weight:bold;font-size:14px;color:#116633;white-space:nowrap;}
 #commit {}
 #bookmark {position:absolute;right:6px;top:6px;display:none;}
 #logo {}
@@ -58,47 +60,78 @@ function exit() {
 <h1>All for Good Volunteer Opportunity Spreadsheet <sup id="beta">BETA</sup></h1>
 <div class="exampleIntro" style="position:relative;">
 <p/>
-Please use this spreadsheet form to submit your volunteer opportunities for inclusion in the All for Good search engine. Once submitted, you can update your spreadsheet as needed with new opportunities and make changes to previously submitted ones.  Once your spreadsheet has been submitted for processing, your opportunities normally will be included in the All for Good search results within 24 hours.  If you need technical assistance with the posting process please contact us at <a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a>.
-<p/>
-If you have more than a few dozen listings you may wish to use the <a href="http://tinyurl.com/allforgood-submit">large spreadsheet submission tool</a>.
-<p/>
-By submitting your listings, you agree to the terms and conditions of All for Good as well as the 
-<a href="http://www.allforgood.org/cla">Content License Agreement</a>.
-</p>
-<p>
-<b>First enter your email address.</b> This is used to retrieve your previous listings and save new ones.
+Please use this form to submit your volunteer opportunities for inclusion in the All for Good search engine.  If you need technical assistance with the posting process or guidance on the best solution to your needs, please contact us at <a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a> and we will be happy to assist you.  If you do have many listings and are comfortable using Google Doc Spreadsheets, you may wish to try using our <a href="http://tinyurl.com/allforgood-submit">large spreadsheet submission template</a> so that you can determine which approach works best for your organization to enter and update its opportunities. 
 </p>
 <form>
-<table width="100%">
+<table>
 <tr>
-<td>
-<label class="ci" for="contact_email">Contact email:</label><input tabindex="1" onblur="goEmail(this);" id="contact_email" type="text" class="yui-ac-input"> 
+<td class="instructions">
+<div class="friendly">Step 1. Enter your email address</div>
 <p/>
+Enter your email address to begin using the form as new user or if you are a returning user enter your email address to edit, delete or add to your previously saved opportunities.
+<p/>Do not enter your opportunities in the form until after you have entered your email address or your entries will not be saved.
+</td>
+<td class="instructions">
+<div class="friendly">Step 2. Enter organization info</div>
+<p/>
+If you are a new user, enter your organization name, your name, and your phone number in case we need to contact you regarding your volunteer opportunities.<p/>  
+If you are returning user your previously entered information and opportunities will be automatically retrieved using your email address. 
+</td>
+<td class="instructions">
+<div class="friendly">Step 3.  Enter volunteer opportunities</div> 
+<p/>
+Enter your volunteer opportunities in the fields below</span> by clicking your mouse in each cell and typing your information or selecting the appropriate values from the cell dropdowns.  
+<p/>
+The following fields are required for each opportunity: Opportunity Title, Description, Website/URL for the opportunity, Location Name, and a valid City/State and/or Zip Code.  Note that the State and date related cells require you to click "Save" or "Cancel" in the cell's pop-up window when you make your entry.  If the address information you enter cannot be validated by our Google Maps based system those fields will be highlighted in red.  Only locations that can be mapped in Google Maps properly can be processed.
+<p/>
+If your opportunity is ongoing you may leave the start and end dates blank.  
+Once an opportunity has all of its required fields filled with valid entries, the row will be highlighted in green to indicate it is ready for processing.  Note that only opportunities in rows that are highlighted in green will be processed.  Any rows with invalid or missing required data will be ignored during processing.
+</td>
+<td class="instructions">
+<div class="friendly">Step 4. Agree to terms of service and submit</div>
+<p/>
+Once you have entered all of your opportunities, check the "I agree" checkbox to indicate that you have read and agree to All for Good's Terms of Service and Content License Agreement.
+<p/>
+<p/>
+Then click the "Submit for Processing" button to have your green highlighted opportunities submitted for addition to the All for Good search engine.  Once your form is submitted, you can update it as needed with new opportunities and make changes to previously submitted ones as desired. 
+<p/>
+After your spreadsheet has been submitted for processing, your opportunities normally will be included in the All for Good search results within 24 hours.
+</td>
+</tr>
+<tr>
+<td colspan="4">
+<hr noshade/>
+</tr>
+<tr>
+<td valign="top">
+<label class="ci" for="contact_email">Contact email:</label><input tabindex="1" onblur="goEmail(this);" id="contact_email" type="text" class="yui-ac-input"> 
+</td>
+<td valign="top">
 <!-- sponsor = Sponsoring Organization -->
 <label class="ci" for="sponsor">Organization:</label><input tabindex="3" id="sponsor" type="text" class="yui-ac-input"> 
-</td>
-<td>
+<p/>
 <label class="ci" for="contact_name">Contact name:</label><input tabindex="2" onfocus="chkEmail(this)" id="contact_name" type="text" class="yui-ac-input"> 
 <p/>
 <label class="ci" for="contact_phone">Contact phone:</label><input tabindex="4" id="contact_phone" type="text" class="yui-ac-input"> 
 </td>
-<td valign="top">
-<input id="save" type="button" onclick="goSave();" value="Save" disabled />
-</td>
-<td style="width:460px;" valign="top">
+<td colspan="2" valign="top" align="right">
 <input type="hidden" id="committed" value="0" />
 <input id="tos" type="checkbox" class="yui-ac-input" onclick="goTOS(this)">We agree to the <a href="http://www.allforgood.org/tos">terms of service</a>
-<div id="commit_advice" style="display:none;">&nbsp;Any data found in this spreadsheet will be processed every 24 hours.
+<div id="commit_advice" style="display:none;"><br />Any data found in this spreadsheet will be processed every 24 hours.
 <p/>
 <div style="display:none;">When your opps have been processed you will be able to find them 
   <a id="my_opps" href="javascript:void(0)">here</a></div>
 </div>
 <div id="submit_advice" style="display:none;">
 <p/>
+<div style="width:200px;text-align:left;">
 <input id="commit" type="button" value="Submit for Processing" onclick="goCommit();" disabled />
-Click the "Submit for Processing" button when to indicate these listings are ready to be processed.
+Click the "Submit for Processing" button to indicate these listings are ready to be processed.
 </div>
-</p>
+</div>
+<div style="position:absolute;bottom:1px;">
+<input id="save" type="button" onclick="goSave();" value="Save Spreadsheet" disabled />
+</div>
 </td></tr></table>
 </form>
 </div>
