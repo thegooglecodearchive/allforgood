@@ -76,10 +76,9 @@ def default_boosts(args):
   boost += '+%28*:*+-feed_providername:girlscouts%29^200'
   # boost short events
   boost += '+eventduration:[0+TO+10]^10'
-
-  if api.PARAM_KEY in args:
-    if  args[api.PARAM_KEY] == 'liveunited':
-      boost += '+feed_providername:unitedway^200'
+  if api.PARAM_KEY in args and args[api.PARAM_KEY] == 'liveunited':
+     boost += ('feed_providername:unitedway^2000+title:tutor^1000' +
+               '+title:(school+OR+children+OR+student+OR+classroom)^100')
   
   return boost
 
@@ -92,6 +91,7 @@ def add_range_filter(field, min_val, max_val):
   result += field
   result += ':[' + str(min_val) +' TO ' + str(max_val) + ']'
   return result
+
 
 def rewrite_query(query_str, api_key = None):
   """ Rewrites the query string from an easy to type and understand format
@@ -140,7 +140,7 @@ def form_solr_query(args):
   # this is near the middle of the continental US 
   lat = '37'
   lng = '-95'
-  max_dist = 1500
+  max_dist = 12400
   if api.PARAM_LAT in args and api.PARAM_LNG in args and \
      (args[api.PARAM_LAT] != "" and args[api.PARAM_LNG] != ""):
     lat = args[api.PARAM_LAT]
@@ -153,7 +153,9 @@ def form_solr_query(args):
     max_dist = float(args[api.PARAM_VOL_DIST])
   
   
-  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,150,10)^1}'
+  geo_params = ('{!spatial lat=' + str(lat) + ' long=' + str(lng) 
+                + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,150,10)^1}')
+
   global GEO_GLOBAL
   GEO_GLOBAL = urllib.quote_plus(geo_params)
   if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
@@ -166,8 +168,8 @@ def form_solr_query(args):
         args[api.PARAM_CATEGORY] = str(key)   
 
   # keyword
+  filter_query = ''
   query_is_empty = False
-  boost_fq = None
   if (api.PARAM_Q in args and args[api.PARAM_Q] != ""):
     qwords = args[api.PARAM_Q].split(" ")
     for qi, qw in enumerate(qwords):
@@ -181,16 +183,16 @@ def form_solr_query(args):
           qwords[qi] = qw
           args[api.PARAM_Q] = ' '.join(qwords)
 
-    query_boosts, boost_fq = boosts.query_time_boosts(args)
+    query_boosts, filter_query = boosts.query_time_boosts(args)
     
     # Remove categories from query parameter    
     args[api.PARAM_Q] = args[api.PARAM_Q].replace('category:', '')
     
     if api.PARAM_CATEGORY in args:        
         args[api.PARAM_Q] += (" AND " + args[api.PARAM_CATEGORY])
-    
+
     if query_boosts:
-      solr_query = query_boosts    
+      solr_query = query_boosts
     else:
       solr_query += rewrite_query('*:* AND ' +  args[api.PARAM_Q], api_key)
   elif api.PARAM_CATEGORY in args:
@@ -216,10 +218,6 @@ def form_solr_query(args):
       solr_query += "+AND+micro:true"
   else:
       solr_query += "&fq=self_directed:false+AND+virtual:false+AND+micro:false"
-
-  if boost_fq:
-    solr_query += "&fq=" + boost_fq
-
   global FULL_QUERY_GLOBAL
   FULL_QUERY_GLOBAL =  solr_query
     
@@ -262,6 +260,8 @@ def form_solr_query(args):
     BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
   
   solr_query += default_boosts(args);
+  if filter_query:
+    solr_query += '&fq=' + filter_query
 
   # field list
   solr_query += '&fl='
@@ -427,9 +427,9 @@ def query(query_url, args, cache, dumping = False):
   
   fetch_start = time.time()
   status_code = 999
+  fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
   try:
-    fetch_result = urlfetch.fetch(query_url,
-                   deadline = api.CONST_MAX_FETCH_DEADLINE)
+    #fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
     status_code = fetch_result.status_code
   except:
     # can get a response too large error here
@@ -740,6 +740,7 @@ def get_facet_counts():
         fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
     except:
         logging.info('error receiving solr facet counts')
+        return
 
     result_content = fetch_result.content
     result_content = re.sub(r';;', ',', result_content)
