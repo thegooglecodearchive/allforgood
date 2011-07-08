@@ -47,7 +47,7 @@
     <EnumValue value="Technology" display_value="__MSG_technology__"/>
     <EnumValue value="Poverty" display_value="Poverty"/>
   </UserPref>
-  <UserPref name="prefLocation"
+  <UserPref name="Health"
             display_name="__MSG_default_location__"
             default_value="" />
   <UserPref name="preferredKeywords"
@@ -273,8 +273,7 @@ var miniMsg;
  * @const
  * @type {string}
  */
-//var FEED_URL = 'http://www.allforgood.org/api/volopps?output=rss';
-var FEED_URL = 'http://poli-united.servicefootprint.appspot.com/api/volopps?output=rss';
+var FEED_URL = 'http://www.allforgood.org/api/volopps?output=rss';
 
 /**
  * To store or cache the feeds between pagination.
@@ -510,8 +509,7 @@ function showRecordsAndUpdatePagination() {
   // Add pagination.
   html.push('<div class="pagination">',
       '<div style="width:100%;overflow:hidden;"><a target="_blank" ' +
-      //'href="http://www.allforgood.org/' +
-      'href="http://poli-united.servicefootprint.appspot.com/' +
+      'href="http://www.allforgood.org/' +
       'search#cache=1&num=10' +
       '&start=', feedParams.start,
       '&vol_loc=', _esc(feedParams.vol_loc),
@@ -672,7 +670,7 @@ function requestFeed() {
   var callback = function(xmlContent){
     fetchRecords(xmlContent, timerId);
   }
-  _IG_FetchXmlContent(feedUrlString, callback);
+  _IG_FetchXmlContent(feedUrlString + '&v=4', callback);
 }
 
 /**
@@ -1051,13 +1049,15 @@ if(!this.JSON){JSON=function(){function f(n){return n<10?'0'+n:n}Date.prototype.
       <form name="frmSearch" id="afg-search-form" action="#" onsubmit="search();hideDialog();return false;">
         <div style="width:90%; margin:auto;">
           <input name="searchText" id="afg-search-text" tabIndex="1" type="text" onkeyup="isCancel(event);" autocomplete="off" class="afg-text"/>
-          <div style="text-align:left; color: #fff; margin:1px 0 2px;height:12px;">
-<!--
+          <div style="text-align:left; color: #fff; margin:1px 0 2px;">
             __MSG_example__
             <a href="javascript:search('__MSG_education__', 1)" class="afg-popup-link">
                 __MSG_education__</a>,
-            <a href="javascript:search('__MSG_health__', 1)" class="afg-popup-link">
-                __MSG_health__</a>,
+            <a href="javascript:search('Income', 1)" class="afg-popup-link">
+                Income</a>,
+            <a href="javascript:search('Health', 1)" class="afg-popup-link">
+                Health</a>,
+<!--
             <a href="javascript:search('__MSG_nature__', 1)" class="afg-popup-link">
                 __MSG_nature__</a>
 -->
@@ -1092,7 +1092,25 @@ if(!this.JSON){JSON=function(){function f(n){return n<10?'0'+n:n}Date.prototype.
             <input type="checkbox" id="afg-virtual" tabIndex="2" 
 onChange="toggleVirtual()"/>
           </li>
-<div style="display:none;">
+          <li style="text-align:center;clear:both;float:none;width:100%;padding:0;">
+<div style="height:15px;">&nbsp;</div>
+            <input id="afg-ok-button" class="afg-ok-button" tabIndex="6"
+              alt="__MSG_ok__" title="__MSG_ok__" type="image"
+              src="http://afg.echo3.net/gadget/theme-liveunited/__MSG_ok_btn__.gif"
+              onerror="this.src='http://afg.echo3.net/gadget/theme-liveunited/__MSG_ok_btn__.gif'"/>
+            <img id="afg-cancel-button1" class="afg-cancel-button"
+              alt="__MSG_cancel__" title="__MSG_cancel__" tabIndex="7"
+              onclick="hideDialog();" onkeypress="hideDialog();"
+              src="http://afg.echo3.net/gadget/theme-liveunited/__MSG_cancel_btn__.gif"
+              onerror="this.src='http://afg.echo3.net/gadget/theme-liveunited/__MSG_cancel_btn__.gif'" />
+          </li>
+        </ul>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div style="position:absolute;top:-100000;height:0;overflow:hidden;display:none;">
           <li class="separator" style="width:100%">&nbsp;</li>
           <li style="width:33%;">__MSG_category__</li>
           <li>
@@ -1130,23 +1148,6 @@ onChange="toggleVirtual()"/>
               <option value="this_month">__MSG_this_month__</option>
             </select>
           </li>
-</div>
-          <li style="text-align:center;clear:both;float:none;width:100%;padding:0;">
-<div style="height:15px;">&nbsp;</div>
-            <input id="afg-ok-button" class="afg-ok-button" tabIndex="6"
-              alt="__MSG_ok__" title="__MSG_ok__" type="image"
-              src="http://afg.echo3.net/gadget/theme-liveunited/__MSG_ok_btn__.gif"
-              onerror="this.src='http://afg.echo3.net/gadget/theme-liveunited/__MSG_ok_btn__.gif'"/>
-            <img id="afg-cancel-button1" class="afg-cancel-button"
-              alt="__MSG_cancel__" title="__MSG_cancel__" tabIndex="7"
-              onclick="hideDialog();" onkeypress="hideDialog();"
-              src="http://afg.echo3.net/gadget/theme-liveunited/__MSG_cancel_btn__.gif"
-              onerror="this.src='http://afg.echo3.net/gadget/theme-liveunited/__MSG_cancel_btn__.gif'" />
-          </li>
-        </ul>
-      </form>
-    </div>
-  </div>
 </div>
 ]]>
 </Content>
