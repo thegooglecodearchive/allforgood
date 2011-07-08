@@ -1,8 +1,7 @@
 application: footprint2009dev
 #application: servicefootprint
 
-#version: r2-backup
-version: staging
+version: unity
 runtime: python
 api_version: 1
 
@@ -10,7 +9,27 @@ api_version: 1
 default_expiration: "1000d"
 
 handlers:
-# NOTE: don't map /js|css|images directly, but instead force the
+- url: /proxy
+  script: proxy/main.py
+
+- url: /css
+  static_dir: css
+
+- url: /images
+  static_dir: images
+
+- url: /js
+  static_dir: js
+
+# this is for the opp spreadsheet
+- url: /online/(get|put|clear|list|xml|geo)
+  script: online/main.py
+
+- url: /online
+  expiration: "1h"
+  static_dir: online/html
+
+# NOTE: these aren't mapped /js|css|images directly, but instead force the
 # use of version numbers to avoid accidental version problems.
 # Unlike ?zx= this works for proxies that refuse to cache urls
 # containing question marks.
@@ -42,9 +61,6 @@ handlers:
 - url: /xd_receiver.htm
   static_files: templates/xd_receiver.htm
   upload: templates/xd_receiver.htm
-
-- url: /test/.*
-  script: testpages.py
 
 - url: /admin/.*
   script: main.py

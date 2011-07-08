@@ -1,29 +1,11 @@
-{% extends 'layout_two_column.html' %}
-{% block content_left %}
-<h1>&nbsp;</h1>
-<ul id='static_content_list'>
-<li>
-{% ifequal path '/about' %} About {% else %} <a href='/about'>About</a> {% endifequal %}
-<li><a href='http://blog.allforgood.org'>Blog</a>
-<li>
-{% ifequal path '/help' %} Help {% else %} <a href='/help'>Help</a> {% endifequal %}
-<li>
-{% ifequal path '/faq' %} FAQs {% else %} <a href='/faq'>FAQs</a> {% endifequal %}
-<li>
-{% ifequal path '/apps' %} Apps {% else %} <a href='/apps'>Apps</a> {% endifequal %}
-<li>
-{% ifequal path '/docs/api.html' %} API {% else %} <a href='/docs/api.html'>API</a> {% endifequal %}
-<li>
-{% ifequal path '/posting' %} Posting Listings {% else %} <a href='/posting'>Posting Listings</a> {% endifequal %}
-<li>
-{% ifequal path '/privacypolicy' %} Privacy Policy {% else %} <a href='/privacypolicy'>Privacy Policy</a> {% endifequal %}
-<li>
-{% ifequal path '/tos' %} Terms of Service {% else %} <a href='/tos'>Terms of Service</a> {% endifequal %}
-<li>
-{% ifequal path '/contentpolicy' %} Content Policy {% else %} <a href='/contentpolicy'>Content Policy</a> {% endifequal %}
-</ul>
-{% endblock content_left %}
-{% block content_right %}
+    <!--#main-->
+    <div id="main" class="clearfix">
+        <!--.content-->
+        <div id="content" class="clearfix">
+            <!--.single-page-->
+            <div class="single-page-full-width">
+                <!--.col-main-->
+                <div class="col-main">
 <h1>All for Good API Terms of Service</h1>
 
 <p>Last updated: February 2011</p>
@@ -134,5 +116,9 @@ Waiver and Severability of Terms. The failure of Our Good Works to exercise or e
 <p>The section headings in the Terms of Service are for convenience only and have no legal or contractual effect.</p>
 </ul>
 </ul>
-
-{% endblock content_right%}
+                </div>
+                <!--.col-main-->
+            </div>
+            <!--.single-page-->
+        </div>
+        <!--.content-->
