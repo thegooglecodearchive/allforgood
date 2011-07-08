@@ -1,13 +1,14 @@
 {% extends "base_min.html" %}
 {% block head %}
 {% block js_files %}
+<!-- base_search.html -->
 <script type='text/javascript'>
   var vol = {};  // Namespace for calendar
 </script>
 {# can't combine with other JS, because that would go through a proxy, breaking IP-base location sniffing #}
 <script type='text/javascript' src='http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php'></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-<script src='http://www.google.com/jsapi?key={{ maps_api_key }}' type='text/javascript'></script>
+<script type='text/javascript' src="/zx{{version}}/js/jqueryui/jquery-ui-1.8.10.min.js"></script>
+<script src='http://www.google.com/jsapi?key={{ maps_api_key }}&zx={{version}}' type='text/javascript'></script>
 <script type='text/javascript' src='/zx{{version}}/js/third_party/jquery-1.3.2.min.js'></script>
 <script type='text/javascript' src='/zx{{version}}/js/third_party/jquery.json-1.3.min.js'></script>
 <script type='text/javascript' src='/zx{{version}}/js/third_party/rsh.js'></script>

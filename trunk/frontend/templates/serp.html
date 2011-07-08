@@ -1,4 +1,4 @@
- <!--.content-->
+<!--.content-->
 <div id="content" class="clearfix">
 	<!--.single-page-->
 	<div class="search-page">
@@ -23,21 +23,17 @@
 			</div>
 			<div class="search-info">
 				<ul>
-<li><strong>In Your Area</strong> 
-Opportunities near you to make a difference
-<a href="javascript:submitForm('oppType', 0);">link</a>.</li>
+<li><strong>In Your Area</strong>
+<a href="javascript:submitForm('oppType', 0);">Opportunities near you to make a difference</a>.</li>
 
 <li><strong>Virtual</strong>
-Ways to help out no matter where you're located 
-<a href="javascript:submitForm('oppType', 1);">link</a>.</li>
+<a href="javascript:submitForm('oppType', 1);">Ways to help out no matter where you're located</a>.</li>
 
 <li><strong>Micro</strong>
-You're online, but only have a few moments to spare
-<a href="javascript:submitForm('oppType', 2);">link</a>.</li>
+<a href="javascript:submitForm('oppType', 2);">You're online, but only have a few moments to spare</a>.</li>
 
 <li><strong>Self-Directed</strong>
-How-To guides for starting your own projects
-<a href="javascript:submitForm('oppType', 3);">link</a>.</li>
+<a href="javascript:submitForm('oppType', 3);">How-To guides for starting your own projects</a>.</li>
 				</ul>
 			</div>
 		</div>
@@ -103,18 +99,56 @@ How-To guides for starting your own projects
 						</div>
 					</div>
 					<div class="search-main">
+<div style="position:relative;">
+<!-- ad code -->
+<script type="text/javascript">
+function recordAdClick(category, action) {
+  try {
+    if (typeof(pageTracker) != 'object') {
+      pageTracker = _gat._getTracker('UA-8689219-2');
+      pageTracker._trackPageview();
+    }
+    pageTracker._trackEvent(category, action);
+  }catch(err){}
+}
+try {
+  if (typeof(pageTracker) != 'object') {
+    pageTracker = _gat._getTracker('UA-8689219-2');
+    pageTracker._trackPageview();
+  }
+  pageTracker._trackEvent('/SearchResultAd', '/Impression');
+}catch(err){}
+</script>
+<div id="search_results_adspace"><a 
+  target="_blank" alt="Bill and Warren" title="Bill and Warren Day"
+  onclick="recordAdClick('/SearchResultAd', '/Click')"
+  href="http://www.facebook.com/BillandWarrenDay"><div id="ad_wrapper"><img 
+  src="images/bwDayButton.png" 
+  alt="Bill and Warren Day" title="Bill and Warren Day" /></div></a>
+</div>
+<!--
+<div id="search_results_adspace"><a 
+  target="_blank" alt="Champions of Service" title="Champions of Service"
+  onclick="recordAdClick('/SearchResultAd', '/Click')"
+  href="http://www.volunteeringandservice.org/"><div id="ad_wrapper"><img 
+  src="images/120x60-champions-of-service.jpg" 
+  alt="Champions of Service" title="Champions of Service" /></div></a>
+</div>
+-->
 						<div id="loading"></div>
 						<div class="top_search">
 							<div class="sort">Sort by 
-								<select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
-									<option>Relevance</option>
-									<option>Date</option>
-								</select>
+		<select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+                      <option value="score">Relevance</option>
+                      <option value="eventrangeend">Date</option>
+		</select>
 							</div>
 						</div>
+<div style="height:15px;width:1px;"> </div>
 						<ul id="tabs-1-results" class="results">
 							<div id="snippets_pane"></div>
 						</ul>
+</div>
 					</div>
 				</div>
 				<!--#tabs-1--> 
