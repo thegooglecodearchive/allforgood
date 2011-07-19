@@ -1,0 +1,47 @@
+<script type='text/javascript'>
+  initMap();  // In case it hasn't been inited.
+  asyncLoadManager.addCallback('map', function(){
+      map.clearMarkers();
+  });
+  
+  function resetForm() {
+    setInputFieldValue(el('keywords'), "");    
+    $('#startdate').value = "";
+    $('#enddate').value = "";
+    $("#location_slider").slider("option", "value", 25);
+    $("#location_distance").html($("#location_slider").slider("value"));
+    //submitForm('oppType', getSelectedTab());
+    submitForm('oppType', 3);
+  }
+</script>
+
+
+{% ifequal current_page "MY_EVENTS" %}
+<h1 class="snippets_list_header" style="margin:0">You haven't liked any activities yet.</h1>
+<br>
+Liking an activity lets you promote an organization or cause. Simply click "like" in the search results and then share it with friends or keep track of it for yourself, through this activity page.
+
+<script type="text/javascript">
+  setTextContent(el('like_count'), 0);
+</script>
+
+{% else %}
+<br><br>
+Your search did not match any volunteering activities.
+Suggestions:
+<ul>
+  <li>If you're searching for a location, please enter your search above the map to the left.</li>
+  <li>Make sure all words are spelled correctly.</li>
+  <li>Try different keywords.</li>
+  <li>Try more general keywords.</li>
+  <li>Try fewer keywords.</li>
+  <li>Try a different location.</li>
+  <li>Try a different date filter.</li>
+</ul>
+<div style="font-size:20px;font-weight:bold;">Interested in putting together your own service project?
+<br />
+<br />
+<a href="javascript:resetForm();">Click here to learn more.</a></div>
+
+{% endifequal %}
+
