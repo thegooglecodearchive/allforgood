@@ -1,0 +1,241 @@
+
+{% block content %}
+<font size="-1"><pre>
+<a href="javascript:;" onclick='toggle("help")'>Help</a><div id='help' style='display:none;font-size:14px;'>
+Keys:  <span id='shortcut_dbg'></span>
+ - next listing: J or &gt; or Down
+ - prev listing: K or &lt; or Up
+ - accept: 1 or A or (space)
+ - reject: 2 or R or M 
+ - toggle details: = or T
+ - defer:  3 or Q or ? or / (i.e. "I'm not sure...")
+ - delete: 4 or D or X (for testing and true spam, not live listings)
+ - delete everything on the page (careful!): ctrl-x
+ - process changes: (enter)
+</div>
+</pre></font>
+
+<span style="font-family: Lucida Console, Andale Mono, Courier New, arial;">
+<div style="position:absolute;top:3px;left:3px;display:none;border:1px solid gray;background-color:red;font-family:arial;padding:3px 6px 3px 6px" id="alert"></div>
+<form method='POST' name='moderator'>
+<input type='hidden' name='usig' value='{{usig|escape}}'>
+<input type='hidden' name='action' value='moderate'>
+<input type='hidden' name='num' value='{{num|escape }}'>
+<input type='hidden' name='ts' value='{{ts|escape }}'>
+
+{% for result in result_set %}
+<input type='hidden' id='v{{result.idx|escape }}' name='v{{result.key|escape }}' value="{{result.status_char|escape }}">
+<div style='padding:5px 7px 5px 7px' id='r{{result.idx|escape }}'>
+<span id='mk{{result.idx|escape }}'>&nbsp;</span>
+{{result.idx|escape }}. {{result.start_date|escape }} {{result.quality_score|escape }} {{result.title|escape }}<br/>
+<span id='st{{result.idx|escape }}'>&nbsp;&nbsp;&nbsp;&nbsp;</span> {{result.description|escape }}<div id='dt{{result.idx|escape }}' style='display:none'>{{result.listing_fmtd}}</div><br/>
+</div>
+{% endfor %}
+</form>
+</span>
+<script>
+function highlight(i) {
+  var marker = document.getElementById('mk'+i);
+  if (marker != null) {
+    marker.innerText = "> "
+  }
+  var row = document.getElementById('r'+i);
+  if (row != null) {
+    row.style.backgroundColor = "yellow";
+  }
+}
+function unhighlight(i) {
+  var marker = document.getElementById('mk'+i);
+  if (marker != null) {
+    marker.innerHTML = "&nbsp;";
+  }
+  var row = document.getElementById('r'+i);
+  if (row != null) {
+    row.style.backgroundColor = "white";
+  }
+}
+
+function setStatus(c,s) {
+  var status = document.getElementById('st'+current_row);
+  if (status == null) { return; }
+  status.innerHTML = s;
+  var formelem = document.getElementById('v'+current_row);
+  if (formelem == null) { alert("internal error fetching "+'v'+current_row); }
+  // faster for submission
+  formelem.value = c;
+}
+
+function reset_listing() {
+  var row = document.getElementById('r'+current_row);
+  if (row == null) { return; }
+  row.style.textDecoration = "none";
+  row.style.color = "black";
+  row.style.fontWeight = "normal";
+  setStatus("", "&nbsp;&nbsp;&nbsp;&nbsp;");
+}
+function accept_listing() {
+  var row = document.getElementById('r'+current_row);
+  if (row == null) { return; }
+  if (row.style.fontWeight == "bold") {
+    reset_listing();
+  } else {
+    reset_listing();
+    row.style.fontWeight = "bold";
+    setStatus("A", "<font size='-2'>ACCEPTED</font>");
+  }
+}
+function is_deleted() {
+  var row = document.getElementById('r'+current_row);
+  if (row == null) { return; }
+  return (row.style.textDecoration == "line-through" && row.style.color == "rgb(221, 221, 221)")
+}
+function delete_listing() {
+  var row = document.getElementById('r'+current_row);
+  if (row == null) { return; }
+  if (is_deleted()) {
+    reset_listing();
+  } else {
+    reset_listing();
+    row.style.color= "rgb(221, 221, 221)";
+    row.style.textDecoration = "line-through";
+    setStatus("X", "<font size='-2'>DELETED</font>");
+  }
+}
+function delete_all() {
+  cur = current_row;
+  current_row = 1;
+  while (1) {
+    var row = document.getElementById('r'+current_row);
+    if (row == null) { break; }
+    delete_listing();
+    current_row++;
+  }
+  // reset for highlighting
+  current_row = cur;
+}
+function reject_listing() {
+  var row = document.getElementById('r'+current_row);
+  if (row == null) { return; }
+  if (row.style.textDecoration == "line-through" && row.style.color == "black") {
+    reset_listing();
+  } else {
+    reset_listing();
+    row.style.color = "black";
+    row.style.textDecoration = "line-through";
+    setStatus("R", "<font size='-2'>REJECTED</font>");
+  }
+}
+function defer_listing() {
+  var row = document.getElementById('r'+current_row);
+  if (row == null) { return; }
+  if (row.style.color == "gray") {
+    reset_listing();
+  } else {
+    reset_listing();
+    row.style.color = "gray";
+    setStatus("D", "<font size='-2'>DEFERRED</font>");
+  }
+}
+function next_listing() {
+  var i = current_row;
+  var marker = document.getElementById('mk'+(i+1));
+  if (marker == null) { return; }
+  unhighlight(i);
+  highlight(i+1);
+  current_row++;
+}
+function prev_listing() {
+  var i = current_row;
+  var marker = document.getElementById('mk'+(i-1));
+  if (marker == null) { return; }
+  unhighlight(i);
+  highlight(i-1);
+  current_row--;
+}
+function show_alert(msg) {
+  var div = document.getElementById("alert");
+  div.innerHTML = msg;
+  div.style.display = "inline";
+}
+function toggle(id) {
+  var div = document.getElementById(id);
+  if (div == null) { alert("internal error:"+id); return; }
+  if (div.style.display == "none") {
+    div.style.display = "inline";
+  } else {
+    div.style.display = "none";
+  }
+}
+function toggle_details() {
+  toggle('dt'+current_row);
+}
+function hide_alert() {
+  var div = document.getElementById("alert");
+  div.innerHTML = "";
+  div.style.display = "none";
+}
+function process_changes() {
+  //show_alert("saving changes...");
+  document.moderator.submit();
+}
+  
+function sync_status() {
+  unhighlight(current_row);
+  cur = current_row;
+  current_row = 1;
+  while (1) {
+    var el = document.getElementById('v'+current_row);
+    if (el == null) { break; }
+    val = el.value;
+    reset_listing();
+    if (val == 'A') { accept_listing(); }
+    else if (val == 'R') { reject_listing(); }
+    current_row++;
+  }
+  current_row = cur;
+  highlight(current_row);
+}  
+
+var current_row = 1;
+sync_status();
+</script>
+
+<script src="/zx{{version}}/js/shortcut.js"></script>
+<script>
+// J/K doesn't work in Chrome?!
+shortcut.add("K",prev_listing, {'keycode':75});
+shortcut.add("J",next_listing, {'keycode':74});
+shortcut.add(",",prev_listing);
+shortcut.add(".",next_listing);
+shortcut.add("<",prev_listing);
+shortcut.add(">",next_listing);
+shortcut.add("Up",prev_listing);
+shortcut.add("Down",next_listing);
+
+shortcut.add("=",toggle_details, {'keycode':187});
+shortcut.add("T",toggle_details, {'keycode':84});
+
+shortcut.add("A",accept_listing, {'keycode':65});
+shortcut.add("Space",accept_listing);
+shortcut.add("1",accept_listing, {'keycode':49});
+
+shortcut.add("M",reject_listing, {'keycode':77});
+shortcut.add("R",reject_listing, {'keycode':82});
+shortcut.add("2",reject_listing, {'keycode':50});
+
+shortcut.add("?",defer_listing, {'keycode':191});
+shortcut.add("/",defer_listing);
+shortcut.add("Q",defer_listing, {'keycode':81});
+shortcut.add("3",defer_listing, {'keycode':51});
+
+shortcut.add("D",delete_listing, {'keycode':68});
+shortcut.add("X",delete_listing, {'keycode':88});
+shortcut.add("4",delete_listing, {'keycode':52});
+
+shortcut.add("0",delete_all);
+
+shortcut.add("Enter",process_changes);
+</script>
+
+{% endblock %}
+
