@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title_url="http://footprint2009dev.appspot.com/"
+               title="Footprint"
+               height="124"
+               author="Blake Schwendiman"
+               author_email="blake.schwendiman@gmail.com"
+               scrolling="false"
+               scaling="true"
+               author_location="Mesa, AZ"
+               description="Consumer gadget for Footprint project"
+               directory_title="Footprint"
+               author_affiliation="thehowandthewhy.com"
+               screenshot=""
+               thumbnail="">
+    <!-- <Require feature="dynamic-height" /> -->
+    <!-- <Require feature="setprefs" /> -->
+    <!-- <Require feature="google-domain"/> -->
+    <Require feature="analytics" />
+  </ModulePrefs>
+
+  <Content type="html">
+  <![CDATA[
+    <script type="text/javascript">
+      const DISPLAY_TYPE_MAP__MODULE_ID__ = 0;
+      
+      var mod__MODULE_ID__ = function() {
+        return {
+          footprint_search_url: 'http://footprint2009dev.appspot.com/search?q=',
+          
+          log: function(msg) {
+            if (window.console) {
+              console.log(msg);
+            }
+          },
+          
+          get_search_url: function(parms) {
+            var result = this.footprint_search_url;
+            
+            for (var name in parms) {
+              this.log(name + ': ' + parms[name]);
+              result += '&' + name + '=' + _esc(parms[name]);
+            }
+            
+            this.log(result);
+            return result;
+          },
+          
+          search_for: function(query_terms) {
+            var url = this.footprint_search_url;
+            url += _esc(query_terms);
+            
+            window.open(url);
+          },
+          
+          do_search: function() {
+            var query_el = _gel('search-query__MODULE_ID__');
+            
+            if (query_el) {
+              this.search_for(query_el.value);
+            }
+          },
+          
+          init: function() {
+          },
+          
+          dummy: function() {
+          
+          }
+        }
+      }();
+      
+      function init() {
+        mod__MODULE_ID__.init();
+      }
+      
+      _IG_RegisterOnloadHandler(init);
+    </script>
+    <style>
+      .custom__MODULE_ID__ {font-family: Helvetica, Arial, sans-serif; font-size: 9pt; padding: 0; margin: 0;}
+      .custom__MODULE_ID__ form {padding: 0; margin: 0 0 2px 0}
+      .custom__MODULE_ID__ form fieldset {padding: 0; margin: 0}
+      .headline__MODULE_ID__ {font-size: 11pt; margin-bottom: 4px; margin-top: 4px;}
+      .help__MODULE_ID__ {font-size: 7pt}
+      .help__MODULE_ID__ a {text-decoration: none;}
+      .help__MODULE_ID__ a:hover {text-decoration: underline;}
+      .powered-by__MODULE_ID__ {font-size: 8pt; text-align: right;}
+      .all-for-good__MODULE_ID__ {font-size: 11pt;}
+      .noborder__MODULE_ID__ {border: none;}
+      #search-query__MODULE_ID__ {width: 70%;}
+      img {border: none; vertical-align: bottom;}
+    </style>
+    <div id="search-gadget__MODULE_ID__" class="custom__MODULE_ID__">
+      <p class="custom__MODULE_ID__ headline__MODULE_ID__">Find simple ways to do good</p>
+      <form onsubmit="mod__MODULE_ID__.do_search(); return false;">
+        <fieldset class="custom__MODULE_ID__ noborder__MODULE_ID__">
+          <input type="text" id="search-query__MODULE_ID__" />
+          <button type="submit">Search</button>
+        </fieldset>
+      </form>
+      <p class="custom__MODULE_ID__ help__MODULE_ID__">Eg. <a href="#" onclick="mod__MODULE_ID__.search_for('education'); return false;">education</a>,
+      <a href="#" onclick="mod__MODULE_ID__.search_for('animals'); return false;">animals</a> and
+      <a href="#" onclick="mod__MODULE_ID__.search_for('parks'); return false;">parks</a></p>
+      <p class="custom__MODULE_ID__ powered-by__MODULE_ID__">powered by
+      <a href=""><img src="http://blake-footprint.appspot.com/images/gadget-logo-sm.png" alt="AllForGood.org" /></a></p>
+    </div>
+  ]]> 
+  </Content>
+
+</Module>

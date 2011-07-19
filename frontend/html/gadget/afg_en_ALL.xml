@@ -1,0 +1,78 @@
+<messagebundle>
+  <msg name="title">All for Good</msg>
+  <msg name="description">
+  Get all good events in and around your location, embed it and more.
+  </msg>
+  <msg name="default_location" desc="Default location label for user preferences settings.">
+    Default location
+  </msg>
+  <msg name="themes_folder" desc="Themes folder label for user preferences settings.">
+    Themes folder
+  </msg>
+  <msg name="default_location_value" desc="Value for default location.">
+    San Francisco, CA
+  </msg>
+  <msg name="brand_title" desc="Title of the brand logo.">All for Good</msg>
+  <msg name="loading" desc="Label for loading.">Loading...</msg>
+  <msg name="go" desc="Go button tooltip.">Go</msg>
+  <msg name="ok" desc="OK button tooltip.">OK</msg>
+  <msg name="embed" desc="Embed button tooltip.">Embed widget code</msg>
+  <msg name="search" desc="Search button tooltip.">Search</msg>
+  <msg name="cancel" desc="Cancel button tooltip.">Cancel</msg>
+  <msg name="recent_listings" desc="Label for recent listings.">
+    Recent listings
+  </msg>
+  <msg name="near" desc="Label for near."> near </msg>
+  <msg name="no_data" desc="Data may not be available.">Data may not be available.</msg>
+  <msg name="your_search" desc="Label appended at the beginning with error message.">Your search</msg>
+  <msg name="not_match" desc="Label appended at the end with error message.">did not match any volunteer opportunities.</msg>
+  <msg name="try_again" desc="While showing error message, to allow user to reload.">Try again</msg>
+  <msg name="search_again" desc="While showing error message, to allow user to search again.">Search again</msg>
+  <msg name="listings_per_page" desc="Listings per page label for user preferences settings.">Listings per page</msg>
+  <msg name="previous" desc="Label for previous link.">Prev</msg>
+  <msg name="next" desc="Label for next link.">Next</msg>
+  <msg name="preferred_keywords" desc="User preference label for preferred keywords.">Preferred keywords</msg>
+  <msg name="example" desc="Label for example.">E.g.,</msg>
+  <msg name="education" desc="Label for education.">Education</msg>
+  <msg name="health" desc="Label for health.">Health</msg>
+  <msg name="hunger" desc="Label for hunger.">Hunger</msg>
+  <msg name="mlk" desc="Label for mlk.">MLK</msg>
+  <msg name="earthday" desc="Label for earth day.">Earth Day</msg>
+  <msg name="nature" desc="Label for nature.">Nature</msg>
+  <msg name="hunger" desc="Label for hunger.">Hunger</msg>
+  <msg name="animals" desc="Label for animals.">Animals</msg>
+  <msg name="all" desc="Label for animals.">All</msg>
+  <msg name="seniors" desc="Label for seniors.">Seniors</msg>
+  <msg name="technology" desc="Label for technology.">Technology</msg>
+  <msg name="set_location" desc="Label for set location used in title region of gadget.">Set location</msg>
+  <msg name="change_location" desc="Label for change location used in title region of gadget.">Change location</msg>
+  <msg name="clear_search" desc="Label for clear search used in title region of gadget.">Clear search</msg>
+  <msg name="go_btn" desc="Image file name for go button.">go</msg>
+  <msg name="ok_btn" desc="Image file name for ok button.">ok</msg>
+  <msg name="embed_btn" desc="Image file name for embed button.">embed</msg>
+  <msg name="search_btn" desc="Image file name for search button.">search</msg>
+  <msg name="cancel_btn" desc="Image file name for cancel button.">cancel</msg>
+  <msg name="time_period" desc="Time period label for user preferences settings">Time period</msg>
+  <msg name="category" desc="Categories label for user preferences settings">Category</msg>
+  <msg name="location" desc="Location label for user preferences settings">Location</msg>
+  <msg name="today" desc="A user preferences value for time period.">Today</msg>
+  <msg name="this_week" desc="A user preferences value for time period.">This week</msg>
+  <msg name="this_weekend" desc="A user preferences value for time period.">This weekend</msg>
+  <msg name="this_month" desc="A user preferences value for time period.">This month</msg>
+  <msg name="september_11" desc="A user preferences value for time period.">September 11</msg>
+  <msg name="everything" desc="Default user preferences value for time period.">Anytime</msg>
+  <msg name="promotion911" desc="Label for September 11 promotion.">Help America remember 9/11 with a National Day of Service:</msg>
+  <msg name="find_listings" desc="Link text for September 11 promotion.">Find listings</msg>
+  <msg name="change_settings" desc="Label for change settings used in title region of gadget.">change settings</msg>
+  <msg name="for" desc="Conjuction to display the search text in title section.">for</msg>
+  <msg name="in_category" desc="Conjuction to display the category in title section.">in category</msg>
+  <msg name="open_synd_default_message" desc="Message to show before the user set the settings, when syndication is open.">
+    <![CDATA[
+      Please <a href="javascript:showDialog('settings')">configure</a> to see the listings.
+    ]]>
+  </msg>
+  <msg name="configure" desc="Link text to show the open syndication default message.">Configure</msg>
+  <msg name="see_listings" desc="Text to show the open syndication default message.">to see the listings in this page</msg>
+  <msg name="see_more" desc="Link text to the site.">See more</msg>
+  <msg name="Present" desc="Present">Present</msg>
+</messagebundle>
