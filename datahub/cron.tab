@@ -1,8 +1,0 @@
-@reboot /home/footprint/bin/rebooted.sh
-# m h  dom mon dow   command
-
-MAILTO=""
-1 22 * * * /home/footprint/bin/backup.sh > /home/fooprint/log/log.backup 2>&1
-
-MAILTO=mt1955@gmail.com,asah@midgard.net,danstryker1@gmail.com
-1 0 * * * /home/footprint/allforgood/datahub/lock_pipeline.sh
