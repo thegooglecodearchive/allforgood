@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{% autoescape off %}
+{% spaceless %}
+{% endspaceless %}
+{% comment %}
+   Base template for Django inheritance.
+   All templates should inherit from this.
+   blocks that can be overridden:
+     css_files: link tags for css files to include.
+     js_files: script tags for JS files to include.
+     subheader: area below header.
+     content_layout: the main area inside the body, below the header, or
+        below the subheader if defined.  This should only be overridden by
+        layout templates
+     prefooter: area above footer.
+{% endcomment %}
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="content-language" content="en" />
+<meta name="title" content="All for Good" />
+<meta name="description" content="Each of us has a role to play in improving our communities and our country. Small actions add up to a big difference.  All for good helps you find and share ways to do good." />
+<script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
+<title>{% block title %}All for Good{% endblock %}</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link type="text/css" rel="stylesheet" href="/zx{{version}}/css/style.css" />
+    <!--[if IE]><link type="text/css" rel="stylesheet" href="/zx{{version}}/css/ie.css" /><![endif]-->
+    <!--[if IE 6]><link type="text/css" rel="stylesheet" href="/zx{{version}}/css/ie6.css" /><![endif]-->
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="/zx{{version}}/js/IE9.js"></script>
+    <![endif]-->
+    <!--[if IE 6]>
+    <script type="text/javascript" src="/zx{{version}}/js/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script type="text/javascript" >
+        DD_belatedPNG.fix('img, a, .ir, div, li, ul, span, p, h1, h2, h3, h4, h5, h6, strong, em');
+    </script>
+    <![endif]-->
+    <script type="text/javascript" src="/zx{{version}}/js/fieldclear.js"></script> 
+{% block head %}{% endblock %}
+</head>
+{% block body %}{% endblock %}
+{% endautoescape %}
+<script>
+initOverLabels();
+</script>
+</html>

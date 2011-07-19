@@ -1,0 +1,1860 @@
+
+|
+5601 Brooklyn Blvd,Brooklyn Center,MN,55429|5601 Brooklyn Blvd, Brooklyn Center, MN 55429;45.0567140;-93.3254160;8
+5601 Brooklyn Blvd,Brooklyn Center,MN,55429,USA|5601 Brooklyn Blvd, Brooklyn Center, MN 55429;45.0567140;-93.3254160;8
+5601 Brooklyn Blvd,Brooklyn Center,MN,55429,United States|5601 Brooklyn Blvd, Brooklyn Center, MN 55429;45.0567140;-93.3254160;8
+Trenton,NJ,08608|Trenton, NJ 08608;40.2238006;-74.7648773;5
+Berkeley,CA,94703|Berkeley, CA 94703;37.8609619;-122.2746582;5
+Santa Cruz,CA,95062|Santa Cruz, CA 95062;36.9690017;-121.9579772;5
+West Windsor,NJ,08550|Princeton Junction, NJ 08550;40.2905578;-74.6236381;5
+Mercer County,NJ,08610|Trenton, NJ 08610;40.1831398;-74.7026824;5
+NY|New York, NY;40.7143528;-74.0059731;4
+201 N. River St.,Aurora,IL,60506|201 N River St, Aurora, IL 60506;41.7608220;-88.3142210;8
+VA|Virginia;37.4315734;-78.6568942;2
+Minot,ND,58701|Minot, ND;48.2325095;-101.2962732;4
+Grand Forks,ND,58201|Grand Forks, ND;47.9252568;-97.0328547;4
+ND|North Dakota;47.5514926;-101.0020119;2
+Boston,MA,02216|Boston, 23-25 Farrington Ave, Cambridge, MA 02138;42.3719740;-71.1237140;9
+02216|Vila Medeiros, Sao Paulo - São Paulo, 02216-100, Brazil;-23.4883775;-46.5855047;5
+FL|Florida;27.6648274;-81.5157535;2
+ME|Maine;45.2537830;-69.4454689;2
+718 W Clairemont Ave,Eau Claire,WI,54701|718 W Clairemont Ave, Eau Claire, WI 54701;44.7932370;-91.5086427;8
+1431 Assembly Street,Columbia,SC,29201|1431 Assembly St, Columbia, SC 29201;34.0041660;-81.0377490;8
+SC|South Carolina;33.8360810;-81.1637245;2
+KY|Kentucky;37.8393332;-84.2700179;2
+WV|West Virginia;38.5976262;-80.4549026;2
+TN|Tennessee;35.5174913;-86.5804473;2
+Riverside,RI,02915|Riverside, RI 02915;41.7975788;-71.3492507;5
+MA|Massachusetts;42.4072107;-71.3824374;2
+All Over The Greater Cincinnati Area,Cincinnati,OH,45069|West Chester Township, OH;39.3676835;-84.4675069;4
+4650 Taney Ave.,Alexandria,VA,22304|4650 Taney Ave, Alexandria, VA 22304;38.8164360;-77.1127200;8
+Charlotte,NC,28270|Charlotte, NC 28270;35.0718040;-80.7378883;5
+3080 E. Gentry Way Suite 100,Meridian,ID,83642|3080 E Gentry Way #100, Meridian, ID 83642;43.5984030;-116.3567430;9
+PA|Pennsylvania;41.2033216;-77.1945247;2
+WI|Wisconsin;43.7844397;-88.7878678;2
+Woodland Job Corps Center, 3300 Ft. Meade Rd.,Laurel,MD,20724|Laurel, MD 20724;39.1047859;-76.8390197;5
+Houston,TX,77036|Houston, TX 77036;29.7054557;-95.5289001;5
+2247 Western Avenue,Knoxville,TN,37921|2247 Western Ave, Knoxville, TN 37921;35.9700750;-83.9517599;8
+DC|District of Columbia;38.9059849;-77.0334179;2
+1100 Centerpoint Dr.,Stevens Point,WI,54481|1100 Center Point Dr, Stevens Point, WI 54481;44.5254000;-89.5822000;8
+20461 ventura bl,woodland hills,CA,91364|20461 Ventura Blvd, San Fernando Valley, CA 91364;34.1686020;-118.5786630;8
+610 4th Street,San Rafael,CA,94901|610 4th St, San Rafael, CA 94901;37.9725330;-122.5211470;8
+greater Atlanta area,Atlanta area,GA,30092|Norcross, GA 30092;33.9738533;-84.1898263;5
+1700 N 200 W,Angola,IN,46703|1700 N 200 W, Angola, IN 46703;41.6688319;-85.0284540;8
+CA|California;36.7782610;-119.4179324;2
+519 Memorial Dr.,Atlanta,GA,30312|519 Memorial Dr SE, Atlanta, GA 30312;33.7461200;-84.3706310;8
+Richmond,VA,23227|Richmond, VA 23227;37.5985736;-77.4771308;5
+403 West 6th Street,Antioch,CA,94509|403 W 6th St, Antioch, CA 94509;38.0140353;-121.8113865;8
+7105 Virginia Rd, Suite 21, Crystal Lake, IL,McHenry County,IL,60014|7105 Virginia Rd #21, Crystal Lake, IL 60014;42.2252771;-88.3269731;9
+Boston,MA,02130|Boston, MA 02130;42.3102836;-71.1164283;5
+CO|Colorado;39.5500507;-105.7820674;2
+982 Eastern Parkway,Louisville,KY,40217|982 Eastern Pkwy, Louisville, KY 40217;38.2200446;-85.7338515;8
+181 Willlow Dr,Mars Hill,NC,28754|181 Willow Dr, Mars Hill, NC 28754;35.8166739;-82.5785700;8
+NC|North Carolina;35.7595731;-79.0192997;2
+1422 W Liberty,Ann Arbor,MI,48103|1422 W Liberty Rd, Ann Arbor, MI 48103;42.2730320;-83.7892248;8
+3383 South 300 East,Salt Lake City,UT,84115|3383 S 300 E, Salt Lake City, UT 84115;40.6979980;-111.8806000;8
+Cincinnati,OH,45201|Cincinnati, OH 45201;39.1100000;-84.5400000;5
+NJ|New Jersey;40.0583238;-74.4056612;2
+MI|Michigan;44.3148443;-85.6023643;2
+Faith In Action for Monroe County,Monroe County,MI,48162|Monroe, MI;41.9164343;-83.3977101;4
+1323 Cedar Street NE,Grand Rapids,MI,49503|1323 Cedar St NE, Grand Rapids, MI 49503;42.9808312;-85.6362686;8
+106 E. Front Street,Traverse City,MI,49684|106 E Front St, Traverse City, MI 49684;44.7640635;-85.6234300;8
+25925 Telegraph Road, Suite #102,Southfield,MI,48033|25925 Telegraph Rd #102, Southfield, MI 48033;42.4786950;-83.2870160;9
+Communities Throughout Jefferson, Dodge, and Walworth Counties.,Jefferson,WI,53038|Johnson Creek, WI 53038;43.1012763;-88.8611679;5
+601 E Street NW,Washington,DC,20049|601 E St NW, Washington, DC 20004;38.8962180;-77.0204150;8
+3815 W. St. Joseph Hwy., Suite C200,Lansing,MI,48917|c200, 3815 W St Joseph Hwy, Lansing, MI 48917;42.7265375;-84.6029789;9
+1107 Martin Luther King Jr. Blvd.,Green Cove Springs,FL,32043|1107 Martin Luther King Jr Blvd, Green Cove Springs, FL 32043;29.9949630;-81.6892710;8
+1365-C Clifton Road NE, Suite C1166,Atlanta,GA,30322|c1166, 1365 Clifton Rd NE, Atlanta, GA 30322;33.7920310;-84.3210878;9
+SD|South Dakota;43.9695148;-99.9018131;2
+Orpheum Theater, PO Box 767,Sioux Falls,SD,57101|Sioux Falls, SD 57101;43.5147831;-96.7744956;5
+3815 West St. Joseph Highway, Suite C200,Lansing,MI,48917|c200, 3815 W St Joseph Hwy, Lansing, MI 48917;42.7265375;-84.6029789;9
+Stony Brook,NY,11794|Stony Brook, NY 11794;40.8995132;-73.1410369;5
+2261 N. University Drive  Suite 103,Pembroke Pines,FL,33024|2261 N University Dr #103, Pembroke Pines, FL 33024;26.0288210;-80.2470790;9
+13150 FM 529, Suite 106,Houston,TX,77041|13150 Fm 529 Rd #106, Houston, TX 77041;29.8804320;-95.6095550;9
+Los Angeles,CA,91114|Pasadena, CA 91114;34.1700000;-118.1300000;5
+DE|Delaware;38.9108325;-75.5276699;2
+2207 Gatewary Drive,Opelika,AL,36801|2207 Gateway Dr, Opelika, AL 36801;32.6240674;-85.4050826;8
+2050 Carnes Street,Orange Park,FL,32073|2050 Carnes St, Orange Park, FL 32073;30.1642770;-81.7097409;8
+Albuquerque,NM,87109|Albuquerque, NM 87109;35.1504478;-106.5793457;5
+2141 Division Street,North Saint Paul,MN,55109|2141 Division St N, St Paul, MN 55109;45.0062885;-92.9847593;8
+Gum Springs Head Start Center, 8100 Fordson Road,Alexandria,VA,22306|8100 Fordson Rd, Alexandria, VA 22306;38.7382420;-77.0846229;8
+Paul Spring Retirement Community, 7116 Fort Hunt Road,Alexandria,VA,22307|7116 Fort Hunt Rd, Alexandria, VA 22307;38.7615040;-77.0616430;8
+Mount Vernon Kiwanis Club,Alexandria,VA,22309|Alexandria, VA 22309;38.7182388;-77.1089553;5
+Norristown,PA,19401|Norristown, PA;40.1214970;-75.3399048;4
+1483 Alaskan Way,Seattle,WA,98101|1483 Alaskan Way, Seattle, WA 98101;47.6098959;-122.3462634;8
+818 South Perry Street,Montgomery,AL,36104|818 S Perry St, Montgomery, AL 36104;32.3655070;-86.3074690;8
+220 Alco Drive,Brewton,AL,36426|220 Alco Dr, Brewton, AL 36426;31.1007455;-87.0847966;8
+San Marcos,TX,78666|San Marcos, TX;29.8832749;-97.9413941;4
+15th and Cordova,Anchorage,AK,99501|E 15th Ave & Cordova St, Anchorage, AK 99501;61.2077094;-149.8791840;7
+715 I Street NE,Washington,DC,20002|715 I St NE, Washington, DC 20002;38.9011690;-76.9953419;8
+Lexington,KY,40508|Lexington, KY 40508;38.0290412;-84.5057868;5
+7710 SW 31st Avenue,Portland,OR,97280|7710 SW 31st Ave, Portland, OR 97219;45.4686449;-122.7090759;8
+29101 Health Campus Dr.,Westlake,OH,44145|29101 Health Campus Dr, Westlake, OH 44145;41.4371542;-81.9442999;8
+Address Confidential, please call for more information,Weld County,CO,80631|Greeley, CO 80631;40.3599910;-104.6111831;5
+5513 Connecticut Avenue NW,Washington,DC,20015|5513 Connecticut Ave NW, Washington, DC 20015;38.9635373;-77.0745134;8
+303 E. 17th Avenue, Suite 210,Denver,CO,80203|303 E 17th Ave #210, Denver, CO 80203;39.7437100;-104.9829020;9
+2200 W. Harrison,Chicago,IL,60612|2200 W Harrison St, Chicago, IL 60612;41.8739842;-87.6813594;8
+3540 s. Hermitage,Chicago,IL,60609|3540 S Hermitage Ave, Chicago, IL 60609;41.8294534;-87.6691533;8
+2040 Linglestown Road, Suite 104,Harrisburg,PA,17110|2040 Linglestown Rd #104, Harrisburg, PA 17110;40.3289630;-76.8672420;9
+Safety Harbor,FL,34695|Safety Harbor, FL 34695;28.0069675;-82.6926879;5
+1325 N. Western Ave,Los Angeles,CA,90027|1325 N Western Ave, Los Angeles, CA 90027;34.0956371;-118.3093654;8
+14755 Manchester Road,Ballwin,MO,63011|14755 Manchester Rd, Ballwin, MO 63011;38.5932248;-90.5340160;8
+5351-53 Park Heights Ave,Baltimore,MD,21215|5351 Park Heights Ave, Baltimore, MD 21215;39.3509420;-76.6801850;8
+5351-53 Park Heights Ave.,Baltimore,MD,21215|5351 Park Heights Ave, Baltimore, MD 21215;39.3509420;-76.6801850;8
+89 South Street,Boston,MA,02111|89 South St, Boston, MA 02111;42.3518440;-71.0574890;8
+5 Dunaway Drive,Sanford,ME,04073|5 Dunaway Dr, Sanford, ME 04073;43.3604064;-70.7292690;8
+817 A 6th Street,Clarkston,WA,99403|817 6th St, Clarkston, WA 99403;46.4140476;-117.0455186;8
+Chandler,AZ,85244|Chandler, AZ 85244;33.3000000;-111.8400000;5
+Baltimore,MD,21215|Baltimore, MD 21215;39.3425750;-76.6841812;5
+3001 West 37th St.,Brooklyn,NY,11224|3001 W 37th St, Brooklyn, NY 11224;40.5727190;-74.0021160;8
+GA|Georgia;32.1574351;-82.9071230;2
+North Hills Community Outreach Faith in Action 500 Chapel Harbor Drive,Pittsburgh,PA,15238|
+Pittsburgh,PA,15238|Pittsburgh, PA 15238;40.4918746;-79.9539375;5
+James W. Robinson Free Enterprise Center,Louisville,KY,40203|Louisville, KY 40203;38.2531089;-85.7740173;5
+OR|Oregon;43.8041334;-120.5542012;2
+Little Rock,AR,72205|Little Rock, AR 72205;34.7599773;-92.3734130;5
+Hot Springs,AR,71901|Hot Springs, AR;34.5037004;-93.0551795;4
+Conway,AR,72034|Conway, AR;35.0886963;-92.4421011;4
+Cabot,AR,72023|Cabot, AR;34.9745320;-92.0165336;4
+260 High Street,Pottstown,PA,19464|260 E High St, Pottstown, PA 19464;40.2450550;-75.6482850;8
+501 College Avenue,Aurora,IL,60505|501 College Ave, Aurora, IL 60505;41.7578370;-88.3040140;8
+PO Box 14214,Greensboro,NC,27415|Greensboro, NC 27415;36.0900000;-79.7800000;5
+David Penney FC, 203 W. Losey St. Room 3600,Scott AFB,IL,62225|203 W Losey St #3600, Scott AFB, IL 62225;38.5427258;-89.8672076;9
+VT|Vermont;44.5588028;-72.5778415;2
+7001 W 21st St N,Wichita,KS,67205|7001 W 21st St N, Wichita, KS 67205;37.7194969;-97.4196970;8
+Rancho Palos Verdes,CA,90275|Rancho Palos Verdes, CA 90275;33.7718505;-118.3263854;5
+1102 South 16th Street,Wilmington,SC,28401|1102 S 16th St, Wilmington, NC 28401;34.2231660;-77.9276820;8
+Canon City,CO,81212|Canon City, CO;38.4399490;-105.2260970;4
+Glendive,MT,59330|Glendive, Mt 59330;47.1086111;-104.7105556;4
+478 Monroe Hill,Macon,GA,31204|478 Monroe Hill, Macon, GA 31204;32.8540812;-83.6479775;8
+25 East Washington, Suite 1500,Chicago,IL,60602|25 E Washington St #1500, Chicago, IL 60602;41.8829020;-87.6266530;9
+Judy Fried,  1113 Greenwood,Waukegan,IL,60087|1113 W Greenwood Ave, Waukegan, IL 60087;42.3844650;-87.8449890;8
+Huntington Beach,CA,92648|Huntington Beach, CA 92648;33.7001113;-118.0130348;5
+IL|Illinois;40.6331249;-89.3985283;2
+Council on Aging-OC 1971 E. 4th St. Suite 200,Santa Ana,CA,92705|1971 E 4th St #200, Santa Ana, CA 92705;33.7487480;-117.8393930;9
+27155 Tinkers Valley Dr,GLENWILLOW,OH,44139|27155 Tinkers Valley Dr, Glenwillow, OH 44139;41.3710442;-81.4858515;8
+Oldsmar,FL,34677|Oldsmar, FL;28.0341847;-82.6650992;4
+7770 Richmond Hwy,Alexandria,VA,22306|7770 Richmond Hwy, Alexandria, VA 22306;38.7472680;-77.0847510;8
+4262G Entre Ct,Chantilly,VA,20151|4262 Entre Ct, Chantilly, VA 20151;38.8876105;-77.4362000;8
+465 East High Street, Suite 100,Lexington,KY,40507|465 W High St #100, Lexington, KY 40508;38.0480183;-84.5019934;9
+1901 Tate Springs Road,Lynchburg,VA,24501|1901 Tate Springs Rd, Lynchburg, VA 24501;37.4199463;-79.1711096;8
+11347 SW 160 STreet,Miami,FL,33157|11347 SW 160th St, Miami, FL 33157;25.6202000;-80.3753908;8
+West end of Cheyenne Boulevard,Colorado Springs,CO,80906|Cheyenne Meadows Rd, Colorado Springs, CO 80906;38.7812378;-104.8046087;6
+87 Tyler Street,Boston,MA,02111|87 Tyler St, Boston, MA 02111;42.3482324;-71.0617870;8
+NYACK,NY,10960|Nyack, NY;41.0906519;-73.9179146;4
+3580 Pacific Ave,Tacoma,WA,98418|3580 Pacific Ave, Tacoma, WA 98418;47.2271480;-122.4350650;8
+1645 Marthaler Lane,West St Paul,MN,55118|1645 Marthaler Ln, West St Paul, MN 55118;44.8964670;-93.0761519;8
+1930 Foothill Blvd.,La Canada,CA,91214|Foothill Blvd, CA;34.2042000;-118.2004380;6
+3300 Capitol Avenue,Fremont,CA,94538|3300 Capitol Ave, Fremont, CA 94538;37.5520340;-121.9820040;8
+2825 Fairfax,Denver,CO,80207|2825 Fairfax St, Denver, CO 80207;39.7572630;-104.9285570;8
+Fort Worth,TX,76112|Fort Worth, TX 76112;32.7500038;-97.2150459;5
+Ft Worth,TX,76112|Fort Worth, TX 76112;32.7500038;-97.2150459;5
+Westchester and Playa Del Rey,CA,90045|Westchester Sports Grill, 5630 W Manchester Ave, Los Angeles, CA 90045;33.9594420;-118.3795680;9
+90045|Los Angeles, CA 90045;33.9303817;-118.3685455;5
+Westbrook,ME,04098|Westbrook, ME 04098;43.6800000;-70.3700000;5
+13150 FM 529 Suite 106,Houston,TX,77041|13150 Fm 529 Rd #106, Houston, TX 77041;29.8804320;-95.6095550;9
+320 West Woodlawn Ave,Hastings,MI,49058|320 W Woodlawn Ave, Hastings, MI 49058;42.6608842;-85.2930169;8
+4750 Woodward Avenue, Room 404,Detroit,MI,48201|4750 Woodward Ave #404, Detroit, MI 48201;42.3556940;-83.0628620;9
+Detroit,MI,48201|Detroit, MI 48201;42.3303489;-83.0416679;5
+309 N. Washington Square, Suite 110,Lansing,MI,48933|309 N Washington Square #110, Lansing, MI 48933;42.7362210;-84.5527770;9
+7770 Richmond Highway,Alexandria,VA,22306|7770 Richmond Hwy, Alexandria, VA 22306;38.7472680;-77.0847510;8
+121 North Marion Street,Oak Park,IL,60301|121 N Marion St, Oak Park, IL 60301;41.8879710;-87.8027180;8
+230 Moselle,Buffalo,NY,14211|230 Moselle St, Buffalo, NY 14211;42.9097918;-78.8242751;8
+Capital District Area,Albany,NY,12222|Capital District Psychiatric Center, 75 New Scotland Ave, Albany, NY 12208;42.6544398;-73.7797569;9
+615 Albany Street,Little Falls,NY,13365|615 Albany St, Little Falls, NY 13365;43.0440250;-74.8545630;8
+1045 Independence Blvd,Charlotte,MI,48813|1045 Independence Blvd, Charlotte, MI 48813;42.5812723;-84.8450545;8
+1300 Biscayne Boulevard,Miami,FL,33132|1300 Biscayne Blvd, Miami, FL 33132;25.7876280;-80.1899050;8
+2113 Central Avenue NE,Minneapolis,MN,55418|2113 Central Ave NE, Minneapolis, MN 55418;45.0097323;-93.2471514;8
+1212 Prairie Street,Houston,TX,77007|1212 Prairie St, Houston, TX 77002;29.7596159;-95.3600899;8
+Our service area includes central San Diego County,San Diego,CA,92117|San Diego, CA 92117;32.8351860;-117.1630477;5
+716 Bridge Street,Twin Falls,ID,83301|716 Bridge St, Twin Falls, ID 83301;42.5541715;-114.4797610;8
+County-wide,Athens,OH,45701|Athens, OH;39.3292396;-82.1012554;4
+Terrell,TX,75160|Terrell, TX;32.7359626;-96.2752569;4
+17194 CR 329,Terrell,TX,75161|17194 County Road 329, Terrell, TX 75161;32.8040570;-96.1699110;8
+347 W. 36th Street, Suite 503,New York,NY,10018|347 W 36th St #503, New York, NY 10018;40.7543873;-73.9945082;9
+7985 113th Street, Suite 100,Seminole,FL,33707|7985 113th St #100, Seminole, FL 33772;27.8449001;-82.7952122;9
+317 Koberlin,San Angelo,TX,76903|317 Koberlin St, San Angelo, TX 76903;31.4680027;-100.4317866;8
+3715 McClintock Ave,Los Angeles,CA,90089|3715 McClintock Ave, Los Angeles, CA 90089;34.0201236;-118.2904923;8
+Tampa,FL,33559|Lutz, FL 33559;28.1628580;-82.3932876;5
+NE|Nebraska;41.4925374;-99.9018131;2
+IA|Iowa;41.8780025;-93.0977020;2
+MO|Missouri;37.9642529;-91.8318334;2
+KS|Kansas;39.0119020;-98.4842465;2
+OK|Oklahoma;35.0077519;-97.0928770;2
+AR|Arkansas;35.2010500;-91.8318334;2
+OH|Ohio;40.4172871;-82.9071230;2
+515 N. Main St.,Boerne,TX,78006|515 N Main St, Boerne, TX 78006;29.7980620;-98.7334110;8
+Ewing,NJ,08628|Ewing, NJ;40.2599971;-74.7908680;4
+TX|Texas;31.9685988;-99.9018131;2
+1818 Corsicana St.,Dallas,TX,75201|1818 Corsicana St, Dallas, TX 75201;32.7757040;-96.7915570;8
+2707 S White Mountain Road, Suite F,Show Low,AZ,85901|2707 S White Mountain Rd, Show Low, AZ 85901;34.2245990;-110.0281440;8
+Overgaard,AZ,85933|Arizona 85933;34.4603424;-110.5009918;5
+Pinetop,AZ,85935|Pinetop, AZ 85935;34.0826110;-109.9084243;5
+San Fernando,CA,91340|San Fernando, CA;34.2819461;-118.4389719;4
+210 Kinsley,Winslow,AZ,86047|210 N Kinsley Ave, Winslow, AZ 86047;35.0237067;-110.6977918;8
+Joseph City,AZ,86032|Arizona 86032;35.0592956;-110.3474311;5
+Holbrook,AZ,86047|Holbrook Unified District, Arizona;35.1655129;-110.0449662;0
+IN|Indiana;40.5512165;-85.6023643;2
+WPKN Radio 244 University Ave,Bridgeport,CT,06604|244 University Ave, Bridgeport, CT 06604;41.1654844;-73.1914382;8
+CT|Connecticut;41.6032207;-73.0877490;2
+2220 Tecumseh Rd.,Blanchard,OK,73010|Classic Exteriors, Tecumseh Rd, Blanchard, OK 73010;35.2618801;-97.6984330;9
+Clearfield,PA,16830|Clearfield, PA 16830;41.0272796;-78.4391876;4
+115 N. 4th Street, PO Box 158,Manhattan,KS,66505|115 N 4th St, Manhattan, KS 66502;39.1800260;-96.5621800;8
+1200 W. 37th Place,Los Angeles,CA,90007|1200 W 37th Pl, Los Angeles, CA 90007;34.0198617;-118.2946612;8
+Los Angeles,CA,91101|Pasadena, CA 91101;34.1468029;-118.1392364;5
+MS|Mississippi;32.3546679;-89.3985283;2
+Seattle,WA,98104|Seattle, WA 98104;47.6073875;-122.3333320;5
+3620 Admiral Street,El Paso,TX,79925|3620 Admiral St, El Paso, TX 79925;31.7943296;-106.3640145;8
+1139 Upper Front Street,Binghamton,NY,13905|1139 Upper Front St, Binghamton, NY 13905;42.1490500;-75.8997377;8
+1118 Rt 222,Cortland,NY,13045|1118 Rte 222, Cortland, NY 13045;42.5988443;-76.2018180;8
+1222 Arsenal Street,Watertown,NY,13601|1222 Arsenal St, Watertown, NY 13601;43.9803920;-75.9434660;8
+50 S. Belcher Rd., Suite 116,Clearwater,FL,33770|50 S Belcher Rd #116, Clearwater, FL 33765;27.9645810;-82.7466970;9
+604 South Central Ave.,Lakeland,FL,33815|604 S Central Ave, Lakeland, FL 33815;28.0372620;-81.9730200;8
+305 Seventh Avenue,New York,NY,10001|305 7th Ave, New York, NY 10001;40.7466300;-73.9934310;8
+2200 NE 24th Ave,Portland,OR,97212|2200 NE 24th Ave, Portland, OR 97212;45.5381910;-122.6408140;8
+1302 Chapel St.,New Haven,CT,06511|1302 Chapel St, New Haven, CT 06511;41.3098505;-72.9379370;8
+Plymouth,MN,55447|Plymouth, MN 55447;45.0037384;-93.4897651;5
+600 East Washington Street,Phoenix,AZ,85004|600 E Washington St, Phoenix, AZ 85004;33.4503507;-112.0674464;8
+250 Georgia Avenue, SE, Suite 208,Atlanta,GA,30312|250 Georgia Ave #208, Atlanta, GA 30312;33.7370810;-84.3793830;9
+1550 Bryant Street, Suite 800,San Francisco,CA,94103|1550 Bryant St #800, San Francisco, CA 94103;37.7675620;-122.4111420;9
+603 West University,Georgetown,TX,78628|603 W University Ave, Georgetown, TX 78626;30.6336730;-97.6820680;8
+AK|Alaska;63.5887530;-154.4930619;2
+Lubbock,TX,79414|Lubbock, TX 79414;33.5471534;-101.9209213;5
+Surrounding Communities,Lubbock,TX,79411|Lubbock, TX 79411;33.6285877;-101.8554458;5
+280 East Via Rancho Parkway,Escondido,CA,92025|280 E Via Rancho Pkwy, Escondido, CA 92025;33.0695650;-117.0658890;8
+30 N. Raymond Avenue, Suite 212,Pasadena,CA,91103|30 N Raymond Ave #212, Pasadena, CA 91103;34.1462823;-118.1488776;9
+http://freedomchess.blogspot.com,Tuscaloosa and Northport,AL,35401|Tuscaloosa, AL 35401;33.1837577;-87.5313835;5
+1011 10th St,,Orange,TX,77630|1011 10th St, Orange, TX 77630;30.1002800;-93.7405510;8
+W7897 Eagle Avenue,Westfield,WI,53964|Eagle Ave, Westfield, WI 53964;43.8942586;-89.5421942;6
+42 Catharine St.,Poughkeepsie,NY,12601|42 Catharine St, Poughkeepsie, NY 12601;41.7049189;-73.9245959;8
+Houston,TX,77219|Houston, TX 77219;29.7500000;-95.4000000;5
+404 West Walnut,Benton,AR,72015|404 W Walnut St, Benton, AR 72015;34.5562607;-92.5911858;8
+259 Monroe Avenue,Rochester,NY,14607|259 Monroe Ave, Rochester, NY 14607;43.1496178;-77.5990943;8
+441 W. Paseo Solana,Green Valley,AZ,85614|441 W Pso Solana, Green Valley, AZ 85614;31.8711540;-110.9975090;8
+Greater Phoenix Metro Area,AZ,85006|Phoenix, AZ 85006;33.4488277;-112.0656738;5
+Orange County,CA,92648|Huntington Beach, CA 92648;33.7001113;-118.0130348;5
+1212 East Moreno Street at 12th Ave,Pensacola,FL,32501|1212 E Moreno St, Pensacola, FL 32503;30.4316610;-87.2040650;8
+160 Hollis Street,Framingham,MA,01702|160 Hollis St, Framingham, MA 01702;42.2741100;-71.4175240;8
+11 Counties N Central Florida,Gainesville,FL,32606|Gateway Bank-Central Florida, 4110 NW 37 Pl, Gainesville, FL 32606-6128;29.6874837;-82.3884312;9
+Waco,TX,76701|Waco, TX 76701;31.5530490;-97.1382827;5
+Throughout Bucks County,Doylestown,PA,18901|Doylestown, PA;40.3101063;-75.1298939;4
+480 State Street,Holland,MI,49423|480 State St, Holland, MI 49423;42.7793809;-86.1080422;8
+Rushmore Mall,Rapid City,SD,57701|Rapid City, SD;44.0805434;-103.2310149;4
+7th & Ohio,Huron,SD,57350|Ohio Ave SW & 7th St SW, Huron, SD 57350;44.3584758;-98.2191041;7
+Main Street,Philip,SD,57567|Philip, SD 57567;44.0394329;-101.6651441;4
+Center for Active Generations, 2300 W 46th ST,Sioux Falls,SD,57105|2300 W 46th St, Sioux Falls, SD 57105;43.5106014;-96.7528965;8
+Booms,Wagner,SD,57380|Wagner, SD 57380;43.0797156;-98.2931342;4
+Senior Citizen's Center,Yankton,SD,57078|Senior Citizens Center, 900 Whiting Dr, Yankton, SD 57078-5006;42.8777416;-97.3809789;9
+Wenatchee,WA,98801|Wenatchee, WA;47.4234599;-120.3103494;4
+1700 Kalarama Suite 102,Washington,DC,20009|1700 Kalorama Rd NW #102, Washington, DC 20009;38.9213209;-77.0389160;9
+Colorado Springs,CO,80923|Colorado Springs, CO 80923;38.9232978;-104.7140159;5
+AZ|Arizona;34.0489281;-111.0937311;2
+3100 Del Prado Blvd South,Cape Coral,FL,33904|3100 Del Prado Blvd S, Cape Coral, FL 33904;26.5945430;-81.9424830;8
+1020 State St,Baden,PA,15005|1020 W State St, Baden, PA 15005;40.6471154;-80.2334582;8
+100 Charles Street,Hagerstown,MD,21740|100 Charles St, Hagerstown, MD 21740;39.6505920;-77.7172329;8
+AL|Alabama;32.3182314;-86.9022980;2
+Hendersonville,NC,28792|Hendersonville, NC;35.3187279;-82.4609528;4
+1329 Dublin Road, Suite 101,Columbus,OH,43215|1329 Dublin Rd #101, Columbus, OH 43215;39.9784538;-83.0616301;9
+Hermitage,TN,37214|Nashville, TN 37214;36.1252250;-86.6100463;5
+1975 Ferguson Rd.,Allison Park,PA,15101|1975 Ferguson Rd, Allison Park, PA 15101;40.5632996;-79.9887754;8
+451 Hungerford Drive, Suite 508,Rockville,MD,20850|451 Hungerford Dr #508, Rockville, MD 20850;39.0896610;-77.1510520;9
+Mobile,AL,36604|Mobile, AL 36604;30.6846446;-88.0679740;5
+Lansing,MI,48864|Okemos, MI 48864;42.7201213;-84.4455184;5
+Broward County,FL,33327|Fort Lauderdale, FL 33327;26.0912857;-80.4072647;5
+University of Florida,Gainesville and surrounding areas,FL,32610|Gainesville, FL 32610;29.6401172;-82.3417981;5
+26-36 4th Street,Queens,NY,11102|26-36 4th St, Queens, NY 11102;40.7752380;-73.9334350;8
+Costello Courthosue, 32 Cherry St.,Burlington,VT,05401|32 Cherry St, Burlington, VT 05401;44.4794550;-73.2173330;8
+At Senior's Homes,Needham,MA,02492|Needham, MA 02492;42.2790336;-71.2439613;5
+The History of Diving Museum,Islamorada,FL,33036|Islamorada, FL 33036;24.9672012;-80.5940856;5
+San Bruno,CA,94066|San Bruno, CA;37.6304904;-122.4110835;4
+Dodge City,KS,67801|Dodge City, KS;37.7527982;-100.0170787;4
+MN|Minnesota;46.7295530;-94.6858998;2
+Havana and Martin Luther King,Denver,CO,80238|Martin Luther King Jr Blvd & Havana Way, Denver, CO 80238;39.7600572;-104.8676711;7
+35 Jesse Hill Jr. Drive,Atlanta,GA,30303|35 Jesse Hill Jr Dr NE, Atlanta, GA 30303;33.7536280;-84.3820870;8
+4 Pine West Plaza, Bldg 4, Suite 405, Washington Avenue extension,Albany,NY,12205|Washington Ave Ext, Albany, NY 12205;42.7077330;-73.8610010;6
+2900 Telestar Court  (off Gallows Road at Highway 50),Falls Church,VA,22042|Falls Church, VA;38.8823340;-77.1710914;4
+6172 Arlington Blvd, Williston Center,Falls Church,VA,22042|Falls Church, VA;38.8823340;-77.1710914;4
+26 W. Market Street - Capital Treasures Thrift Store,Leesburg,VA,20176|Leesburg, VA;39.1156615;-77.5636015;4
+41769 Enterprise Circle North Suite 102,Temecula,CA,92590|41769 Enterprise Cir N #102, Temecula, CA 92590;33.5183250;-117.1707760;9
+900 Pennsylvania Ave,San Francisco,CA,94107|900 Pennsylvania Ave, San Francisco, CA 94107;37.7547070;-122.3931240;8
+444 North 3rd Street,Sacramento,CA,95811|444 N 3rd St, Sacramento, CA 95811;38.5989750;-121.5000520;8
+17400 Victory Blvd.,Van Nuys,CA,91406|17400 Victory Blvd, San Fernando Valley, CA 91406;34.1866115;-118.5120399;8
+715 I St NE,Washington,DC,20002|715 I St NE, Washington, DC 20002;38.9011690;-76.9953419;8
+202 Victoria Manor Ct. #205,Lakeland,FL,33805|Victoria Manor Dr, Lakeland, FL 33805;28.0900850;-81.9552130;6
+113 S. Milwaukee Ave,Kingsford,MI,49801|113 S Milwaukee Ave, Kingsford, MI 49802;45.8077487;-88.0678501;8
+Encinitas,CA,92023|Encinitas, CA 92023;33.0400000;-117.2900000;5
+Memphis,TN,38133|Memphis, TN 38133;35.2093086;-89.7964134;5
+Memphis,TN,38135|Memphis, TN 38135;35.2407302;-89.8415870;5
+Northgate,Seattle,WA,98115|Seattle, WA 98115;47.6835365;-122.2792739;5
+325 Pine Avenue (Valley Program for Aging Services),Waynesboro,VA,22980|Waynesboro, VA;38.0684692;-78.8894682;4
+3800 Homer Street,Los Angeles,CA,90031|3800 Homer St, Los Angeles, CA 90031;34.0877630;-118.2089560;8
+1014 W. 36th Street,Baltimore,MD,21211|1014 W 36th St, Baltimore, MD 21211;39.3312529;-76.6335280;8
+Client's home,Herkimer or Oneida Counties,NY,13502|Utica, NY 13502;43.1178321;-75.2516098;5
+123 Newnan St.,Carrollton,GA,30117|123 Newnan St, Carrollton, GA 30117;33.5798060;-85.0741670;8
+8449 W Bellfort # 200,Houston,TX,77071|8449 W Bellfort St, Houston, TX 77071;29.6550000;-95.5249580;8
+montgomery,AL,36117|Montgomery, AL 36117;32.3638839;-86.0526962;5
+1945 SE Water Ave,Portland,OR,97214|1945 SE Water Ave, Portland, OR 97214;45.5080560;-122.6650160;8
+8 Industry Court,Ewing,NJ,08638|8 Industry Ct, Ewing, NJ 08638;40.2522350;-74.7529450;8
+6000 Boonsboro Road - Suite F,Lynchburg,VA,24503|6000 Boonsboro Rd, Lynchburg, VA 24503;37.4490490;-79.2599070;8
+madison heights,MI,48071|Madison Heights, MI 48071;42.5051937;-83.1054458;5
+Throughout Maricopa County,Phoenix,AZ,85004|Better Help Through Chiro, 4727 E Bell Road # 61, Phoenix, AZ 85032-2312;33.6410593;-111.9779350;9
+6955 Central Highway,Pennsauken,NJ,08109|6955 Central Hwy, Pennsauken, NJ 08109;39.9292580;-75.0803090;8
+3090 Weidemann Drive,Clarkston,MI,48348|3090 Weidemann Dr, Clarkston, MI 48348;42.8010050;-83.4249120;8
+532 Lafayette Road,Sparta,NJ,07871|532 Lafayette Rd, Sparta, NJ 07871;41.0716741;-74.6552262;8
+2250 Sutherland Ave.  Suite 101,Knoxville,TN,37919|2250 Sutherland Ave #101, Knoxville, TN 37919;35.9568555;-83.9524191;9
+North Seattle,WA,98028|North, Seattle, WA;47.7170204;-122.3009337;4
+Livonia,MI,48150|Livonia, MI 48150;42.3699493;-83.3721237;5
+1353 FM 646 Suite 201,Dickinson,TX,77539|1353 Farm-To-Market Road 646 #201, Dickinson, TX 77539;29.4239538;-95.0921179;9
+Grand Rapids,MI,49504|Grand Rapids, MI 49504;42.9775581;-85.7106628;5
+Billie Jean King Tennis Center,Long Beach,CA,90804|Long Beach, CA 90804;33.7836608;-118.1326103;5
+New York,NY,10036|New York 10036;40.7651023;-74.0023612;5
+1411 SW Morrison Ave., Suite 290,Portland,OR,97205|1411 SW Morrison St #290, Portland, OR 97205;45.5212573;-122.6867202;9
+3000 Johnson Road,Huntsville,AL,35805|3000 Johnson Rd SW, Huntsville, AL 35805;34.6914940;-86.6029820;8
+4560 Fountain Ave,Los Angeles,CA,90029|4560 Fountain Ave, Los Angeles, CA 90029;34.0953340;-118.2883500;8
+2120 New Macland Road,Powder Springs,GA,30127|2120 New MacLand Rd, Powder Springs, GA 30127;33.9005340;-84.6747080;8
+357 9th Street,Brooklyn,NY,11215|357 9th St, Brooklyn, NY 11215;40.6684924;-73.9844869;8
+334 College Hill Rd.,Hopkinton,NH,03229|334 College Hill Rd, Contoocook, NH 03229;43.1677061;-71.7476809;8
+1615 Kecoughtan Rd.,Hampton,VA,23661|1615 Kecoughtan Rd, Hampton, VA 23661;36.9995679;-76.3854200;8
+Boynton Beach to Tequesta,FL,33407|US Post Office, 1095 Military Trail, Jupiter, FL 33458-7000;26.9196933;-80.1021274;9
+33407|West Palm Beach, FL 33407;26.7600593;-80.0924606;5
+Warren,OH,44481|Warren, OH;41.2375569;-80.8184166;4
+Phoenix,AZ,85009|Phoenix, AZ 85009;33.4453754;-112.1316299;5
+Columbus,OH,43210|Columbus, OH 43210;39.9985275;-83.0352439;5
+Baltimore,MD,21214|Baltimore, MD 21214;39.3475761;-76.5677299;5
+11100 Winton Rd. Suite C,Cincinnati,OH,45218|11100 Winton Rd, Cincinnati, OH 45218;39.2722870;-84.5223150;8
+1802 16th St. #1,Greeley,CO,80631|1802 16th St, Greeley, CO 80631;40.4138176;-104.7090980;8
+Houston,TX,77041|Houston, TX 77041;29.8796157;-95.6280784;5
+209 North First Ave.,Barstow,CA,92311|209 N 1st Ave, Barstow, CA 92311;34.8995415;-117.0271674;8
+4515 S. McClintock Dr. #210,Tempe,AZ,85282|4515 S McClintock Dr, Tempe, AZ 85282;33.3846500;-111.9082510;8
+4312-A chamblee Tucker Road,Tucker,GA,30084|4312 Chamblee Tucker Rd, Tucker, GA 30340;33.8809174;-84.2198720;8
+205 Badger Ave,Oak Ridge,TN,37830|Badger Ave, Oak Ridge, TN 37830;36.0111167;-84.2621185;6
+805 S. Kiwanis Ave,Sioux Falls,SD,57104|805 S Kiwanis Ave, Sioux Falls, SD 57104;43.5390922;-96.7612169;8
+Miami,FL,33131|Miami, FL 33131;25.7667808;-80.1851043;5
+Maui,HI,96761|Lahaina, HI 96761;20.9169530;-156.6055908;5
+1250 S Ivy Street,Canby,OR,97013|1250 S Ivy St, Canby, OR 97013;45.2525254;-122.6869032;8
+947 3rd St,Rensselaer,NY,12144|947 3rd St, Rensselaer, NY 12144;42.6476169;-73.7361080;8
+1760 Ossia Rd,Duck,WV,25063|Ossia-Obrien Rd, Duck, WV 25063;38.6108594;-80.9724692;6
+Denver,CO,80218|Denver, CO 80218;39.7473190;-104.9777610;5
+10601 47th Place W,Mukilteo,WA,98275|10601 47th Pl W, Mukilteo, WA 98275;47.9019280;-122.2956950;8
+4204 Woodcok Dr., Suite 240,San Antonio,TX,78228|4204 Woodcock Dr #240, San Antonio, TX 78228;29.4847650;-98.5686440;9
+UT|Utah;39.3209801;-111.0937311;2
+Charlottesville,VA,22902|Charlottesville, VA;38.0293059;-78.4766781;4
+100 Fairfield Dr.,Seneca,PA,16346|100 Fairfield Dr, Seneca, PA 16346;41.3611580;-79.7006508;8
+Williston Park,NY,11596|Williston Park, NY;40.7564900;-73.6448513;4
+City of Los Altos Senior Center,Los Altos,CA,94022|Los Altos Senior Center, 97 Hillview Ave, Los Altos, CA 94022;37.3800298;-122.1112307;9
+City of Los Altos - Senior Center 97 Hillview Ave,Los Altos,CA,94022|Los Altos Senior Center, 97 Hillview Ave, Los Altos, CA 94022;37.3800298;-122.1112307;9
+101 E. Broadway,Excelsior Springs,MO,64062|101 E Broadway St, Excelsior Springs, MO 64024;39.3420890;-94.2230380;8
+ID|Idaho;44.0682019;-114.7420408;2
+Philadelphia,PA,19107|Philadelphia, PA 19107;39.9517345;-75.1583099;5
+1701 N. 4th Street,Waco,TX,76707|1701 N 4th St, Waco, TX 76707;31.5706090;-97.1455510;8
+4200 Park Avenue,Bridgeport,CT,06604|4200 Park Ave, Bridgeport, CT 06825;41.2123433;-73.2317777;8
+Garland,TX,75044|Garland, TX 75044;32.9586715;-96.6684341;5
+995 Kensington Ave,Buffalo,NY,14215|995 Kensington Ave, Buffalo, NY 14215;42.9362400;-78.8171190;8
+2701 Naylor Road SE,Washington,DC,20020|2701 Naylor Rd SE, Washington, DC 20020;38.8588902;-76.9682165;8
+South King County,WA,98104|Seattle, WA 98104;47.6073875;-122.3333320;5
+853 Inca St., Ste 1A,Denver,CO,80204|853 Inca St #1a, Denver, CO 80204;39.7300149;-104.9976142;9
+5435 North Burnet Road,Austin,TX,78759|5435 Burnet Rd, Austin, TX 78756;30.3293790;-97.7393750;8
+1005 Martin Luther King Blvd. (Ave F),Huntsville,TX,77320|Ave F, Huntsville, TX 77320;30.7329324;-95.5421360;6
+13555 Bell Brook Drive,Auburn,CA,95602|13555 Bell Brook Dr, Auburn, CA 95602;38.9912539;-121.0911322;8
+2715 Route 44,Millbrook,NY,12545|2715 Rte 44, Millbrook, NY 12578;41.7802980;-73.7396940;8
+130 E. Mountain Street (Library Basement),Kernersville,NC,27284|Kernersville, NC;36.1198588;-80.0736533;4
+312 Bomber Boulevard,Mountain Home,AR,72653|312 Bomber Blvd, Mountain Home, AR 72653;36.3314189;-92.3915350;8
+3450 Ortiz Avenue,Fort Myers,FL,33905|3450 Ortiz Ave, Fort Myers, FL 33905;26.6182070;-81.8135450;8
+53 N. Duke St.   Room 303,Lancaster,PA,17602|53 N Duke St #303, Lancaster, PA 17602;40.0394500;-76.3033160;9
+4300 Rogers Ave #33,Fort Smith,AR,72903|4300 Rogers Ave, Fort Smith, AR 72903;35.3689730;-94.3849013;8
+4685 Dorsett Shoals Rd,Douglasville,GA,30135|4685 Dorsett Shoals Rd, Douglasville, GA 30135;33.6694249;-84.7504730;8
+City of Los Altos Senior Center - 97 Hillview Ave,Los Altos,CA,94022|Los Altos Senior Center, 97 Hillview Ave, Los Altos, CA 94022;37.3800298;-122.1112307;9
+882 Titus Avenue,Rochester,NY,14617|882 Titus Ave, Rochester, NY 14617;43.2111870;-77.5918570;8
+325 Pine Avenue,Waynesboro,VA,22980|325 Pine Ave, Waynesboro, VA 22980;38.0680727;-78.8951569;8
+Paff Auditorium, URI Campus  80 Washington Street,Providence,RI,02923|
+Providence,RI,02923|Providence Community Health, 160 Broad St, Providence, RI 02903;41.8169550;-71.4168480;9
+02923|02923 Hähnichen, Germany;51.3144770;14.8902938;5
+4366 S. Main Street,Los Angeles,CA,90037|4366 S Main St, Los Angeles, CA 90037;34.0042828;-118.2738228;8
+Durham County Nursing Homes,Durham,NC,27709|Durham, NC 27709;35.9016238;-78.8665718;5
+675 S. Carondelet Street,Los Angeles,CA,90057|675 S Carondelet St, Los Angeles, CA 90057;34.0592259;-118.2813759;8
+334 college hill rd,Hopkinton,NH,03229|334 College Hill Rd, Contoocook, NH 03229;43.1677061;-71.7476809;8
+Surfside Beach,SC,29575|Surfside Beach, SC 29575;33.6060031;-78.9730887;4
+Chicago South Suburbs,IL,60448|Law Offices of Hal M. Garfinkel, 111 #1301, Chicago, IL 60602;41.8832210;-87.6312660;9
+60448|Mokena, IL 60448;41.5262680;-87.8515357;5
+6201  Wynona Dr.,Austin,TX,78757|6201 Wynona Ave, Austin, TX 78757;30.3378777;-97.7411958;8
+Wilmington,OH,45177|Wilmington, OH 45177;39.4453393;-83.8285375;4
+West Long Branch,NJ,07764|West Long Branch, NJ 07764;40.2887001;-74.0187416;5
+Madison,WI,53711|Madison, WI 53711;43.0219688;-89.4276199;5
+Salem,OR,97301|Salem, OR 97301;44.9605312;-123.0028305;5
+3737 Portland Rd NE,Salem,OR,97301|3737 Portland Rd NE, Salem, OR 97301;44.9739320;-123.0032490;8
+10 Constitution Drive,Chico,CA,95973|10 Constitution Dr, Chico, CA 95973;39.7715160;-121.8737180;8
+129 West Fowlkes Street, Suite 143,Franklin,TN,37064|129 W Fowlkes St #143, Franklin, TN 37064;35.9176310;-86.8764140;9
+Oakland,CA,94611|Oakland, CA 94611;37.8399963;-122.1829263;5
+Gordonsville,VA,23219|gordonsville, va, Gordonsville, VA 22942;38.1419000;-78.1892100;9
+23219|Richmond, VA 23219;37.5387763;-77.4482078;5
+952 Evergreen Dr.,Branchburg,NJ,08876|952 Evergreen Dr, Somerville, NJ 08876;40.5550740;-74.7226160;8
+1003 Greenway Drive,Cambridge,MD,21613|1003 Greenway Dr, Cambridge, MD 21613;38.5665628;-76.0590796;8
+Ronald McDonald House   825 S Lake Ave,Sioux Falls,SD,57104|825 S Lake Ave, Sioux Falls, SD 57104;43.5386416;-96.7450135;8
+Sioux Falls,SD,57104|Sioux Falls, SD 57104;43.5880699;-96.7078704;5
+The Center Mall, 1941 42nd St. - Suite 220,Omaha,NE,68105|1941 S 42nd St #220, Omaha, NE 68105;41.2411400;-95.9756969;9
+2000 Rosemount Ave, NW,Washington,DC,20010|2000 Rosemont Ave NW, Washington, DC 20010;38.9331820;-77.0470950;8
+Maui County,All cities,HI,96700|Maui, Kihei, HI 96753;20.7983626;-156.3319253;5
+Oklahoma City,OK,73109|Oklahoma City, OK 73109;35.4348049;-97.5224685;5
+Hot Springs,AR,71913|Hot Springs, AR;34.5037004;-93.0551795;4
+Loudoun County,VA,20175|Leesburg, VA 20175;39.0302925;-77.5389238;5
+4125 Albemarle Street N.W.,Washington,DC,20016|4125 Albemarle St NW, Washington, DC 20016;38.9482209;-77.0816530;8
+NSU, Missouri River Room,,Aberdeen,SD,57401|Aberdeen, SD;45.4646985;-98.4864829;4
+165 Ocean Terrace,Bridgeport,CT,06605|165 Ocean Terrace, Bridgeport, CT 06605;41.1612432;-73.2184772;8
+Box 279,Kimball,SD,57355|Kimball, SD 57355;43.7466651;-98.9584258;4
+1801 3rd Ave SE # 16,Aberdeen,SD,57401|1801 3rd Ave SE, Aberdeen, SD 57401;45.4621835;-98.4615996;8
+Box 132,Lemmon,SD,57638|Lemmon, SD 57638;45.9408340;-102.1593201;4
+Nicky's, public library,Madison,SD,57042|Madison, SD 57042;44.0060847;-97.1139496;4
+Pizza Ranch,Milbank,SD,57252|Milbank, SD 57252;45.2191313;-96.6356167;4
+300 W 1st,Mitchell,SD,57301|300 W 1st Ave, Mitchell, SD 57301;43.7094470;-98.0283095;8
+Mobridge Senior Center,Mobridge,SD,57601|Mobridge, SD 57601;45.5372162;-100.4279129;4
+Philip Senior Center,Philip,SD,57567|Philip, SD 57567;44.0394329;-101.6651441;4
+220 W. McKinley,Decatur,IL,62526|220 W McKinley Ave, Decatur, IL 62526;39.8693880;-88.9589612;8
+2405 Grand, Ste. 300,Kansas City,MO,64108|2405 Grand Blvd #300, Kansas City, MO 64108;39.0833090;-94.5812760;9
+Vista,CA,92083|Vista, CA 92083;33.1612930;-117.2180099;5
+Auburn University,Auburn,AL,36849|Auburn, AL 36849;32.6057662;-85.4855422;5
+NV|Nevada;38.8026097;-116.4193890;2
+South Shore YMCA 79 Coddington St.,Quincy,MA,02169|South Shore YMCA, 79 Coddington St, Quincy, MA 02169;42.2529780;-70.9970830;9
+South Shore YMCA, 75 Mill St.,Hanover,MA,02339|75 Mill St, Hanover, MA 02339;42.1422548;-70.8392690;8
+South Shore YMCA, 79 Coddington St.,Quincy,MA,02169|South Shore YMCA, 79 Coddington St, Quincy, MA 02169;42.2529780;-70.9970830;9
+NorthEast Mobile Search and rescue,Clifton Park,NY,12065|Clifton Park, NY 12065;42.8563117;-73.7812690;5
+Louisville,KY,40223|Louisville, KY 40223;38.2841682;-85.5385055;5
+77 Franklin Square,New Britain,CT,06051|77 Franklin Square, New Britain, CT 06051;41.6627430;-72.7806610;8
+Lebanon,IN,46052|Lebanon, IN 46052;40.0483744;-86.4691677;4
+Leeward Oahu,Kapolei,HI,96707|Oahu, Pearl City, HI 96782;21.4389123;-158.0000565;5
+Waipahu,HI,96797|Waipahu, HI;21.3866667;-158.0091667;4
+Waianae,HI,96792|Waianae, HI;21.4477778;-158.1791667;4
+Mililani,HI,96789|Mililani, HI;21.4513314;-158.0152807;4
+Ewa Beach,HI,96706|Ewa Beach, HI;21.3169000;-158.0131990;4
+Lihue,HI,96766|Lihue, HI;21.9811111;-159.3711111;4
+Kapaa,HI,96746|Kapaa, HI;22.0783333;-159.3219444;4
+HI|Hawaii;19.8986819;-155.6658568;2
+Kailua Kona,HI,96740|Kailua, HI;19.6405556;-155.9955556;4
+Honolulu,HI,96817|Honolulu, HI 96817;21.3389415;-157.8450469;5
+Kahului,HI,96732|Kahului, HI;20.8947222;-156.4700000;4
+320 Riverside Drive,Florence,MA,01062|320 Riverside Dr, Florence, MA 01062;42.3203790;-72.6652050;8
+1941 So. 42nd Street, Suite 502,Omaha,NE,68105|1941 S 42nd St #502, Omaha, NE 68105;41.2411400;-95.9756969;9
+85 Fulton Street,Hampton,VA,23663|85 Fulton St, Hampton, VA 23663;37.0247660;-76.3228950;8
+Boston,MA,02129|Boston, MA 02129;42.3818244;-71.0691909;5
+Alpharetta,GA,30005|Alpharetta, GA 30005;34.0478210;-84.2934951;5
+Berth 84, Foot of 6th Street,San Pedro,CA,90731|
+San Pedro,CA,90731|San Pedro, CA 90731;33.7182998;-118.2478179;5
+Sonoma County,CA,95401|Santa Rosa, CA 95401;38.4526120;-122.7566814;5
+7400 South Louise Avenue,Sioux Falls,SD,57108|7400 S Louise Ave, Sioux Falls, SD 57108;43.4933152;-96.7680568;8
+515 N Main St,Boerne,TX,78006|515 N Main St, Boerne, TX 78006;29.7980620;-98.7334110;8
+Atlanta Metro,GA,30084|Tucker, GA 30084;33.8956832;-84.2063064;5
+13206 Grover Street,Omaha,NE,68144|13206 Grover St, Omaha, NE 68144;41.2261290;-96.1202330;8
+Unity For kids School 1325 North A Street Lake Worth, Fl.,Lake Worth,FL,33460|Lake Worth, FL 33460;26.6193685;-80.0589447;5
+2844 Frederick Douglass Boulevard,New York,NY,10039|2844 Frederick Douglass Blvd, New York, NY 10039;40.8263520;-73.9389560;8
+Senior Center 803 C Ave.,Central City,NE,68826|803 C Ave, Central City, NE 68826;41.1145611;-98.0025187;8
+lowell,MA,01850|Lowell, MA 01850;42.6552886;-71.3044166;5
+West Roxbury,Jamaica Plain,MA,02130|Massachusetts 02130;42.3102836;-71.1164283;5
+9701 Veirs Dr.,Rockville,MD,20850|9701 Veirs Dr, Rockville, MD 20850;39.0779340;-77.1941380;8
+2808 11 1/2 Street,Terre Haute,IN,47802|2808 S 11th 1/2 St, Terre Haute, IN 47802;39.4365668;-87.3998329;8
+7915 N 30th Street,Omaha,NE,68112|7915 N 30th St, Omaha, NE 68112;41.3317010;-95.9590888;8
+444 Sherman Street,Denver,CO,80203|444 Sherman St, Denver, CO 80203;39.7235100;-104.9847250;8
+Lexington,KY,40504|Lexington, KY 40504;38.0402717;-84.5405426;5
+90 Lindall St.,Danvers,MA,01923|90 Lindall St, Danvers, MA 01923;42.5737610;-70.9452810;8
+33 Parker Road,Barre,VT,05641|33 Parker Rd, Barre, VT 05641;44.1733030;-72.4826630;8
+117 Graham Ave.,Bowling Green,KY,42101|117 Graham Dr, Bowling Green, KY 42101;37.0021064;-86.4408139;8
+Springfield,MO,65808|Springfield, MO 65808;37.1900000;-93.2600000;5
+600 Cummings Center,Beverly,MA,01915|600 Cummings Center, Beverly, MA 01915;42.5610454;-70.8868973;8
+Northwestern Connecticut,CT,06069|Northwestern Connecticut Community College, Winsted, CT 06098;41.9226411;-73.0604504;9
+06069|Sharon, CT 06069;41.7919578;-73.4067230;5
+33 Parker Road,Barre,VT,05670|33 Parker Rd, Barre, VT 05641;44.1733030;-72.4826630;8
+Midway,GA,31320|Midway, GA 31320;31.8057690;-81.4306642;4
+Littleton,CO,80104|Littleton Cemetery, Littleton, CO 80120;39.6039553;-105.0173887;9
+80104|Castle Rock, CO 80104;39.3136558;-104.8209609;5
+401 Kentucky St.,Bowling Green,KY,42101|401 Kentucky St, Bowling Green, KY 42101;36.9996969;-86.4372443;8
+716 East 10th Avenue,Bowling Green,KY,42101|716 E 10th Ave, Bowling Green, KY 42101;36.9891025;-86.4393793;8
+Five Boroughs,NY,10018|Borough of Manhattan Community College, 199 Chambers St, New York, NY 10007;40.7185650;-74.0120171;9
+10018|New York, NY 10018;40.7560958;-73.9939575;5
+6070 Gateway East, Suite 217,El Paso,TX,79905|6070 Gateway Blvd E #217, El Paso, TX 79905;31.7801720;-106.4107949;9
+Amarillo,TX,79101|Amarillo, TX 79101;35.2037010;-101.8640899;5
+2626 South Loop West,Houston,TX,77054|2626 S Loop W Fwy, Houston, TX 77054;29.6783240;-95.4211250;8
+Nashville,TN,37208|Nashville, TN 37208;36.1759643;-86.8026504;5
+1207-A McDowell Ave. NE,Roanoke,VA,24012|1207 McDowell Ave NE, Roanoke, VA 24012;37.2824620;-79.9212350;8
+2745 W. Dalepark Dr,San Dimas,CA,91773|2745 W Dalepark Dr, San Dimas, CA 91773;34.1274450;-117.8101480;8
+2000 Rosemount Ave.,Washington,DC,20010|2000 Rosemont Ave NW, Washington, DC 20010;38.9331820;-77.0470950;8
+Akron,OH,44304|Akron, OH 44304;41.0898323;-81.5196952;5
+1 Skippack Pike,Schwenksville,PA,19473|1 W Skippack Pike, Schwenksville, PA 19473;40.2427725;-75.4378332;8
+their home anywhere in,Citrus County,FL,34452|Inverness, FL 34452;28.7806739;-82.3219299;5
+Various Locations in Metro Louisville,Louisville,KY,40204|Louisville, KY 40204;38.2387084;-85.7202987;5
+Johnson County, Kansas,Johnson County,KS,66061|New Century AirCenter (JCI), Olathe, KS 66031;38.8333948;-94.8931152;9
+1501 Burnley Road,Scottsville,KY,42164|1501 Burnley Rd, Scottsville, KY 42164;36.7756602;-86.2212136;8
+Dayton,OH,45404|Dayton, OH 45404;39.7918510;-84.1583938;5
+Huber Heights,OH,45424|Huber Heights, OH;39.8439470;-84.1246608;4
+736 Johnson Ferry Rd STE A-3,Marietta,GA,30068|736 Johnson Ferry Rd, Marietta, GA 30068;33.9685450;-84.4102760;8
+U. S. Capitol,Washington,DC,20515|U.S. Capitol, White House Visitor Center, Washington, DC 20515;38.8898050;-77.0059410;9
+3 East Pulteney Square,Bath,NY,14810|3 E Pulteney Square, Bath, NY 14810;42.3330460;-77.3162360;8
+New Bedford,MA,02740|New Bedford, MA 02740;41.6353416;-70.9359931;5
+Price,UT,84501|Price, UT 84501;39.5994095;-110.8107148;4
+8621 Bellanca Ave Suite 211,Los Angeles,CA,90045|8621 Bellanca Ave #211, Los Angeles, CA 90045;33.9591300;-118.3808530;9
+Good Samaritan Village,Hastings,NE,68901|Good Samaritan Village, Hastings, NE 68901;40.5789023;-98.3678365;4
+Columbus,OH,43215|Columbus, OH 43215;39.9524307;-82.9946975;5
+177 Graham Ave.,Bowling Green,KY,42101|177 Graham Dr, Bowling Green, KY 42101;37.0024632;-86.4412866;8
+1300 Sports Center Drive,Lexington,KY,40502|Sports Center Dr, Lexington, KY 40502;38.0255680;-84.5016869;6
+The Seattle Public Library, 1000 Fourth Avenue,Seattle,WA,98104|The Seattle Public Library, 1000 4th Ave, Seattle, WA 98164;47.6065170;-122.3331500;9
+Santa Barbara or Carpinteria,CA,93103|Santa Barbara, CA 93103;34.4356327;-119.6831512;5
+6 Beech St.,Framingham,MA,01702|6 Beech St, Framingham, MA 01702;42.2829050;-71.4216950;8
+Warren County,OH,45036|Lebanon, OH 45036;39.3663406;-84.1934318;5
+Ashtabula,OH,44005|Ashtabula, OH 44005;41.8700000;-80.7900000;5
+3803 N. Fairfax Dr, Suite 100,Arlington,VA,22203|3803 N Fairfax Dr #100, Arlington, VA 22203;38.8829139;-77.1051916;9
+10311 Malachite Drive,Bradenton,FL,34211|10311 Malachite Dr, Bradenton, FL 34211;27.4490660;-82.4389090;8
+4305 University Ave, Ste. 630,San Diego,CA,92105|4305 University Ave #630, San Diego, CA 92105;32.7491640;-117.1014220;9
+1117 S. Prairie Avenue,Pueblo,CO,81005|1117 S Prairie Ave, Pueblo, CO 81005;38.2473840;-104.6438896;8
+10110 Main Street,Norfolk,VA,23151|Main St, Norfolk, VA 23510;36.8469965;-76.2942613;6
+Louisville,KY,40207|Louisville, KY 40207;38.2353916;-85.6646270;5
+1570 County Road A,Edgerton,WI,53534|1570 County Road A, Edgerton, WI 53534;42.8980425;-89.1296793;8
+2633 P St,Lincoln,NE,68503|2633 P St, Lincoln, NE 68503;40.8143350;-96.6830160;8
+Saline Eldercare 109 W. 3rd,Wilber,NE,68465|109 W 3rd St, Wilber, NE 68465;40.4810480;-96.9609990;8
+13355 E 10 Mile Rd,Warren,MI,48089|13355 E 10 Mile Rd, Warren, MI 48089;42.4782586;-82.9875988;8
+201 Allen Road  Suite 408,Atlanta,GA,30328|201 Allen Rd NE #408, Atlanta, GA 30328;33.9134152;-84.3805145;9
+Clay County,MO,64068|Liberty, MO 64068;39.3156204;-94.3228950;5
+Chelsea,MA,02150|Chelsea, MA 02150;42.3994064;-71.0272750;5
+180 South 300 West Ste 260,Salt Lake City,UT,84101|180 W 300 S #260, Salt Lake City, UT 84101;40.7629187;-111.8964229;9
+Cincinnati,OH,45202|Cincinnati, OH 45202;39.1231994;-84.4550819;5
+420 Front Street,Danville,CA,94526|420 Front St, Danville, CA 94526;37.8202399;-121.9963442;8
+23 Calendar Avenue,La Grange,IL,60525|23 Calendar Ave, La Grange, IL 60525;41.8150450;-87.8708520;8
+Providence,RI,02903|Providence, RI 02903;41.8329429;-71.3770599;5
+81800 Avenue 51,Indio,CA,92201|81800 Ave 51, Indio, CA 92201;33.6782486;-116.2374621;8
+Martin Luther King Dr and Havana Way,Denver,CO,80238|Martin Luther King Jr Blvd & Havana Way, Denver, CO 80238;39.7600572;-104.8676711;7
+201 E. Washington Street, Ste 1795,Phoenix,AZ,85004|201 E Washington St #1795, Phoenix, AZ 85004;33.4482453;-112.0712573;9
+Detroit,MI,48195|Southgate, MI 48195;42.2058868;-83.2047233;5
+28 Harpersville Rd.,Newport News,VA,23601|28 Harpersville Rd, Newport News, VA 23601;37.0502980;-76.4732560;8
+New Bern,NC,28560|New Bern, NC;35.1084930;-77.0441143;4
+1663 29th ave place,Greeley,CO,80634|1663 29th Ave Pl, Greeley, CO 80634;40.4130933;-104.7280733;8
+4801 N 52nd St,Omaha,NE,68104|4801 N 52nd St, Omaha, NE 68104;41.3023115;-95.9950014;8
+1401 NE 68th Ave,Portland,OR,97213|1401 NE 68th Ave, Portland, OR 97213;45.5316951;-122.5943900;8
+7206 National Seashore Lane,Berlin,MD,21811|7206 National Seashore Ln, Berlin, MD 21811;38.2498220;-75.1559737;8
+3221 59th st.,Lubbock,TX,79424|3221 59th St, Lubbock, TX 79424;33.5411315;-101.9363456;8
+4900 High Street West,Portsmouth,VA,23703|4900 High St W, Portsmouth, VA 23703;36.8517470;-76.3773370;8
+410 Houston School Road,Red Oak,TX,75154|410 Houston School Rd, Red Oak, TX 75154;32.5413690;-96.8053970;8
+Denver Metro,CO,80226|Denver, CO 80226;39.7090492;-105.0908584;5
+Portland's O'Bryant Square (SW 9th and Washington),Portland,OR,97205|Portland, OR 97205;45.5154037;-122.7098693;5
+Oak Park,IL,60301|Oak Park, IL 60301;41.8888015;-87.7997894;5
+Livingston,NJ,07039|Livingston, NJ 07039;40.7870750;-74.3287963;5
+Stockton,CA,95207|Stockton, CA 95207;37.9999351;-121.3215827;5
+909 Robert Ray Drive,Des Moines,IA,50316|909 Robert D. Ray Dr, Des Moines, IA 50316;41.5974335;-93.6143564;8
+2318 Main Street,Buffalo,NY,14214|2318 Main St, Buffalo, NY 14214;42.9326560;-78.8467210;8
+701 Butter Road,Upper Township,NJ,08230|701 Butter Rd, Marmora, NJ 08223;39.2547900;-74.6872999;8
+15440 S. Central Ave.,Oak Forest,IL,60452|15440 S Central Ave, Oak Forest, IL 60452;41.6126135;-87.7567200;8
+1801 Watermark Drive, Suite 200,Columbus,OH,43215|1801 Watermark Dr #200, Columbus, OH 43215;39.9712040;-83.0547610;9
+Lee Center,NY,13363|New York 13363;43.2965049;-75.4800491;5
+South Padre Island,TX,78597|South Padre Island, TX;26.1118401;-97.1681257;4
+4601 Mid Rivers Mall Drive, Social Sciences Building Auditorium,Cottleville,MO,63376|Cottleville, MO;38.7519444;-90.6533333;4
+Box 543,Islip,NY,11751|Box Pl, Hauppauge, NY 11788;40.8299010;-73.1804998;6
+Osborne Nature Center - 29862 Osborne Rd,Elkader,IA,52043|Osborne Rd, Elkader, IA 52043;42.7919203;-91.4454616;6
+Bethany Lutheran Church, 307 3rd Street N.E.,Elkader,IA,52043|Bethany Lutheran Church, 307 3rd St NE, Elkader, IA 52043-9004;42.8580406;-91.4031936;9
+207 North Main Street,Elkader,IA,52043|207 N Main St, Elkader, IA 52043;42.8552875;-91.4052411;8
+9223 West St. Francis Road,Frankfort,IL,60423|9223 W Street Francis Rd, Frankfort, IL 60423;41.5212962;-87.8358493;8
+122 Main Street,East Hartford,CT,06118|122 Main St, East Hartford, CT 06118;41.7330258;-72.6249363;8
+Mesa,AZ,85201|Mesa, AZ 85201;33.4422721;-111.8448867;5
+Idaho Falls,ID,83403|Idaho Falls, ID 83403;43.4942800;-112.0261470;5
+1330 Lincoln Ave,San Rafael,CA,94901|1330 Lincoln Ave, San Rafael, CA 94901;37.9762100;-122.5223500;8
+192 W. Arch Street,Negaunee,MI,49866|192 W Arch St, Negaunee, MI 49866;46.5044890;-87.6132055;8
+137 Earl St,San Antonio,TX,78212|137 Earl St, San Antonio, TX 78212;29.4717780;-98.4932000;8
+Oregon City,OR,97045|Oregon City, OR;45.3573429;-122.6067583;4
+WA|Washington;47.7510741;-120.7401386;2
+414 Vernon Street, Suite 110,Roseville,CA,95661|414 Vernon St #110, Roseville, CA 95678;38.7479170;-121.2859830;9
+Central Shenandoah Health District, P.O. Box 2126,Staunton,VA,24402|Staunton, VA 24402;38.1500000;-79.0699999;5
+24580 Dakota Avenue,Lakeville,MN,55044|24580 Dakota Ave, Lakeville, MN 55044;44.5931209;-93.3644850;8
+New York,NY,10075|New York, NY 10075;40.7770156;-73.9653854;5
+530 E. Main Street  Suite 410,Richmond,VA,23219|530 E Main St #410, Richmond, VA 23219;37.5401981;-77.4396109;9
+Columbus,OH,43229|Columbus, OH 43229;40.0866527;-82.9759140;5
+15 E 65th Street,NY,NY,10065|15 E 65th St, New York, NY 10065;40.7677510;-73.9692381;8
+222 N. La Salle Street,Chicago,IL,60601|222 N LaSalle St, Chicago, IL 60601;41.8863018;-87.6325722;8
+2131 West Third Street,Los Angeles,CA,90057|2131 W 3rd St, Los Angeles, CA 90057;34.0638930;-118.2734700;8
+3701 Hayes Street NE,Washington,DC,20010|3701 Hayes St NE, Washington, DC 20019;38.9015080;-76.9489920;8
+32 Sheboygan St.,Fond du Lac,WI,54935|32 Sheboygan St, Fond du Lac, WI 54935;43.7775200;-88.4453530;8
+22500 West Harris Road,Barnesville,MD,20838|22500 W Harris Rd, Barnesville, MD 20842;39.2263704;-77.3828349;8
+Suffolk County,NY,11941|Eastport, NY 11941;40.8274421;-72.7223892;5
+Intersection of Atlantic Avenue and Henry Street,BROOKLYN,NY,11201|Atlantic Ave & Henry St, Brooklyn, NY 11201;40.6907532;-73.9962408;7
+Lookout and Pleasure House roads in front of the Bay Condos,Virginia Beach,VA,23455|Virginia Beach, VA 23455;36.8399925;-76.1358489;5
+267 Grand Street,Waterbury,CT,06702|267 Grand St, Waterbury, CT 06702;41.5545010;-73.0439760;8
+Fulton County,Gloversville,NY,12078|Gloversville, NY;43.0528506;-74.3437467;4
+303 E. 17th Ave. #510,Thornton,CO,80203|303 County Road 17, Brighton, CO 80603;40.0040257;-104.9048307;8
+109 W. 3rd,Wilber,NE,68465|109 W 3rd St, Wilber, NE 68465;40.4810480;-96.9609990;8
+Wilber,NE,68465|Wilber, NE 68465;40.4819444;-96.9625000;4
+Second Harvest warehouse located at 1234 E. Front Avenue,Spokane,WA,99202|1234 E Front Ave, Spokane, WA 99202;47.6599470;-117.3910960;8
+1054 Washington Street,Bakersfield,CA,93307|1054 Washington St, Bakersfield, CA 93307;35.3662954;-118.9764514;8
+2312 Atascocita,Humble,TX,77396|2312 Atascocita Rd, Humble, TX 77396;29.9714132;-95.2315487;8
+Tyler,TX,75702|Tyler, TX 75702;32.3672409;-95.3057861;5
+58 Wyoming Valley Mall,Wilkes Barre,PA,18702|58 Wyoming Valley Mall, Wilkes-Barre, PA 18702;41.2499239;-75.8425995;8
+PO Box 101,Windsor,VT,05089|Windsor, VT 05089;43.4900283;-72.4392395;5
+Ohio Historical Society 1982 Velma Avenue,Columbus,OH,43211|Ohio Historical Society, 1982 Velma Ave, Columbus, OH 43211-2497;40.0021250;-82.9866240;9
+454 W. 46th St,New York,NY,10036|454 W 46th St, New York, NY 10036;40.7615910;-73.9934400;8
+1590 Las Plumas Ave.,San Jose,CA,95133|1590 Las Plumas Ave, San Jose, CA 95133;37.3593628;-121.8698983;8
+202 Mount Airy Rd,Basking Ridge,NJ,07920|202 Mt Airy Rd, Basking Ridge, NJ 07920;40.6936409;-74.5768447;8
+11064 Staples Mill Road,Glen Allen,VA,23060|11064 Staples Mill Rd, Glen Allen, VA 23060;37.6730550;-77.5399440;8
+Richmond,VA,23219|Richmond, VA 23219;37.5387763;-77.4482078;5
+1755 West Lakes Parkway #B,West Des Moines,IA,50266|1755 W Lakes Pkwy, West Des Moines, IA 50266;41.5987640;-93.7850300;8
+7400 Hampton Boulevard,Norfolk,VA,23505|7400 Hampton Blvd, Norfolk, VA 23505;36.9118554;-76.3057796;8
+Dinwiddie,VA,23841|Dinwiddie, VA 23841;37.0088424;-77.6075172;5
+1301 Summit Blvd,West Palm Beach,FL,33401|1301 Summit Blvd, West Palm Beach, FL 33405;26.6701520;-80.0682930;8
+Portland,OR,97215|Portland, OR 97215;45.5145950;-122.5994911;5
+Portland,OR,97211|Portland, OR 97211;45.5945663;-122.5575714;5
+3750 South Flamingo Road,Davie,FL,33330|3750 S Flamingo Rd, Davie, FL 33330;26.0720762;-80.3139727;8
+City Hall Building,Virginia Beach,VA,23456|Fabrication Specialists-Va, 3436 W Neck Rd, Virginia Beach, VA 23456-3811;36.7095970;-76.0451470;9
+Cave Creek,AZ,85327|Cave Creek, AZ 85327;33.8248775;-111.9813128;5
+Presbyterian Towers, 1824 Presbyterian Drive, SW,Decatur,AL,35601|1824 Presbyterian Dr SW, Decatur, AL 35603;34.5680011;-87.0179525;8
+115 Jefferson Hwy,Louisa,VA,23093|115 Jefferson Hwy, Louisa, VA 23093;38.0104712;-77.9858598;8
+various locations in Cape May County,Cape May Court House,NJ,08210|Cape May Court House, NJ;39.0826135;-74.8237786;4
+4320 S Oxbow Ave,Sioux Falls,SD,57106|4320 S Oxbow Ave, Sioux Falls, SD 57106;43.5064711;-96.7659197;8
+380 SE Spokane Street, Ste. 110,Portland,OR,97202|380 SE Spokane St #110, Portland, OR 97202;45.4645340;-122.6618690;9
+2320 Paseo Del Prado, Building B, #112,Las Vegas,NV,89102|2320 Paseo Del Prado, Las Vegas, NV 89102;36.1456881;-115.1778954;8
+5585 Sabre Road,Norfolk,VA,23502|5585 Sabre Rd, Norfolk, VA 23502;36.8603830;-76.2151920;8
+1513 Concord Avenue,Chester,PA,19013|1513 Concord Ave, Chester, PA 19013;39.8474083;-75.3849261;8
+549 PARKSIDE DRIVE,LEXINGTON,KY,40505|549 Parkside Dr, Lexington, KY 40505;38.0831236;-84.4546632;8
+3304 B. Culmore Avenue,Falls Church,VA,22041|3304 Culmore Ct, Falls Church, VA 22041;38.8561174;-77.1409126;8
+6017 Argyle Drive,Falls Church,VA,22041|6017 Argyle Dr, Falls Church, VA 22041;38.8536745;-77.1377755;8
+2100 Gallows Road,Vienna,VA,22182|2100 Gallows Rd, Vienna, VA 22182;38.9061260;-77.2228210;8
+Near Vienna metro,Fairfax,VA,22031|Metro, 2900 Nutley St, Fairfax, VA 22031;38.8770180;-77.2687550;9
+7224 Commerce Street,Springfield,VA,22150|7224 Commerce St, Springfield, VA 22150;38.7807576;-77.1914144;8
+4750 Woodward Ave.,Detroit,MI,48201|4750 Woodward Ave, Detroit, MI 48201;42.3556940;-83.0628620;8
+38815 130th Street,Aberdeen,SD,57401|38815 130th St, Aberdeen, SD 57401;45.5026762;-98.4713325;8
+8018 Sunport Drive, ste 206,Orlando,FL,32809|8018 Sunport Dr #206, Orlando, FL 32809;28.4495390;-81.3736860;9
+2901 Third Avenue, Suite 100,Seattle,WA,98121|2901 3rd Ave #100, Seattle, WA 98109;47.6182170;-122.3518320;9
+West Bloomfield,MI,48322|West Bloomfield Township CDP, MI 48322;42.5429496;-83.3798866;5
+1209 Camino Carlos Rey,Santa Fe,NM,87507|1209 Camino Carlos Rey, Santa Fe, NM 87507;35.6547846;-105.9848819;8
+Molalla,OR,97038|Molalla, OR 97038;45.1473445;-122.5770322;4
+4910 Para Drive,Cincinnati,OH,45237|4910 Para Dr, Cincinnati, OH 45237;39.1763530;-84.4815620;8
+500 N Broadway, Ste 50,Oklahoma City,OK,73102|500 N Broadway Ave #50, Oklahoma City, OK 73102;35.4718699;-97.5142909;9
+1001 Farnam Street,Omaha,NE,68102|1001 Farnam St, Omaha, NE 68102;41.2572500;-95.9295250;8
+1941 S. 42nd St., Suite 127,Omaha,NE,68128|1941 S 42nd St #127, Omaha, NE 68105;41.2411400;-95.9756969;9
+12th Ave near bus garage,Milbank,SD,57252|Milbank, SD 57252;45.2191313;-96.6356167;4
+Charleston,WV,25301|Charleston, WV 25301;38.3532199;-81.6127624;5
+Bosler Memorial Library,Carlisle,PA,17013|Bosler Free Library, 158 W High St, Carlisle, PA 17013-2988;40.2017878;-77.1931578;9
+Crawford County,WI,53821|Prairie du Chien, WI 53821;43.0393524;-90.9636764;5
+1050 Government Street, Suite 201,Mobile,AL,36604|1050 Government St #201, Mobile, AL 36604;30.6853210;-88.0584030;9
+Clackamas County,Oregon City,OR,97045|Oregon City, OR;45.3573429;-122.6067583;4
+800 San Benito Street, Suite C,Hollister,CA,95023|800 San Benito St, Hollister, CA 95023;36.8478680;-121.4023951;8
+4638 County Road 11,Pequot Lakes,MN,56472|4638 County Road 11, Pequot Lakes, MN 56472;46.6028936;-94.3053063;8
+1010 N. Thompson Street,Richmond,VA,23230|1010 N Thompson St, Richmond, VA 23230;37.5676810;-77.4793910;8
+1010 N Thompson Street,Richmond,VA,23220|1010 N Thompson St, Richmond, VA 23230;37.5676810;-77.4793910;8
+1010 N Thompson St,Richmond,VA,23230|1010 N Thompson St, Richmond, VA 23230;37.5676810;-77.4793910;8
+50 S. Belcher Rd., Suite 116,Clearwater,FL,33765|50 S Belcher Rd #116, Clearwater, FL 33765;27.9645810;-82.7466970;9
+3211 S. Lake Dr.  Suite 321,Saint Francis,WI,53235|3211 S Lake Dr #321, St Francis, WI 53207;42.9866133;-87.8703660;9
+MD|Maryland;39.0457549;-76.6412712;2
+Nanjemoy,MD,20662|Nanjemoy, MD 20662;38.4089927;-77.1049995;5
+5128 So. 24th St.,Omaha,NE,68107|5128 S 24th St, Omaha, NE 68107;41.2062753;-95.9470869;8
+605 Ross Avenue,Pittsburgh,PA,15221|605 Ross Ave, Pittsburgh, PA 15221;40.4433400;-79.8858680;8
+695 Ross Avenue,Pittsburgh,PA,15221|695 Ross Ave, Pittsburgh, PA 15221;40.4429105;-79.8852079;8
+100 East Main Street,Christiansburg,VA,24073|100 E Main St, Christiansburg, VA 24073;37.1313000;-80.4077000;8
+Baltimore,MD,21203|Baltimore, MD 21203;39.2900000;-76.6100000;5
+77 Summer Street, 11th Floor,Boston,MA,02110|Boston, MA 02110;42.3614673;-71.0526428;5
+467 Delaware AVenue,Delmar,NY,12054|467 Delaware Ave, Delmar, NY 12054;42.6198520;-73.8429410;8
+212 West 3rd Street, Suite C,Hastings,NE,68901|212 W 3rd St, Hastings, NE 68901;40.5860406;-98.3836480;8
+2601 Mission Street,San Francisco,CA,94110|2601 Mission St, San Francisco, CA 94110;37.7552310;-122.4185810;8
+295 Hamilton Street,Albany,NY,12203|295 Hamilton St, Albany, NY 12203;42.6592956;-73.7774917;8
+Arlington,VA,22203|Arlington, VA 22203;38.8749809;-77.1131401;5
+100 Morrissey Blvd.,Boston,MA,02125|100 William T Morrissey Blvd, Boston, MA 02125;42.3134056;-71.0397774;8
+Salt Lake City,UT,84116|Salt Lake City, UT 84116;40.8431396;-112.0449523;5
+2051 Kaen Road,Oregon City,OR,97045|2051 Kaen Rd, Oregon City, OR 97045;45.3327190;-122.5987570;8
+8800 SE 80th,Portland,OR,97206|8800 SE 80th Ave, Portland, OR 97206;45.4602120;-122.5811450;8
+Fair Oaks,CA,95628|Fair Oaks, CA;38.6446264;-121.2721718;4
+211 W. 3rd Avenue, Suite 110,Pine Bluff,AR,71601|211 W 3rd Ave #110, Pine Bluff, AR 71601;34.2272626;-92.0044842;9
+Mount Clemens,MI,48043|Mt Clemens, MI 48043;42.5980491;-82.8785591;5
+14255 Stark Rd,Livonia,MI,48154|14255 Stark Rd, Livonia, MI 48154;42.3867190;-83.3803690;8
+37548 W. Durango Street,Tonopah,AZ,85354|37548 W Durango St, Tonopah, AZ 85354;33.4292860;-112.8601820;8
+Orange County,Orange County,CA,92648|Star Real Estate - Real Estate Foreclosures in Orange County, 19440 Golden W, Huntington Beach, CA 92648;33.7334910;-118.0025060;9
+182 W. 5th Street,LaPlace,LA,70068|182 W 5th St, LaPlace, LA 70068;30.0659090;-90.4863540;8
+Los Angeles,CA,90057|Los Angeles, CA 90057;34.0604038;-118.2754745;5
+Sam's Club 970 Hilton Heights Road,Charlottesville,VA,22901|970 Hilton Heights Rd, Charlottesville, VA 22901;38.0997110;-78.4657230;8
+Downtown Mall,Charlottesville,VA,22902|Regal Cinemas Downtown Mall 6, 200 W Main St, Charlottesville, VA 22902;38.0309890;-78.4822870;9
+Downtown Mall,Charlottesville,VT,22902|Regal Cinemas Downtown Mall 6, 200 W Main St, Charlottesville, VA 22902;38.0309890;-78.4822870;9
+Lincoln,NE,68510|Lincoln, NE 68510;40.7980461;-96.6243705;5
+MT|Montana;46.8796822;-110.3625658;2
+Oshkosh,WI,54911|Oshkosh, 263 Osceola St, Oshkosh, WI 54901;44.0226520;-88.5491510;9
+54911|Appleton, WI 54911;44.2757415;-88.3878288;5
+Lodi,CA,95240|Lodi, CA;38.1301968;-121.2724473;4
+Huntington,WV,25701|Huntington, WV;38.4192496;-82.4451540;4
+Multi-Locations,Lancaster or Palmdale,CA,93535|Lancaster, CA 93535;34.6487388;-118.1291656;5
+4525A Pandanus Tree Road,Boynton Beach,FL,33436|4525 Pandanus Tree Rd, Boynton Beach, FL 33436;26.5296840;-80.1156479;8
+Uniontown,PA,15401|Uniontown, PA 15401;39.9000760;-79.7164326;4
+2616 South Oneida Street,Appleton,WI,54915|2616 S Oneida St, Appleton, WI 54915;44.2381781;-88.4040052;8
+2219 Chicago Ave. S,Minneapolis,MN,55404|2219 Chicago Ave S, Minneapolis, MN 55404;44.9607389;-93.2625278;8
+1570 Crownsville Road,Crownsville,MD,21032|1570 Crownsville Rd, Crownsville, MD 21032;39.0196770;-76.5979530;8
+Bowling Green,KY,42101|Bowling Green, KY;36.9903199;-86.4436018;4
+402 W. Front St.,Tyler,TX,75702|402 W Front St, Tyler, TX 75702;32.3464432;-95.3044743;8
+619 Broadway,Alexandria,MN,56308|619 Broadway St, Alexandria, MN 56308;45.8857209;-95.3776771;8
+301 E Washington St,Greensboro,NC,27401|301 E Washington St, Greensboro, NC 27401;36.0700376;-79.7869769;8
+520 King Street,Alexandria,VA,22314|520 King St, Alexandria, VA 22314;38.8043989;-77.0453640;8
+Clovis,CA,93611|Clovis, CA;36.8252277;-119.7029194;4
+3439 State St,Omaha,NE,68112|3439 State St, Omaha, NE 68112;41.3345670;-95.9679589;8
+RI|Rhode Island;41.5800945;-71.4774291;2
+924 N. Alvernon Way,Tucson,AZ,85711|924 N Alvernon Way, Tucson, AZ 85711;32.2331980;-110.9091760;8
+Savannah Area,GA,31401|Laurel Grove/Railroad Area, Savannah, GA;32.0651797;-81.1127120;4
+Denver,CO,80214|Denver, CO 80214;39.7438354;-105.0725708;5
+1 Governors Lane,Exeter,NH,03833|1 Governors Ln, Exeter, NH 03833;42.9813687;-70.9484976;8
+625 S. Seventh St.,San Jose,CA,95030|625 S 7th St, San Jose, CA 95112;37.3297343;-121.8771726;8
+1620 S Pioneer Way,Moses Lake,WA,98837|1620 S Pioneer Way, Moses Lake, WA 98837;47.1112440;-119.2592690;8
+815 N. Scenic Highway,Babson Park,FL,33827|815 N Scenic Hwy, Babson Park, FL 33827;27.8323580;-81.5276410;8
+300 Mollica,Gallup,NM,87301|300 Mollica Dr, Gallup, NM 87301;35.5276900;-108.7150918;8
+7008 S Michigan Ave,Chicago,IL,60637|7008 S Michigan Ave, Chicago, IL 60637;41.7671337;-87.6217170;8
+Arlington,TX,76004|Arlington, TX 76004;32.7342605;-97.1041297;5
+2024 West Glenville Road,Glenville,NY,12010|2024 W Glenville Rd, Amsterdam, NY 12010;42.9290160;-74.0501869;8
+Southbend,IN,46617|South Bend, IN 46617;41.6842460;-86.2311172;5
+Grand Rapids,MI,49501|Grand Rapids, MI 49501;42.9704267;-85.6727369;5
+South San Francisco,CA,94109|San Francisco, CA 94109;37.7951583;-122.4221572;5
+Livermore,CA,94550|Livermore, CA;37.6818745;-121.7680088;4
+Salt Lake City,UT,84190|Salt Lake City, UT 84190;40.7270908;-111.8867797;5
+Pensecola,FL,32508|Pensacola, FL 32508;30.3526840;-87.2961730;5
+Warner Robbins,GA,31088|Warner Robins, GA 31088;32.5892143;-83.5881576;5
+3979 W. Industrial Way,West Palm Beach,FL,33404|3979 W Industrial Way, West Palm Beach, FL 33404;26.7861561;-80.0978086;8
+Atlanta,GA,30384|Atlanta, GA 30384;33.7500000;-84.3900000;5
+Redmond,OR,97758|Redmond Cemetery, Redmond, OR 97756;44.2450381;-121.2038811;9
+97758|Riley, OR 97758;43.4731025;-119.4176559;5
+822 South 3rd Street, Suite 100,Minneapolis,MN,55415|822 S 3rd St #100, Minneapolis, MN 55415;44.9758000;-93.2568620;9
+Portland,OR,97298|Portland, OR 97298;45.5000000;-122.7700000;5
+Southern Oregon Coast,OR,97001|Antelope, OR 97001;44.9528160;-120.6704177;5
+Pierce County,WA,98303|Anderson Island, WA 98303;47.1876678;-122.6959991;5
+Pasedena,TX,77501|Pasadena, TX 77501;29.6922604;-95.2008601;5
+Corpus Christi,TX,98480|PetSmart Corpus Christi, 5214 Blanch Moore, Corpus Christi, TX 78411;27.7091311;-97.3780524;9
+98480|
+Corpus Christi,TX|Corpus Christi, TX;27.8005828;-97.3963810;4
+Missouri City,TX,77459|Missouri City, TX 77459;29.5348167;-95.4949264;5
+Meridian,ID,83642|Meridian, ID;43.6121087;-116.3915131;4
+870 Market Street,San Francisco,CA,94102|870 Market St, San Francisco, CA 94102;37.7851110;-122.4074230;8
+144 Park Place East,Wood Ridge Area,NJ,07075|7075 Park Pl, Brooklyn, NY 11216;40.6733298;-73.9480971;8
+3051 Industrial 25th Street,Fort Pierce,FL,34946|3051 Industrial 25th St, Fort Pierce, FL 34946;27.4886660;-80.3508440;8
+PO Box 7427,New York,NY,10010|New York, NY 10010;40.7388648;-73.9831733;5
+816 Chelham Way,Santa Barbara,CA,93108|816 Chelham Way, Santa Barbara, CA 93108;34.4455079;-119.6657850;8
+1501 Adams Street,Toledo,OH,43604|1501 Adams St, Toledo, OH 43620;41.6573038;-83.5436216;8
+6975 Union Park Center #320,Midvale,UT,84047|6975 Union Park Center, Midvale, UT 84047;40.6243927;-111.8557119;8
+45 pediatric and family clinics in KC area,Kansas City,KS,66160|Kansas City, KS 66160;39.0588097;-94.6088856;5
+Huhter Green Country Club/18101 Longwater Run Drive,Tampa,FL,33647|18101 Longwater Run Dr, Tampa, FL 33647;28.1377270;-82.3483943;8
+San Diego,CA,92121|San Diego, CA 92121;32.9020309;-117.2066421;5
+Tarrant County,Fort Worth,TX,76107|Fort Worth, TX 76107;32.7509784;-97.4177780;5
+5200 Buford Hwy,Doraville,GA,30341|5200 Buford Hwy, Doraville, GA 30340;33.8995200;-84.2783067;8
+17282 N. Hwy 5,Laurie,MO,65037|17282 Hwy 5, Laurie, MO 65037;38.2113571;-92.8449429;8
+112 N Main,Monticello,AR,71655|112 S Main St, Monticello, AR 71655;33.6281869;-91.7909613;8
+Hunt Brothers Road,Lake Wales,FL,33853|Hunt Brothers Rd, Lake Wales, FL 33853;27.8923460;-81.5559392;6
+644 West Main Street,Radford,VA,24141|644 W Main St, Radford, VA 24141;37.1312940;-80.5795257;8
+3021 65th Street,Sacramento,CA,95820|3021 65th St, Sacramento, CA 95817;38.5465316;-121.4278048;8
+Providence,RI,02907|Providence, RI 02907;41.8014659;-71.4256134;5
+Crivitz,WI,54114|Crivitz, WI 54114;45.2324755;-88.0076062;4
+Building 42, 610 Farragut Avenue,Great Lakes,IL,60088|42 Farragut Ave, Shields, IL 60088;42.3121060;-87.8416220;8
+222 E Willow Avenue,Wheaton,IL,60187|222 E Willow Ave, Wheaton, IL 60187;41.8632386;-88.1039370;8
+45-67 W. Tremont Avenue,Bronx,NY,10453|68-67 W Tremont Ave, Bronx, NY 10453;40.8516884;-73.9115559;8
+824 Columbus St. #404,Rapid City,SD,57701|824 Columbus St, Rapid City, SD 57701;44.0779850;-103.2333529;8
+507 Whitmore Drive, 44th St SW,Birmingham,AL,35221|44th St SW, Birmingham, AL 35221;33.4440605;-86.8988692;6
+San Jose,CA,95110|San Jose, CA 95110;37.3345603;-121.8954315;5
+South 9th and Wakefield Streets,Arlington,VA,22204|9th St S & S Wakefield St, Arlington, VA 22204;38.8592769;-77.1073674;7
+NW 186 Street NW 67th Avenue,Miami Gardens,FL,33015|NW 67th Cir Ct, Hialeah, FL 33015;25.9502500;-80.3093110;6
+1200 Everett Drive,Oklahoma City,OK,73104|Mark Everett Dr, Oklahoma City, OK 73104;35.4813806;-97.4962537;6
+15315 Magnolia Blvd #101,Sherman Oaks,CA,91403|15315 Magnolia Blvd, Sherman Oaks, CA 91411;34.1652390;-118.4666250;8
+15315 Magnolia Blvd. #101,Sherman Oaks,CA,91403|15315 Magnolia Blvd, Sherman Oaks, CA 91411;34.1652390;-118.4666250;8
+343 S. Wall Street,Calhoun,GA,30701|343 S Wall St, Calhoun, GA 30701;34.4977542;-84.9519861;8
+1200 university,des moines,IA,50314|1200 University Ave, Des Moines, IA 50314;41.5999910;-93.6330340;8
+95 White Bridge Road, Suite 114,Nashville,TN,37205|95 White Bridge Rd #114, Nashville, TN 37205;36.1302270;-86.8575539;9
+10658 George Washington Mem. Hwy,Gloucester,VA,23061|10658 George Washington Memorial Hwy, Gloucester, VA 23061;37.4593626;-76.6019268;8
+218 Buttonwoods Ave,Warwick,RI,02886|218 Buttonwoods Ave, Warwick, RI 02886;41.7008180;-71.4295510;8
+725 American Ave.,Waukesha,WI,53188|725 American Ave, Waukesha, WI 53188;43.0112000;-88.2431000;8
+4436 Rainier Ave South,Seattle,WA,98122|4436 Rainier Ave S, Seattle, WA 98118;47.5630507;-122.2875587;8
+1125 E. Commerce Rd,Richmond,VA,23224|1125 Commerce Rd, Richmond, VA 23224;37.5124170;-77.4333040;8
+5106 Village Square Drive,Austin,TX,78744|5106 Village Square Dr, Austin, TX 78744;30.1879148;-97.7436534;8
+1320 West Abram Street,Arlington,TX,76013|1320 W Abram St, Arlington, TX 76013;32.7354340;-97.1261890;8
+Miami,FL,33127|Miami, FL 33127;25.8138322;-80.2039794;5
+3200 Barclay Street,Baltimore,MD,21218|3200 Barclay St, Baltimore, MD 21218;39.3272199;-76.6113419;8
+221 Matheson Street,Healdsburg,CA,95448|221 Matheson St, Healdsburg, CA 95448;38.6108939;-122.8673304;8
+1005 "O" Street,Lincoln,NE,68501|1005 O St, Lincoln, NE 68508;40.8132820;-96.7065060;8
+9 Saint Mary's Street,Annapolis,MD,21401|9 St Marys St, Annapolis, MD 21401;38.9755830;-76.4862480;8
+3715 Northside Parkway,Atlanta,GA,30327|3715 Northside Pkwy NW, Atlanta, GA 30327;33.8566960;-84.4296310;8
+221 Main St., Ste. 1650,San Francisco,CA,94105|221 Main St #1650, San Francisco, CA 94105;37.7903460;-122.3922140;9
+1621 Whitfield Drive,Bedford,VA,24523|1621 Whitfield Dr, Bedford, VA 24523;37.3502269;-79.5182290;8
+Vienna,VA,22182|Vienna, VA;38.9012225;-77.2652604;4
+15230 Charlevoix,Grosse Pointe Park,MI,48236|15230 Charlevoix, Grosse Pointe Park, MI 48230;42.3858839;-82.9422237;8
+1450 Parkside Avenue Suite 22,Ewing,NJ,08638|1450 Parkside Ave #22, Ewing, NJ 08638;40.2508089;-74.7700520;9
+9887 4th Street N. Ste.100,Saint Petersburg,FL,33702|9887 4th St N #100, St Petersburg, FL 33702;27.8613570;-82.6379330;9
+2401 Shadelands Dr. Ste 112,Walnut Creek,CA,94598|2401 Shadelands Dr #112, Walnut Creek, CA 94598;37.9253610;-122.0262190;9
+Bloomfield,NJ,07003|Bloomfield, NJ 07003;40.8073558;-74.1872558;5
+Virginia Beach Convention Center,Virginia Beach,VA,23455|Virignia Beach Convention Center, 1000 19th St, Virginia Beach, VA 23451;36.8447750;-75.9890200;9
+Dover,DE,19902|Dover, DE 19902;39.1258811;-75.4831504;5
+4639 Hammersley Rd.,Madison,WI,53711|4639 Hammersley Rd, Madison, WI 53711;43.0389480;-89.4553180;8
+New Haven,CT,06519|New Haven, CT 06519;41.2861633;-72.9520454;5
+23030 North Pima Road,Scottsdale,AZ,85255|23030 N Pima Rd, Scottsdale, AZ 85255;33.6961200;-111.8911260;8
+Concord,CA,94524|Concord, CA 94524;37.9799999;-122.0600000;5
+Pensecola,FL,32501|Pensacola, FL 32501;30.4317035;-87.2288856;5
+60 Evergreen Place ste. 412,East Orange,NJ,07018|60 Evergreen Pl #412, East Orange, NJ 07018;40.7632310;-74.2204299;9
+Midlothian,VA,23112|Midlothian, VA 23112;37.4345016;-77.6344413;5
+2615 Fannin St.,Houston,TX,77002|2615 Fannin St, Houston, TX 77002;29.7447434;-95.3732559;8
+Crownsville,MD,21032|Crownsville, MD;39.0284438;-76.6013536;4
+2200 NE 24th Ave,Portland,OR,97232|2200 NE 24th Ave, Portland, OR 97212;45.5381910;-122.6408140;8
+3900 S. Cathy Ave,Sioux Falls,SD,57106|3900 S Cathy Ave, Sioux Falls, SD 57106;43.5102921;-96.7892589;8
+3202 Main Street,Bedias,TX,77831|3202 Main St, Bedias, TX 77831;30.7755433;-95.9480779;8
+New London,CT,06320|New London, CT 06320;41.3543453;-72.1060791;5
+4360 Glendale-Milford Rd,Cincinnati,OH,45242|4360 Glendale Milford Rd, Cincinnati, OH 45242;39.2521556;-84.3880339;8
+820 Campbell Ave SW,Roanoke,VA,24016|820 Campbell Ave SW, Roanoke, VA 24016;37.2709497;-79.9558563;8
+Radford,VA,24143|Radford, VA 24143;37.1400000;-80.5600000;5
+Washington,DC,20001|Washington, DC 20001;38.9140167;-77.0175323;5
+Taylor,MI,48180|Taylor, MI 48180;42.2262859;-83.2685623;5
+70 Normand Street,Winooski,VT,05404|70 Normand St, Winooski, VT 05404;44.5004160;-73.1806870;8
+329 Greenpoint Avenue,Brooklyn,NY,11222|329 Greenpoint Ave, Brooklyn, NY 11222;40.7311673;-73.9471556;8
+545 S. San Pedro St.,Los Angeles,CA,90013|545 S San Pedro St, Los Angeles, CA 90013;34.0433270;-118.2451110;8
+Ocean Shores,WA,98569|Ocean Shores, WA;46.9736986;-124.1562852;4
+25 Delaware Avenue,Albany,NY,12210|25 Delaware Ave, Albany, NY 12202;42.6508200;-73.7688760;8
+50 Dana Avenue,Wynantskill,NY,12198|50 Dana Ave, Wynantskill, NY 12198;42.6945600;-73.6489800;8
+7 Culligan Drive,Scotia,NY,12302|7 Culligan Dr, Scotia, NY 12302;42.8375186;-73.9556638;8
+1473 Erie Boulevard, 3rd Floor,Schenectady,NY,12305|Schenectady, NY 12305;42.8165435;-73.9462165;5
+1 Abele Drive,Clifton Park,NY,12065|1 Abele Dr, Clifton Park, NY 12065;42.8683590;-73.7798730;8
+21 Ferncliff Drive,Rhinebeck,NY,12572|21 Ferncliff Dr, Rhinebeck, NY 12572;41.9426940;-73.9344109;8
+3701 R Street,Richmond,VA,23223|3701 R St, Richmond, VA 23223;37.5311720;-77.4016690;8
+2 West Grace Street,Richmond,VA,23220|2 W Grace St, Richmond, VA 23220;37.5451750;-77.4428020;8
+Pettis County,MO,65301|Sedalia, MO 65301;38.6805381;-93.2512092;5
+Northeast Bronx and Westchester Counties,NY,10602|Westchester Ave & Cross Bronx Service Rd N, Bronx, NY 10462;40.8334236;-73.8590514;7
+10602|White Plains, NY 10602;41.0300000;-73.7800000;5
+Lake Mills,WI,53551|Lake Mills, WI 53551;43.0813888;-88.9117742;4
+Watertown,WI,53094|Watertown, WI;43.1947211;-88.7289918;4
+Fort Atkinson,WI,53538|Fort Atkinson, WI;42.9288944;-88.8370509;4
+421 Columbia Street,Cohoes,NY,12047|421 Columbia St, Cohoes, NY 12047;42.7745650;-73.7250330;8
+Beaver Dam,WI,53916|Beaver Dam, WI 53916;43.4577692;-88.8373290;4
+Elkhorn,WI,53121|Elkhorn, WI 53121;42.6727927;-88.5445447;4
+2007 Randall Street,Dallas,TX,75201|2007 Randall St, Dallas, TX 75201;32.7953150;-96.8088200;8
+201 East Roosevelt,Little Rock,AR,72206|201 E Roosevelt Rd, Little Rock, AR 72206;34.7241662;-92.2726660;8
+North Little Rock,AR,72119|North Little Rock, AR 72119;34.7800000;-92.2700000;5
+Montgomery County,MD,20906|Silver Spring, MD 20906;39.0912704;-77.0600891;5
+Atlanta,GA,30380|Atlanta, GA 30380;33.6599999;-84.3900000;5
+Redmond,OR,97074|Clackamas County Veterinary: Redmond Lacy DVM, 1678 Beavercreek Rd # F, Oregon City, OR 97045;45.3325540;-122.5847410;9
+97074|97074 Würzburg, Germany;49.7801362;9.9647348;5
+Portland,OR,97330|Old Portland and Umpaqua Vally Rd, Corvallis, OR 97330;44.6849940;-123.2394480;6
+97330|Corvallis, OR 97330;44.6389923;-123.2667388;5
+Pierce County,WA,98402|Tacoma, WA 98402;47.2545051;-122.4277877;5
+Thurston County,WA,98502|Olympia, WA 98502;47.1339187;-123.0010681;5
+3601 Lake Austin Blvd,Austin,TX,78703|3601 Lake Austin Blvd, Austin, TX 78703;30.2928900;-97.7843610;8
+Pasedena,TX,77002|Pasadena Auto Glass, Houston, TX 77002;29.7583270;-95.3704000;9
+77002|Houston, TX 77002;29.7292022;-95.3868904;5
+Corpis Cristi,TX,78480|Corpus Christi, TX 78480;27.6539854;-97.2936142;5
+Missouri City,TX,77002|Missouri City pr 3 Dr, Houston, TX 77085;29.6214018;-95.5080600;6
+9140 La Madre Way,Las Vegas,NV,89149|9140 W La Madre Way, Las Vegas, NV 89149;36.2523870;-115.2960620;8
+115 Broadway,Dobbs Ferry,NY,10522|115 Broadway, Dobbs Ferry, NY 10522;41.0075395;-73.8793189;8
+100 W Kingsbridge Rd,Bronx,NY,10468|100 W Kingsbridge Rd, Bronx, NY 10468;40.8679990;-73.9021900;8
+120 West 106th St,New York,NY,10025|120 W 106th St, New York, NY 10025;40.7995682;-73.9636881;8
+104 West 29th St,New York,NY,10018|104 W 29th St, New York, NY 10001;40.7467180;-73.9908020;8
+164-11 Chapin Parkway,Jamaica,NY,11432|164-11 Chapin Pkwy, Queens, NY 11432;40.7144340;-73.8019080;8
+1145 17th Street NW,Washington,DC,20036|1145 17th St NW, Washington, DC 20036;38.9051400;-77.0381020;8
+Sewickley,PA,15143|Sewickley, PA;40.5364566;-80.1845031;4
+810 5th Street, NW,Washington,DC,20001|810 5th St NW, Washington, DC 20001;38.9003310;-77.0192190;8
+43 Rivington St,New York,NY,10002|43 Rivington St, New York, NY 10002;40.7212335;-73.9922604;8
+420 North 5th Street,Minneapolis,MN,55401|420 N 5th St, Minneapolis, MN 55401;44.9835960;-93.2774990;8
+Hempstead,NY,11550|Hempstead, NY;40.7062128;-73.6187397;4
+Roosevelt,NY,11575|Roosevelt, NY 11575;40.6800231;-73.5862503;5
+4003 Camp Letts Road,Edgewater,MD,21037|4003 Camp Letts Rd, Edgewater, MD 21037;38.8906320;-76.5280580;8
+Burkeville,VA,23922|Burkeville, VA;37.1876529;-78.2013859;4
+1875 El Prado,San Diego,CA,92116|1875 El Prado, San Diego, CA 92101;32.7314667;-117.1470218;8
+1875 El Prado, Balboa Park,San Diego,CA,92101|1875 El Prado, San Diego, CA 92101;32.7314667;-117.1470218;8
+Tamarac,FL,33321|Tamarac, FL 33321;26.2070960;-80.2382087;5
+Belle Mead,NJ,08502|Belle Mead, NJ 08502;40.4430656;-74.6535301;5
+Round Rock,TX,78665|Round Rock, TX 78665;30.5717000;-97.6908187;5
+47-518 Van Buren,Indio,CA,92201|Van Buren St, Indio, CA 92201;33.7020158;-116.1990397;6
+4929 N. Peoria Ave.,Tulsa,OK,74126|4929 N Peoria Ave, Tulsa, OK 74126;36.2250336;-95.9747178;8
+2055 Craigshire Suite #410,Saint Louis,MO,63146|2055 Craigshire Rd #410, St Louis, MO 63146;38.6958320;-90.4486570;9
+Waukesha,WI,53186|Waukesha, WI 53186;43.0401840;-88.2236595;5
+9777 SEAACA Street,Downey,CA,90241|9777 Seaaca St, Downey, CA 90241;33.9224360;-118.1119870;8
+los angeles,CA,90066|Los Angeles, CA 90066;33.9990844;-118.4124755;5
+Irvine,CA,92612|Irvine, CA 92612;33.6868534;-117.7978286;5
+310 5th Street SE,Cedar Rapids,IA,52401|310 5th St SE, Cedar Rapids, IA 52401;41.9788300;-91.6630100;8
+143 Gougler Ave.,Kent,OH,44240|143 Gougler Ave, Kent, OH 44240;41.1542143;-81.3602642;8
+11631 S 700 E,Draper,UT,84020|11631 S 700 E, Draper, UT 84020;40.5402440;-111.8709060;8
+101 Ray Watson Dr.,Sun City Center,FL,33573|101 Ray Watson Dr, Greater Sun Center, FL 33573;27.7133740;-82.3541520;8
+c/o MVRHS 100 Edgartown Rd,Oak Bluffs,MA,02557|Oak Bluffs, MA 02557;41.4423713;-70.5558242;5
+5850 Omaha Ave North,Oak Park Heights,MN,55082|5850 Omaha Ave N, Oak Park Heights, MN 55082;45.0330370;-92.8137740;8
+7800 S Hwy 17-92, Suite 174,Fern Park,FL,32730|7800 S Us Highway 17/92 #174, Fern Park, FL 32730;28.6528000;-81.3499600;9
+Birmingham,AL,35211|Birmingham, AL 35211;33.4211683;-86.8564426;5
+415 N Pasadena,Mesa,AZ,85201|415 N Pasadena, Mesa, AZ 85201;33.4225154;-111.8276615;8
+1836 West Georgia Road,Simpsonville,SC,29680|1836 W Georgia Rd, Simpsonville, SC 29680;34.7098920;-82.3129570;8
+12200 Fairhill Road,Cleveland,OH,44120|12200 Fairhill Rd, Cleveland, OH 44120;41.4915900;-81.5975100;8
+Globe,AZ,85501|Globe, AZ;33.3942223;-110.7864984;4
+PR|Puerto Rico;18.2208330;-66.5901490;1
+1313 W. Old Cold Spring Lane,Baltimore,MD,21209|1313 W Old Cold Spring Ln, Baltimore, MD 21209;39.3434696;-76.6415158;8
+1838 SW Jefferson St.,Portland,OR,97217|1838 SW Jefferson St, Portland, OR 97201;45.5168560;-122.6932810;8
+4436 Rainier Ave So,Seattle,WA,98118|4436 Rainier Ave S, Seattle, WA 98118;47.5630507;-122.2875587;8
+1530 Nicholasville Road,Lexington,KY,40503|1530 Nicholasville Rd, Lexington, KY 40503;38.0243201;-84.5120034;8
+4300 Ashley River Road,Charleston,SC,29414|4300 Ashley River Rd, Charleston, SC 29414;32.8996240;-80.1406290;8
+Tacoma,WA,98418|Tacoma, WA 98418;47.2240066;-122.4474258;5
+84 Progress Lane,Waterbury,CT,06705|84 Progress Ln, Waterbury, CT 06705;41.5336010;-72.9738260;8
+2118 K Street,Sacramento,CA,95818|2118 K St, Sacramento, CA 95816;38.5746940;-121.4783080;8
+Los Angeles,CA,90007|Los Angeles, CA 90007;34.0203132;-118.2819747;5
+Missouri Botanical Garden,Saint Louis,MO,63110|Missouri Botanical Garden, 4344 Shaw Blvd, St Louis, MO 63110;38.6128714;-90.2596868;9
+La Plata,MD,20646|La Plata, MD;38.5292877;-76.9752514;4
+Throughout Loudoun County,Leesburg,VA,22077|
+Leesburg,VA,22077|Leesburg Pike, Bailey's Crossroads, VA 22041;38.8485638;-77.1216508;6
+22077|22077 Olgiate Comasco Como, Italy;45.7855054;8.9652954;5
+One North 3rd. Street, Suite 200,Richmond,VA,23219|1 N 3rd St #200, Richmond, VA 23219;37.5414093;-77.4417006;9
+Memphis,TN,38111|Memphis, TN 38111;35.1093292;-89.9435424;5
+13 Riverdale Ave.,Yonkers,NY,10701|13 Riverdale Ave, Yonkers, NY 10701;40.9317070;-73.9005980;8
+1615 Wolcott Road,Wolcott,CT,06716|1615 Wolcott Rd, Wolcott, CT 06716;41.6334807;-72.9630931;8
+201 Pratt St.,Winsted,CT,06098|201 Pratt St, Winsted, CT 06098;41.9092361;-73.0757409;8
+110 Main St.,Winsted,CT,06098|110 Main St, Winsted, CT 06098;41.9210162;-73.0606245;8
+50 Church St.,Windsor Locks,CT,06096|50 Church St, Windsor Locks, CT 06096;41.9296610;-72.6303774;8
+100 Deerfield Rd.,Windsor,CT,06095|100 Deerfield Rd, Windsor, CT 06095;41.8202596;-72.6526760;8
+186 High Street Suite 1A,Windsor,CT,06095|186 High St #1a, Windsor, CT 06095;41.9149170;-72.6776400;9
+Philadelphia,PA,19138|Philadelphia, PA 19138;40.0523910;-75.1752014;5
+480 Main Street,Winchester,CT,06098|480 Main St, Winsted, CT 06098;41.9208666;-73.0727215;8
+2169 74th Avenue,Philadelphia,PA,19138|2169 74th Ave, Philadelphia, PA 19138;40.0674636;-75.1537740;8
+180 School Rd.,Wilton,CT,06897|180 School Rd, Wilton, CT 06897;41.2026570;-73.4339690;8
+1016 41st Street,Philadelphia,PA,19104|1016 N 41st St, Philadelphia, PA 19104;39.9722280;-75.2065670;8
+529 Danbury Road,Wilton,CT,06897|529 Danbury Rd, Wilton, CT 06897;41.2295241;-73.4257514;8
+720 Main St., 3rd Floor,Willimantic,CT,06226|Willimantic, CT 06226;41.7092971;-72.2125396;5
+88 Jackson Street,Willimantic,CT,06226|88 Jackson St, Willimantic, CT 06226;41.7128226;-72.2079644;8
+505 Silas Deane Highway,Wethersfield,CT,06109|505 Silas Deane Hwy, Wethersfield, CT 06109;41.7120226;-72.6634935;8
+Portland,OR,97214|Portland, OR 97214;45.5142173;-122.6450653;5
+404 Mendocino Avenue Suite C,Santa Rosa,CA,95401|404 Mendocino Ave, Santa Rosa, CA 95401;38.4414670;-122.7144850;8
+404 Mendocino Ave Suite C,Santa Rosa,CA,95401|404 Mendocino Ave, Santa Rosa, CA 95401;38.4414670;-122.7144850;8
+686 W. Main St.,Forest City,NC,28043|686 W Main St, Forest City, NC 28043;35.3429300;-81.8808610;8
+Branson,MO,65615|Branson, MO 65615;36.6259528;-93.2244301;5
+Jonesboro,AR,72403|Jonesboro, AR 72403;35.8400000;-90.7000000;5
+Columbia,MD,21045|Columbia, MD 21045;39.2098903;-76.8265151;5
+754 5th Avenue West,Hendersonville,NC,28739|754 5th Ave W, Hendersonville, NC 28739;35.3164531;-82.4697635;8
+339 New Leicester Hwy, Sutie 140,Asheville,NC,28806|339 New Leicester Hwy #140, Asheville, NC 28806;35.6014370;-82.6217180;9
+36 Montford Ave,Asheville,NC,28801|36 Montford Ave, Asheville, NC 28801;35.5971450;-82.5605520;8
+Jacksonville,FL,32207|Jacksonville, FL 32207;30.3357028;-81.6558685;5
+3491 62nd Ave. N.,Pinellas Park,FL,33781|3491 62nd Ave N, Pinellas Park, FL 33781;27.8288420;-82.6811340;8
+339 New Leicester Hwy, Suite 140,Asheville,NC,28806|339 New Leicester Hwy #140, Asheville, NC 28806;35.6014370;-82.6217180;9
+110 Myrtle Avenue,Westport,CT,06880|110 Myrtle Ave, Westport, CT 06880;41.1447966;-73.3605686;8
+17 School Road,Andover,CT,06232|17 School Rd, Andover, CT 06232;41.7284330;-72.3680410;8
+23 Route 6,Andover,CT,06232|23 Rte 6, Andover, CT 06232;41.7631609;-72.4022510;8
+24 School Rd.,Weston,CT,06883|24 School Rd, Weston, CT 06883;41.2048786;-73.3809296;8
+12 State Street,Ansonia,CT,06401|12 State St, Ansonia, CT 06401;41.3473987;-73.0785480;8
+35 East Main St - Old Avon Village,Avon,CT,06001|35 E Main St, Avon, CT 06001;41.8085893;-72.8279975;8
+Young Designers,West Haven,CT,06516|West Haven, CT 06516;41.2929954;-72.9464797;5
+One School Street , Clifford J. Hurgin Municipal Center,Bethel,CT,06801|Bethel, CT;41.3712063;-73.4140097;4
+330 Park Avenue 2nd Floor,Bloomfield,CT,06002|Bloomfield, CT 06002;41.8529357;-72.7368316;5
+120 Mountain Avenue Suite 212,Bloomfield,CT,06002|120 Mountain Ave #212, Bloomfield, CT 06002;41.8313527;-72.7564159;9
+445 Union Avenue,Bridgeport,CT,06607|445 Union Ave, Bridgeport, CT 06607;41.1781474;-73.1644620;8
+338 Stillman St - MCGIVNEY COMMUNITY CENTER,Bridgeport,CT,06608|Bridgeport, CT 06608;41.1847267;-73.1803359;5
+637 Park Avenue - MERCY LEARNING CENTER,Bridgeport,CT,06604|Bridgeport, CT 06604;41.2522773;-73.2176132;5
+50 South Maine Street Room 306,West Hartford,CT,06107|50 S Main St #306, West Hartford, CT 06107;41.7585736;-72.7425408;9
+510 Barnum Avenue 3rd Floor - MUSIC AND ARTS CENTER FOR HUMANITY,Bridgeport,CT,06608|Bridgeport, CT 06608;41.1847267;-73.1803359;5
+768 Fairfield Avenue - BRIDGEPORT FAMILY CENTER,Bridgeport,CT,06605|Family Vision Center, 101 Boston Ave, Bridgeport, CT 06610-1648;41.2023565;-73.1874850;9
+387 Clinton Avenue - YMCA - CENTRAL CONNECTICUT COAST,Bridgeport,CT,06604|Bridgeport, CT 06604;41.2522773;-73.2176132;5
+104 Mayflower St,West Hartford,CT,06110|104 Mayflower St, West Hartford, CT 06110;41.7355341;-72.7375102;8
+47 Upson St - FAMILY CENTER,Bristol,CT,06010|Bristol, CT 06010;41.6813888;-72.9402999;5
+27 Judd Street - ZION LUTHERAN CHURCH,Bristol,CT,06010|Zion Evangelical Lutheran Church, 27 Judd St, Bristol, CT 06010-4399;41.6823204;-72.9409366;9
+70 Union St - TURNING POINT CHRISTIAN CENTER,Bristol,CT,06010|Bristol, CT 06010;41.6813888;-72.9402999;5
+335 Bloomfield Avenue,West Hartford,CT,06117|335 Bloomfield Ave, West Hartford, CT 06117;41.8002372;-72.7242260;8
+11 Midway Drive,New Castle,IN,47362|11 Midway Dr, New Castle, IN 47362;39.9132721;-85.3852375;8
+1678 Asylum Avenue,West Hartford,CT,06117|1678 Asylum Ave, West Hartford, CT 06119;41.7786827;-72.7291847;8
+200 Main St - UNITED WAY OF WEST CENTRAL CONNECTICUT,Bristol,CT,06010|Bristol, CT 06010;41.6813888;-72.9402999;5
+246 Federal Rd., Unit B21 Brookfield Commons-YMCA OF WESTERN CONNECTICUT,Brookfield,CT,06804|246 Federal Rd, Brookfield, CT 06804;41.4443008;-73.4044914;8
+139 North Main Street,West Hartford,CT,06107|139 N Main St, West Hartford, CT 06107;41.7713703;-72.7440411;8
+84 South Main Street - CHESHIRE YOUTH AND SOCIAL SERVICES,Cheshire,CT,06410|84 S Main St, Cheshire, CT 06410;41.4976240;-72.9021038;8
+127 Norwich Avenue - COLCHESTER SOCIAL SERVICES,Colchester,CT,06415|127 Norwich Ave, Colchester, CT 06415;41.5756302;-72.3241784;8
+235 Birch St,Waterbury,CT,06704|235 Birch St, Waterbury, CT 06704;41.5557932;-73.0205133;8
+One Salem St - KIDS IN CRISIS,Cos Cob,CT,06807|Kids in Crisis, 1 Salem St, Cos Cob, CT 06807;41.0365825;-73.6047093;9
+95 North Main St,Waterbury,CT,06702|95 N Main St, Waterbury, CT 06702;41.5574876;-73.0398394;8
+1712 Main St - COVENTRY HUMAN SERVICES,Coventry,CT,06238|1712 Main St, Coventry, CT 06238;41.7819630;-72.3092030;8
+41 West Street - CROMWELL HUMAN SERVICES,Cromwell,CT,06416|Cromwell, CT 06416;41.5881004;-72.6509895;5
+30 West Street - AIDS PROJECT GREATER DANBURY,Danbury,CT,06810|
+Danbury,CT,06810|Danbury, CT 06810;41.4218406;-73.4177398;5
+66 North Street - DANBURY COMMUNITY ACTION COMMITTEE,Danbury,CT,06810|Community Action Committee of Danbury Inc: Energy Assistance, 66 North St, Danbury, CT 06810;41.4066171;-73.4558123;9
+54 West St - HARAMBEE CENTER FOR YOUTH AND COMMUNITY SERVICES,Danbury,CT,06810|Danbury, CT 06810;41.4218406;-73.4177398;5
+39 Rose Street - INTERFAITH AIDS MINISTRY OF GREATER DANBURY,Danbury,CT,06810|
+2 West Street - WOMEN'S CENTER OF GREATER DANBURY,Danbury,CT,06810|Women's Center of Greater Danbury, 2 West St, Danbury, CT 06810;41.3936440;-73.4515220;9
+2 Renshaw Road - TOWN OF DARIEN,Darien,CT,06820|2 Renshaw Rd, Darien, CT 06820;41.0656805;-73.4835538;8
+1007 North Main St - UNITED SERVICES,Dayville,CT,06241|United Services, Inc., 1007 N Main St, Killingly, CT 06241;41.8347450;-71.8795990;9
+20 East High Street - EAST HAMPTON FOOD BANK,East Hampton,CT,06424|20 E High St, East Hampton, CT 06424;41.5833043;-72.5036759;8
+383-385 Main Street - EAST HARTFORD SHELTER,East Hartford,CT,06108|Community Renewal Team Inc: East Hartford Community Shelter, 385 Main St, East Hartford, CT 06118;41.7476930;-72.6368560;9
+740 Main St - EAST HARTFORD SOCIAL SERVICES,East Hartford,CT,06108|740 Main St, East Hartford, CT 06108;41.7659214;-72.6451934;8
+1929 East Main St,Waterbury,CT,06705|1929 E Main St, Waterbury, CT 06705;41.5442344;-73.0102943;8
+68 Hauppauge Road,Commack,NY,11725|68 Hauppauge Rd, Commack, NY 11725;40.8292140;-73.3001650;8
+80 Phoenix Avenue Suite 201,Waterbury,CT,06702|80 Phoenix Ave #201, Waterbury, CT 06702;41.5573560;-73.0389230;9
+29 Central Avenue  2nd Floor,Waterbury,CT,06702|Waterbury, CT 06702;41.5605716;-73.0428390;5
+15490 Ventura Blvd Ste 210,Sherman Oaks,CA,91403|15490 Ventura Blvd #210, Sherman Oaks, CA 91403;34.1544150;-118.4716710;9
+2163 S Yosemite Street,Denver,CO,80231|2163 S Yosemite St, Denver, CO 80231;39.6771000;-104.8849520;8
+333 West First Street,Oswego,NY,13126|333 W 1st St, Oswego, NY 13126;43.4511760;-76.5082259;8
+154 Broad St,New London,CT,06320|154 Broad St, New London, CT 06320;41.3586648;-72.1046970;8
+40 Woodtick Road,Waterbury,CT,06705|40 Woodtick Rd, Waterbury, CT 06705;41.5525728;-73.0067303;8
+94-96 South Turnpike Rd,Wallingford,CT,06492|94-96 S Turnpike Rd, Wallingford, CT 06492;41.4484620;-72.8433170;8
+93 East Main St,Vernon,CT,06066|93 E Main St, Vernon Rockville, CT 06066;41.8680665;-72.4438933;8
+29 Naek Road  Suite 5A,Vernon,CT,06066|29 Naek Rd #5a, Vernon Rockville, CT 06066;41.8394312;-72.4913788;9
+12 Maple Avenue,Uncasville,CT,06382|12 Maple Ave, Oxoboxo River, CT 06382;41.4360944;-72.1110578;8
+23 Priscilla Place,Trumbull,CT,06611|23 Priscilla Pl, Trumbull, CT 06611;41.2393544;-73.1618279;8
+836 Main Street,Torrington,CT,06790|836 Main St, Torrington, CT 06790;41.8175520;-73.1213360;8
+50 King St,Torrington,CT,06790|50 King St, Torrington, CT 06790;41.7870610;-73.1162260;8
+332 South Main St,Torrington,CT,06790|332 S Main St, Torrington, CT 06790;41.7935730;-73.1206690;8
+158 Main Street,Thomaston,CT,06787|158 Main St, Thomaston, CT 06787;41.6730700;-73.0755640;8
+77 Main Street,Terryville,CT,06786|77 Main St, Terryville, CT 06786;41.6790377;-73.0011694;8
+450 South Street,Suffield,CT,06078|450 South St, Suffield, CT 06078;41.9721506;-72.6595367;8
+2283 Main St,Stratford,CT,06615|2283 Main St, Stratford, CT 06615;41.1919734;-73.1303431;8
+62 Palmer's Hill Rd,Stamford,CT,06902|62 Palmers Hill Rd, Stamford, CT 06902;41.0591083;-73.5608183;8
+888 Washington Boulevard 8th Floor,Stamford,CT,06901|Stamford, CT 06901;41.0539894;-73.5387649;5
+83 Lockwood Avenue,Stamford,CT,06902|83 Lockwood Ave, Stamford, CT 06902;41.0532199;-73.5214831;8
+777 Summer Street Suite 400,Stamford,CT,06901|777 Summer St #400, Stamford, CT 06901;41.0576618;-73.5401734;9
+150 Nevers Road,South Windsor,CT,06074|150 Nevers Rd, South Windsor, CT 06074;41.8409831;-72.5519483;8
+600 Main St,Somers,CT,06071|600 Main St, Somers, CT 06071;41.9849043;-72.4501740;8
+754 Hopmeadow St,Simsbury,CT,06070|754 Hopmeadow St, Simsbury Center, CT 06070;41.8742477;-72.8019893;8
+3 Corporate Drive Suite 501,Shelton,CT,06484|3 Corporate Dr #501, Shelton, CT 06484;41.2766006;-73.1315309;9
+699 Old Main Street,Rocky Hill,CT,06067|699 Old Main St, Rocky Hill, CT 06067;41.6660303;-72.6382983;8
+15 Prospect Street,Rockville,CT,06066|15 Prospect St, Rockville, CT 06066;41.8689533;-72.4441179;8
+33 Wicker St,Putnam,CT,06260|33 Wicker St, Putnam, CT 06260;41.9219521;-71.9194328;8
+91 Norton Street,Plantsville,CT,06479|91 Norton St, Plantsville, CT 06479;41.5683965;-72.8950083;8
+91 Northwest Drive,Plainville,CT,06062|91 Northwest Dr, Plainville, CT 06062;41.6920011;-72.8775071;8
+334 Farmington Avenue,Plainville,CT,06062|334 Farmington Ave, Plainville, CT 06062;41.6883064;-72.8514995;8
+54 South Canal St,Plainville,CT,06062|54 S Canal St, Plainville, CT 06062;41.6651726;-72.8710311;8
+651 Norwich Rd,Plainfield,CT,06374|651 Norwich Rd, Plainfield, CT 06374;41.6761190;-71.9163510;8
+27 Chase Street,Pawcatuck,CT,06379|27 Chase St, Pawcatuck, CT 06379;41.3753828;-71.8349075;8
+25 School Street - EAST WINDSOR HUMAN SERVICES,East Windsor,CT,06088|25 School St, East Windsor, CT 06088;41.9266590;-72.6189650;8
+103R Phoenix Avenue - EDUCATIONAL RESOURCES FOR CHILDREN,Enfield,CT,06082|Enfield, CT 06082;41.9843444;-72.5522613;5
+100 High Street - ENFIELD NEIGHBORHOOD SERVICES,Enfield,CT,06082|100 High St, Enfield, CT 06082;41.9968486;-72.5975402;8
+139 Hazard Avenue,Bldg. 3-9 - NETWORK AGAINST DOMESTIC ABUSE,Enfield,CT,06082|Enfield, CT 06082;41.9843444;-72.5522613;5
+322 Main Street,Old Saybrook,CT,06475|322 Main St, Old Saybrook, CT 06475;41.2885253;-72.3757140;8
+1216 Post Rd - STEWART B. MCKINNEY FOUNDATION,Fairfield,CT,06824|Fairfield, CT 06824;41.1752929;-73.2830924;5
+300 Welles Street - Riverfront Community Center,Glastonbury,CT,06033|Riverfront Community Center, 300 Welles St, Glastonbury, CT 06033-2095;41.7129830;-72.6137947;9
+36 Town Woods Rd,Old Lyme,CT,06371|36 Town Woods Rd, Old Lyme, CT 06371;41.3520599;-72.3070521;8
+30 Central Avenue - BOYS AND GIRLS CLUB OF SOUTHEASTERN CONNECTICUT,Groton,CT,06340|Groton, CT 06340;41.3587512;-72.0407714;5
+2 Fort Hill Road - HUMAN SERVICES DEPARTMENT,Groton,CT,06340|Groton, CT 06340;41.3587512;-72.0407714;5
+80 Broadway,Norwich,CT,06360|80 Broadway, Norwich, CT 06360;41.5259788;-72.0758205;8
+32 Church Street - GUILFORD SOCIAL SERVICES,Guilford,CT,06437|32 Church St, Guilford, CT 06437;41.2853403;-72.6828361;8
+95 Church Street - CHURCH STREET SCHOOL FAMILY RESOURCE CENTER,Hamden,CT,06514|Hamden, CT 06514;41.3684978;-72.9415206;5
+21 Mahan Drive,Norwich,CT,06360|21 Mahan Dr, Norwich, CT 06360;41.5495475;-72.0769237;8
+11 Pine Street - Keefe Community Center,Hamden,CT,06514|Hamden, CT 06514;41.3684978;-72.9415206;5
+1200 Albany Avenue - ARTISTS COLLECTIVE,Hartford,CT,06112|Hartford, CT 06112;41.7926635;-72.6981582;5
+42 Charter Oak Avenue - BETANCES SCHOOL FAMILY RESOURCE CENTER,Hartford,CT,06106|Hartford, CT 06106;41.7457466;-72.7005844;5
+240 Main Street,Norwich,CT,06360|240 Main St, Norwich, CT 06360;41.5245320;-72.0749898;8
+261 Main St,Norwich,CT,06360|261 Main St, Norwich, CT 06360;41.5245430;-72.0738805;8
+999 Asylum Avenue - CATHOLIC CHARITIES - ARCHDIOCESE OF HARTFORD,Hartford,CT,06105|Hartford, CT 06105;41.7766799;-72.6062088;5
+370 West Avenue,Norwalk,CT,06850|370 West Ave, Norwalk, CT 06850;41.1111650;-73.4177667;8
+45 Wadsworth Street - INSTITUTE FOR THE HISPANIC FAMILY,Hartford,CT,06106|Hartford, CT 06106;41.7457466;-72.7005844;5
+20 West Avenue,Norwalk,CT,06854|20 West Ave, Norwalk, CT 06854;41.1032658;-73.4199454;8
+125 Market Street - MIGRATION AND REFUGEE SERVICES,Hartford,CT,06103|Hartford, CT 06103;41.7609863;-72.6740684;5
+7 Chestnut St,Norwalk,CT,06854|7 Chestnut St, Norwalk, CT 06854;41.0960707;-73.4202809;8
+15-21 Newfield Avenue - SOUTHSIDE FAMILY CENTER,Hartford,CT,06106|Hartford, CT 06106;41.7457466;-72.7005844;5
+21 Grand Street - CHARTER OAK HEALTH CENTER,Hartford,CT,06106|Hartford, CT 06106;41.7457466;-72.7005844;5
+16 River St,Norwalk,CT,06850|16 River St, Norwalk, CT 06850;41.1182218;-73.4135950;8
+One Park St,Norwalk,CT,06851|1 Park St, Norwalk, CT 06851;41.1178247;-73.4083981;8
+39 Grace St - FAMILY LIFE EDUCATION,Hartford,CT,06106|Hartford, CT 06106;41.7457466;-72.7005844;5
+340 Washington Street - GIRL SCOUTS OF CONNECTICUT,Hartford,CT,06106|Connecticut Valley Girl Scouts, 340 Washington St, Hartford, CT 06106-3317;41.7521120;-72.6829590;9
+330 Main St. 3rd Floor - HANDS ON HARTFORD,Hartford,CT,06106|Hartford, CT 06106;41.7457466;-72.7005844;5
+1453 Main Street - HOUSE OF BREAD,Hartford,CT,06120|N Main St;37.8536296;-96.8498923;6
+102 Pliny Street - MY SISTERS PLACE,Hartford,CT,06120|Hartford, CT 06120;41.7701950;-72.6810989;5
+20-28 Sargeant St - OUR PIECE OF THE PIE,Hartford,CT,06105|Hartford, CT 06105;41.7766799;-72.6062088;5
+5 Eversley Avenue,Norwalk,CT,06851|5 Eversley Ave, Norwalk, CT 06851;41.1111199;-73.4067536;8
+820 Park St - SAINT ANN'S-IMMACULATE CONCEPTION CHURCH FOOD PANTRY,Hartford,CT,06106|Hartford, CT 06106;41.7457466;-72.7005844;5
+20-28 Sargeant St - SHELTER FOR WOMEN,Hartford,CT,06105|Hartford, CT 06105;41.7766799;-72.6062088;5
+75 Main St - SOUTH PARK INN,Hartford,CT,06106|South Park Inn, 75 Main St, Hartford, CT 06106;41.7564300;-72.6760000;9
+PO Box 260268 - VECINOS UNIDOS,Hartford,CT,06126|Hartford, CT 06126;41.7600000;-72.6900000;5
+103 Woodland Street - VNA HEALTHCARE,Hartford,CT,06105|Hartford, CT 06105;41.7766799;-72.6062088;5
+1477 Park St - YOUTH UNITED FOR SURVIVAL,Hartford,CT,06106|Hartford, CT 06106;41.7457466;-72.7005844;5
+579 Exeter Road - LEBANON SOCIAL SERVICES,Lebanon,CT,06249|Lebanon, CT 06249;41.6266136;-72.2510833;5
+100 East Avenue,Norwalk,CT,06851|100 East Ave, Norwalk, CT 06851;41.1159642;-73.4078091;8
+20 Washington Avenue,North Haven,CT,06473|20 Washington Ave, North Haven, CT 06473;41.3900182;-72.8600904;8
+741 Colonel Ledyard Highway - LEDYARD YOUTH AND SOCIAL SERVICES,Ledyard,CT,06339|741 Colonel Ledyard Hwy, Ledyard, CT 06339;41.4421481;-72.0170393;8
+550 Goshen Road, Route 63 - CONNECTICUT JUNIOR REPUBLIC,Litchfield,CT,06759|Litchfield, CT 06759;41.7557334;-73.2095298;5
+421 Bantam Rd - LITCHFIELD COMMUNITY CENTER,Litchfield,CT,06759|Litchfield, CT 06759;41.7557334;-73.2095298;5
+64 Church Street - MANCHESTER AREA NETWORK ON AIDS,Manchester,CT,06040|Manchester, CT;41.7759324;-72.5214754;4
+239 East Middle Turnpike - MANCHESTER POLICE ACTIVITIES LEAGUE,Manchester,CT,06040|Manchester, CT 06040;41.7633590;-72.5219955;5
+723 Main St - WORLD-WIDE LIGHTHOUSE MISSIONS,Manchester,CT,06040|World Wide Lighthouse Missions, 1007 Main St, Manchester, CT 06040-6032;41.7682829;-72.5201800;9
+17 School Drive - MARLBOROUGH SOCIAL AND SENIOR SERVICES,Marlborough,CT,06447|Marlborough, CT 06447;41.6367683;-72.4566497;5
+883 Paddock Avenue - RUSHFORD CENTER,Meriden,CT,06450|Meriden, CT 06450;41.5370216;-72.7798843;5
+20 Batterson Park Road, 3rd Floor,Farmington,CT,06032|Farmington, CT 06032;41.7278404;-72.8257522;5
+1225 Silver St - CONNECTICUT JUVENILE TRAINING SCHOOL,Middletown,CT,06457|Middletown, CT 06457;41.5498352;-72.6504364;5
+128 Washington St - ODDFELLOWS PLAYHOUSE YOUTH THEATER,Middletown,CT,06457|Odd Fellows Playhouse Inc, 128 Washington St, Middletown, CT 06457-2820;41.5617593;-72.6526242;9
+528 Wheelers Farms Road - BOYS & GIRLS VILLAGE,Milford,CT,06461|Milford, CT 06461;41.2310943;-73.0636291;5
+PO Box 3468 - MILFORDS PROMISE,Milford,CT,06460|Promise, 61 Howe Ave, Shelton, CT 06484-4112;41.3086030;-73.0824317;9
+7 Fan Hill Road - MONROE COMMUNITY AND SOCIAL SERVICES,Monroe,CT,06468|Monroe, CT 06468;41.3427581;-73.2301445;5
+119 High St - MYSTIC AREA SHELTER AND HOSPITALITY,Mystic,CT,06355|Mystic, CT 06355;41.3179435;-71.9754066;5
+Visitor's Center in the Sepulveda House, 622 N. Main Street,Los Angeles,CA,90012|622 N Main St, Los Angeles, CA 90012;34.0577266;-118.2382771;8
+Detroit Metro Airport,Romulus,MI,48242|Detroit, MI 48242;42.2156639;-83.3515777;5
+8200 Walnut Hill Lane,Dallas,TX,75231|8200 Walnut Hill Ln, Dallas, TX 75231;32.8806460;-96.7623730;8
+Bloomington,IL,61701|Bloomington, IL 61701;40.4738502;-88.9889030;5
+2620 Industry Way Suite F,Lynwood,CA,90262|2620 Industry Way, Lynwood, CA 90262;33.9232990;-118.2254480;8
+4290 South Avalon Boulevard,Los Angeles,CA,90011|4290 Avalon Blvd, Los Angeles, CA 90011;34.0057840;-118.2652145;8
+2900 South Crenshaw Boulevard,Los Angeles,CA,90016|2900 Crenshaw Blvd, Los Angeles, CA 90018;34.0290970;-118.3346880;8
+200 North Spring Street, Room 303,Los Angeles,CA,90012|200 N Spring St #303, Los Angeles, CA 90012;34.0535710;-118.2429930;9
+100 Arch St. 2nd Floor - GREATER NEW BRITAIN TEEN PREGNANCY PREVENTION PROGRAM,New Britain,CT,06051|New Britain, CT 06051;41.6621456;-72.7969512;5
+180 Clinton Street - HUMAN RESOURCES AGENCY,New Britain,CT,06053|New Britain, CT 06053;41.6902160;-72.7848892;5
+20 High St - LITERACY VOLUNTEERS OF CENTRAL CONNECTICUT,New Britain,CT,06051|New Britain, CT 06051;41.6621456;-72.7969512;5
+16 Armistice St - NEW BRITAIN HOUSING AUTHORITY,New Britain,CT,06053|16 Armistice St, New Britain, CT 06053;41.6704876;-72.7998028;8
+PO Box 895 - PRUDENCE CRANDALL CENTER,New Britain,CT,06050|New Britain, CT 06050;41.6659178;-72.7771358;5
+22 Glen Street - NEW BRITAIN YWCA,New Britain,CT,06050|22 Glen St, New Britain, CT 06051;41.6638660;-72.7809120;8
+61 Main Street - HUMAN SERVICES DEPARTMENT,New Canaan,CT,06840|New Canaan, CT 06840;41.1588764;-73.5018005;5
+291 Whitney Avenue Unit 401 - BIRMINGHAM GROUP HEALTH SERVICES,New Haven,CT,06511|Whitney, Birmingham, AL 35243;33.4249134;-86.7328598;6
+446-A Blake Street Suite 100 - CHILDREN'S COMMUNITY PROGRAMS OF CONNECTICUT,New Haven,CT,06515|New Haven, CT 06515;41.3304252;-72.9636993;5
+131 Dwight St - COORDINATING COUNCIL FOR CHILDREN IN CRISIS,New Haven,CT,06511|New Haven, CT 06511;41.3678226;-72.9374542;5
+31 Jefferson St - LEADERSHIP, EDUCATION, AND ATHLETICS IN PARTNERSHIP,New Haven,CT,06511|New Haven, CT 06511;41.3678226;-72.9374542;5
+153 East Street Suite 200 - NEW HAVEN HOME RECOVERY,New Haven,CT,06511|
+New Haven,CT,06511|New Haven, CT 06511;41.3678226;-72.9374542;5
+45 Dixwell Avenue - R KIDS FAMILY CENTER,New Haven,CT,06511|New Haven, CT 06511;41.3678226;-72.9374542;5
+154 Broad Street - ALLIANCE FOR LIVING,New London,CT,06320|New London, CT 06320;41.3543453;-72.1060791;5
+40 Shaw Street - CHILD & FAMILY AGENCY,New London,CT,06320|New London, CT 06320;41.3543453;-72.1060791;5
+42 Jay Street - COVENANT SHELTER OF NEW LONDON,New London,CT,06320|New London, CT 06320;41.3543453;-72.1060791;5
+45 Broad Street Annex - DROP IN LEARNING CENTER,New London,CT,06320|New London, CT 06320;41.3543453;-72.1060791;5
+106 Truman Street - LITERACY VOLUNTEERS OF EASTERN CONNECTICUT,New London,CT,06320|New London, CT 06320;41.3543453;-72.1060791;5
+40 Main Street - NEW MILFORD SOCIAL SERVICES,New Milford,CT,06776|New Milford, CT 06776;41.5770391;-73.4084542;4
+21 Main St - UNITED WAY OF WESTERN CONNECTICUT,New Milford,CT,06776|New Milford, CT 06776;41.5910167;-73.4160079;5
+131 Cedar Street - NEWINGTON HUMAN SERVICES,Newington,CT,06111|131 Cedar St, Newington, CT 06111;41.6972861;-72.7296604;8
+338 Main St - CONNECTICUT PARENT ADVOCACY CENTER,Niantic,CT,06357|Niantic, CT 06357;41.2891845;-72.2232666;5
+45 Society Road - EAST LYME YOUTH SERVICES ASSOCIATION,Niantic,CT,06357|
+Niantic,CT,06357|Niantic, CT 06357;41.2891845;-72.2232666;5
+65 Main Street - THOMPSON ECUMENICAL EMPOWERMENT GROUP,North Grosvenordale,CT,06255|North Grosvenor Dale, CT 06255;41.9856531;-71.8986833;4
+220 East Mountain View Street,Barstow,CA,92311|220 E Mountain View St, Barstow, CA 92311;34.8924520;-117.0251340;8
+740 Glover Street,Hendersonville,NC,28792|740 Glover St, Hendersonville, NC 28792;35.3176269;-82.4464881;8
+357 Asheville Green Works,Asheville,NC,28801|Asheville, NC 28801;35.5904464;-82.5179672;5
+1401 Fish Hatchery Road,Pisgah Forest,NC,28768|Pisgah Forest, NC 28768;35.3480796;-82.6654548;5
+PO Box 12511,Denver,CO,80211|Denver, CO 80211;39.7640132;-105.0178833;5
+60 East Broadway - AARP Info Center - 2nd floor, west side,Bloomington,MN,55425|Bloomington, MN;44.8407980;-93.2982799;4
+Saint Louis,MO,63104|St Louis, MO 63104;38.6082038;-90.2137374;5
+341 Walker Chapel Plaza,Fultondale,AL,35068|Walker Chapel Plaza, Fultondale, AL 35068;33.6104318;-86.7976517;6
+341 Walker Chapel Plaza Suite 105,Fultondale,AL,35068|Walker Chapel Plaza, Fultondale, AL 35068;33.6104318;-86.7976517;6
+350 W. Gainsborough Road,Thousand Oaks,CA,91359|350 W Gainsborough Rd, Thousand Oaks, CA 91360;34.1942269;-118.8862603;8
+Panorama City,CA,91402|Panorama City, Los Angeles, CA;34.2300303;-118.4338345;4
+901 North McCoy Ave,Aztec,NM,87410|901 Mccoy Ave, Aztec, NM 87410;36.8307659;-107.9896150;8
+5800 Beach Boulevard,Jacksonville,FL,32207|5800 Beach Blvd, Jacksonville, FL 32207;30.2921720;-81.6049309;8
+668 Main Street,West Creek,NJ,08092|668 Main St, West Creek, NJ 08092;39.6675150;-74.2802010;8
+P.O. Box 867,Bowling Green,KY,42102|Bowling Green, KY 42102;36.9902333;-86.4415038;5
+201 East Capitol Street SE,Washington,DC,20003|201 East Capitol St SE, Washington, DC 20003;38.8892792;-77.0030236;8
+46 Sheffield Circle,Asheville,NC,28803|46 Sheffield Cir, Asheville, NC 28803;35.5125940;-82.5290250;8
+70 Commercial Street,Concord,NH,03301|70 Commercial St, Concord, NH 03301;43.2201264;-71.5354800;8
+Greater Dallas Area,Dallas,TX,75219|Dallas, TX 75219;32.7880840;-96.8111801;5
+Dallas,TX,75219|Dallas, TX 75219;32.7880840;-96.8111801;5
+Westfield,NJ,07090|Westfield, NJ 07090;40.6488456;-74.3460769;5
+357 Depot St,Asheville,NC,28801|357 Depot St, Asheville, NC 28801;35.5812790;-82.5645460;8
+102 Northwest Lane,Swannanoa,NC,28815|102 Northwest Ln, Asheville, NC 28805;35.6130200;-82.4439930;8
+85 Mountain Street,Asheville,NC,28801|85 Mountain St, Asheville, NC 28801;35.5972750;-82.5424080;8
+120 Executive Park Bld #1,Asheville,NC,28801|120 Executive Park, Asheville, NC 28801;35.5984410;-82.5445610;8
+141 Hillside Street (Admin Offices),Asheville,NC,28801|Asheville, NC 28801;35.5904464;-82.5179672;5
+204 Haywood Street,Asheville,NC,28801|204 Haywood St, Asheville, NC 28801;35.5953440;-82.5600860;8
+Washington,DC,20003|Washington, DC 20003;38.8777275;-76.9915008;5
+Enfield,NH,03748|Enfield, NH;43.6406274;-72.1439764;4
+438 Montford Avenue,Asheville,NC,28801|438 Montford Ave, Asheville, NC 28801;35.6072640;-82.5701530;8
+101 Carver Ave,Black Mountain,NC,28711|101 Carver Ave, Black Mountain, NC 28711;35.6151485;-82.3405567;8
+205 Kenilworth Rd,Asheville,NC,28803|205 Kenilworth Rd, Asheville, NC 28803;35.5789360;-82.5379210;8
+3025 Bull Street,Savannah,GA,31405|3025 Bull St, Savannah, GA 31405;32.0493890;-81.1032840;8
+Greenville,TX,75401|Greenville, TX;33.1384488;-96.1108066;4
+Rockwall,TX,75087|Rockwall, TX;32.9312336;-96.4597089;4
+7425 Mechanicsville Elementary Drive,Mechanicsville,VA,23111|7425 Mechanicsville Elementary Dr, Mechanicsville, VA 23111;37.6110070;-77.3787140;8
+16831 West Alameda Parkway,Morrison,CO,80465|16831 W Alameda Pkwy, Morrison, CO 80465;39.6886290;-105.1904870;8
+Raleigh,NC,27609|Raleigh, NC 27609;35.8429718;-78.6333274;5
+15 Elmhurst Ave,Dorchester,MA,02124|15 Elmhurst St, Boston, MA 02124;42.2889670;-71.0762890;8
+Hc 86 box 63,Green Spring,WV,26722|Green Spring, WV 26722;39.4989051;-78.5926246;5
+Baton Rouge,LA,70808|Baton Rouge, LA 70808;30.4001922;-91.1395759;5
+LA|Louisiana;31.2448234;-92.1450245;2
+NH|New Hampshire;43.1938516;-71.5723953;2
+NM|New Mexico;34.9727305;-105.0323635;2
+WY|Wyoming;43.0759678;-107.2902839;2
+Wailuku,HI,96793|Wailuku, HI;20.8911111;-156.5047222;4
+530 Shoshone St W,Twin Falls,ID,83301|530 Shoshone St W, Twin Falls, ID 83301;42.5528934;-114.4740595;8
+421 Columbia st,Cohoes,NY,12047|421 Columbia St, Cohoes, NY 12047;42.7745650;-73.7250330;8
+Norfolk,VA,23517|Norfolk, VA 23517;36.8694267;-76.2919540;5
+2318 Hungary Road,Henrico,VA,23228|2318 Hungary Rd, Henrico, VA 23228;37.6418189;-77.4958750;8
+710 W. King St.,Owosso,MI,48867|710 W King St, Owosso, MI 48867;43.0049753;-84.1785530;8
+239 Third Avenue East,Hendersonville,NC,28792|239 3rd Ave E, Hendersonville, NC 28792;35.3161396;-82.4581951;8
+239 Third Avenue East,Hendersonville,NC,28793|239 3rd Ave E, Hendersonville, NC 28792;35.3161396;-82.4581951;8
+627 Swannanoa River Rd,Asheville,NC,28805|627 Swannanoa River Rd, Asheville, NC 28805;35.5771960;-82.4981910;8
+1335 North Main Street,Marshall,NC,27853|1335 N Main St, Marshall, NC 28753;35.8099971;-82.6911032;8
+900 Jennings Street,Sioux City,IA,51101|900 Jennings St, Sioux City, IA 51105;42.4996545;-96.3993657;8
+Manhattan, Brooklyn, Queens,New York,NY,10017|New York, NY 10017;40.7525825;-73.9698715;5
+Manhattan, Brooklyn & Queens,New York,NY,10017|New York, 1255 2nd Ave, New York, NY 10065;40.7647890;-73.9613410;9
+2420 19th Avenue,Forest Grove,OR,97116|2420 19th Ave, Forest Grove, OR 97116;45.5179950;-123.1040120;8
+2028 Broad Ripple Avenue,Indianapolis,IN,46220|2028 Broad Ripple Ave, Indianapolis, IN 46220;39.8689920;-86.1260240;8
+4137 West 21st Avenue,Gary,IN,46404|4137 W 21st Ave, Gary, IN 46404;41.5806669;-87.3877758;8
+2301 pierce Street,Sioux City,IA,51101|2301 Pierce St, Sioux City, IA 51104;42.5141772;-96.4051634;8
+715 Douglas Street,Sioux City,IA,51101|715 Douglas St, Sioux City, IA 51101;42.4977680;-96.4064849;8
+214 East Washington St.,Lewisburg,WV,24901|214 E Washington St, Lewisburg, WV 24901;37.8007054;-80.4437061;8
+14134 Midland Road,Poway,CA,92074|14134 Midland Rd, Poway, CA 92064;32.9703890;-117.0364490;8
+2715 W 11th Ave,Denver,CO,80204|2715 W 11th Ave, Denver, CO 80204;39.7342760;-105.0204950;8
+229 Lawrence Road,Lawrenceville,NJ,08648|Lawrence Rd, Lawrenceville, NJ 08648;40.2805360;-74.7459030;6
+7125 FOOTHILL bLVD.,TUJUNGA,CA,91042|7125 Foothill Blvd, Tujunga, CA 91042;34.2481704;-118.2868390;8
+Albany,NY,12205|Albany, NY 12205;42.6804428;-73.7749786;5
+33 Everett Road,Albany,NY,12205|33 Everett Rd, Albany, NY 12205;42.6891419;-73.7779760;8
+216 Harmon Street,Lexington,SC,29072|216 Harmon St, Lexington, SC 29072;33.9790860;-81.2286890;8
+5123 Virginia Way,Brentwood,TN,37027|5123 Virginia Way, Brentwood, TN 37027;36.0317280;-86.8036240;8
+Lewistown,MT,59457|Lewistown, Mt 59457;47.0466452;-109.4666370;4
+847 Case Street,Hendersonville,NC,28792|847 Case St, Hendersonville, NC 28792;35.2925440;-82.4276841;8
+35 E. Walnut Street,Asheville,NC,28801|35 E Walnut St, Asheville, NC 28801;35.5972110;-82.5511790;8
+1335 North Main Street,Marshall,NC,28753|1335 N Main St, Marshall, NC 28753;35.8099971;-82.6911032;8
+1515 S. Harwood,Dallas,TX,75215|1515 S Harwood St, Dallas, TX 75215;32.7737720;-96.7866820;8
+701 MacArthur Avenue,Ashland,WI,54806|701 MacArthur Ave, Ashland, WI 54806;46.5831860;-90.8881590;8
+824 US Highway 1 Suite 240,North Palm Beach,FL,33408|824 U.S. Highway 1 #240, North Palm Beach, FL 33408;26.8229590;-80.0592980;9
+2313 17th Avenue,Kenosha,WI,53140|2313 17th Ave, Kenosha, WI 53140;42.6163390;-87.8289240;8
+214 S. Washington Street,Watertown,WI,53094|214 S Washington St, Watertown, WI 53094;43.1927900;-88.7280270;8
+Neillsville,WI,54456|Neillsville, WI 54456;44.5599620;-90.5962498;4
+2020 N. Broadway,Walnut Creek,CA,94596|2020 N Broadway, Walnut Creek, CA 94596;37.9073605;-122.0614403;8
+Dallas,TX,75231|Dallas, TX 75231;32.8757858;-96.7725524;5
+Phillipsburg,NJ,08865|Phillipsburg, NJ;40.6937099;-75.1901761;4
+46 Park Street,Framingham,MA,01702|46 Park St, Framingham, MA 01702;42.2780690;-71.4191390;8
+824 US Highway 1, Suite 240,North Palm Beach,FL,33408|824 U.S. Highway 1 #240, North Palm Beach, FL 33408;26.8229590;-80.0592980;9
+1985 Pennington Road,Ewing,NJ,08618|1985 Pennington Rd, Ewing, NJ 08618;40.2702400;-74.7844790;8
+2728 Asbury Road - Fountain Park,Dubuque,IA,52001|Dubuque, IA 52001;42.5556869;-90.6984405;5
+Nashville,TN,37211|Nashville, TN 37211;36.0445404;-86.6932983;5
+14255 Stark Road,Livonia,MI,48154|14255 Stark Rd, Livonia, MI 48154;42.3867190;-83.3803690;8
+877 Madison Avenue,Albany,NY,12208|877 Madison Ave, Albany, NY 12208;42.6616170;-73.7829430;8
+9201 Basil Court Suite 160,Largo,MD,20774|9201 Basil Ct #160, Upper Marlboro, MD 20774;38.9142220;-76.8472560;9
+2424A Rice Blvd.,Houston,TX,77005|2424 Rice Blvd, Houston, TX 77005;29.7177010;-95.4160380;8
+720 Charles Street,Wellsburg,WV,26070|720 Charles St, Wellsburg, WV 26070;40.2699954;-80.6126168;8
+Elizabeth,NJ,07208|Elizabeth, NJ 07208;40.6768074;-74.2153739;5
+340 N Sam Houston Pkwy E, Ste 101,Houston,TX,77060|340 North Sam Houston Pkwy E #101, Houston, TX 77060;29.9384241;-95.3997052;9
+2580 South Montesano,Westport,WA,98595|2580 S Montesano St, Westport, WA 98595;46.8614968;-124.1009479;8
+2763 Webster Avenue,Bronx,NY,10458|2763 Webster Ave, Bronx, NY 10458;40.8659320;-73.8865670;8
+506 Central Avenue,Newark,NJ,07107|506 Central Ave, Newark, NJ 07107;40.7481820;-74.1945660;8
+2860 Annandale Road,Falls Church,VA,22042|2860 Annandale Rd, Falls Church, VA 22042;38.8738650;-77.1749690;8
+6031 Centreville Crest Lane,Centreville,VA,20121|6031 Centreville Crest Ln, Centreville, VA 20121;38.8364467;-77.4347349;8
+314 Main St,Sandstone,MN,55072|Main St, Sandstone, MN 55072;46.1285235;-92.8694152;6
+1785 S Escondido Blvd #A,Escondido,CA,92025|1785 S Escondido Blvd, Escondido, CA 92025;33.1029790;-117.0723940;8
+1450 Parkside Ave. Suite 22,Ewing,NJ,08638|1450 Parkside Ave #22, Ewing, NJ 08638;40.2508089;-74.7700520;9
+185 N. Main Street,Richland Center,WI,51581|185 N Main St, Richland Center, WI 53581;43.3364156;-90.3865716;8
+Charlestown,WV,25311|Charleston, WV 25311;38.3816871;-81.5952148;5
+9750 3rd Avenue NE,Seattle,WA,98115|9750 3rd Ave NE, Seattle, WA 98115;47.6996360;-122.3248460;8
+Belle,WV,25015|Belle, WV;38.2320461;-81.5376184;4
+St Albans,WV,25177|St Albans, WV;38.3761810;-81.8326840;4
+South Charleston,WV,25309|South Charleston, WV;38.3684290;-81.6995700;4
+Wheeling,WV,26003|Wheeling, WV;40.0639616;-80.7209149;4
+Beckley,WV,25801|Beckley, WV;37.7781702;-81.1881557;4
+111 Milk Street,Westborough,MA,01581|111 Milk St, Westborough, MA 01581;42.2738940;-71.6233410;8
+Boston,MA,02111|Boston, MA 02111;42.3546981;-71.0509681;5
+Jersey City and Newark Metro Areas,NJ,07305|Jersey City's Bed and Breakfast, 442 Mercer St, Jersey City, NJ 07302;40.7240320;-74.0623090;9
+07305|Jersey City, NJ 07305;40.6996860;-74.0405502;5
+650 Winchester Ave,Martinsburg,WV,25401|650 Winchester Ave, Martinsburg, WV 25401;39.4523847;-77.9759554;8
+250 Main St.,Marlborough,MA,01752|250 Main St, Marlborough, MA 01752;42.3465609;-71.5518705;8
+528 East 22nd Street,Baltimore,MD,21218|528 E 22nd St, Baltimore, MD 21218;39.3145635;-76.6086321;8
+528 E 22nd Street,Baltimore,MD,21218|528 E 22nd St, Baltimore, MD 21218;39.3145635;-76.6086321;8
+11 Towle Avenue,Dover,NH,03820|11 Towle Ave, Dover, NH 03820;43.1901300;-70.8842051;8
+Cincinnati,OH,45219|Cincinnati, OH 45219;39.1249618;-84.5161323;5
+1 Harrison St., S.E.,Leesburg,VA,20175|1 Harrison St SE, Leesburg, VA 20175;39.1139000;-77.5625249;8
+1 Harrison St. , S.E.,Leesburg,VA,20175|1 Harrison St SE, Leesburg, VA 20175;39.1139000;-77.5625249;8
+Tampa,FL,33602|Tampa, FL 33602;27.9580774;-82.4598388;5
+1763 Columbia Road NW,Washington,DC,20009|1763 Columbia Rd NW, Washington, DC 20009;38.9235638;-77.0415005;8
+2202 Post Road,Plover,WI,54467|2202 Post Rd, Plover, WI 54467;44.4650000;-89.5442000;8
+8449 South 150 West,Midvale,UT,84047|8449 S 150 W, Midvale, UT 84047;40.5978987;-111.8960397;8
+29430 Ida Street,Valley,NE,68064|29430 Ida St, Valley, NE 68064;41.3212130;-96.3787119;8
+215 Veterans Blvd,Branson,MO,65616|215 Veterans Blvd, Branson, MO 65616;36.6430714;-93.2181897;8
+1 College street, ECHO Lake Aquarium and Science Center,Burlington,VT,05401|ECHO Lake Aquarium and Science Center, at the Leahy Center for Lake Champlain, 1 College St, Burlington, VT 05401;44.4770160;-73.2224190;9
+Solano County,CA,94534|Fairfield, CA 94534;38.2179012;-122.1556701;5
+3519 N. Richmond Rd.,McHenry,IL,60051|3519 N Richmond Rd, McHenry, IL 60051;42.3782749;-88.2694427;8
+West Columbia,SC,29171|West Columbia, SC 29171;33.9900000;-81.0699999;5
+1900 S. Michigan Avenue,Chicago,IL,60616|1900 S Michigan Ave, Chicago, IL 60616;41.8564619;-87.6240669;8
+2129 Osuna NE,Albuquerque,NM,87113|2129 Osuna Rd NE, Albuquerque, NM 87113;35.1538640;-106.6060070;8
+Chicago,IL,60620|Chicago, IL 60620;41.7397155;-87.6561927;5
+7322 West Waters Avenue,Tampa,FL,33634|7322 W Waters Ave, Tampa, FL 33634;28.0257264;-82.5612785;8
+State Route 90,Huachuca City,AZ,85616|Rte 90, Huachuca City, AZ 85616;31.7577445;-110.3503005;6
+Bisbee,AZ,85603|Bisbee, AZ 85603;31.4481547;-109.9284084;4
+Thatcher,AZ,85552|Thatcher, AZ;32.8492323;-109.7592479;4
+Benson,AZ,85602|Benson, AZ;31.9678611;-110.2945174;4
+Clifton,AZ,85533|Clifton, AZ;33.0508966;-109.2961826;4
+2300 7th Street NW,New Brighton,MN,55112|2300 7th St NW, New Brighton, MN 55112;45.0622400;-93.2163190;8
+355 BARD AVE,STATEN ISLAND,NY,10310|355 Bard Ave, Staten Island, NY 10301;40.6357340;-74.1067193;8
+P.O. Box 2285,Toluca Lake,CA,91602|San Fernando Valley, CA 91602;34.1461067;-118.3622436;5
+5280 Carroll Canyon Rd Ste 310,San Diego,CA,92121|5280 Carroll Canyon Rd #310, San Diego, CA 92121;32.8919540;-117.1937060;9
+8470 N. Overfield Road,Coolidge,AZ,85128|8470 N Overfield Rd, Coolidge, AZ 85128;32.9565050;-111.6552420;8
+Florence,AL,35630|Florence, AL 35630;34.8856620;-87.6728363;5
+2695 S. Index Street,Washougal,WA,98671|2695 Index St, Washougal, WA 98671;45.5708021;-122.3435357;8
+2060-D Ave Los Arboles, #544,Thousand Oaks,CA,91362|2060 Avenida De Los Arboles, Thousand Oaks, CA 91362;34.2111961;-118.8417564;8
+Richmond,VA,23238|Richmond, VA 23238;37.6118221;-77.6830749;5
+Larimer County,CO,80521|Fort Collins, CO 80521;40.5713691;-105.1408615;5
+Fort Collins and Loveland,CO,80521|
+80521|Fort Collins, CO 80521;40.5713691;-105.1408615;5
+14063 W. Grand Avenue,Surprise,AZ,85374|14063 W Grand Ave, Surprise, AZ 85374;33.6511958;-112.3666134;8
+1421 E. State St.,Fremont,OH,43420|1421 E State St, Fremont, OH 43420;41.3415090;-83.0933130;8
+13525 446th Ave.,Waubay,SD,57273|446th Ave, Waubay, SD 57273;45.2459579;-97.2839730;6
+Anaheim,CA,92807|Anaheim, CA 92807;33.8604202;-117.8407745;5
+3893 Adler Place- Suite 170,Bethlehem,PA,18017|3893 Adler Pl #170, Bethlehem, PA 18017;40.6697420;-75.3824670;9
+830 Mace Avenue,Bronx,NY,10467|830 Mace Ave, Bronx, NY 10469;40.8631105;-73.8626125;8
+39 Montauk Hwy,Blue Point,NY,11715|39 Montauk Hwy, Blue Point, NY 11715;40.7539010;-73.0404480;8
+136 S Main St,Canandaigua,NY,14424|136 S Main St, Canandaigua, NY 14424;42.8858581;-77.2801089;8
+2700 East 3100 South,Salt Lake City,UT,84109|2700 E 3100 S, Salt Lake City, UT 84109;40.7035408;-111.8149423;8
+Oakland,CA,94612|Oakland, CA 94612;37.8079643;-122.2694702;5
+3828 Main Street,Hinsdale,NY,14743|3828 Main St, Hinsdale, NY 14743;42.1671574;-78.3890216;8
+155 Gifford Street,Syracuse,NY,13202|155 Gifford St, Syracuse, NY 13202;43.0435674;-76.1551289;8
+148 Gifford Street,Syracuse,NY,13202|148 Gifford St, Syracuse, NY 13202;43.0435885;-76.1552988;8
+35 Clinton Street,Salamanca,NY,14779|35 Clinton St, Salamanca, NY 14779;42.1551100;-78.7147729;8
+135 W MANLIUS ST,EAST SYRACUSE,NY,13057|135 W Manlius St, East Syracuse, NY 13057;43.0637370;-76.0723030;8
+Route 9G,Hyde Park,NY,12538|Rte 9g, Hyde Park, NY 12538;41.8159660;-73.8972200;6
+Main St,Chestertown,NY,12817|Main St, Chestertown, NY 12817;43.5981860;-73.8014309;6
+214 Railroad Ave NW,Mora,MN,55051|214 Railroad Ave NW, Mora, MN 55051;45.8767859;-93.2987804;8
+4833 W. 123rd Street,Savage,MN,55378|4833 W 123rd St, Savage, MN 55378;44.7783929;-93.3408519;8
+19 North Main Street,Portville,NY,14770|19 N Main St, Portville, NY 14770;42.0395380;-78.3421480;8
+Randolph,NY,14772|Randolph, NY 14772;42.1620050;-78.9753174;4
+Chisago County and City of Forest Lake,MN,55013|Chisago City, MN 55013;45.3537139;-92.8714332;5
+Montgomery County,MD,20852|Rockville, MD 20852;39.0525588;-77.1222572;5
+PITTSBURGH,PA,15220|Pittsburgh, PA 15220;40.4253993;-80.0210546;5
+1 Church Street,Hyde Park,NY,12534|1 Church St, Hyde Park, NY 12538;41.7902240;-73.9351650;8
+8 Leo Moss Drive,Olean,NY,14760|Leo Moss Dr, Olean, NY 14760;42.0875760;-78.4509920;6
+Denver,CO,80201|Denver, CO 80201;39.7443428;-104.9907298;5
+South Bend,IN,46601|South Bend, IN 46601;41.6732254;-86.2580184;5
+381 Riverside Dr., Suite 440,Franklin,TN,37064|381 Riverside Dr #440, Franklin, TN 37064;35.9120280;-86.8268390;9
+9168 T.N. Skiles Road,Ponder,TX,76259|9168 T N Skiles Rd, Ponder, TX 76259;33.1961290;-97.2732480;8
+80 Maiden Lane,New York,NY,10038|80 Maiden Ln, New York, NY 10038;40.7072950;-74.0075840;8
+815 Washington St.,Reading,PA,19601|815 Washington St, Reading, PA 19601;40.3368859;-75.9212316;8
+Greenwood,SC,29648|Greenwood, SC 29648;34.2007513;-82.1384775;5
+583 Highland Crossing Suite 210,East Ellijay,GA,30540|Highland Crossing, East Ellijay, GA 30540;34.6561880;-84.4914524;6
+570 North State Route 741,Lebanon,OH,45036|570 Rte 741, Lebanon, OH 45036;39.4466707;-84.2785057;8
+4005 Hendersonville Rd.,Fletcher,NC,28732|4005 Hendersonville Rd, Fletcher, NC 28732;35.4271510;-82.5026080;8
+50 S French Broad #213,Asheville,NC,28801|50 S French Broad Ave, Asheville, NC 28801;35.5917370;-82.5585880;8
+31 College Pl.,Asheville,NC,28801|31 College Pl, Asheville, NC 28801;35.5989990;-82.5433310;8
+2091 Radcliff Dr,Cincinnati,OH,45204|2091 Radcliff Dr, Cincinnati, OH 45204;39.1210120;-84.5476100;8
+Asheville,NC,28803|Asheville, NC 28803;35.5460395;-82.4509963;5
+Asheville,NC,28801|Asheville, NC 28801;35.5904464;-82.5179672;5
+Boston,MA,02124|Boston, MA 02124;42.2862663;-71.0749092;5
+318 N. Main St.,Hendersonville,NC,28792|318 N Main St, Hendersonville, NC 28792;35.3161351;-82.4600756;8
+Fletcher,NC,28732|Fletcher, NC;35.4306712;-82.5012316;4
+Chicago,IL,60624|Chicago, IL 60624;41.8799324;-87.7245330;5
+Hendersonville,NC,28793|Hendersonville, NC 28793;35.3200000;-82.4599999;5
+339 New Leicester Hwy,Asheville,NC,28803|339 New Leicester Hwy, Asheville, NC 28806;35.6014370;-82.6217180;8
+Roxbury,MA,02119|Boston, MA 02119;42.3181228;-71.0894813;5
+46 West 16 Street,New York,NY,10011|46 W 16th St, New York, NY 10011;40.7380400;-73.9952600;8
+Fort Collins,CO,80521|Fort Collins, CO 80521;40.5713691;-105.1408615;5
+2069 Grand Concourse,Bronx,NY,10457|2069 Grand Concourse, Bronx, NY 10457;40.8531045;-73.9028176;8
+2832 Fulton St. at Schenk Ave.,Brooklyn,NY,11207|2832 Fulton St, Brooklyn, NY 11207;40.6780690;-73.8900550;8
+100 Pensylvania Avenue, 2nd Floor,Brooklyn,NY,11208|New York, NY 11208;40.6765708;-73.8729858;5
+43-31 39th Street,Sunnyside,NY,11104|48-31 39th St, Queens, NY 11104;40.7392989;-73.9270676;8
+78 Hudson Avenue,Haverstraw,NY,10927|78 Hudson Ave, Haverstraw, NY 10927;41.1953990;-73.9689770;8
+365 West 1st St,Fulton,NY,13069|365 N 1st St, Fulton, NY 13069;43.3333402;-76.4165284;8
+4500 Beltway Dr Suite A,Addison,TX,75001|4500 Beltway Dr, Addison, TX 75001;32.9516280;-96.8346810;8
+112 10th St.,Watkins Glen,NY,14891|112 10th St, Watkins Glen, NY 14891;42.3766575;-76.8700824;8
+324 W. Buffalo St.,Ithaca,NY,14850|324 W Buffalo St, Ithaca, NY 14850;42.4411913;-76.5035445;8
+1473 Erie Boulevard 3rd Floor,Schenectady,NY,12305|Schenectady, NY 12305;42.8165435;-73.9462165;5
+204 Hawthorne Avenue,Yonkers,NY,10705|204 Hawthorne Ave, Yonkers, NY 10705;40.9234200;-73.9026750;8
+61 West Street,Ilion,NY,13357|61 West St, Ilion, NY 13357;43.0140749;-75.0391584;8
+2023 Vale Road  Suite 210,San Pablo,CA,94806|2023 Vale Rd #210, San Pablo, CA 94806;37.9540560;-122.3386830;9
+100 Manny Court,Michigan City,IN,46360|100 Manny Ct, Michigan City, IN 46360;41.7276246;-86.8845365;8
+790 Broadway, 2nd Fl.,Brooklyn,NY,11206|Brooklyn, NY 11206;40.7023506;-73.9433975;5
+43 Valco Dr.,Malone,NY,12953|Valco Dr, Malone, NY 12953;44.8561560;-74.3400900;6
+112 Center St., PO Box 384,Canastota,NY,13032|112 Center St, Canastota, NY 13032;43.0785010;-75.7523010;8
+25 Jefferson St.,Salamanca,NY,14779|25 Jefferson St, Salamanca, NY 14779;42.1537020;-78.7171230;8
+160 McCracken Circle,Bluffton,SC,29910|160 H E Mccracken Cir, Bluffton, SC 29910;32.2463325;-80.8971553;8
+24 Cherry St.,Johnson City,NY,13790|24 Cherry St, Johnson City, NY 13790;42.1095530;-75.9558110;8
+20 Sumter AVe,Guilderland,NY,12186|20 Sumter Ave, Guilderland, NY 12084;42.6936250;-73.8872200;8
+361 South Main Street,Geneva,NY,14456|361 S Main St, Geneva, NY 14456;42.8663970;-76.9846560;8
+130 Dolson Ave., 3rd Floor,Middletown,NY,10940|Middletown, NY 10940;41.4459271;-74.4229341;4
+2431 6th Avenue,Troy,NY,12180|2431 6th Ave, Troy, NY 12180;42.7401383;-73.6833102;8
+1 Hudson Street,Yonkers,NY,10702|1 Hudson St, Yonkers, NY 10701;40.9316710;-73.8993720;8
+1 Kimball St.,Amsterdam,NY,12010|1 Kimball St, Amsterdam, NY 12010;42.9401940;-74.1928240;8
+6970 Schuyler Road,East Syracuse,NY,13057|6970 Schuyler Rd, East Syracuse, NY 13057;43.1092889;-76.0720560;8
+Savannah,GA,31410|Savannah, GA 31410;32.0023221;-80.9665527;5
+1272 Delaware Ave.,Buffalo,NY,14209|1272 Delaware Ave, Buffalo, NY 14209;42.9186656;-78.8683373;8
+112 Spring St.,Saratoga Springs,NY,12866|112 Spring St, Saratoga Springs, NY 12866;43.0783480;-73.7796870;8
+1 - 3 Milk Street,Branchville,NJ,07826|3 Milk St, Branchville, NJ 07826;41.1454710;-74.7470990;8
+514 North Court,Carroll,IA,51401|514 N Court St, Carroll, IA 51401;42.0646670;-94.8655730;8
+215 East Broadway Street,Alliance,OH,44601|215 E Broadway St, Alliance, OH 44601;40.9187640;-81.1025300;8
+New Orleans,LA,70119|New Orleans, LA 70119;29.9742412;-90.0911636;5
+285 17th St.,Oakland,CA,94612|285 17th St, Oakland, CA 94612;37.8050130;-122.2658130;8
+5700 SW 34th Street, Suite 222,Gainesville,FL,32608|5700 SW 34th St #222, Gainesville, FL 32608;29.5995540;-82.3690820;9
+Martin,TN,38237|Martin, TN 38237;36.3433965;-88.8503379;4
+Knoxville,TN,37919|Knoxville, TN 37919;35.8989295;-84.0408821;5
+Chattanooga,TN,37401|Chattanooga, TN 37401;35.0457994;-85.3065281;5
+142 Stage Rd,Monroe,NY,10950|142 Stage Rd, Monroe, NY 10950;41.3264833;-74.1869797;8
+1101 Beach Ave,LaGrange Park,IL,60526|1101 Beach Ave, La Grange Park, IL 60526;41.8345682;-87.8638873;8
+252 W. 116th Street,New York,NY,10026|252 W 116th St, New York, NY 10026;40.8039429;-73.9549890;8
+345 Guyon Avenue,Staten Island,NY,10306|345 Guyon Ave, Staten Island, NY 10306;40.5594006;-74.1179958;8
+100 Lemon Street,Central Islip,NY,11722|100 Lemon St, Central Islip, NY 11722;40.7773790;-73.2123650;8
+103 First Street,Riverhead,NY,11901|103 1st St, Riverhead, NY 11901;40.9179109;-72.6610410;8
+7 Amity Street,Patchogue,NY,11772|7 Amity St, Patchogue, NY 11772;40.7605020;-73.0138370;8
+179 East Main Street,Patchogue,NY,11772|179 E Main St, Patchogue, NY 11772;40.7662090;-73.0104290;8
+146 Babylon Turnpike,Freeport,NY,11566|146 Babylon Turnpike, Merrick, NY 11566;40.6567740;-73.5568610;8
+131 Middle Road,Sayville,NY,11782|131 Middle Rd, Sayville, NY 11782;40.7364400;-73.0800200;8
+510 Naragansette Ave,East Patchogue,NY,11772|510 Narragansett Ave, Patchogue, NY 11772;40.7739991;-72.9603914;8
+716 Route 25A,Rocky Point,NY,11778|716 New York 25A, Rocky Point, NY 11778;40.9463004;-72.9156016;8
+140 West Pine Street,Long Beach,NY,11561|140 W Pine St, Long Beach, NY 11561;40.5924214;-73.6681628;8
+100 Madison Ave,Hempstead,NY,11550|100 Madison Ave, Hempstead, NY 11550;40.7020200;-73.6278570;8
+17 South 20th Street,Wyandanch,NY,11798|17 S 20th St, Wyandanch, NY 11798;40.7493110;-73.3635480;8
+95 East Main Street,Patchogue,NY,11772|95 E Main St, Patchogue, NY 11772;40.7661609;-73.0128440;8
+523 Front Street,Greenport,NY,11944|523 Front St, Greenport, NY 11944;41.1007524;-72.3669736;8
+7 Continental Place,Glen Cove,NY,11542|7 Continental Pl, Glen Cove, NY 11542;40.8619300;-73.6315780;8
+31 Rider Avenue,Patchogue,NY,11772|31 Rider Ave, Patchogue, NY 11772;40.7644340;-73.0089140;8
+45 Church Street,Lake Ronkonkoma,NY,11779|45 Church St, Lake Ronkonkoma, NY 11779;40.8177160;-73.1165380;8
+792 Hawkins Avenue,Lake Grove,NY,11755|792 Hawkins Ave, Lake Grove, NY 11755;40.8375050;-73.1112600;8
+645 Middle Country Road,Middle Island,NY,11953|645 Middle Country Rd, Middle Island, NY 11953;40.8815838;-72.9498607;8
+309 Patchogue Road,Port Jefferson,NY,11776|309 Patchogue Rd, Port Jefferson Station, NY 11776;40.9316658;-73.0527409;8
+127 Barnum Avenue,Port Jefferson,NY,11777|127 Barnum Ave, Port Jefferson, NY 11777;40.9429807;-73.0688129;8
+545 Old Town Road,Port Jefferson,NY,11776|545 Old Town Rd, Port Jefferson Station, NY 11776;40.9084360;-73.0634160;8
+Main Street,Port Jefferson,NY,11777|Main St, Port Jefferson, NY 11777;40.9403345;-73.0623799;6
+510 Naragansette Ave.,East Patchogue,NY,11772|510 Narragansett Ave, Patchogue, NY 11772;40.7739991;-72.9603914;8
+609 W. 10th St.,Roswell,NM,88201|609 W 10th St, Roswell, NM 88201;33.4033800;-104.5305279;8
+945 County Route 64,Elmira,NY,14903|945 County Road 64, Elmira, NY 14903;42.1542405;-76.8770843;8
+90 John St., Suite 301,New York,NY,10038|90 John St #301, New York, NY 10038;40.7079520;-74.0066600;9
+116 Street,New York,NY,10006|Wall Street, New York, NY 10006;40.7057350;-74.0108780;9
+39 Broadway 10th Floor,New York,NY,10006|New York, NY 10006;40.7098102;-74.0137786;5
+New York,NY,10006|New York, NY 10006;40.7098102;-74.0137786;5
+355 Food Center Dr,Bronx,NY,10474|355 Food Center Dr, Bronx, NY 10474;40.8098796;-73.8726093;8
+407 West Fifth Street,Owensboro,KY,42301|407 W 5th St, Owensboro, KY 42301;37.7715646;-87.1147045;8
+936 Exchange Street,Rochester,NY,14608|936 Exchange St, Rochester, NY 14608;43.1386124;-77.6212295;8
+1724 Mandela Parkway Suite 1,Oakland,CA,94607|1724 Mandela Pkwy #1, Oakland, CA 94607;37.8131208;-122.2904462;9
+10001 NW 87 avenue,Hialeah Gardens,FL,33016|10001 NW 87th Ave, Hialeah Gardens, FL 33016;25.8672270;-80.3384980;8
+Bingham Farms,MI,48025|Bingham Farms, MI;42.5158680;-83.2732642;4
+8119 Clough Pike,Cincinnati,OH,45244|8119 Clough Pike, Cincinnati, OH 45255;39.0874760;-84.3293190;8
+12 Ridgeview Avenue,White Plains,NY,10606|12 Ridgeview Ave, White Plains, NY 10606;41.0230492;-73.7787171;8
+2289 Gunbarrel Rd & 3605 Brainerd Rd,Chattanooga,TN,37421|E Brainerd Rd & Gunbarrel Rd, Chattanooga, TN 37421;35.0151930;-85.1636395;7
+Martinez,CA,94553|Martinez, CA;38.0193657;-122.1341321;4
+350 Erkenbrecher avenue,cincinnati,OH,45229|350 Erkenbrecher Ave, Cincinnati, OH 45229;39.1426770;-84.5007450;8
+55 Colvin Ave.,Albany,NY,12206|55 Colvin Ave, Albany, NY 12206;42.6789320;-73.7946160;8
+St Petersburg,FL,33705|St Petersburg, FL 33705;27.7272090;-82.6456909;5
+841 Broadway, 3rd Floor, Suite 301,New York,NY,10003|Broadway Dance Center, 322 W 45th Street, 3rd Floor, New York, NY 10032;40.7596180;-73.9895720;9
+University Parkway,Johnson City,TN,37604|University Pkwy, Johnson City, TN 37604;36.3033965;-82.3575312;6
+331 E70th St.,New York,NY,10021|331 E 70th St, New York, NY 10021;40.7670810;-73.9577540;8
+4215 Crescent Street, 9th Floor,Long Island City,NY,11101|LONG IS CITY, NY 11101;40.7457618;-73.9420433;5
+23 Liberty St.,Bath,NY,14810|23 Liberty St, Bath, NY 14810;42.3343149;-77.3186480;8
+10615 Double R blvd,Reno,NV,89521|10615 Double R Blvd, Reno, NV 89521;39.4281988;-119.7521931;8
+235 Glen Street,Glen Cove,NY,11542|235 Glen St, Glen Cove, NY 11542;40.8608135;-73.6223833;8
+143 Schleigel Blvd.,Amityville,NY,11701|143 Schleigel Blvd, Amityville, NY 11701;40.7058683;-73.4070006;8
+145 South 3rd Street,Brooklyn,NY,11211|145 S 3rd St, Brooklyn, NY 11211;40.7123830;-73.9615370;8
+Bronx,NY,10451|New York, NY 10451;40.8219203;-73.9210815;5
+Bronx,NY,10452|New York, NY 10452;40.8363704;-73.9223632;5
+Bronx,NY,10453|New York, NY 10453;40.8526611;-73.9130096;5
+Bronx,NY,10455|Bronx, NY 10455;40.8133773;-73.9069786;5
+Bronx,NY,10456|Bronx, NY 10456;40.8304138;-73.9097023;5
+Bronx,NY,10457|Bronx, NY 10457;40.8458824;-73.8989448;5
+Bronx,NY,10458|Bronx, NY 10458;40.8630256;-73.8864517;5
+Bronx,NY,10459|Bronx, NY 10459;40.8149490;-73.8957633;5
+Bronx,NY,10460|Bronx, NY 10460;40.8468742;-73.8798980;5
+Bronx,NY,10461|Bronx, NY 10461;40.8298034;-73.8345146;5
+Bronx,NY,10465|New York, NY 10465;40.8418388;-73.8047943;5
+Bronx,NY,10467|Bronx, NY 10467;40.8682632;-73.8718032;5
+Bronx,NY,10468|New York, NY 10468;40.8669834;-73.9019775;5
+Bronx,NY,10473|New York, NY 10473;40.8116245;-73.8616714;5
+115 Sharpe Blvd.,Mount Vernon,NY,10550|Mt Vernon, NY 10550;40.9050273;-73.8266143;5
+Queens,NY,11004|Glen Oaks, NY 11004;40.7464523;-73.7145614;5
+Queens,NY,11101|New York, NY 11101;40.7457618;-73.9420433;5
+Queens,NY,11102|Astoria, NY 11102;40.7806015;-73.9384765;5
+Queens,NY,11103|Queens, NY 11103;40.7631397;-73.9121093;5
+Queens,NY,11104|Queens, NY 11104;40.7431793;-73.9206275;5
+Queens,NY,11105|Astoria, NY 11105;40.7833442;-73.9077415;5
+Queens,NY,11106|Astoria, NY 11106;40.7609748;-73.9313430;5
+Queens,NY,11355|Queens, NY 11355;40.7440605;-73.8404617;5
+Queens,NY,11369|East Elmhurst, NY 11369;40.7714653;-73.8722801;5
+Queens,NY,11372|Queens, NY 11372;40.7525100;-73.8837814;5
+Queens,NY,11373|Queens, NY 11373;40.7290878;-73.8766212;5
+Parsons Blvd.,Jamaica,NY,11432|Parsons Blvd, Queens, NY 11432;40.7110077;-73.8061167;6
+Queens,NY,11375|Queens, NY 11375;40.7393783;-73.8475356;5
+Queens,NY,11377|Queens, NY 11377;40.7610473;-73.8981552;5
+Queens,NY,11385|New York, NY 11385;40.6969528;-73.8902740;5
+Queens,NY,11418|Queens, NY 11418;40.7004394;-73.8341827;5
+Queens,NY,11432|Queens, NY 11432;40.7169151;-73.8103103;5
+37-22 Union Street,Flushing,NY,11354|28-22 Union St, Queens, NY 11354;40.7719934;-73.8266104;8
+258 St. Nicholas Avenue at 123rd Street,New York,NY,10030|258 St Nicholas Terrace, New York, NY 10030;40.8192740;-73.9481692;8
+Boulder,CO,80302|Boulder, CO;40.0149856;-105.2705456;4
+2401 A Distribution Street,Charlotte,NC,28209|2401 Distribution St, Charlotte, NC 28203;35.2060950;-80.8666370;8
+210 S Pepper Street,Christiansburg,VA,24073|210 Pepper St S, Christiansburg, VA 24073;37.1292000;-80.4045000;8
+163-18 Jamaica Ave. 4th Floor,Jamaica,NY,11432|Queens, NY 11432;40.7169151;-73.8103103;5
+103-24 Roosevelt Ave., 3rd Floor,Corona,NY,11368|Corona, Queens, NY;40.7395505;-73.8566087;4
+515 E 3rd Street,Hastings,NE,68901|515 E 3rd St, Hastings, NE 68901;40.5861984;-98.3761817;8
+1525 Central Ave.,Far Rockaway,NY,11691|15-25 Central Ave, Queens, NY 11691;40.6052110;-73.7515060;8
+119-45 Union Tpke.,Forest Hills,NY,11375|119-45 Union Turnpike, Queens, NY 11375;40.7140370;-73.8323178;8
+136-19 41st Ave. 3rd Fl.,Flushing,NY,11355|Queens, NY 11355;40.7440605;-73.8404617;5
+1707 Ave M,Brooklyn,NY,11230|1707 Avenue M, Brooklyn, NY 11230;40.6184039;-73.9577165;8
+31-10 Thomas Ave. (Building C),Long Island City,NY,11101|31 Thomas St, Brooklyn, NY 11222;40.7258127;-73.9335661;8
+1368 Fulton St. 4th Floor,Brooklyn,NY,11216|Brooklyn, NY 11216;40.6812362;-73.9454765;5
+795 Lexington Ave.,Brooklyn,NY,11221|795 Lexington Ave, Brooklyn, NY 11221;40.6902136;-73.9290471;8
+2094 Fulton St.,Brooklyn,NY,11223|2094 Fulton St, Brooklyn, NY 11233;40.6783415;-73.9138790;8
+595 Sutter Avenue,Brooklyn,NY,11207|595 Sutter Ave, Brooklyn, NY 11207;40.6693060;-73.8968760;8
+5505 Fourth Avenue,Brooklyn,NY,11220|5505 4th Ave, Brooklyn, NY 11220;40.6433300;-74.0154070;8
+621 DeGraw St.,Brooklyn,NY,11217|621 Degraw St, Brooklyn, NY 11217;40.6791280;-73.9827169;8
+32 Penn St.,Brooklyn,NY,11205|32 Penn St, Brooklyn, NY 11211;40.7001323;-73.9614138;8
+1707 Avenue M,Brooklyn,NY,10038|Avenue S, Brooklyn, NY 11217;40.6831450;-73.9824940;6
+392 Kingston Avenue,Brooklyn,NY,11225|392 Kingston Ave, Brooklyn, NY 11225;40.6652370;-73.9428480;8
+1525 Central Avenue,Faraway,NY,11691|Faraway Rd, Armonk, NY 10504;41.1464250;-73.7071630;6
+2001 Oriental Blvd.,Brooklyn,NY,11235|2001 Oriental Blvd, Brooklyn, NY 11235;40.5783490;-73.9344650;8
+76 Wadsworth Avenue,New York,NY,10033|76 Wadsworth Ave, New York, NY 10033;40.8468920;-73.9371511;8
+80 Pitt Street (Lower East Side),New York,NY,10002|80 Pitt St, New York, NY 10002;40.7183402;-73.9824338;8
+198 E. 121st St. 5th Floor,New York,NY,10035|New York, NY 10035;40.7861480;-73.9287109;5
+140 West 140th Street,New York,NY,10030|140 W 140th St, New York, NY 10030;40.8180858;-73.9405130;8
+8 East 109th Street,New York,NY,10029|8 E 109th St, New York, NY 10029;40.7958699;-73.9492411;8
+80 Maiden Ln 10th Floor,New York,NY,10038|New York, NY 10038;40.7099685;-74.0030937;5
+32 Broadway, 6th Floor,New York,NY,10004|New York 10004;40.7076393;-74.0079106;5
+281 East Broadway,New York,NY,10002|281 E Broadway, New York, NY 10002;40.7143040;-73.9844140;8
+215 W. 125th Street 6th FL,New York,NY,10027|New York, NY 10027;40.8131065;-73.9434585;5
+80 Maiden Ln 10th FL,New York,NY,10038|New York, NY 10038;40.7099685;-74.0030937;5
+860 Courtlandt Ave.,Bronx,NY,10451|860 Courtlandt Ave, Bronx, NY 10451;40.8241600;-73.9153450;8
+c/o The Refuge House, 2715 Bainbridge Ave.,Bronx,NY,10458|Refuge House, 2715 Bainbridge Ave, Bronx, NY 10458-4075;40.8662970;-73.8906940;9
+50 East 168th Street,Bronx,NY,10466|50 E 168th St, Bronx, NY 10452;40.8362490;-73.9191450;8
+1510 Southern Blvd.,Bronx,NY,10460|1510 Southern Blvd, Bronx, NY 10460;40.8337340;-73.8895170;8
+514 Bay St.,Staten Island,NY,10304|514 Bay St, Staten Island, NY 10304;40.6293952;-74.0767112;8
+5801 Marina Drive,Holmes Beach,FL,34217|5801 Marina Dr, Holmes Beach, FL 34217;27.5096922;-82.7145373;8
+1921 W. Main St,Louisville,OH,44641|1921 W Main St, Louisville, OH 44641;40.8352379;-81.2802240;8
+Gaithersburg,MD,20877|Gaithersburg, MD 20877;39.1383953;-77.1833114;5
+SD Hwys 34 & 47 S.W. corner,Fort Thompson,SD,57339|Fort Thompson, SD;44.0686010;-99.4378846;4
+5901 Palisade Ave,Riverdale,NY,10471|5901 Palisade Ave, Bronx, NY 10471;40.9088920;-73.9096610;8
+1600 S 48th St,Lincoln,NE,68506|1600 S 48th St, Lincoln, NE 68506;40.7967030;-96.6519770;8
+9620 Nall Ave,Overland Park,KS,66213|9620 Nall Ave, Overland Park, KS 66207;38.9549861;-94.6490198;8
+715 N. St Joseph,Hastings,NE,68901|715 N St Joseph Ave, Hastings, NE 68901;40.5915980;-98.3874664;8
+2400 S 56th St,Lincoln,NE,68506|2400 S 56th St, Lincoln, NE 68506;40.7873180;-96.6431200;8
+South Omaha Library,Omaha,NE,68107|University of Nebraska At Omaha: Computer and Professional Development Training, 13006 W Center Rd, Omaha, NE 68144;41.2341370;-96.1163710;9
+Washington Library,Omaha,NE,68111|Omaha, NE 68111;41.2951889;-95.9656066;5
+Washington,DC,20009|Washington, DC 20009;38.9196929;-77.0381584;5
+2 South Hospital Drive,Murphysboro,IL,62966|2 S Hospital Dr, Murphysboro, IL 62966;37.7732434;-89.3261923;8
+1245 Elm Street,Manchester,NH,03101|1245 Elm St, Manchester, NH 03101;42.9960551;-71.4633311;8
+2385 W Cheltenham Ave.,Philadelphia,PA,19150|2385 W Cheltenham Ave, Philadelphia, PA 19095;40.0721949;-75.1548259;8
+Denver,CO,80216|Denver, CO 80216;39.8109512;-104.9920272;5
+Roanoke,VA,24016|Roanoke, VA 24016;37.2716064;-79.9960861;5
+Habitat For Humanity of Monroe County 14930 LaPlaisance Rd Suite 111,Monroe,MI,48161|14930 Laplaisance Rd #111, Monroe, MI 48161;41.8895600;-83.3959798;9
+Pomfret,MD,20675|Pomfret, MD 20675;38.5731239;-77.0436859;5
+50 Bay Street, 4th Floor,Staten Island,NY,10303|Staten Island, NY 10303;40.5964813;-74.1366996;5
+217 Wyckoff Ave,Brooklyn,NY,11201|217 Wyckoff Ave, Brooklyn, NY 11237;40.7022002;-73.9156445;8
+100 Pensylvania Avenue 2nd Floor,Brooklyn,NY,11207|New York, NY 11207;40.6496238;-73.8895454;5
+2832 Fulton St. at Schenk Ave.,Brooklyn,NY,11208|2832 Fulton St, Brooklyn, NY 11207;40.6780690;-73.8900550;8
+99 Essex Street 3rd Floor,Manhattan,NY,10002|New York, NY 10002;40.7144432;-73.9862785;5
+165 Eldridge Street,Manhattan,NY,10003|165 Eldridge St, New York, NY 10002;40.7199364;-73.9911580;8
+One Hellen Keller Way, 4th Floor,Hempstead,NY,11550|Hempstead, NY;40.7062128;-73.6187397;4
+2821 Frederick Douglass Boulevard,Manhattan,NY,10025|2821 Frederick Douglass Blvd, New York, NY 10039;40.8262522;-73.9394425;8
+76 Wadsworth Ave 2nd Floor,Manhattan,NY,10031|New York, NY 10031;40.8254508;-73.9493255;5
+13 Community Drive, Suite 103,Addison,NY,14801|Community Dr, Addison, NY 14801;42.1101959;-77.2223350;6
+24 Maple Street,Hornell,NY,14843|24 Maple St, Hornell, NY 14843;42.3305400;-77.6610400;8
+7625 Cty Rt. 20,Bradford,NY,14815|Bradford, NY 14815;42.3843097;-77.0999526;5
+6034 County Rt. 69,Canisteo,NY,14823|6034 County Road 69, Canisteo, NY 14823;42.3009048;-77.5086837;8
+23 Liberty Street,Bath,NY,14810|23 Liberty St, Bath, NY 14810;42.3343149;-77.3186480;8
+22 John Street,Painted Post,NY,14870|22 John St, Corning, NY 14830;42.1569485;-77.0819948;8
+304 Joseph Ave.,Rochester,NY,14605|304 Joseph Ave, Rochester, NY 14605;43.1691209;-77.6070780;8
+152 Baden St.,Rochester,NY,14605|152 Baden St, Rochester, NY 14605;43.1685634;-77.6067727;8
+169 St. Bridget's Drive,Rochester,NY,14605|169 St Bridgets Dr, Rochester, NY 14605;43.1665380;-77.6118750;8
+120 St. Bridget's Drive,Rochester,NY,14605|120 St Bridgets Dr, Rochester, NY 14605;43.1657960;-77.6123911;8
+138 Main Street,Brockport,NY,14420|138 Main St, Brockport, NY 14420;43.2132030;-77.9396390;8
+68 Ashland Street,Rochester,NY,14620|68 Ashland St, Rochester, NY 14620;43.1436110;-77.6086580;8
+1476 St. Paul Street,Rochester,NY,14621|1476 St Paul St, Rochester, NY 14621;43.1832396;-77.6249057;8
+1585 Academy Street,Woodhull,NY,14898|1585 Academy St, Woodhull, NY 14898;42.0785330;-77.4144900;8
+700 Exchange Street,Rochester,NY,14609|700 Exchange St, Rochester, NY 14608;43.1417760;-77.6167000;8
+39 West William Street,Corning,NY,14830|39 W William St, Corning, NY 14830;42.1502520;-77.0625010;8
+5929 Morton Hill Road,Hornell,NY,14843|5929 Morton Hill Rd, Hornell, NY 14843;42.2885954;-77.6330444;8
+1754 Norton Street,Rochester,NY,14609|1754 Norton St, Rochester, NY 14609;43.1878361;-77.5747579;8
+8593 Jacob's Ladder Road,Avoca,NY,14809|8593 Jacobs Ladder Rd, Avoca, NY 14809;42.4158109;-77.4389687;8
+Corner of Lake and Main Streets,Hammondsport,NY,14840|Main St & Lake St, Hammondsport, NY 14840;42.4079739;-77.2237959;7
+201 N. Hamilton Street,Painted Post,NY,14870|201 N Hamilton St, Painted Post, NY 14870;42.1590429;-77.0920740;8
+253 N. Clinton Ave.,Rochester,NY,14605|253 N Clinton Ave, Rochester, NY 14605;43.1620548;-77.6084244;8
+1727 Indian Hills Road,Lindley,NY,14870|1727 Indian Hills Rd, Painted Post, NY 14870;42.0836550;-77.1506880;8
+57 Central Part,Rochester,NY,14605|57 Central Park, Rochester, NY 14605;43.1694248;-77.5937732;8
+913 Coun ty Rte 82,Troupsburg,NY,14885|913 County Road 82, Troupsburg, NY 14885;42.0438530;-77.5459653;8
+145 Parsells Ave.,Rochester,NY,14609|145 Parsells Ave, Rochester, NY 14609;43.1652480;-77.5750280;8
+24 Main Street- American Legion,Prattsburgh,NY,14873|Prattsburgh, NY 14873;42.5372222;-77.3325000;4
+32 Denison Parkway,Corning,NY,14830|32 Denison Pkwy E, Corning, NY 14830;42.1421120;-77.0534790;8
+95 Seneca Street,Hornell,NY,14843|95 Seneca St, Hornell, NY 14843;42.3312830;-77.6608310;8
+34 West Main Street,Canisteo,NY,14823|34 W Main St, Canisteo, NY 14823;42.2727790;-77.6068490;8
+313 Third Ave/7th Day Adventist Church,Wayland,NY,14572|Wayland, NY 14572;42.5678449;-77.5897139;4
+102 N. Union St.,Rochester,NY,14607|102 N Union St, Rochester, NY 14607;43.1594776;-77.5944951;8
+20 Elm St. Suite 2,Hornell,NY,14843|20 Elm St #2, Hornell, NY 14843;42.3248738;-77.6600251;9
+100 Main Street,Binghamton,NY,13905|100 Main St, Binghamton, NY 13905;42.1009180;-75.9252150;8
+333 East Chestnut St.,Rochester,NY,14445|333 E Chestnut St, East Rochester, NY 14445;43.1121826;-77.4773343;8
+203 Washington Ave,Endicott,NY,13760|203 Washington Ave, Endicott, NY 13760;42.1002710;-76.0476900;8
+141 Arnett Blvd.,Rochester,NY,14619|141 Arnett Blvd, Rochester, NY 14619;43.1420497;-77.6368383;8
+28 King Road,Harpursville,NY,13787|28 King Rd, Harpursville, NY 13787;42.1825875;-75.6316740;8
+957 Goerge St.,Mumford,NY,14511|957 George St, Wheatland, NY 14511;42.9921850;-77.8646870;8
+25 1/2 Mill Street,Binghamton,NY,13903|25 1/2 Mill St, Binghamton, NY 13903;42.0908580;-75.9063230;8
+614 Clifford Ave.,Rochester,NY,14621|614 Clifford Ave, Rochester, NY 14621;43.1754130;-77.6068420;8
+127-131 Washington Street,Binghamton,NY,13901|127 Washington St, Binghamton, NY 13901;42.0981660;-75.9138470;8
+953 Joseph Ave.,Rochester,NY,14621|953 Joseph Ave, Rochester, NY 14621;43.1824489;-77.6081128;8
+42 Chenango Street,Binghamton,NY,13901|42 Chenango St, Binghamton, NY 13901;42.1002409;-75.9109950;8
+1101 Norton St.,Rochester,NY,14621|1101 Norton St, Rochester, NY 14621;43.1867720;-77.5931550;8
+224 Chestnut Ridge Rd.,Rochester,NY,14624|224 Chestnut Ridge Rd, Rochester, NY 14624;43.1182520;-77.7496550;8
+1000 Jenkins Street,Endicott,NY,13760|1000 Jenkins St, Endicott, NY 13760;42.1126797;-76.0519251;8
+693 Portland Ave.,Rochester,NY,14621|693 Portland Ave, Rochester, NY 14621;43.1784407;-77.5892038;8
+15 Doubleday Street,Binghamton,NY,13902|15 Doubleday St, Binghamton, NY 13901;42.1063350;-75.9043300;8
+500 Maiden Lane,Greece,NY,14616|500 Maiden Ln, Greece, NY 14616;43.2254700;-77.6559430;8
+5 Kent Street,Windsor,NY,13865|5 Kent St, Windsor, NY 13865;42.0654889;-75.6909925;8
+101 Berlin St.,Rochester,NY,14621|101 Berlin St, Rochester, NY 14621;43.1787850;-77.6048950;8
+330 West Church St.,Elmira,NY,14901|330 W Church St, Elmira, NY 14901;42.0892300;-76.8118450;8
+360 Wellington Ave.,Rochester,NY,14619|360 Wellington Ave, Rochester, NY 14619;43.1411940;-77.6407168;8
+921 College Ave.,Elmira,NY,14901|921 College Ave, Elmira, NY 14901;42.0996650;-76.8165110;8
+414 Lake Street,Elmira,NY,14901|414 Lake St, Elmira, NY 14901;42.0938520;-76.8033400;8
+PO Box 127,Hilton,NY,14468|Hilton, NY 14468;43.2841606;-77.8023376;5
+3611 Front St.,Wellsburg,NY,14894|3611 Front St, Wellsburg, NY 14894;42.0169013;-76.7305668;8
+35 Monroe Street,Honeoye Falls,NY,14472|35 Monroe St, Honeoye Falls, NY 14472;42.9546817;-77.5939189;8
+5369 Main St.,Chemung,NY,14825|Main St, Chemung, NY 14825;42.0079360;-76.6180466;6
+1450 Ridge Rd.,Webster,NY,14580|1450 Ridge Rd, Webster, NY 14580;43.2144180;-77.4159740;8
+408 South Main St.,Horseheads,NY,14845|408 S Main St, Horseheads, NY 14845;42.1649060;-76.8193270;8
+725 Hudson Ave.,Rochester,NY,14621|725 Hudson Ave, Rochester, NY 14621;43.1778141;-77.5990061;8
+2-8 Broadway,Bethpage,NY,11714|8 Broadway, Bethpage, NY 11714;40.7277647;-73.4769332;8
+677 Breesport N. Chemung Rd.,Lowman,NY,14861|677 Breesport N Chemung Rd, Baldwin, NY 14861;42.1012160;-76.6930330;8
+325 Lake Street,Elmira,NY,14901|325 Lake St, Elmira, NY 14901;42.0928354;-76.8033106;8
+1853 County Rte. 60,Lowman,NY,14861|1853 County Road 60, Chemung, NY 14861;42.0297603;-76.7185563;8
+441 East Ave.,Rochester,NY,14607|441 East Ave, Rochester, NY 14607;43.1538670;-77.5928440;8
+1238 Pennsylvania Ave.,Pine City,NY,14871|1238 Pennsylvania Ave, Pine City, NY 14871;42.0536533;-76.8250529;8
+PO Box 160,Hamlin,NY,14464|Hamlin, NY 14464;43.3181762;-77.9173393;5
+559 Spaulding St.,Elmira,NY,14904|559 Spaulding St, Elmira, NY 14904;42.0813580;-76.7953760;8
+800 Carter St.,Rochester,NY,14621|800 Carter St, Rochester, NY 14621;43.1922620;-77.5912180;8
+161 High St.,Elmira,NY,14901|161 High St, Elmira, NY 14901;42.0908333;-76.7966949;8
+121 Driving Park Ave.,Rochester,NY,14613|121 Driving Park Ave, Rochester, NY 14613;43.1805390;-77.6333010;8
+95 Main St.,Big Flats,NY,14814|95 Main St, Big Flats, NY 14814;42.1349019;-76.9349610;8
+549 Clarissa Street,Rochester,NY,14608|549 Clarissa St, Rochester, NY 14608;43.1458555;-77.6186228;8
+1155 Richard Street,Elmira,NY,14904|1155 Richard St, Elmira, NY 14904;42.0619439;-76.7961880;8
+212 Oakwood Ave.,Elmira Heights,NY,14903|212 Oakwood Ave, Elmira Heights, NY 14903;42.1272580;-76.8263850;8
+59 Ontario St.,Rochester,NY,14605|59 Ontario St, Rochester, NY 14605;43.1645765;-77.5973879;8
+380 South Main St.,Elmira,NY,14904|380 S Main St, Elmira, NY 14904;42.0795660;-76.8040420;8
+351 Joseph Ave.,Rochester,NY,14605|351 Joseph Ave, Rochester, NY 14605;43.1700272;-77.6074261;8
+2075 Chambers Road,Beaver Dams,NY,14812|2075 Chambers Rd, Beaver Dams, NY 14812;42.2610049;-76.9560212;8
+270 Scio St.,Rochester,NY,14605|270 Scio St, Rochester, NY 14605;43.1617541;-77.5972729;8
+112 10th Street,Watkins Glen,NY,14891|112 10th St, Watkins Glen, NY 14891;42.3766575;-76.8700824;8
+Cayuta Town Hall,Cayuta,NY,14824|Cayuta Rd, Cayuta, NY 14824;42.2871853;-76.6907237;6
+243 Rosedale St.,Rochester,NY,14620|243 Rosedale St, Rochester, NY 14620;43.1404757;-77.5818480;8
+State Route 414,Hector,NY,14841|Rte 414, Hector, NY 14841;42.5116631;-76.8766658;6
+100 West Ave.,Rochester,NY,14611|100 West Ave, Rochester, NY 14611;43.1500093;-77.6404293;8
+2035 State Route 14,Montour Falls,NY,14865|2035 Rte 14, Montour Falls, NY 14865;42.3306173;-76.8392908;8
+1089 Joseph Ave.,Rochester,NY,14621|1089 Joseph Ave, Rochester, NY 14621;43.1850249;-77.6082826;8
+221 W. South Avenue,Montour Falls,NY,14865|221 E South St, Montour Falls, NY 14865;42.3464273;-76.8419152;8
+218 Murray St.,Rochester,NY,14606|218 Murray St, Rochester, NY 14606;43.1640310;-77.6418260;8
+State Route 227,Trumansburg,NM,14886|State Route 227, Trumansburg, NY 14886;42.4913540;-76.7117163;6
+1862 Penfield Rd.,Penfield,NY,14526|1862 Penfield Rd, Penfield, NY 14526;43.1318220;-77.4734840;8
+Monterey Town Hall,Monterey,NY,14812|Monterey Baptist Church, 911 County Road 16, Beaver Dams, NY 14812;42.3063490;-77.0477130;9
+PO Box 381,Fairport,NY,14450|Fairport, NY 14450;43.0590248;-77.4555892;5
+Tyrone Methodist Church,Tyrone,NY,14887|Tyrone, NY 14887;42.4128210;-77.0543859;5
+1 Grove St.,Pittsford,NY,14534|1 Grove St, Pittsford, NY 14534;43.0962610;-77.5166220;8
+464 Broad St,Waverly,NY,14892|464 Broad St, Waverly, NY 14892;42.0014348;-76.5329279;8
+270 Cumberland St.,Rochester,NY,14605|270 Cumberland St, Rochester, NY 14605;43.1619979;-77.6048820;8
+70 North Main Street,Spencer,NY,14882|70 N Main St, Spencer, NY 14883;42.2133671;-76.4924554;8
+997 N. Clinton Ave.,Rochester,NY,14621|997 N Clinton Ave, Rochester, NY 14621;43.1771753;-77.6134365;8
+3586 East River Road,Nichols,NY,13812|3586 E River Dr, Nichols, NY 13812;42.0634982;-76.3312270;8
+111 N. Chestnut St.,Rochester,NY,14604|111 N Chestnut St, Rochester, NY 14604;43.1591830;-77.6031960;8
+Corner of Glen Road & State Rt 38,Berkshire,NY,13763|Rte 38 & Glen Rd, Berkshire, NY 13736;42.3019244;-76.1875276;7
+425 Upper North Avenue,Owego,NY,13827|Owego, NY;42.1034075;-76.2621549;4
+388 Remont St.,Rochester,NY,14608|Rochester, NY 14608;43.1638850;-77.6135960;5
+1000 Elmwood Ave.,Rochester,NY,14620|1000 Elmwood Ave, Rochester, NY 14620;43.1256480;-77.6121070;8
+152 Parkmeadow Dr.,Rochester,NY,14534|152 Parkmeadow Dr, Pittsford, NY 14534;43.0635920;-77.5814770;8
+1326 North Winton Rd.,Rochester,NY,14609|1326 Winton Rd N, Rochester, NY 14609;43.1707580;-77.5408920;8
+25 Westminster Rd.,Rochester,NY,14607|25 Westminster Rd, Rochester, NY 14607;43.1511464;-77.5814945;8
+143 North Avenue,Owego,NY,13827|143 North Ave, Owego, NY 13827;42.1069290;-76.2655790;8
+890 Portland Ave.,Rochester,NY,14621|890 Portland Ave, Rochester, NY 14621;43.1820263;-77.5866820;8
+70 Main Street,Newark Valley,NY,13811|70 S Main St, Newark Valley, NY 13811;42.2198350;-76.1870420;8
+1245 Culver Rd.,Rochester,NY,14609|1245 Culver Rd, Rochester, NY 14609;43.1680680;-77.5621880;8
+30 Glann Road,Apalachin,NY,13732|30 Glann Rd, Apalachin, NY 13732;42.0575930;-76.1271809;8
+222 Spencerport Rd.,Rochester,NY,14606|222 Spencerport Rd, Rochester, NY 14606;43.1681430;-77.6962360;8
+1 Water Street,Candor,NY,13743|1 Water St, Candor, NY 13743;42.2276400;-76.3385660;8
+Corner of South and Main St,Trumansburg,NY,14886|E Main St & South St, Trumansburg, NY 14886;42.5408929;-76.6583500;7
+350 Chili Ave.,Rochester,NY,14611|350 Chili Ave, Rochester, NY 14611;43.1473050;-77.6460660;8
+39 Main St.,Freeville,NY,13068|39 Main St, Freeville, NY 13068;42.5118961;-76.3505001;8
+3495 Lake Ave.,Rochester,NY,14612|3495 Lake Ave, Rochester, NY 14612;43.2341028;-77.6246587;8
+4 Meigs St.,Rochester,NY,14607|4 Meigs St, Rochester, NY 14607;43.1535380;-77.5903720;8
+410-412 First St.,Ithaca,NY,14850|412 1st St, Ithaca, NY 14850;42.4476970;-76.5037390;8
+102 Reynolds St.,Rochester,NY,14608|102 Reynolds St, Rochester, NY 14608;43.1483412;-77.6260981;8
+150 N. Albany St.,Ithaca,NY,14850|150 N Albany St, Ithaca, NY 14850;42.4399350;-76.5021330;8
+214 Lake Ave.,Rochester,NY,14608|214 Lake Ave, Rochester, NY 14613;43.1684630;-77.6253020;8
+522 Valley Rd.,Brooktondale,NY,14817|522 Valley Rd, Brooktondale, NY 14817;42.3832170;-76.3711830;8
+985 Ebner Dr.,Webster,NY,14580|985 Ebner Dr, Webster, NY 14580;43.2075729;-77.4397040;8
+32 Brickyard Rd.,Lansing,NY,14882|32 Brickyard Rd, Lansing, NY 14882;42.5441640;-76.5266690;8
+175 N. Clinton Ave.,Rochester,NY,14604|175 N Clinton Ave, Rochester, NY 14605;43.1614681;-77.6081809;8
+6 North St.,Dryden,NY,13053|6 North St, Dryden, NY 13053;42.4910631;-76.2976673;8
+717 W. Court St.,Ithaca,NY,14850|717 W Court St, Ithaca, NY 14850;42.4422757;-76.5096668;8
+305 South Plain St,Ithaca,NY,14850|305 S Plain St, Ithaca, NY 14850;42.4373270;-76.5035410;8
+227 Main St.,Newfield,NY,14867|227 Main St, Newfield, NY 14867;42.3599080;-76.5941480;8
+101 McKinley Ave.,Groton,NY,13073|101 McKinley Ave, Groton, NY 13073;42.5798651;-76.3636856;8
+182 Enfield Main Rd,Ithaca,NY,14850|182 Enfield Main Rd, Ithaca, NY 14850;42.4369857;-76.6311337;8
+113 North Geneva St,Ithaca,NY,14850|113 N Geneva St, Ithaca, NY 14850;42.4401100;-76.5002920;8
+701 Spencer Rd,Ithaca,NY,14850|701 Spencer Rd, Ithaca, NY 14850;42.4190390;-76.5192527;8
+1859 Danby Rd.,Ithaca,NY,14850|1859 Danby Rd, Ithaca, NY 14850;42.3522260;-76.4802230;8
+119 W Broadway,Bridger,MT,59014|119 E Broadway Ave, Bridger, Mt 59014;45.2957160;-108.9138373;8
+4765 Henry Hunson Parkway,Bronx,NY,10471|4765 Henry Hudson Pkwy, Bronx, NY 10471;40.8962400;-73.9081537;8
+1105 Park Avenue Suite 4B,New York,NY,10128|1105 Park Ave #4b, New York, NY 10128;40.7821160;-73.9552110;9
+165 Eldridge St., Ground Floor,New York,NY,10002|New York, NY 10002;40.7144432;-73.9862785;5
+105 East 22nd Street,New York,NY,10010|105 E 22nd St, New York, NY 10010;40.7395293;-73.9865583;8
+50 State Highway 120,East Rutherford,NJ,07073|50 State Highway 120, East Rutherford, NJ 07073;40.8240181;-74.0736325;8
+165 Mulberry St,Newark,NJ,07102|165 Mulberry St, Newark, NJ 07102;40.7337470;-74.1702680;8
+5625 Arlington Avenue,Bronx,NY,10471|5625 Arlington Ave, Bronx, NY 10471;40.9051360;-73.9080040;8
+6000 Riverdale Avenue,Bronx,NY,10471|6000 Riverdale Ave, Bronx, NY 10471;40.9084504;-73.9036454;8
+965 Albany-Shaker Road,Latham,NY,12110|965 Albany Shaker Rd, Latham, NY 12110;42.7644900;-73.8134250;8
+195 Hudson Street,Cornwall on Hudson,NY,12520|195 Hudson St, Cornwall-on-Hudson, NY 12520;41.4437977;-74.0106673;8
+Portland,ME,04104|Portland, ME 04104;43.6600650;-70.2700136;5
+4610 South 133rd Street, Suite 101,Omaha,NE,68137|4610 S 133rd St #101, Omaha, NE 68137;41.2142250;-96.1221280;9
+#9 Plaza Rd,Tubac,AZ,85646|9 Plaza Rd, Tubac, AZ 85646;31.6130945;-111.0488481;8
+2900 Airport Road,Pierre,SD,57501|Airport Rd, Pierre, SD 57501;44.3821267;-100.2998759;6
+1105 Park Avenue, Suite 4B,New York,NY,10128|1105 Park Ave #4b, New York, NY 10128;40.7821160;-73.9552110;9
+120 Liberty Street,New York,NY,10006|120 Liberty St, New York, NY 10006;40.7097650;-74.0124520;8
+3715McClintock Ave,Los Angeles,CA,90089|3715 McClintock Ave, Los Angeles, CA 90089;34.0201236;-118.2904923;8
+515 North Park Avenue,Helena,MT,59601|515 N Park Ave, Helena, Mt 59601;46.5925565;-112.0402039;8
+2933 Lower Bellbrook Rd,Spring Valley,OH,45370|2933 Lower Bellbrook Rd, Spring Valley, OH 45370;39.6307540;-84.0500400;8
+Spring Valley,OH,45370|Spring Valley, OH;39.6089490;-84.0077105;4
+Manna Food Bank, 627 Swannanoa River Rd,Asheville,NC,28805|Manna Food Bank, 623 Swannanoa River Rd, Asheville, NC 28805;35.5764627;-82.4984833;9
+30 Meadow Rd,Asheville,NC,28803|30 Meadow Rd, Asheville, NC 28803;35.5682770;-82.5484590;8
+Land of Sky RSVP,Asheville,NC,28806|Asheville, NC 28806;35.4815177;-82.6271781;5
+75 Haywood Street, Suite G4,Asheville,NC,28801|75 Haywood St, Asheville, NC 28801;35.5969620;-82.5551260;8
+201 North Main ST,Hendersonville,NC,28792|201 N Main St, Hendersonville, NC 28792;35.3149153;-82.4598409;8
+175 King Street,Brevard,NC,28712|175 King St, Brevard, NC 28712;35.2376870;-82.7359800;8
+New Hartford,NY,13413|New Hartford, NY;43.0734030;-75.2876661;4
+Columbia,TN,38401|Columbia, TN;35.6150716;-87.0352831;4
+Centerville,TN,37033|Centerville, TN;35.7789565;-87.4669587;4
+339 New Leicester Hwy,Asheville,NC,28806|339 New Leicester Hwy, Asheville, NC 28806;35.6014370;-82.6217180;8
+2385 W Cheltenham Ave,Philadelphia,PA,19150|2385 W Cheltenham Ave, Philadelphia, PA 19095;40.0721949;-75.1548259;8
+East Stroudsburg,PA,18301|East Stroudsburg, PA;40.9995386;-75.1812913;4
+Miami,FL,33156|Miami, FL 33156;25.6506767;-80.2663726;5
+441 West 26th Street,NY,NY,10001|441 W 26th St, New York, NY 10001;40.7496490;-74.0013869;8
+270 Minot Ave. Suite B,Auburn,ME,04210|270 Minot Ave, Auburn, ME 04210;44.0881470;-70.2340660;8
+Tidal Basin: West Potomac Park, Ohio Drive SW,Washington,DC,20024|East Potomac Park Golf Course & Driving Range, Ohio Dr SW, Washington, DC 20024;38.8760228;-77.0349152;9
+27 Golden Lane,Harpursville,NY,13787|27 Golden Ln, Harpursville, NY 13787;42.1747680;-75.6236170;8
+226 Clinton Street,Binghamton,NY,13905|226 Clinton St, Binghamton, NY 13905;42.1069720;-75.9300540;8
+30 Brocton St.,Johnson City,NY,13790|30 Brocton St, Johnson City, NY 13790;42.1188430;-75.9549860;8
+12 Strongs Place,Whitney Point,NY,13862|12 Strongs Pl, Whitney Point, NY 13862;42.3274823;-75.9675100;8
+201 Main St.,Vestal,NY,13850|201 Main St, Vestal, NY 13850;42.0845045;-76.0525855;8
+Oakdale Mall, 601-635 Harry L. Drive, Suite 52,Johnson City,NY,13790|ZUMIEZ OAKDALE MALL, 601-635 Harry L Dr #94, Johnson City, NY 13790;42.1285790;-75.9742140;9
+Colonial Plaza, 32 West State St.,Binghamton,NY,13901|32 W State St, Binghamton, NY 13901;42.1085630;-75.9059570;8
+754 East Gun Hill Road,Bronx,NY,10467|754 E Gun Hill Rd, Bronx, NY 10467;40.8763520;-73.8643360;8
+6735 Black Horse Pike,Egg Harbor Township,NJ,08234|6735 Black Horse Pike, Egg Harbor Township, NJ 08234;39.3991050;-74.5595610;8
+1068 Gerard Avenue,Bronx,NY,10452|1068 Gerard Ave, Bronx, NY 10452;40.8321050;-73.9218970;8
+Spokane and Whitman Counties,WA,99201|Boys And Girls Club Of Spokane County, 544 E Providence Ave, Spokane, WA 99207;47.6920880;-117.4011150;9
+99201|Spokane, WA 99201;47.6649589;-117.4466667;5
+106-06 Queens Blvd,Forest Hill,NY,11375|Pathmark, 15515 Aguilar Ave, Queens, NY 11367;40.7285670;-73.8130360;9
+239 West 49th Street,New York,NY,10019|239 W 49th St, New York, NY 10019;40.7614840;-73.9856020;8
+1047 Amsterdam Ave,New York,NY,10025|1047 Amsterdam Ave, New York, NY 10025;40.8042110;-73.9628420;8
+Richmond Hill,NY,11418|Richmond Hill, Queens, NY;40.6997200;-73.8316700;4
+839 Albany Street,Schenectady,NY,12307|839 Albany St, Schenectady, NY 12307;42.8062990;-73.9349290;8
+Harrisburg,PA,17109|Harrisburg, PA 17109;40.2905693;-76.8191184;5
+780 3rd Avenue, Lobby,New York,NY,10017|New York, NY 10017;40.7525825;-73.9698715;5
+770 Poplar Church Road,Camp Hill,PA,17011|770 Poplar Church Rd, Camp Hill, PA 17011;40.2569690;-76.9197240;8
+N6669 Cherry Road,Shawano,WI,54166|Cherry Ave, Shawano, WI 54166;44.7949901;-88.6121001;6
+34 Felton St,Hudson,MA,01749|34 Felton St, Hudson, MA 01749;42.3945094;-71.5690810;8
+Santa Barbara,CA,93101|Santa Barbara, CA 93101;34.4381656;-119.7119979;5
+320 Hill Street,Biddeford,ME,04005|320 Hill St, Biddeford, ME 04005;43.4754564;-70.4690774;8
+614 Western Highway,Blauvel,NY,10913|614 Western Hwy, Blauvelt, NY 10913;41.0658200;-73.9590900;8
+209 Route 9W,Congers,NY,10920|209 U.S. 9W, Congers, NY 10920;41.1596204;-73.9282294;8
+37 Clove Avenue,Haverstraw,NY,10927|37 Clove Ave, Haverstraw, NY 10927;41.1958330;-73.9667350;8
+89-93 Hudson Avenue,Haverstraw,NY,10927|89 Hudson Ave, Haverstraw, NY 10927;41.1954689;-73.9685377;8
+169 Route 9W,Haverstraw,NY,10927|169 Rte 9w, Haverstraw, NY 10927;41.1980560;-73.9811330;8
+39 Division Street,Haverstraw,NY,10927|39 Division St, Haverstraw, NY 10927;41.1982510;-73.9625910;8
+7900 NE 33rd Drive,Portland,OR,97211|7900 NE 33rd Dr, Portland, OR 97211;45.5803820;-122.6319120;8
+740 York Avenue,Saint Paul,MN,55106|740 York Ave, St Paul, MN 55106;44.9680260;-93.0688009;8
+10 Orms Street Suite 200,Providence,RI,02904|10 Orms St #200, Providence, RI 02904;41.8348666;-71.4124995;9
+160 Washburn Street,Lockport,NY,14094|160 Washburn St, Lockport, NY 14094;43.1692520;-78.6875570;8
+Plaza David Chavez, 2821 Mountain Rd, NW,Albuquerque,NM,87101|2821 Mountain Rd NW, Albuquerque, NM 87104;35.1003330;-106.6814870;8
+La Vida Nueva, 1200 Dickerson SE,Albuquerque,NM,87106|Albuquerque, NM 87106;35.0784912;-106.6071929;5
+One West Main Street, 4th Floor,Rochester,NY,14614|Rochester, NY 14614;43.1594772;-77.6152877;5
+121 West Nyack Rd., Unit #1,Nanuet,NY,10954|121 W Nyack Rd #1, Nanuet, NY 10954;41.0968350;-74.0010020;9
+South Omaha Library, 2808 Q St,Omaha,NE,68107|Omaha, NE 68107;41.1919860;-95.9427413;5
+Washington Library, 2868 Ames,Omaha,NE,68111|2868 Ames Ave, Omaha, NE 68111;41.2998790;-95.9547480;8
+67 S. Broadway,Nyack,NY,10960|67 S Broadway, Nyack, NY 10960;41.0884300;-73.9187110;8
+125 Maiden Lane,New York,NY,10038|125 Maiden Ln, New York, NY 10038;40.7065900;-74.0062400;8
+85 Depew Avenue,Nyack,NY,10960|85 Depew Ave, Nyack, NY 10960;41.0893970;-73.9205450;8
+DeWitt Library, 208 East Fillmore,DeWitt,NE,68341|De Witt, NE 68341;40.3823165;-96.9324302;5
+80 N. Franklin St.,Nyack,NY,10960|80 N Franklin St, Nyack, NY 10960;41.0927310;-73.9215430;8
+33 Jefferson St./St.Ann's School,Nyack,NY,10960|St Ann's School of Religion, 33 Jefferson St, Nyack, NY 10960-2609;41.0939851;-73.9195814;9
+84 Ehrardt Road,Pearl River,NY,10965|84 Ehrhardt Rd, Pearl River, NY 10965;41.0664770;-74.0033750;8
+405 Piermont Avenue,Piermont,NY,10968|405 Piermont Ave, Piermont, NY 10968;41.0387040;-73.9159080;8
+1540 Route 202, Suite 4,Pomona,NY,10970|1540 Rte 202 #4, Pomona, NY 10970;41.1824980;-74.0527580;9
+93 Orange Turnpike,Sloatsburg,NY,10974|93 Orange Turnpike, Sloatsburg, NY 10974;41.1582250;-74.1922706;8
+218 N. Main St.,Spring Valley,NY,10977|218 N Main St, Spring Valley, NY 10977;41.1217774;-74.0423047;8
+179 N.Main St./Salvation Army,Spring Valley,NY,10977|Spring Valley, NY;41.1131514;-74.0437521;4
+176 North Main Street,Spring Valley,NY,10977|176 N Main St, Spring Valley, NY 10977;41.1201150;-74.0427510;8
+130 Bethune Boulevard,Spring Valley,NY,10977|130 Bethune Blvd, Spring Valley, NY 10977;41.1200199;-74.0377070;8
+80 North Madison Ave.,Spring Valley,NY,10977|80 N Madison Ave, Spring Valley, NY 10977;41.1161309;-74.0455649;8
+32 Grove Street, PO Box 477,Spring Valley,NY,10977|32 Grove St, Spring Valley, NY 10977;41.1143751;-74.0463528;8
+110 Bethune Boulevard,Spring Valley,NY,10977|110 Bethune Blvd, Spring Valley, NY 10977;41.1190320;-74.0378200;8
+24 North Madison Avenue,Spring Valley,NY,10977|24 N Madison Ave, Spring Valley, NY 10977;41.1143072;-74.0453000;8
+11 East Church Street,Spring Valley,NY,10977|11 E Church St, Spring Valley, NY 10977;41.1132830;-74.0432890;8
+1 Headstart Circle,Spring Valley,NY,10977|Spring Valley, NY;41.1131514;-74.0437521;4
+18 Paiken Drive,Spring Valley,NY,10977|18 Paikin Dr, Spring Valley, NY 10977;41.1189326;-74.0523636;8
+26 South Madison Ave.,Spring Valley,NY,10977|26 S Madison Ave, Spring Valley, NY 10977;41.1089250;-74.0458850;8
+118 Bethune Boulevard,Spring Valley,NY,10977|118 Bethune Blvd, Spring Valley, NY 10977;41.1193070;-74.0377830;8
+96 North Main Street,Spring Valley,NY,10977|96 N Main St, Spring Valley, NY 10977;41.1152600;-74.0438980;8
+286 N Main St., Suite 34A,Spring Valley,NY,10977|286 N Main St #34a, Spring Valley, NY 10977;41.1255440;-74.0405500;9
+26 John St./Immac. Con. Church,Stony Point,NY,10980|Stony Point, NY;41.2295386;-73.9870847;4
+49 E. Main St./Trinity U.M. Ch.,Stony Point,NY,10980|Stony Point, NY;41.2295386;-73.9870847;4
+65 Washington Ave,Suffern,NY,10901|65 Washington Ave, Suffern, NY 10901;41.1130706;-74.1497699;8
+365 King's Highway,Valley Cottage,NY,10920|365 Kings Hwy, Valley Cottage, NY 10989;41.1333042;-73.9491789;8
+450 West Nyack Rd,West Nyack,NY,10994|450 W Nyack Rd, West Nyack, NY 10994;41.0997090;-73.9872000;8
+Denver,CO,80204|Denver, CO 80204;39.7246398;-105.0298461;5
+13702 E. 46 Pl. South,Tulsa,OK,74134|E 46th Pl, Tulsa, OK 74134;36.0963559;-95.7788700;6
+4103 Benning Road NE,Washington,DC,20019|4103 Benning Rd NE, Washington, DC 20019;38.8933056;-76.9439931;8
+2000 Hollywood Drive,York,PA,17403|2000 Hollywood Dr, York, PA 17403;39.9456940;-76.6903550;8
+112 Center Street,Canastota,NY,13032|112 Center St, Canastota, NY 13032;43.0785010;-75.7523010;8
+Prescott,AZ,86305|Prescott, AZ;34.5400242;-112.4685025;4
+60 School St,Brockton,MA,02301|60 School St, Brockton, MA 02301;42.0828829;-71.0182673;8
+131 Myrtle Street,Boise,ID,83702|131 W Myrtle St, Boise, ID 83702;43.6085466;-116.1985570;8
+612 North Main Street,Mitchell,SD,57301|612 N Main St, Mitchell, SD 57301;43.7146152;-98.0255520;8
+1301 N. Kimball St,Mitchell,SD,57301|1301 N Kimball St, Mitchell, SD 57301;43.7217776;-98.0229072;8
+929 East Second,Mitchell,SD,57301|929 E 2nd Ave, Mitchell, SD 57301;43.7105170;-98.0135770;8
+7162 Reading Road, #1150,Cincinnati,OH,45237|7162 Reading Rd, Cincinnati, OH 45237;39.1915870;-84.4609720;8
+1201 East Fayette Street,Syracuse,NY,13210|1201 E Fayette St, Syracuse, NY 13210;43.0484419;-76.1320437;8
+Westwood,NJ,07675|Westwood, NJ;40.9912087;-74.0326395;4
+2075 East 68th Street,Brooklyn,NY,11234|2075 E 68th St, Brooklyn, NY 11234;40.6186936;-73.9100211;8
+9502 Seaview Avenue,Brooklyn,NY,11236|9502 Seaview Ave, Brooklyn, NY 11236;40.6328074;-73.8910015;8
+7440 Coffee Street,Houston,TX,77033|7440 Coffee St, Houston, TX 77033;29.6770130;-95.3517230;8
+Briarcliff,NY,10510|BRIARCLIFF, NY 10510;41.1676177;-73.8117141;5
+13655 Riverport Drive, 5th Floor,Maryland Heights,MO,63043|Maryland Heights, MO 63043;38.7010498;-90.4487113;5
+839 Londontown Rd,Edgewater,MD,21037|839 Londontown Rd, Edgewater, MD 21037;38.9414900;-76.5409600;8
+1550 Corporate Woods Parkway,Uniontown,OH,44685|1550 Corporate Woods Pkwy, Uniontown, OH 44685;40.9635850;-81.4696570;8
+215 SE Quincy Street,Topeka,KS,66603|215 SE Quincy St, Topeka, KS 66603;39.0562890;-95.6701710;8
+281 Clinton Street,Hempstead,NY,11550|281 Clinton St, Hempstead, NY 11550;40.7145510;-73.6211650;8
+Newport News,VA,23606|Newport News, VA 23606;37.0514450;-76.5049209;5
+19 Third Street,Troy,NY,12180|19 3rd St, Troy, NY 12180;42.7316790;-73.6902438;8
+69 Church St,Hoosick Falls,NY,12090|69 Church St, Hoosick Falls, NY 12090;42.8997920;-73.3522280;8
+2431 6th Ave,Troy,NY,12180|2431 6th Ave, Troy, NY 12180;42.7401383;-73.6833102;8
+1600 7th Ave #4,Troy,NY,12180|1600 7th Ave, Troy, NY 12180;42.7289440;-73.6856820;8
+720 Federal St,Troy,NY,12180|720 Federal St, Troy, NY 12180;42.7325560;-73.6842880;8
+460 Forbes Ave,Rensselaer,NY,12144|460 Forbes Ave, Rensselaer, NY 12144;42.6592590;-73.7290359;8
+18 4th Ave,Rensselaer,NY,12144|18 4th Ave, Rensselaer, NY 12144;42.6386449;-73.7396220;8
+2121 6th Ave,Troy,NY,12180|2121 6th Ave, Troy, NY 12180;42.7342432;-73.6856505;8
+2 Roxborough Rd,Cropseyville,NY,12052|2 Roxborough Rd, Cropseyville, NY 12052;42.7692940;-73.4490810;8
+Toledo,OH,43612|Toledo, OH 43612;41.7063713;-83.5468330;5
+10804 E Broadway,Spokane Valley,WA,99206|10804 E Broadway Ave, Spokane, WA 99206;47.6643314;-117.2593094;8
+1340 Baldwin Ave,Roanoke,VA,24012|1340 Baldwin Ave NE, Roanoke, VA 24012;37.2815695;-79.9159812;8
+6904 Glenwood Avenue,Raleigh,NC,27612|6904 Glenwood Ave, Raleigh, NC 27613;35.8640500;-78.7120939;8
+2049 Bartow Avenue,Bronx,NY,10474|2049 Bartow Ave, Bronx, NY 10475;40.8695411;-73.8285367;8
+177 Dreiser Loop Rd,Bronx,NY,10475|Loop Rd, Bronx, NY 10474;40.8104115;-73.8761317;6
+135 Einstein Loop,Bronx,NY,10475|135 Einstein Loop, Bronx, NY 10475;40.8653618;-73.8226911;8
+210 S. Pepper St.   Suite D,Christiansburg,VA,24073|210 Pepper St S, Christiansburg, VA 24073;37.1292000;-80.4045000;8
+182 4th Avenue,Brooklyn,NY,11217|182 4th Ave, Brooklyn, NY 11217;40.6789751;-73.9823982;8
+711 Seagirt Avenue,Far Rockaway,NY,11691|7-11 Seagirt Ave, Queens, NY 11691;40.5959738;-73.7414802;8
+Lake Pend Oreille School District,ID,83864|Lake Pend Oreille School District #84: Lake Pend Oreille High Alternative High, 1005 N Boyer Ave, Sandpoint, ID 83864;48.2827010;-116.5576920;9
+83864|Sandpoint, ID 83864;48.5735397;-116.5917510;5
+151 Stage Road,Monroe,NY,10950|151 Stage Rd, Monroe, NY 10950;41.3262373;-74.1870027;8
+209 Joralemon Street,Brooklyn,NY,11209|209 Joralemon St, Brooklyn, NY 11201;40.6926813;-73.9902145;8
+912 W 6th Ave (old Sears store),Pine Bluff,AR,71601|Pine Bluff, AR;34.2284312;-92.0031955;4
+Jamaica Plain,MA,02130|Jamaica Plain, Boston, MA;42.3098201;-71.1203299;4
+Detroit,MI,48025|Franklin, MI 48025;42.5179748;-83.2620697;5
+30600 Telegraph Road,Bingham Farms,MI,48025|30600 Telegraph Rd, Bingham Farms, MI 48025;42.5132790;-83.2830700;8
+Inside the Shore Mall behind Boscov's on the Black Horse Pike,Egg Harbor Twp,NJ,08234|Black Horse Pike, Egg Harbor Township, NJ 08234;39.4176297;-74.5813246;6
+1007 York Street,Denver,CO,80206|1007 York St, Denver, CO 80206;39.7319727;-104.9609083;8
+3000 Prescott Rd,Modesto,CA,95350|3000 Prescott Rd, Modesto, CA 95350;37.6830039;-121.0308890;8
+2 S Central Ave.,Troy,TX,76579|2 S Central Ave, Troy, TX 76579;31.2067760;-97.3033410;8
+109 Broad St,North St Georges,DE,19733|109 Broad St, New Castle, DE 19720;39.5564400;-75.6495740;8
+3880 Sedgwick Avenue,Bronx,NY,10463|3880 Sedgwick Ave, Bronx, NY 10463;40.8823990;-73.8939530;8
+County College of Morris,Morristown,NJ,07960|Morristown, NJ;40.7967667;-74.4815438;4
+Macon,GA,31208|Macon, GA 31208;32.8400000;-83.6300000;5
+2701 North Australian Avenue,West Palm Beach,FL,33407|2701 N Australian Ave, West Palm Beach, FL 33407;26.7371190;-80.0682660;8
+Toms River,NJ,08754|Toms River, NJ 08754;39.9500000;-74.2000000;5
+Portal,AZ,85632|San Simon, AZ 85632;32.0568943;-109.1979598;5
+625 Quincy Street,Brooklyn,NY,11221|625 Quincy St, Brooklyn, NY 11221;40.6892179;-73.9341260;8
+400 E Main St, The Snack Shop,Batavia,NY,14020|Batavia, NY 14020;42.9981156;-78.1875167;4
+1601 Nicodemus  Road,Reisterstown,MD,21117|1601 Nicodemus Rd, Reisterstown, MD 21136;39.4430940;-76.8684290;8
+1744 University Ave.,Berkeley,CA,94703|1744 University Ave, Berkeley, CA 94703;37.8709906;-122.2763555;8
+Severn,MD,21144|Severn, MD;39.1370528;-76.6983022;4
+1140 Gervais Avenue,Maplewood,MN,55109|1140 Gervais Ave, Maplewood, MN 55109;45.0131600;-93.0520440;8
+1522 E. Hwy 82,Nocona,TX,76255|1522 U.S. 82, Nocona, TX 76255;33.7859245;-97.7083683;8
+6400 Goldsboro Road,Bethesda,MD,20817|6400 Goldsboro Rd, Bethesda, MD 20817;38.9699830;-77.1296420;8
+9650 Muirkirk Road,Laurel,MD,20708|9650 Muirkirk Rd, Laurel, MD 20708;39.0631000;-76.8418820;8
+7 West Drive,Bethesda,MD,20814|7 West Dr, Bethesda, MD 20814;39.0042338;-77.1044769;8
+14 Elm Street,Brattleboro,VT,05301|14 Elm St, Brattleboro, VT 05301;42.8509600;-72.5608600;8
+431 I Street, Suite 200,Sacramento,CA,95814|431 I St #200, Sacramento, CA 95814;38.5841200;-121.4993480;9
+Albany,NY,12203|Albany, NY 12203;42.6827735;-73.7797317;5
+400 N. Highland Avenue,Aurora,IL,60506|400 N Highland Ave, Aurora, IL 60506;41.7648439;-88.3306980;8
+Akron,OH,44320|Akron, OH 44320;41.0774345;-81.5771789;5
+Austin,TX,78746|Austin, TX 78746;30.2961044;-97.8142547;5
+8500 Deer Creek Canyon Road,Littleton,CO,80128|8500 W Deer Creek Canyon Rd, Littleton, CO 80128;39.5526660;-105.0923820;8
+Albany,NY,12222|Albany, NY 12222;42.4403280;-73.7870812;5
+Schenectady,NY,12308|Schenectady, NY 12308;42.8231410;-73.9201278;5
+1949 Old Hickory Blvd,Brentwood,TN,37027|1949 Old Hickory Blvd, Brentwood, TN 37027;36.0441930;-86.8593340;8
+855 Bush Street,San Francisco,CA,94108|855 Bush St, San Francisco, CA 94108;37.7895510;-122.4113250;8
+King County Courthouse-516 3rd Ave,Seattle,WA,98104|County of King: E-327 King County Courthouse, Rm E400, 516 3rd Ave, Seattle, WA 98104;47.6026430;-122.3305290;9
+300 Burt Street,Syracuse,NY,13202|300 Burt St, Syracuse, NY 13202;43.0382156;-76.1473480;8
+Phoenix,AZ,85012|Phoenix, AZ 85012;33.5092716;-112.0711822;5
+Hotel Albuquerque,Albuquerque,NM,87102|Doubletree Hotel Albuquerque, 201 Marquette Ave NW, Albuquerque, NM 87102-2248;35.0883100;-106.6491040;9
+Nevada Museum of Art -160 West Liberty Street,Reno,NV,89501|Nevada Museum of Art, 160 W Liberty St, Reno, NV 89501-1916;39.5208888;-119.8132924;9
+4741 Iroquois,Detroit,MI,48214|4741 Iroquois St, Detroit, MI 48214;42.3757639;-83.0075143;8
+617 Central Avenue,Fort Dodge,IA,50501|617 Central Ave, Fort Dodge, IA 50501;42.5047432;-94.1897824;8
+Fort Dodge,IA,50501|Fort Dodge, IA 50501;42.4974694;-94.1680158;4
+1413 K Street,Washington,DC,20005|1413 K St NW, Washington, DC 20005;38.9029140;-77.0326850;8
+1138 GA Hwy 20 Spur,Cartersville,GA,30121|1138 Hwy 20 Spur, Cartersville, GA 30121;34.1857446;-84.7401689;8
+511 East Baltimore Street,Baltimore,MD,21229|511 E Baltimore St, Baltimore, MD 21202;39.2897618;-76.6087102;8
+2009 Bacharach,Atlantic City,NJ,08401|2009 Bacharach Blvd, Atlantic City, NJ 08401;39.3650870;-74.4403050;8
+1484 First Avenue,New York,NY,10021|1484 1st Ave, New York, NY 10075;40.7712127;-73.9533326;8
+Brooklyn,NY,11226|Brooklyn, NY 11226;40.6454887;-73.9571075;5
+Uniontown,OH,44685|Uniontown, OH 44685;40.9750568;-81.4081673;4
+740 Glover St.,Hendersonville,NC,28792|740 Glover St, Hendersonville, NC 28792;35.3176269;-82.4464881;8
+9041 Greenwood Ave. N,Seattle,WA,98103|9041 Greenwood Ave N, Seattle, WA 98103;47.6955340;-122.3557650;8
+2500 23rd Avenue,Gulfport,MS,39501|2500 23rd Ave, Gulfport, MS 39501;30.3803152;-89.0900668;8
+Revere,MA,02151|Revere, MA 02151;42.4191055;-71.0086288;5
+205 S. Willowbrook Avenue,Compton,CA,90220|205 S Willowbrook Ave, Compton, CA 90220;33.8955370;-118.2243584;8
+Ewing,NJ,08638|Ewing, NJ 08638;40.2256317;-74.7697181;5
+1220 Dundee Ave.,Elgin,IL,60120|1220 Dundee Ave, Elgin, IL 60120;42.0599055;-88.2662391;8
+Mineola,NY,11501|Mineola, NY;40.7492678;-73.6406845;4
+10250 Westheimer,Houston,TX,77042|10250 Westheimer Rd, Houston, TX 77042;29.7378770;-95.5547430;8
+Rhinebeck,NY,12572|Rhinebeck, NY 12572;41.9267591;-73.9126354;4
+4900 SW Huntoon,Topeka,KS,66604|4900 SW Huntoon St, Topeka, KS 66604;39.0445230;-95.7393249;8
+Downtown Salt Lake City Library Plaza 200 East 400 South,Salt Lake City,UT,84101|200 E 400 S, Salt Lake City, UT 84111;40.7605495;-111.8853117;8
+1153 Centre Street,Boston,MA,02130|1153 Centre St, Boston, MA 02130;42.3004686;-71.1276598;8
+10 Perthshire Road,Brighton,MA,02135|10 Perthshire Rd, Boston, MA 02135;42.3534031;-71.1655605;8
+Boston,MA,02201|Boston, MA 02201;42.3582112;-71.0582141;5
+Houston,TX,77042|Houston, TX 77042;29.7390403;-95.5642395;5
+Wilmington,DE,19803|Wilmington, DE 19803;39.7999382;-75.5408020;5
+2500 Emigration Canyon Rd,Salt Lake City,UT,84108|2500 Emigration Canyon Rd, Salt Lake City, UT 84108;40.7600999;-111.7830558;8
+2091 Radcliff Dr,Cincinnatti,OH,45024|2091 Radcliff Dr, Cincinnati, OH 45204;39.1210120;-84.5476100;8
+705 North 16th Street,Council Bluffs,IA,51501|705 N 16th St, Council Bluffs, IA 51501;41.2680759;-95.8673359;8
+Chestnut Hill,MA,02467|Massachusetts 02467;42.3176422;-71.1613540;5
+2200 Eastridge Shopping Center,San Jose,CA,95122|Stoneridge, 2441 Stoneridge Mall Rd, Pleasanton, CA 94588;37.6973000;-121.9262960;9
+47 North Lark St,Albany,NY,12210|47 Lark St, Albany, NY 12210;42.6616234;-73.7573659;8
+2 Clara Barton Drive,Albany,NY,12208|2 Clara Barton Dr, Albany, NY 12208;42.6470709;-73.7765290;8
+Clearwater,FL,33760|Clearwater, FL 33760;27.9358040;-82.7284306;5
+Tualatin and Wilsonville,OR,97062|Wilsonville Inn and Suites, 29769 SW Boones Ferry Rd, Wilsonville, OR 97070;45.3053050;-122.7700920;9
+97062|Tualatin, OR 97062;45.3652801;-122.7543258;5

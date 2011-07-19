@@ -1,0 +1,238 @@
+<!--.content-->
+<div id="content" class="clearfix">
+	<!--.single-page-->
+	<div class="search-page">
+		<!--#search-top-->
+		<div id="search-top">
+			<div class="search-box">
+				<h1>Search:</h1>
+				<form action="/search_form" id="overlabel" onsubmit="submitForm('reset');return false;">
+					<input type="hidden" value="" id="category_input" name="category_input" />
+					<input type="hidden" value="" id="provider_input" name="provider_input" />
+					<div class="form-row">
+						<label for="keywords" class="overlabel">enter search term</label>
+						<input id="keywords" class="text-field" type="text" name="search" title="enter search term" value="" />
+						<input type="submit" name="submit" id="submit" value="Search" />
+					</div>
+				</form>
+				<div class="pop-search">
+					<p><strong>popular searches:</strong> <a href="javascript:submitKeyword('military families')">Military Families</a>, <a href="javascript:submitKeyword('veterans')">Veterans</a>, <a href="javascript:submitKeyword('education')">Education</a>, 
+						<a href="javascript:submitKeyword('hunger')">Hunger</a>, <a href="javascript:submitKeyword('animals')">Animals</a>, <a href="javascript:submitKeyword('health')">Health</a>, 
+						<a href="javascript:submitKeyword('seniors')">Seniors</a>, <a href="javascript:submitKeyword('technology')">Technology</a>, <a href="javascript:submitKeyword('poverty')">Poverty</a></p>
+				</div>
+			</div>
+			<div class="search-info">
+				<ul>
+<li><strong>In Your Area</strong>
+<a href="javascript:submitForm('oppType', 0);">Opportunities near you to make a difference</a>.</li>
+
+<li><strong>Virtual</strong>
+<a href="javascript:submitForm('oppType', 1);">Ways to help out no matter where you're located</a>.</li>
+
+<li><strong>Micro</strong>
+<a href="javascript:submitForm('oppType', 2);">You're online, but only have a few moments to spare</a>.</li>
+
+<li><strong>Self-Directed</strong>
+<a href="javascript:submitForm('oppType', 3);">How-To guides for starting your own projects</a>.</li>
+				</ul>
+			</div>
+		</div>
+		<!--#search-top-->
+		<!--.col-main-->
+		<div class="col-main">
+			<!--#tabs-->
+			<div id="tabs">
+				<ul>
+					<li><a href="#tabs-1">IN YOUR AREA <span id="in_your_area"></span></a></li>
+					<li><a href="#tabs-1">VIRTUAL <span id="virtual"></span></a></li>
+					<li><a href="#tabs-1">MICRO <span id="micro"></span></a></li>
+					<li><a href="#tabs-1">SELF-DIRECTED <span id="self_directed"></span></a></li>
+				</ul>
+				<!--#tabs-1-->
+				<div id="tabs-1">
+					<div class="search-aside">
+						<div class="box no_background"> 
+							<div class="box search-current facets" id="facets_container">
+								<div id="active_facet_query_wrapper">
+									<ul class="data_list" id="active_facet_item">
+									</ul>
+								</div>
+								<input type="hidden" name="category_input" id="category_input" value="" />
+								<input type="hidden" name="provider_input" id="provider_input" value="" />
+							</div>
+							<div id="category_facet" class="box search-refine search-refine-category facets">
+								<div class="header collapsed">
+									<h4>Refine by Category</h4>
+								</div>
+								<ul id="category_list">
+								</ul>
+							</div>
+							<div id="provider_facet" class="box search-refine search-refine-provider facets">
+								<div class="header collapsed">
+									<h4>Refine by Provider</h4>
+								</div>
+								<ul id="provider_list">
+								</ul>
+							</div>
+							<div id="map"></div>
+							<div class="box" id="location_distance_date"> 
+								<form action="/search_form" id="overlabel">
+									<div id="location_box">
+										<strong>Enter your location</strong>
+										<div class="form-row form-row-search-first"> 
+											<input id="location" class="text-field" type="text" name="location" value="" />
+										</div>
+										<div class="form-row form-search-range">
+											<strong><label for="location_slider">Within a <span id="location_distance"></span> mile range</label></strong>
+											<div id="location_slider"></div>
+										</div>
+									</div>
+									<div class="form-row form-row-search-last">
+										<strong>Filter by date range</strong>
+										<input type="text" id="startdate" value="start date" /> 
+										<div class="date-sep">to</div>
+										<input type="text" id="enddate" value="end date" />
+									</div>
+									<input type="submit" value="Update Search" id="submit-btn" />
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="search-main">
+<div style="position:relative;">
+<!-- ad code -->
+<script type="text/javascript">
+function recordAdClick(category, action) {
+  try {
+    if (typeof(pageTracker) != 'object') {
+      pageTracker = _gat._getTracker('UA-8689219-2');
+      pageTracker._trackPageview();
+    }
+    pageTracker._trackEvent(category, action);
+  }catch(err){}
+}
+try {
+  if (typeof(pageTracker) != 'object') {
+    pageTracker = _gat._getTracker('UA-8689219-2');
+    pageTracker._trackPageview();
+  }
+  pageTracker._trackEvent('/SearchResultAd', '/Impression');
+}catch(err){}
+</script>
+<div id="search_results_adspace"><a 
+  target="_blank" alt="Bill and Warren" title="Bill and Warren Day"
+  onclick="recordAdClick('/SearchResultAd', '/Click')"
+  href="http://www.facebook.com/BillandWarrenDay"><div id="ad_wrapper"><img 
+  src="images/bwDayButton.png" 
+  alt="Bill and Warren Day" title="Bill and Warren Day" /></div></a>
+</div>
+<!--
+<div id="search_results_adspace"><a 
+  target="_blank" alt="Champions of Service" title="Champions of Service"
+  onclick="recordAdClick('/SearchResultAd', '/Click')"
+  href="http://www.volunteeringandservice.org/"><div id="ad_wrapper"><img 
+  src="images/120x60-champions-of-service.jpg" 
+  alt="Champions of Service" title="Champions of Service" /></div></a>
+</div>
+-->
+						<div id="loading"></div>
+						<div class="top_search">
+							<div class="sort">Sort by 
+		<select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+                      <option value="score">Relevance</option>
+                      <option value="eventrangeend">Date</option>
+		</select>
+							</div>
+						</div>
+<div style="height:15px;width:1px;"> </div>
+						<ul id="tabs-1-results" class="results">
+							<div id="snippets_pane"></div>
+						</ul>
+</div>
+					</div>
+				</div>
+				<!--#tabs-1--> 
+			</div>
+			<!--#tabs-->
+		</div>
+		<!--.col-main-->
+	</div>
+	<!--.single-page-->
+</div>
+<!--.content--> 
+<script type="text/javascript">	
+	function populateActiveFacets() {
+		  var query = getInputFieldValue(el('keywords'));		  
+		  var category = $("#category_input").val();		  
+		  var source = $("#provider_input").val();
+          var facets = "";
+		  if (query) { 
+			  facets += "<div class=\"header\"><h4>Your Search:</h4></div><ul><li>\"" + query + "\" (<a href=\"javascript:removeKeyword()\">undo</a>)</li></ul>";
+		  }
+		  if (category || source) {
+			  facets += "<div class=\"header\"><h4>Refine by</h4></div><ul>";
+              if (category) { 
+                  facets += "<li>" + category + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>";
+              }
+              if (source) { 
+                  facets += "<li>" + source + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>";
+              }
+              facets += "</ul>";
+		  }
+		  if (facets == "") {
+			  $("#facets_container").hide();
+		  }
+		  else	{	  
+			 $("#facets_container").show();
+			 $("#active_facet_query_wrapper").html(facets);
+		  }
+	}
+	$(".top_search").show();
+    var ts = getHashParam('type', '');
+    if (!ts || ts == "all") {
+        $("#location_box").show();
+        $("#map").show();
+        $("#location_distance_date").show();
+    } else {
+        $("#location_box").hide();
+        $("#map").hide();
+        $("#location_distance_date").show();
+        if (ts == "self_directed") {
+            $(".top_search").hide();
+            $("#location_distance_date").hide();
+        }
+    }
+    $("#tabs").tabs("option", "collapsible", true);
+    $("#tabs").tabs("option", "selected", getSelectedTab());
+    var sort = getHashParam('sort', '');
+    if (sort == "eventrangeend") {
+        $("#sort").attr('selectedIndex', 1);
+    } else {
+        $("#sort").attr('selectedIndex', 0);
+    }
+    if (getSelectedTab() == 3) {
+        $(".top_search").hide();
+    }
+    function capitalize(str) {
+        if (str) {
+            var words = str.split(" ");
+            for (var i = 0; i < words.length; i++) {
+                var testwd = words[i];
+                var firLet = testwd.substr(0, 1);
+                var rest = testwd.substr(1, testwd.length - 1)
+                words[i] = firLet.toUpperCase() + rest
+            }
+            return words.join(" ");
+        }
+    }
+    var category = getHashParam('category', '');
+    if (category) {
+        $("#category_input").val(category);
+        hideShowCategories(capitalize(category));
+    }
+    var source = getHashParam('source', '');
+    if (source) {
+        $("#provider_input").val(source);
+        hideShowProviders(source);
+    }
+</script> 
