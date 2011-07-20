@@ -677,7 +677,7 @@ executeSearchFromHashParams = function(currentLocation) {
 
     var location = query.getLocation();
     if (!location || location.length == 0) {
-      url += '&vol_loc=USA&vol_dist=12400';
+      url += '&vol_loc=USA&vol_dist=1500';
     }
 
     var referrer = document.referrer;

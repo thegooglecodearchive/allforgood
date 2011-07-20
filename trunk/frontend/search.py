@@ -220,12 +220,6 @@ def normalize_query_values(args, dumping = False):
       args[api.PARAM_VOL_STARTDATE] = start_date
       args[api.PARAM_VOL_ENDDATE] = end_date
 
-  if api.PARAM_TIMEPERIOD_START in args and args[api.PARAM_TIMEPERIOD_START] == 'start date':
-    del args[api.PARAM_TIMEPERIOD_START]
-
-  if api.PARAM_TIMEPERIOD_END in args and args[api.PARAM_TIMEPERIOD_END] == 'end date':
-    del args[api.PARAM_TIMEPERIOD_END]
-
   if api.PARAM_TIMEPERIOD_START in args and api.PARAM_TIMEPERIOD_END in args and (api.PARAM_TIMEPERIOD not in args):
       start_date = args[api.PARAM_TIMEPERIOD_START]
       end_date = args[api.PARAM_TIMEPERIOD_END]

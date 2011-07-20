@@ -143,12 +143,7 @@ def get_options():
                         default=pipeline_keys.SOLR_PASS,
                         dest='solr_pass',
                         help ='Solr password')
-
-  solr_group.add_option('--feed_providername',
-                        default=None,
-                        dest='feed_providername')
   (OPTIONS, FILENAMES) = parser.parse_args()
-
 
 def print_progress(msg):
   """print progress message-- shutup pylint"""
@@ -390,7 +385,6 @@ def run_shell_with_retcode(command, print_output=False,
 def run_shell(command, silent_ok=False, universal_newlines=True,
               print_output=False):
   """run a shell command."""
-  print command
   stdout, stderr, retcode = run_shell_with_retcode(command, print_output,
                                                    universal_newlines)
   #if retcode and retcode != 0:
@@ -414,8 +408,7 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
     return
 
   if do_processing:
-    cmd_list = ["./footprint_lib.py", "--feed_providername", OPTIONS.feed_providername,
-                "--progress", "--output", tsv_filename, url, "--compress_output"]
+    cmd_list = ["./footprint_lib.py", "--progress", "--output", tsv_filename, url, "--compress_output"]
     if name == "diy":
       cmd_list.append("--noclean")
     print ' '.join(cmd_list)
@@ -435,16 +428,22 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
     print_progress("Warning: TSV file is empty.")
     return
 
-  #print "processing field stats..."
-  #process_field_stats(tsv_data)
+  print "processing field stats..."
+  process_field_stats(tsv_data)
 
-  #print "processing popular words..."
-  #process_popular_words(tsv_data)
+  print "processing popular words..."
+  process_popular_words(tsv_data)
 
+  if OPTIONS.use_base and do_ftp:
+    print_progress("ftp'ing to base")
+    footprint_lib.PROGRESS = True
+    ftp_to_base(name,
+                OPTIONS.base_ftp_user+":"+OPTIONS.base_ftp_pass,
+                tsv_data)
+    print_progress("pipeline: done.")
   if OPTIONS.use_solr:
-    #print_progress('creating Solr tsv file')
+    print_progress('Commencing Solr index updates')
     create_solr_TSV(name+'1')
-
 
 def test_loaders():
   """for testing, read from local disk as much as possible."""
@@ -465,28 +464,18 @@ def loaders():
   if not FILENAMES or "diy" in FILENAMES:
     run_pipeline("diy", "diy.tsv")
 
-  for name in ["handsonnetwork", "unitedway", 
-               "idealist", 
-               "mentorpro", "aarp", 
-               "americanredcross", "americansolutions",
+  for name in ["unitedway", "volunteermatch", "handsonnetwork", "idealist", # "meetup", 
+               "mentorpro", "aarp", "911dayofservice", "americanredcross", "americansolutions",
                "americorps", "christianvolunteering", "1sky", "sparked", 
                "citizencorps", "extraordinaries", "givingdupage",
-               "greentheblock", "habitat", "mlk_day", 
+               "greentheblock", "habitat", "mlk_day", #"mybarackobama",
                "myproj_servegov", "newyorkcares", 
                "rockthevote", "threefiftyorg", "catchafire",
-               "servenet", "servicenation",
+               "seniorcorps", "servenet", "servicenation",
                "universalgiving", "volunteergov", "up2us",
-               "volunteertwo", "washoecounty", "ymca", 
-               "seniorcorps",
-               "onlinespreadsheet",
-               #"volunteermatch", 
-               #"meetup", 
-               #"911dayofservice", 
-               #"mybarackobama",
-               #"vm-nat"
-               ]:
+               "volunteertwo", "washoecounty", "ymca", "vm-nat"]:
     if not FILENAMES or name in FILENAMES:
-      run_pipeline(name, name + ".xml")
+      run_pipeline(name, name+".xml")
 
   # note: craiglist crawler is run asynchronously, hence the local file
   if not FILENAMES or "craigslist" in FILENAMES:
@@ -662,7 +651,7 @@ def solr_retransform(fname):
       continue
 
     # Fix for events that are ongoing or whose dates were unsucessfully
-    # parsed. These events have start and end dates on 0000-01-01.
+    # parsed. These events have start and end dates on 1971-01-01.
     #
     # These events get a large eventduration (used for ranking) so that
     # they are not erroneously boosted for having a short duration.
@@ -707,9 +696,9 @@ def main():
   else:
     loaders()
 
-  #print_word_stats()
-  #print_field_stats()
-  #print_field_histograms()
+  print_word_stats()
+  print_field_stats()
+  print_field_histograms()
 
 if __name__ == "__main__":
   main()

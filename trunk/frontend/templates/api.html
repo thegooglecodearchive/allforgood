@@ -1,15 +1,34 @@
-    <!--#main-->
-    <div id="main" class="clearfix">
-        <!--.content-->
-        <div id="content" class="clearfix">
-            <!--.single-page-->
-            <div class="single-page-full-width">
-                <!--.col-main-->
-                <div class="col-main">
-
+{% extends 'layout_two_column.html' %}
+<title>All for Good API Reference Guide</title>
+{% block content_left %}
+<h1>&nbsp;</h1>
+<ul id='static_content_list'>
+<li>
+{% ifequal path '/about' %} About {% else %} <a href='/about'>About</a> {% endifequal %}
+<li><a href='http://blog.allforgood.org'>Blog</a>
+<li>
+{% ifequal path '/help' %} Help {% else %} <a href='/help'>Help</a> {% endifequal %}
+<li>
+{% ifequal path '/faq' %} FAQs {% else %} <a href='/faq'>FAQs</a> {% endifequal %}
+<li>
+{% ifequal path '/apps' %} Apps {% else %} <a href='/apps'>Apps</a> {% endifequal %}
+<li>
+{% ifequal path '/docs/api.html' %} API {% else %} <a href='/docs/api.html'>API</a> {% endifequal %}
+<li>
+{% ifequal path '/posting' %} Posting Listings {% else %} <a href='/posting'>Posting Listings</a> {% endifequal %}
+<li>
+{% ifequal path '/privacypolicy' %} Privacy Policy {% else %} <a href='/privacypolicy'>Privacy Policy</a> {% endifequal %}
+<li>
+{% ifequal path '/tos' %} Terms of Service {% else %} <a href='/tos'>Terms of Service</a> {% endifequal %}
+<li>
+{% ifequal path '/contentpolicy' %} Content Policy {% else %} <a href='/contentpolicy'>Content Policy</a> {% endifequal %}
+</ul>
+{% endblock content_left %}
+{% block content_right %}
 <h1>All for Good  API Reference Guide</h1>
 <h2>Introduction</h2>
-<p>The All for Good  application programming interface (API) allows client applications to retrieve and view the content of <a href="http://www.allforgood.org/">http://www.allforgood.org/</a>, which collects and presents volunteer opportunities posted to numerous, disparate sites. Your client application can use the All for Good API to request a list of volunteer opportunities using a number of parameters documented here.</p>
+
+<p>The All for Good application programming interface (API) allows client applications to retrieve and view the content of <a href="/">http://www.allforgood.org/</a>, which collects and presents volunteer opportunities posted to numerous, disparate sites. There are a number of organizations using the All for Good API. See <a href="/APIPartners">here</a> for a list.  Your client application also can use the All for Good API to request a list of volunteer opportunities using a number of parameters documented here.</p>
 <p>Please note that your use of the API is subject to the <a href="/api_tos">API Terms of Service</a>.</p>
 <h2>Contents</h2>
 <p><a href="#Audience">Audience</a></p>
@@ -74,7 +93,8 @@
       <td><code>q</code></td>
       <td>The keyword search string, which offers support for most Google features.</td>
       <td><p>Default value: none</p>
-      <p>Expected values: any string,  including quoted phrases (&quot;some terms&quot;) , and exclusions (-excluded_term)</p></td>
+Expected values: any string, including quoted phrases ("some terms") , and exclusions (-excluded_term).  Not that exclusions can be targeted to any field desired.  For instance, to exclude opportunities that have a detailurl (the destination url) that goes to a specific site such as meetup.com, you could add, “AND –detailurl:meetup” to your query string.
+</p></td>
     </tr>
     <tr>
       <td><code>start</code></td>
@@ -166,9 +186,5 @@ InputStream stream = connection.getInputStream();</pre>
   <li><em>caching results</em> - Yes, you may cache results for at least 1 hour.  Please contact us if you want to cache for longer.</li>
   <li><em>HTTP compressed output</em> - We can probably add this if you need-- please ask and explain why.</li>
 </ul>
-                </div>
-                <!--.col-main-->
-            </div>
-            <!--.single-page-->
-        </div>
-        <!--.content-->
+
+{% endblock content_right%}
