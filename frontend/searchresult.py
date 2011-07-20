@@ -253,11 +253,9 @@ class SearchResultSet(object):
       for res in self.results:
         # Merge keys are M + md5hash(some stuff). This distinguishes them from
         # the stable IDs, which are just md5hash(someotherstuff).
-        #res.merge_key = 'M' + hashlib.md5(safe_str(res.title) +
-        #                                  safe_str(res.snippet) +
-        #                                  safe_str(res.location)).hexdigest()
         res.merge_key = 'M' + hashlib.md5(safe_str(res.title) +
-                                          safe_str(res.snippet)).hexdigest()
+                                          safe_str(res.snippet) +
+                                          safe_str(res.location)).hexdigest()
         res.url_sig = utils.signature(res.url + res.merge_key)
         # we will be sorting & de-duping the merged results
         # by start date so we need an epoch time
@@ -277,13 +275,11 @@ class SearchResultSet(object):
           # merge it
           listed = False
           for merged_result in self.merged_results[i].merged_list:
-            # do we already have this date + url + location?
-            if (merged_result.t_startdate == self.merged_results[i].t_startdate and 
-                merged_result.location == self.merged_results[i].location and
-                merged_result.url == self.merged_results[i].url):
+            # do we already have this date + url?
+            if (merged_result.t_startdate == self.merged_results[i].t_startdate and merged_result.url == self.merged_results[i].url):
               listed = True
               break
-          if not listed: # and res.startdate >= datetime.datetime.today():
+          if not listed and res.startdate >= datetime.datetime.today():
             self.merged_results[i].merged_list.append(res)
             self.merged_results[i].merged_debug.append(res.location + ":" + res.startdate.strftime("%Y-%m-%d"))
           if not merge_by_date_and_location:
@@ -304,10 +300,9 @@ class SearchResultSet(object):
       we will be showing the unique dates as "Month Date"."""
       for i, res in enumerate(self.merged_results):
         res.idx = i + 1
-        if len(res.merged_list) > 0:
+        if len(res.merged_list) > 1:
           res.merged_list.sort(cmp=compare_result_dates)
           location_was = res.location
-          date_was = res.month_day
           res.less_list = []
           if len(res.merged_list) > 2:
             more_id = "more_" + str(res.idx)
@@ -317,23 +312,30 @@ class SearchResultSet(object):
           more = 0
           res.have_more = True
           for merged_result in res.merged_list:
-            entry = ""
-            if merged_result.month_day != date_was:
-              entry += " " + merged_result.month_day
-              date_was = merged_result.month_day
-
-            if merged_result.location != location_was:
-              entry += " " + merged_result.location
-              location_was = merged_result.location
-
-            if len(entry) > 0:
-              if more < 3:
-                res.less_list.append(entry)
+            def make_linkable(text, merged_result, res):
+              """generate HTML hyperlink for text if merged_result != res."""
+              #TODO: find out if we still need to do this
+              if merged_result.url != res.url:
+                return '<a href="' + merged_result.url + '">' + text + '</a>'
               else:
-                res.more_list.append(entry)
+                return text
+
+            entry = ""
+            if merged_result.location != location_was:
+              location_was = merged_result.location
+              entry += ('<br/>'
+               + make_linkable(merged_result.location, merged_result, res)
+               + ' on ')
+            elif more > 0:
+              entry += ', '
+
+            entry += make_linkable(merged_result.month_day, merged_result, res)
+            if more < 3:
+              res.less_list.append(entry)
+            else:
+              res.more_list.append(entry)
 
             more += 1
-
 
     def remove_blacklisted_results():
       """Private helper function for dedup().

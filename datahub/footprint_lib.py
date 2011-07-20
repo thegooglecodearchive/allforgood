@@ -208,9 +208,6 @@ def print_debug(msg):
 def convert_dt_to_gbase(datestr, timestr, timezone):
   """converts dates like YYYY-MM-DD, times like HH:MM:SS and
   timezones like America/New_York, into Google Base format."""
-  if datestr.find('0000') == 0:
-    return datestr
-
   try:
     tzinfo = dateutil.tz.tzstr(timezone)
   except:
@@ -223,8 +220,8 @@ def convert_dt_to_gbase(datestr, timestr, timezone):
   timestr = timestr.replace(tzinfo=tzinfo)
   utc = dateutil.tz.tzutc()
   timestr = timestr.astimezone(utc)
-  #if timestr.year < 1900:
-  #  timestr = timestr.replace(year=timestr.year+1900)
+  if timestr.year < 1900:
+    timestr = timestr.replace(year=timestr.year+1900)
   res = timestr.strftime("%Y-%m-%dT%H:%M:%S")
   res = re.sub(r'Z$', '', res)
   return res
@@ -656,7 +653,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
   for opptime in opp_times:
     # unwind multiple dates
     if opptime is None:
-      startend = convert_dt_to_gbase("0000-01-01", "00:00:00-00:00", "UTC")
+      startend = convert_dt_to_gbase("1971-01-01", "00:00:00-00:00", "UTC")
       starttime = "0000"
       endtime = "2359"
       openended = "Yes"
@@ -671,7 +668,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       ical_recurrence = xmlh.get_tag_val(opptime, "iCalRecurrence")
       # e.g. 2006-12-20T23:00:00/2006-12-21T08:30:00, in PST (GMT-8)
       if (start_date == ""):
-        start_date = "0000-01-01"
+        start_date = "1971-01-01"
         start_time = "00:00:00-00:00"
       startend = convert_dt_to_gbase(start_date, start_time, "UTC")
       if (end_date != "" and end_date + end_time > start_date + start_time):
@@ -994,8 +991,6 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
 
 def guess_shortname(filename):
   """from the input filename, guess which feed this is."""
-  if re.search(r'onlinespreadsheet', filename):
-    return "onlinespreadsheet"
   if re.search(r'rockthevote', filename):
     return "rockthevote"
   if re.search(r'sparked', filename):
@@ -1085,7 +1080,7 @@ def guess_shortname(filename):
     return "myproj_servegov"
   return ""
 
-def guess_parse_func(inputfmt, filename, feed_providername):
+def guess_parse_func(inputfmt, filename):
   """from the filename and the --inputfmt,guess the input type and parse func"""
 
   # for development
@@ -1193,12 +1188,6 @@ def guess_parse_func(inputfmt, filename, feed_providername):
     return "fpxml", fp.parser(
       '137', 'up2us', 'up2us', 'http://www.civicore.com/',
       'civicore')
-  if shortname == "onlinespreadsheet":
-    if not feed_providername:
-      feed_providername = "6000"
-    return "fpxml", fp.parser(
-      '6000', feed_providername, feed_providername, 'http://www.allforgood.org/',
-      'AfG')
   #are they VETTED? check to see if we need to add the new feed to list of Vetted feeds in taggers.py 
 
   if shortname == "habitat":
@@ -1330,7 +1319,6 @@ def parse_options():
   parser.add_option("--fs", "--fieldsep", action="store", dest="fs")
   parser.add_option("--rs", "--recordsep", action="store", dest="rs")
   parser.add_option("-n", "--maxrecords", action="store", dest="maxrecs")
-  parser.add_option("--feed_providername", action="store", dest="feed_providername")
   (options, args) = parser.parse_args(sys.argv[1:])
   if (len(args) == 0):
     parser.print_help()
@@ -1425,7 +1413,7 @@ def test_parse(footprint_xmlstr, maxrecs):
 def process_file(filename, options, providerName="", providerID="",
                  feedID="", providerURL=""):
   shortname = guess_shortname(filename)
-  inputfmt, parsefunc = guess_parse_func(options.inputfmt, filename, options.feed_providername)
+  inputfmt, parsefunc = guess_parse_func(options.inputfmt, filename)
 
   try:
     infh = open_input_filename(filename)

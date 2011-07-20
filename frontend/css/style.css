@@ -877,7 +877,6 @@ form#overlabel input#submit:hover {
   color: #3399cc;
 }
 .block-featured-partners ul li .featured-partner-content {
-  padding-left:6px;
   overflow: hidden;
 }
 .block-featured-partners ul li.last {
@@ -1237,7 +1236,6 @@ form#overlabel input#submit:hover {
   font-size: 15px;
   font-weight: bold;
   margin: 14px 0 10px 0;
-  width:50%;
 }
 .search-main .sort select {
   font-size: 13px;
@@ -1451,11 +1449,5 @@ form#overlabel input#submit:hover {
 
 .addlink span {color: #003399;padding-left:6px;position:relative;top:-10px;}
 .addlink a {text-decoration: none;}
-
-.partner-intro {height:110px;}
-
-.moreless {color:#3399CC;cursor:pointer;}
-
-#search_results_adspace {position:absolute;right:0px;top:0px;width:120px;height:50px;}
 
 /* @end */

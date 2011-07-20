@@ -19,7 +19,6 @@ import datetime
 from datetime import date
 from django.utils import dateformat
 from google.appengine.ext.webapp import template
-from datetime import timedelta
 
 
 # If opt_past_dates is set then past dates are not returned as "Present".
@@ -42,10 +41,6 @@ def custom_date_range_format(result):
   Otherwise, a date range or single date is returned.
   Since some existing ongoing data have an enddate in 1971, these are also
   printed as Ongoing"""
-  
-  threedays = timedelta(days=3)
-  today_minus_three = datetime.datetime.today() - threedays
-  
   if result.openEnded:
     if result.startdate.year <= date.today().year:
       return "Ongoing"
@@ -57,7 +52,7 @@ def custom_date_range_format(result):
         return "Ongoing"
       else:
         return "Starting " + custom_date_format(result.startdate, True)
-    if result.startdate < today_minus_three and result.enddate < today_minus_three:
+    if result.startdate < datetime.datetime.today() and result.enddate < datetime.datetime.today():
         return "Ongoing"
     startdate = custom_date_format(result.startdate)
     enddate = custom_date_format(result.enddate)
