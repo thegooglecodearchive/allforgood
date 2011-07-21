@@ -8,7 +8,7 @@
 {% else %}
   {% for result in result_set.clipped_results %}    
 <li class="{% if forloop.counter0 == 0 %}first{% endif %} result-{{ forloop.counter1 }}">
-<h4>
+<h4 {% if forloop.counter0 == 0 %} style="width:480px"{% endif %}>
     {% if result.latlong %}
 	<img style="position:relative;left:-5px;top:8px;" src='http://www.google.com/mapfiles/marker_midblue{{ forloop.counter0|as_letter }}.png' />
 	<script type='text/javascript'>
@@ -20,11 +20,25 @@
     {% endif %}
 
 <a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title }}</a></h4>
-     {% if result.location or result.startdate or result.interest_count %}
+     {% if result.location or result.startdate %}
 <p class='meta'>
        {{ result.location|escape }}
        {% if result.location %}-{% endif %}
        {{ result|custom_date_range_format }}
+       {% if result.less_list %} 
+{% for entry in result.less_list %}{% if forloop.counter0 != 0 %}, {% endif %}{{ entry }}{% endfor %} 
+       {% endif %}
+       {% if result.more_list %}
+<span id="{{ result.more_id|escape}}" class="meta" style="display:none;">
+{% for entry in result.more_list %}{% if forloop.counter0 != 0 %},{% endif %}{{ entry }}{% endfor %}
+<a href="javascript:void(0)" class="truncate_more_link"
+  onclick="showLessDuplicates('{{ result.more_id|escape }}')" 
+><br />&laquo; show fewer locations and times</a>
+</span>
+<a href="javascript:void(0)" id="s{{ result.more_id|escape}}" 
+  onclick="showMoreDuplicates('{{ result.more_id|escape}}')" class="truncate_more_link"
+> ... show more locations and times &raquo;</a>
+      {% endif %}
 </p>
      {% endif %}
      <p id="brief_{{ forloop.counter0 }}B" class="teaser">{{ result.purged_snippet|escape }}</p>
@@ -37,9 +51,11 @@
 </p>
 </li>	
   {% endfor %}
+  {% endif %}
   <div id="paginator"></div>
 <script language="text/javascript">
-$("#tabs").tabs("option", "collapsible", true);
+	initMap();
+	$("#tabs").tabs("option", "collapsible", true);
 	$("#tabs").tabs("option", "selected", getSelectedTab());
 	var query = createQueryFromUrlParams();
 	var sort = getHashParam('sort', '');
@@ -164,9 +180,7 @@ $("#tabs").tabs("option", "collapsible", true);
           ar[i].innerHTML = ar[i].innerHTML.replace(/""/g,'"');
         }
       }
-    }
-    initMap();
+    }    
     renderPaginator(el('paginator'), {{result_set.facet_counts.count|default:0}}, {{display_nextpage_link|yesno:"true,false"}});    
   $('.teaser').expand(); 
 </script>
-{% endif %}

@@ -58,35 +58,30 @@ MILES_PER_DEG = 69
 DEFAULT_VOL_DIST = 75
 
 def default_boosts(args):
-  boost = ""
-  
-  if api.PARAM_Q in args and args[api.PARAM_Q] == "":    
-    # boosting vetted categories
-    boost += '&bq=categories:vetted^15'    
-    # big penalty for events starting in the far future
-    boost += '+eventrangestart:[*+TO+NOW%2B6MONTHS]^15'    
-    # big boost for events starting in the near future
-    boost += '+eventrangestart:[NOW+TO+NOW%2B1MONTHS]^10'    
-    # slight penalty for events started recently
-    boost += '+eventrangestart:[NOW+TO+*]^5'    
-    # modest penalty for events started long ago
-    boost += '+eventrangestart:[NOW-6MONTHS+TO+*]^7'    
-    # modest penalty for events ending in the far future
-    boost += '+eventrangeend:[*+TO+NOW%2B6MONTHS]^7'     
-    # big boost for events ending in the near future
-    boost += '+eventrangeend:[NOW+TO+NOW%2B1MONTHS]^10'
-    # slight penalty for meetup events
-    boost += '+-feed_providername:meetup^2'
-    # boost short events
-    boost += '+eventduration:[1+TO+10]^10'
-  
-  #if api.PARAM_Q in args and args[api.PARAM_Q] != "" and api.PARAM_TYPE not in args:    
-    # big boost opps with search terms in title
-    #boost += '&qf=title^20'
-    # modest boost opps with search terms in description
-    #boost += '+abstract^7'
+  # boosting vetted categories
+  boost = '&bq=categories:vetted^15'
+  # big penalty for events starting in the far future
+  boost += '+eventrangestart:[*+TO+NOW%2B6MONTHS]^15'    
+  # big boost for events starting in the near future
+  boost += '+eventrangestart:[NOW+TO+NOW%2B1MONTHS]^10'    
+  # slight penalty for events started recently
+  boost += '+eventrangestart:[NOW+TO+*]^5'    
+  # modest penalty for events started long ago
+  boost += '+eventrangestart:[NOW-6MONTHS+TO+*]^7'    
+  # modest penalty for events ending in the far future
+  boost += '+eventrangeend:[*+TO+NOW%2B6MONTHS]^7'     
+  # big boost for events ending in the near future
+  boost += '+eventrangeend:[NOW+TO+NOW%2B1MONTHS]^10'
+  # slight penalty for girl scout events
+  boost += '+%28*:*+-feed_providername:girlscouts%29^200'
+  # boost short events
+  boost += '+eventduration:[0+TO+10]^10'
+  if api.PARAM_KEY in args and args[api.PARAM_KEY] == 'liveunited':
+     boost += ('feed_providername:unitedway^2000+title:tutor^1000' +
+               '+title:(school+OR+children+OR+student+OR+classroom)^100')
   
   return boost
+
 
 def add_range_filter(field, min_val, max_val):
   """ Convert colons in the field name and build a range specifier
@@ -96,6 +91,7 @@ def add_range_filter(field, min_val, max_val):
   result += field
   result += ':[' + str(min_val) +' TO ' + str(max_val) + ']'
   return result
+
 
 def rewrite_query(query_str, api_key = None):
   """ Rewrites the query string from an easy to type and understand format
@@ -115,9 +111,9 @@ def rewrite_query(query_str, api_key = None):
 
   rewritten_query = re.sub(r'[0-9]t[0-9]', reupcase, rewritten_query)
   rewritten_query = re.sub(r'[0-9]z', reupcase, rewritten_query)
-  if rewritten_query.find('meetup') < 0 and api_key and api_key in private_keys.MEETUP_EXCLUDERS:
-    logging.info('solr_search.rewrite_query api key %s excludes meetup' % api_key)
-    rewritten_query = '(' + rewritten_query + ') AND -feed_providername:meetup'
+  #if rewritten_query.find('meetup') < 0 and api_key and api_key in private_keys.MEETUP_EXCLUDERS:
+  #  logging.info('solr_search.rewrite_query api key %s excludes meetup' % api_key)
+  #  rewritten_query = '(' + rewritten_query + ') AND -feed_providername:meetup'
 
   # Replace the category filter shortcut with its proper name.
   rewritten_query = rewritten_query.replace('category:', 'categories:')
@@ -144,7 +140,7 @@ def form_solr_query(args):
   # this is near the middle of the continental US 
   lat = '37'
   lng = '-95'
-  max_dist = 1500
+  max_dist = 12400
   if api.PARAM_LAT in args and api.PARAM_LNG in args and \
      (args[api.PARAM_LAT] != "" and args[api.PARAM_LNG] != ""):
     lat = args[api.PARAM_LAT]
@@ -156,15 +152,23 @@ def form_solr_query(args):
       args[api.PARAM_VOL_DIST] = DEFAULT_VOL_DIST
     max_dist = float(args[api.PARAM_VOL_DIST])
   
-  boost_params = default_boosts(args);
   
-  geo_params = '{!spatial lat=' + str(lat) + ' long=' + str(lng) + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,1000,1000)^1}'
+  geo_params = ('{!spatial lat=' + str(lat) + ' long=' + str(lng) 
+                + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,150,10)^1}')
+
   global GEO_GLOBAL
   GEO_GLOBAL = urllib.quote_plus(geo_params)
   if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
       geo_params = ""       
 
+  # Running our keyword through our categories dictionary to see if we need to adjust our keyword param   
+  if api.PARAM_CATEGORY in args:
+    for key, val in categories.CATEGORIES.iteritems():
+      if str(args[api.PARAM_CATEGORY]) == val:
+        args[api.PARAM_CATEGORY] = str(key)   
+
   # keyword
+  filter_query = ''
   query_is_empty = False
   if (api.PARAM_Q in args and args[api.PARAM_Q] != ""):
     qwords = args[api.PARAM_Q].split(" ")
@@ -179,16 +183,16 @@ def form_solr_query(args):
           qwords[qi] = qw
           args[api.PARAM_Q] = ' '.join(qwords)
 
-    query_boosts = boosts.query_time_boosts(args)
+    query_boosts, filter_query = boosts.query_time_boosts(args)
     
     # Remove categories from query parameter    
     args[api.PARAM_Q] = args[api.PARAM_Q].replace('category:', '')
     
     if api.PARAM_CATEGORY in args:        
         args[api.PARAM_Q] += (" AND " + args[api.PARAM_CATEGORY])
-    
+
     if query_boosts:
-      solr_query = query_boosts    
+      solr_query = query_boosts
     else:
       solr_query += rewrite_query('*:* AND ' +  args[api.PARAM_Q], api_key)
   elif api.PARAM_CATEGORY in args:
@@ -255,6 +259,10 @@ def form_solr_query(args):
     global BACKEND_GLOBAL
     BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
   
+  solr_query += default_boosts(args);
+  if filter_query:
+    solr_query += '&fq=' + filter_query
+
   # field list
   solr_query += '&fl='
   if api.PARAM_OUTPUT not in args:
@@ -265,7 +273,8 @@ def form_solr_query(args):
     else:
       solr_query += '*' 
 
-  return solr_query + boost_params
+  return solr_query
+
 
 def parseLatLng(val):
   """ return precisely zero if a lat|lng value is very nearly zero."""
@@ -360,10 +369,10 @@ def search(args, dumping = False):
   
   global DATE_QUERY_GLOBAL
   if start_datetime_str:
-    DATE_QUERY_GLOBAL = "&fq=((eventrangeend:[" + start_datetime_str + "+TO+*]+AND+eventrangestart:[*+TO+" + end_datetime_str + "])+OR+(eventrangeend:+" +'"1971-01-01T00:00:000Z"' "+AND+eventrangestart:"+'"1971-01-01T00:00:000Z"'+"))"
+    DATE_QUERY_GLOBAL = "&fq=(eventrangeend:[" + start_datetime_str + "+TO+*]+AND+eventrangestart:[*+TO+" + end_datetime_str + "])"
     query_url += DATE_QUERY_GLOBAL
   else:
-    DATE_QUERY_GLOBAL = "&fq=(eventrangeend:[NOW-3DAYS%20TO%20*]+OR+expires:[NOW-3DAYS%20TO%20*])"
+    DATE_QUERY_GLOBAL = "&fq=(eventrangeend:[NOW-1DAYS%20TO%20*]+OR+expires:[NOW-1DAYS%20TO%20*])"
     query_url += DATE_QUERY_GLOBAL
 
   #num_to_fetch = int(args[api.PARAM_NUM]) + 1
@@ -418,9 +427,9 @@ def query(query_url, args, cache, dumping = False):
   
   fetch_start = time.time()
   status_code = 999
+  fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
   try:
-    fetch_result = urlfetch.fetch(query_url,
-                   deadline = api.CONST_MAX_FETCH_DEADLINE)
+    #fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
     status_code = fetch_result.status_code
   except:
     # can get a response too large error here
@@ -719,8 +728,8 @@ def get_facet_counts():
     category_fields = dict()
     provider_fields = []
     query = []
-    for cat in categories.CATEGORIES:
-      query.append("facet.query=" + urllib.quote_plus(cat))  
+    for key, val in categories.CATEGORIES.iteritems():
+      query.append("facet.query=" + urllib.quote_plus(key))  
 
     try:
         query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + '&facet.mincount=1&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query)
@@ -731,8 +740,9 @@ def get_facet_counts():
         fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
     except:
         logging.info('error receiving solr facet counts')
+        return
 
-    result_content = fetch_result.content  
+    result_content = fetch_result.content
     result_content = re.sub(r';;', ',', result_content)
     json = simplejson.loads(result_content)["facet_counts"]
     queries = json["facet_queries"]
@@ -740,7 +750,7 @@ def get_facet_counts():
     
     for k, v in queries.iteritems():
         if v > 0:
-            category_fields[k] = v
+            category_fields[categories.CATEGORIES[k]] = v
     
     for k, v in enumerate(providers):
         if int(k) % 2 == 1:

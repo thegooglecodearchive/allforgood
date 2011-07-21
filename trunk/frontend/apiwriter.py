@@ -192,6 +192,8 @@ class JsonApiWriter(ApiWriter):
           content = ''
         else:
           content = getattr(result, attr, '')
+        if name == "description":
+          content = content[:300]
 
         item[name] = content
         #TODO: figure out a way to add comments to JSON
@@ -308,6 +310,9 @@ class RssApiWriter(ApiWriter):
         if len(field_info) == 3:
           #has a comment
           comment = field_info[2]
+
+      if field_info[0] == "description":
+        content = content[:300]
       return (name, content, comment)
     
     item = self.doc.createElement('item')

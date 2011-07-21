@@ -171,7 +171,7 @@ function processTweets(xml) {
 }
 
 function fetchTweets(twitter_feed) {
-  var url = '/proxy?url=' + encodeURIComponent(twitter_feed);
+  var url = '/proxy?url=' + encodeURIComponent(twitter_feed) + '&v2&cache=60';
   jQuery.ajax({
     url: url, async: true, dataType: 'xml',
     error: function(){processTweets(null)},
