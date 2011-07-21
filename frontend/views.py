@@ -64,9 +64,11 @@ import view_helper
 import searchresult
 import apiwriter
 from template_helpers import get_default_template_values, render_template, load_userinfo_into_dict
+import ga
 
 CONTENT_TEMPLATE = 'base_content.html'
 HOME_PAGE_TEMPLATE = 'base_home.html'
+PARTNER_PAGE_TEMPLATE = 'base_partners.html'
 NOT_FOUND_TEMPLATE = 'not_found.html'
 
 SEARCH_RESULTS_TEMPLATE = 'base_serp.html'
@@ -271,6 +273,31 @@ class home_page_view(webapp.RequestHandler):
       deadline_exceeded(self, "static_content")
 
 
+class partner_page_view(webapp.RequestHandler):
+  """ default homepage for consumer UI."""
+  @expires(0)  # User specific. Maybe we should remove that so it's cacheable.
+  def get(self):
+    """HTTP get method."""
+    try:
+      try:
+        path = os.path.join(os.path.dirname(__file__),  urls.CONTENT_LOCATION +
+                        urls.CONTENT_FILES[self.request.path])
+        fh = open(path, 'r')
+        html = fh.read()
+        fh.close()
+        template_values = get_default_template_values(self.request, 'PARTNER_PAGE')
+        template_values['static_content'] = html
+        self.response.out.write(render_template(PARTNER_PAGE_TEMPLATE,
+                                          template_values))
+      except:
+        self.error(404)
+        return
+
+    except DeadlineExceededError:
+      deadline_exceeded(self, "static_content")
+
+
+
 class home_page_redir_view(webapp.RequestHandler):
   """handler for /home, which somehow got indexed by google."""
   @expires(0)
@@ -393,13 +420,20 @@ class search_view(webapp.RequestHandler):
     try:
       unique_args = get_unique_args_from_request(self.request)
 
-      if api.PARAM_KEY not in unique_args:
+      if api.PARAM_KEY not in unique_args or unique_args[api.PARAM_KEY] in private_keys.BAD_KEYS:
+        if api.PARAM_KEY not in unique_args:
+          logging.info('no key given')
+        elif unique_args[api.PARAM_KEY] in private_keys.BAD_KEYS:
+          logging.info('bad key given %s' % private_keys.BAD_KEYS)
+
         tplresult = render_template(SEARCH_RESULTS_MISSING_KEY_TEMPLATE, {})
         self.response.out.write(tplresult)
         pagecount.IncrPageCount("key.missing", 1)
         return
 
+
       pagecount.IncrPageCount("key.%s.searches" % unique_args[api.PARAM_KEY], 1)
+      ga.track("API", "search", unique_args[api.PARAM_KEY])
 
       dumping = False
       if api.PARAM_DUMP in unique_args and unique_args[api.PARAM_DUMP] == '1':

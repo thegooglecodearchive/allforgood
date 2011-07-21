@@ -127,9 +127,13 @@ def parser(providerID, providerName, feedID, providerURL, feedDescription):
       opplocs = item.getElementsByTagName("Location")
       for opploc in opplocs:
         volopps += '<location>'
-        volopps += xmlh.output_node('region', opploc, "StateOrProvince")
-        volopps += xmlh.output_node('country', opploc, "Country")
-        volopps += xmlh.output_node('postalCode', opploc, "ZipOrPostalCode")
+        virtual_tag = opploc.getElementsByTagName("Virtual")
+        if virtual_tag and xmlh.get_tag_val(opploc, "Virtual").lower() == "yes":
+          volopps += xmlh.output_val('virtual', 'Yes')
+        else:
+          volopps += xmlh.output_node('region', opploc, "StateOrProvince")
+          volopps += xmlh.output_node('country', opploc, "Country")
+          volopps += xmlh.output_node('postalCode', opploc, "ZipOrPostalCode")
         volopps += '</location>'
       volopps += '</locations>'
       volopps += '<categoryTags/>'

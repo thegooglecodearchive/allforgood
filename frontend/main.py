@@ -21,6 +21,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 from google.appengine.dist import use_library
 use_library('django', '1.2')
 
+
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 import logging
@@ -31,6 +32,7 @@ import deploy
 
 APPLICATION = webapp.WSGIApplication(
     [(urls.URL_HOME, views.home_page_view),
+     (urls.URL_PARTNERS, views.partner_page_view),
      (urls.URL_OLD_HOME, views.home_page_redir_view),
      (urls.URL_DATAHUB_DASHBOARD, views.datahub_dashboard_view),
      (urls.URL_API_SEARCH, views.search_view),

@@ -1,5 +1,4 @@
-# Copyright 2009 Google Inc.
-#
+# Copyright 2009 Google Inc.  #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -23,10 +22,16 @@ import api
 
 def query_time_boosts(args):
   logging.info("boosts.query_time_boosts enter")
+
+  solr_query = ""
+  fq = ""
   if args[api.PARAM_Q].find('category:IAMS') >= 0:
-      solr_query = solr_search.rewrite_query('%s' %
+    solr_query = solr_search.rewrite_query('%s' %
         '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))')
-  
-  else:
-     solr_query = "" 
-  return solr_query
+  elif args[api.PARAM_Q].find('category:education') >= 0:
+    solr_query = solr_search.rewrite_query('(%s)' % 
+        '((education OR tutoring)'
+      + ' -feed_providername:girlscouts -prison -prisoner -inmate -disaster -emergency)')
+
+  #return solr_query.replace(' ', '+'), fq.replace(' ', '+')
+  return solr_query, fq
