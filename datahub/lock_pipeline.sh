@@ -37,6 +37,13 @@ then
 	fi
 
 	./notify_michael.sh pipeline processing
+	# process the online spreadsheet opps
+	if [ "$*" = "" ]
+	then
+		./runos.sh
+	fi
+
+	# process the feeds
 	./pipeline.py -s $*
 
         if [ $? -ne 0 ]
@@ -64,9 +71,8 @@ then
                                 if [ $RATIO -lt 70 ]
                                 then
                                         ./notify_team.sh manually check $FILE
-                                else
-                                        cp $FILE $CFILE
                                 fi
+                                cp $FILE $CFILE
                         fi
                 done
 
@@ -86,6 +92,9 @@ then
                 # but only if we haven't lapped
                 cp dashboard.ing/* $DASHBOARD_DIR
         fi
+
+        # update the pipeline_common.js
+	./common.py
 
 	./notify_michael.sh pipeline stopped
 else
