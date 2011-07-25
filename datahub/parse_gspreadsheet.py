@@ -346,7 +346,7 @@ def parse(instr, maxrecs, progress):
     blankrow = True
     #rowstr = "row="+str(row)+"\n"
     record = {}
-    record['LastUpdated'] = '0000-00-00'
+    record['LastUpdated'] = '2000-01-01'
     for field_name in header_colidx:
       col = header_colidx[field_name]
       val = cellval(data, row, col)

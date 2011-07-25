@@ -56,6 +56,8 @@ ProviderNames = {
   "washoecounty":{"name":"Washoe County", "idx":36}, 
   "ymca":{"name":"YMCA", "idx":37}, 
   "1sky":{"name":"1Sky", "idx":38},
+  "usaintlexp":{"name":"International Experience USA", "idx":39},
+  "samaritan":{"name":"Samaritan Technologies", "idx":40},
 }
 
 def updateProviderNamesScript():

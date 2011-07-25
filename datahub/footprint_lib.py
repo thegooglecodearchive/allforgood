@@ -211,23 +211,24 @@ def convert_dt_to_gbase(datestr, timestr, timezone):
   if datestr.find('0000') == 0:
     return datestr
 
+  dflt = '2000-01-01T00:00:00'
   try:
-    tzinfo = dateutil.tz.tzstr(timezone)
-  except:
-    tzinfo = dateutil.tz.tzutc()
-  try:
+    try:
+      tzinfo = dateutil.tz.tzstr(timezone)
+    except:
+      tzinfo = dateutil.tz.tzutc()
+
     timestr = dateutil.parser.parse(datestr + " " + timestr)
+    timestr = timestr.replace(tzinfo=tzinfo)
+    utc = dateutil.tz.tzutc()
+    timestr = timestr.astimezone(utc)
+    res = timestr.strftime("%Y-%m-%dT%H:%M:%S")
+    res = re.sub(r'Z$', '', res)
+    return res
   except:
-    print "error parsing datetime: "+datestr+" "+timestr
-    return ""
-  timestr = timestr.replace(tzinfo=tzinfo)
-  utc = dateutil.tz.tzutc()
-  timestr = timestr.astimezone(utc)
-  #if timestr.year < 1900:
-  #  timestr = timestr.replace(year=timestr.year+1900)
-  res = timestr.strftime("%Y-%m-%dT%H:%M:%S")
-  res = re.sub(r'Z$', '', res)
-  return res
+    pass
+
+  return dflt
 
 CSV_REPEATED_FIELDS = ['categories', 'audiences']
 DIRECT_MAP_FIELDS = [
@@ -620,6 +621,7 @@ def get_feed_fields(feedinfo):
     feedinfo, "description", "feed_description")
   outstr += FIELDSEP + output_tag_value_renamed(
     feedinfo, "createdDateTime", "feed_createdDateTime")
+  # add volunteerHubOrganizationID here?
   return outstr, feed_providerName
 
 def output_opportunity(opp, feedinfo, known_orgs, totrecs):
@@ -656,7 +658,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
   for opptime in opp_times:
     # unwind multiple dates
     if opptime is None:
-      startend = convert_dt_to_gbase("0000-01-01", "00:00:00-00:00", "UTC")
+      startend = convert_dt_to_gbase("2000-01-01", "00:00:00-00:00", "UTC")
       starttime = "0000"
       endtime = "2359"
       openended = "Yes"
@@ -671,7 +673,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       ical_recurrence = xmlh.get_tag_val(opptime, "iCalRecurrence")
       # e.g. 2006-12-20T23:00:00/2006-12-21T08:30:00, in PST (GMT-8)
       if (start_date == ""):
-        start_date = "0000-01-01"
+        start_date = "2000-01-01"
         start_time = "00:00:00-00:00"
       startend = convert_dt_to_gbase(start_date, start_time, "UTC")
       if (end_date != "" and end_date + end_time > start_date + start_time):
@@ -1028,6 +1030,10 @@ def guess_shortname(filename):
     return "catchafire"
   if re.search(r'ymca', filename):
     return "ymca"
+  if re.search(r'usaintlexp', filename):
+    return "usaintlexp"
+  if re.search(r'samaritan', filename):
+    return "samaritan"
   if re.search(r'newyorkcares', filename):
     return "newyorkcares"
   if re.search(r'911dayofservice', filename):
@@ -1193,6 +1199,14 @@ def guess_parse_func(inputfmt, filename, feed_providername):
     return "fpxml", fp.parser(
       '137', 'up2us', 'up2us', 'http://www.civicore.com/',
       'civicore')
+  if shortname == "usaintlexp":
+    return "fpxml", fp.parser(
+      '139', 'usaintlexp', 'usaintlexp', 'http://usa.international-experience.net/',
+      'usaintlexp')
+  if shortname == "samaritan":
+    return "fpxml", fp.parser(
+      '140', 'samaritan', 'samaritan', 'http://ec.volunteernow.com/',
+      'samaritan')
   if shortname == "onlinespreadsheet":
     if not feed_providername:
       feed_providername = "6000"

@@ -375,7 +375,7 @@ def get_taggers():
       #UGC '131', 911dayofservice
       #'132', newyorkcares
       '134', #samaritan
-      '1002', # girl scouts
+      #'1002', # girl scouts
       '1003', # united jewish communities
       '1004', # sierra club
       '1005', # 1Sky
