@@ -390,7 +390,7 @@ def run_shell_with_retcode(command, print_output=False,
 def run_shell(command, silent_ok=False, universal_newlines=True,
               print_output=False):
   """run a shell command."""
-  print command
+  print " ".join(command)
   stdout, stderr, retcode = run_shell_with_retcode(command, print_output,
                                                    universal_newlines)
   #if retcode and retcode != 0:
@@ -414,11 +414,15 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
     return
 
   if do_processing:
-    cmd_list = ["./footprint_lib.py", "--feed_providername", OPTIONS.feed_providername,
-                "--progress", "--output", tsv_filename, url, "--compress_output"]
+    cmd_list = ["./footprint_lib.py"]
+    if OPTIONS.feed_providername:
+      for it in ["--feed_providername", OPTIONS.feed_providername]:
+        cmd_list.append(it)
+    for it in ["--progress", "--output", tsv_filename, url, "--compress_output"]:
+      cmd_list.append(it)
     if name == "diy":
       cmd_list.append("--noclean")
-    print ' '.join(cmd_list)
+
     stdout, stderr, retcode = run_shell(cmd_list, silent_ok=True, print_output=False)
     print stdout,
     if stderr and stderr != "":
@@ -478,12 +482,9 @@ def loaders():
                "universalgiving", "volunteergov", "up2us",
                "volunteertwo", "washoecounty", "ymca", 
                "seniorcorps",
+               "usaintlexp",
+               "samaritan",
                "onlinespreadsheet",
-               #"volunteermatch", 
-               #"meetup", 
-               #"911dayofservice", 
-               #"mybarackobama",
-               #"vm-nat"
                ]:
     if not FILENAMES or name in FILENAMES:
       run_pipeline(name, name + ".xml")
@@ -544,6 +545,73 @@ def ftp_to_base(filename, ftpinfo, instr):
   
 def solr_retransform(fname):
   """Create Solr-compatible versions of a datafile"""
+  """
+rows
+{'c:self_directed:boolean': 'False', 
+ 'event_date_range': '2010-06-11T00:00:00/2011-06-30T00:00:00', 
+ 'c:volunteersSlots:integer': '', 
+ 'c:feed_createdDateTime:dateTime': '2011-06-20T17:17:25', 
+ 'c:providerURL:URL': '', 
+ 'c:commitmentHoursPerWeek:string': '', 
+ 'c:duration:string': '', 
+ 'c:lastUpdated:dateTime': '2011-04-13T00:00:00', 
+ 'c:contactName:string': '', 
+ 'c:contactEmail:string': '', 
+ 'image_link': '', 
+ 'c:location_string:string': 'Waterloo;; IA 50704', 
+ 'c:skills:string': '', 
+ 'c:sexRestrictedTo:string': '', 
+ 'c:feed_description:string': 'HandsOn Network', 
+ 'c:randomsalt:float': '0.395241629379', 
+ 'c:eventrangeend:dateTime': '2011-06-30T00:00:00', 
+ 'c:virtual:boolean': 'False', 
+ 'c:org_fax:string': '', 
+ 'id': '947073c82b818ec7e76408b49bc8b7d1', 
+ 'c:categories:string': 'Vetted', 
+ 'c:detailURL:URL': 'http://www.1-800-volunteer.org/1800Vol/LoadOpportunityReview.do?opportunityId=4477', 
+ 'c:orgLocation:string': '', 
+ 'c:opportunityID:string': '', 
+ 'title': 'Patient/Family Volunteer', 
+ 'c:org_guidestarID:string': '', 
+ 'c:volunteersNeeded:integer': '15', 
+ 'c:organizationID:string': '', 
+ 'c:longitude:float': '907.6574', 
+ 'c:org_email:string': '', 
+ 'c:employer:string': 'Cedar Valley Hospice', 
+ 'location': '', 
+ 'c:micro:boolean': 'False', 
+ 'c:org_name:string': 'Cedar Valley Hospice', 
+ 'c:minimumAge:integer': '18', 
+ 'c:provider_proper_name:string': 'HandsOn Network', 
+ 'c:org_phone:string': '319-272-2002', 
+ 'c:language:string': '', 
+ 'c:org_nationalEIN:string': '', 
+ 'c:feed_providerName:string': 'handsonnetwork', 
+ 'description': 'Cedar Valley Hospice is looking for compassionate people to ... ', 
+ 'c:feedID:string': 'handsonnetwork', 
+ 'c:eventrangestart:dateTime': '2010-06-11T00:00:00', 
+ 'c:openended:boolean': 'False', 
+ 'c:endTime:integer': '0000', 
+ 'c:ical_recurrence:string': '', 
+ 'c:org_providerURL:URL': '', 
+ 'c:latitude:float': '1042.4929', 
+ 'c:org_logoURL:URL': '', 
+ 'c:org_missionStatement:string': '', 
+ 'c:abstract:string': 'Cedar Valley Hospice is looking for compassionate people to ... ', 
+ 'c:expires:dateTime': '2011-06-27T17:19:13', 
+ 'c:feed_providerURL:URL': 'http://handsonnetwork.org/', 
+ 'c:venue_name:string': '', 
+ 'c:paid:boolean': 'n', 
+ 'c:audiences:string': '', 
+ 'c:org_organizationURL:URL': 'http://www.cvhospice.org', 
+ 'c:org_description:string': 'Cedar Valley Hospice is committed to ...', 
+ 'c:volunteersFilled:integer': '', 
+ 'c:feed_providerID:string': '102', 
+ 'c:startTime:integer': '0000', 
+ 'c:contactPhone:string': '', 
+ 'quantity': '15'}
+"""
+
   print_progress('Creating Solr transformed file for: ' + fname)
   out_filename = fname + '.transformed'
   data_file = open(fname, "r")
@@ -598,10 +666,14 @@ def solr_retransform(fname):
         rows["c:eventrangeend:dateTime"] = rows["c:eventrangestart:dateTime"]
 
     # in case we somehow got here without already doing this
+
     rows["title"] = footprint_lib.cleanse_snippet(rows["title"])
     rows["description"] = footprint_lib.cleanse_snippet(rows["description"])
+    rows["c:detailURL:URL"] = rows["c:detailURL:URL"].replace("&amp;", '&'); 
 
     rows["c:aggregatefield:string"] = footprint_lib.cleanse_snippet(' '.join([rows["description"],
+                                               rows["c:provider_proper_name:string"],
+                                               rows["c:skills:string"],
                                                rows["c:org_name:string"],
                                                rows["title"]]))
     rows["c:org_missionStatement:string"] = footprint_lib.cleanse_snippet(
@@ -614,7 +686,8 @@ def solr_retransform(fname):
       rows[key] = rows[key].replace(';;', ',')
 
       if key.find(':dateTime') != -1:
-        rows[key] += 'Z'
+        if rows[key].find(':') > 0:
+          rows[key] += 'Z'
       elif key.find(':integer') != -1:
         if rows[key] == '':
           rows[key] = 0
@@ -628,54 +701,61 @@ def solr_retransform(fname):
 
     try:
       start_date = parser.parse(rows["c:eventrangestart:dateTime"], ignoretz=True)
+    except:
+      start_date = "2001-01-01T00:00:00"
+
+    try:
       end_date = parser.parse(rows["c:eventrangeend:dateTime"], ignoretz=True)
     except:
-      print_progress("error parsing start or end date-- rejecting record.")
-      continue
+      end_date = "2020-12-31T23:59:59"
 
-    # check for expired opportunities
-    delta_days = get_delta_days(relativedelta.relativedelta(end_date, today))
-    if delta_days < -2 and delta_days > -3000:
-      # more than 3000? it's the 1971 thing
-      # else it expired at least two days ago
-      expired_by_end_date += 1
-      continue
+    try:
+      # check for expired opportunities
+      delta_days = get_delta_days(relativedelta.relativedelta(end_date, today))
+      if delta_days < -2 and delta_days > -3000:
+        # more than 3000? it's the 1971 thing
+        # else it expired at least two days ago
+        expired_by_end_date += 1
+        continue
 
-    duration_rdelta = relativedelta.relativedelta(end_date, start_date) 
-    duration_delta_days = get_delta_days(duration_rdelta)
+      duration_rdelta = relativedelta.relativedelta(end_date, start_date) 
+      duration_delta_days = get_delta_days(duration_rdelta)
     
-    # Check whether start/end dates are the wrong way around.
-    if duration_delta_days < 0:
-      # removing this code for now-- too scary wrt. typos
-      # e.g. what happens if 9/11/2009 - 9/7/2009  and it turns out
-      # that the 7 was supposed to be a 17 i.e. simple typo-- by
-      # swapping you've made it worse.  Correct solution is to add
-      # to spreadsheet checker, then reject start>end here.
-      # even this is the wrong place to do this-- should apply to
-      # both Base and SOLR.
-      #print_progress('Date error: start > end. Swapping dates...')
-      #duration_delta_days = -duration_delta_days
-      #temp = rows["c:eventrangestart:dateTime"]
-      #rows["c:eventrangestart:dateTime"] = rows["c:eventrangeend:dateTime"]
-      #rows["c:eventrangeend:dateTime"] = temp
-      print_progress("start>end: rejecting record.")
-      continue
+      # Check whether start/end dates are the wrong way around.
+      if duration_delta_days < 0:
+        # removing this code for now-- too scary wrt. typos
+        # e.g. what happens if 9/11/2009 - 9/7/2009  and it turns out
+        # that the 7 was supposed to be a 17 i.e. simple typo-- by
+        # swapping you've made it worse.  Correct solution is to add
+        # to spreadsheet checker, then reject start>end here.
+        # even this is the wrong place to do this-- should apply to
+        # both Base and SOLR.
+        #print_progress('Date error: start > end. Swapping dates...')
+        #duration_delta_days = -duration_delta_days
+        #temp = rows["c:eventrangestart:dateTime"]
+        #rows["c:eventrangestart:dateTime"] = rows["c:eventrangeend:dateTime"]
+        #rows["c:eventrangeend:dateTime"] = temp
+        print_progress("start>end: rejecting record.")
+        continue
 
-    # Fix for events that are ongoing or whose dates were unsucessfully
-    # parsed. These events have start and end dates on 0000-01-01.
-    #
-    # These events get a large eventduration (used for ranking) so that
-    # they are not erroneously boosted for having a short duration.
-    current_rdelta = relativedelta.relativedelta(today, end_date)
-    current_delta_days = get_delta_days(current_rdelta)
-    rows["c:eventduration:integer"] = max(duration_delta_days,
+      # Fix for events that are ongoing or whose dates were unsucessfully
+      # parsed. These events have start and end dates on 0000-01-01.
+      #
+      # These events get a large eventduration (used for ranking) so that
+      # they are not erroneously boosted for having a short duration.
+      current_rdelta = relativedelta.relativedelta(today, end_date)
+      current_delta_days = get_delta_days(current_rdelta)
+      rows["c:eventduration:integer"] = max(duration_delta_days,
                                           current_delta_days)
+    except:
+      pass
 
     # Fix to the +1000 to lat/long hack   
     if not rows['c:latitude:float'] is None:
       rows['c:latitude:float'] = float(rows['c:latitude:float']) - 1000.0
     if not rows['c:longitude:float'] is None:
       rows['c:longitude:float'] = float(rows['c:longitude:float']) - 1000.0
+
     csv_writer.writerow(rows)
 
   data_file.close()
