@@ -214,16 +214,16 @@ mark {
   color: #000;
 }
 a {
-  color: #333333;
+  color: #000099;
 }
 a:visited {
-  color: #333333;
+  color: #000099;
 }
 a:active {
-  color: #333333;
+  color: #000099;
 }
 a:hover {
-  color: #333333;
+  color: #000099;
 }
 p,
 ul,
