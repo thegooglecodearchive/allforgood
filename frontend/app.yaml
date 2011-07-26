@@ -1,7 +1,7 @@
 application: footprint2009dev
 #application: servicefootprint
 
-version: unity
+version: trunk
 runtime: python
 api_version: 1
 
