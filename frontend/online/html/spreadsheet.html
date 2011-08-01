@@ -93,7 +93,7 @@ Enter your volunteer opportunities in the fields below by clicking your mouse in
 <span class="more" id="more3" onclick="goMore(3, true)">... more &raquo;</span>
 <p/>  
 <div id="more3text" style="display:none;">
-The following fields which are marked with a red * are required for each opportunity: Opportunity Title, Description, Website/URL for the opportunity, and Location Name.  Enter the word, “Virtual” in the Location Name field for virtual opportunities that can be performed remotely.  For physically based, in-person volunteer opportunities the following fields which are marked with a red ^ are required: City and State.  If the opportunity has a Street address or a Postal Code/Zip Code please enter those as well.  If the address information you enter cannot be validated by our Google Maps based system the location fields will be highlighted in red.  Only locations that can be mapped in Google Maps properly can be processed.  Note that the State and the optional date related fields require you to click "Save" or "Cancel" in the cell's pop-up window when you make your entry.
+The following fields which are marked with a red * are required for each opportunity: Opportunity Title, Description, Website/URL for the opportunity, and Location Name.  Enter the word, “Virtual” in the Location Name field for virtual opportunities that can be performed remotely.  For physically based, in-person volunteer opportunities the following fields which are marked with a red * are required: City and State.  If the opportunity has a Street address or a Postal Code/Zip Code please enter those as well.  If the address information you enter cannot be validated by our Google Maps based system the location fields will be highlighted in red.  Only locations that can be mapped in Google Maps properly can be processed.  Note that the State and the optional date related fields require you to click "Save" or "Cancel" in the cell's pop-up window when you make your entry.
 <p/>
 The following fields are required for each opportunity: Opportunity Title, Description, Website/URL for the opportunity, Location Name, and a valid City/State and/or Zip Code.  Note that the State and date related cells require you to click "Save" or "Cancel" in the cell's pop-up window when you make your entry.  If the address information you enter cannot be validated by our Google Maps based system those fields will be highlighted in red.  Only locations that can be mapped in Google Maps properly can be processed.
 <p/>
@@ -126,11 +126,11 @@ After your spreadsheet has been submitted for processing, your opportunities nor
 <td valign="top" style="border-right:solid 1px #cccccc;">
 <div style="position:relative;">
 <!-- sponsor = Sponsoring Organization -->
-<label class="ci" for="sponsor">Organization:</label><input tabindex="3" id="sponsor" type="text" class="yui-ac-input"> 
+<label class="ci" for="sponsor"><span class='rq'>*</span>Organization:</label><input tabindex="3" id="sponsor" type="text" class="yui-ac-input"> 
 <p/>
-<label class="ci" for="contact_name">Contact name:</label><input tabindex="4" id="contact_name" type="text" class="yui-ac-input"> 
+<label class="ci" for="contact_name"><span class='rq'>*</span>Contact name:</label><input tabindex="4" id="contact_name" type="text" class="yui-ac-input"> 
 <p/>
-<label class="ci" for="contact_phone">Contact phone:</label><input tabindex="5" id="contact_phone" type="text" class="yui-ac-input"> 
+<label class="ci" for="contact_phone"><span class='rq'>*</span>Contact phone:</label><input tabindex="5" id="contact_phone" type="text" class="yui-ac-input"> 
 <a href="javascript:begEmail();" title="enter your email address" alt="enter your email address" class="shield"> </a></div>
 </td>
 <td valign="top" style="border-right:solid 1px #cccccc;">
@@ -169,7 +169,6 @@ Click the "Submit for Processing" button to indicate these listings are ready to
 <input type="button" id="clear" disabled style="visibility:visible;" value="Delete selected rows" onclick="clearRows()" />
 <span style="display:inline-block;margin-left:12px;">
 <span class="footnote"><span style="color:red;">*</span> = Required</span>
-<span class="footnote"><span style="color:red;">^</span> = Required if giving location</span>
 </span>
 <p/>
 <div id="cellediting"></div>
@@ -335,11 +334,11 @@ function makeTable(data_url, data_object) {
 
     var now = new Date();
     _gel('bookmark').style.display = 'block';
-    YAHOO.util.Cookie.set('email', email_verified, 
-      {expires: new Date(now.getTime() + (1000 * 3600 * 24 * 90))});
+    YAHOO.util.Cookie.set('email', email_verified);
+      //{expires: new Date(now.getTime() + (1000 * 3600 * 24 * 90))});
     if (feed_providername) {
-      YAHOO.util.Cookie.set('feed_providername', feed_providername, 
-        {expires: new Date(now.getTime() + (1000 * 3600 * 24 * 90))});
+      YAHOO.util.Cookie.set('feed_providername', feed_providername);
+        //{expires: new Date(now.getTime() + (1000 * 3600 * 24 * 90))});
     }
     var it = _gel('confirm_email');
     if (it) {
@@ -380,18 +379,18 @@ function makeTable(data_url, data_object) {
        },
     {label:"<span class='rq'>*</span>Website", key:"Website", 
        editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
-    {label:"<span class='rq'>^</span>Location<br/>Name",key:"Location_Name", 
+    {label:"<span class='rq'>*</span>Location<br/>Name",key:"Location_Name", 
        minWidth:100,
        editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
     {label:"Address",key:"Location_number___street", 
        minWidth:100,
        editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
-    {label:"<span class='rq'>^</span>City",key:"Location_city", 
+    {label:"<span class='rq'>*</span>City",key:"Location_city", 
        editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
-    {label:"<span class='rq'>^</span>State",key:"Location_state___province", 
+    {label:"<span class='rq'>*</span>State",key:"Location_state___province", 
         editor: new YAHOO.widget.DropdownCellEditor({dropdownOptions:YAHOO.example.Data.stateAbbrs,
         multiple:false, disableBtns:false})},
-    {label:"<span class='rq'>^</span>Postal<br/>Code",key:"Location_ZIP___postal_code", 
+    {label:"<span class='rq'>*</span>Postal<br/>Code",key:"Location_ZIP___postal_code", 
         editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
     {label:"Country", key:"Location_Country", editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
     {label:"Start<br/>Date",key:"Start_Date", formatter:YAHOO.widget.DataTable.formatDate, 
@@ -492,8 +491,7 @@ function makeTable(data_url, data_object) {
           rtn = false;
         }
       } else if (field == 'Website') {
-        if (value.length < 11 || value.toLower().indexOf('http://') < 0) {
-          alert('Website invalid');
+        if (value.length < 5) {
           rtn = false;
         }
       }
@@ -803,8 +801,8 @@ function goCommit() {
   if (it) {
     it.value = "1";
   }
-  showCommit();
   goSave();
+  showCommit();
 }
 
 function showTOS() {
@@ -889,7 +887,6 @@ function init() {
     email_arg = (YAHOO.util.Cookie.get("email") || '');
   }
   email_verified = email_arg;
-
   var feed_providername_arg = (YAHOO.util.History.getQueryStringParameter('feed_providername') || '');
   if (!feed_providername_arg) {
     feed_providername = (YAHOO.util.Cookie.get("feed_providername") || '');
@@ -898,6 +895,7 @@ function init() {
     set_feed_providername(feed_providername);
   }
   makeTable("get?email=" + encodeURIComponent(email_arg));
+  goSave();
   setTimeout(function(){goSave(false);}, 60 * 1000);
 }
 YAHOO.util.Event.addListener(window, "load", function(){init();});
