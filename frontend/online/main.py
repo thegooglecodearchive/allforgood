@@ -240,6 +240,10 @@ class GetRecord(webapp.RequestHandler):
     except:
       self.error(500)
 
+  def get(self):
+    self.post()
+    
+
 
 class PutRecord(webapp.RequestHandler):
   """ """
@@ -312,6 +316,9 @@ class GeoCode(webapp.RequestHandler):
         self.response.out.write(rsp)
       else:
         self.error(400)
+
+  def get(self):
+    self.post()
 
 
 def cdata(s):
