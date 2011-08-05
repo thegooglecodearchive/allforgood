@@ -12,7 +12,8 @@
 
 #-----------------------------------------------------------------------
 # AFG Synonyms
-MLK,mlk,martin luther,mlktech,king day,day on not a day off,ml king,MLKDay
+9/11,September 11,September 11th,September Eleventh,Day of Service and Remembrance,911org
+Disaster,Preparedness,CERT
 OilSpill,oil spill,bp,gulf cleanup,oil cleanup,spill cleanup
 EarthDay,environment,nature,environmental,outdoors,gardening,garden,wetlands,forest,forests,tree,trees,sierra club
 Moms,mom,mother,mothers
