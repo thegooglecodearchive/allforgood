@@ -33,5 +33,4 @@ def query_time_boosts(args):
         '((education OR tutoring)'
       + ' -feed_providername:girlscouts -prison -prisoner -inmate -disaster -emergency)')
 
-  #return solr_query.replace(' ', '+'), fq.replace(' ', '+')
   return solr_query, fq
