@@ -58,27 +58,45 @@ MILES_PER_DEG = 69
 DEFAULT_VOL_DIST = 75
 
 def default_boosts(args):
+
+  def bqesc(s):
+    # replace "+ signs" with %2B and spaces with "+ signs", leave else alone
+    # return urllib.quote_plus(s.replace('+', '%2B'), '^()[]:*-')
+    return s.replace('+', '%2B').replace(' ', '+')
+
   # boosting vetted categories
-  boost = '&bq=categories:vetted^15'
+  boost = bqesc('&bq=categories:vetted^15')
+
   # big penalty for events starting in the far future
-  boost += '+eventrangestart:[*+TO+NOW%2B6MONTHS]^15'    
+  boost += bqesc(' eventrangestart:[* TO NOW+6MONTHS]^15')
+
   # big boost for events starting in the near future
-  boost += '+eventrangestart:[NOW+TO+NOW%2B1MONTHS]^10'    
+  boost += bqesc(' eventrangestart:[NOW TO NOW+1MONTHS]^10')
+
   # slight penalty for events started recently
-  boost += '+eventrangestart:[NOW+TO+*]^5'    
+  boost += bqesc(' eventrangestart:[NOW TO *]^5')
+
   # modest penalty for events started long ago
-  boost += '+eventrangestart:[NOW-6MONTHS+TO+*]^7'    
+  boost += bqesc(' eventrangestart:[NOW-6MONTHS TO *]^7')
+
   # modest penalty for events ending in the far future
-  boost += '+eventrangeend:[*+TO+NOW%2B6MONTHS]^7'     
+  boost += bqesc(' eventrangeend:[* TO NOW+6MONTHS]^7')
+
   # big boost for events ending in the near future
-  boost += '+eventrangeend:[NOW+TO+NOW%2B1MONTHS]^10'
+  boost += bqesc(' eventrangeend:[NOW TO NOW+1MONTHS]^10')
+
   # slight penalty for girl scout events
-  boost += '+%28*:*+-feed_providername:girlscouts%29^200'
+  boost += bqesc(' (*:* -feed_providername:girlscouts)^200')
+
   # boost short events
-  boost += '+eventduration:[0+TO+10]^10'
-  if api.PARAM_KEY in args and args[api.PARAM_KEY] == 'liveunited':
-     boost += ('feed_providername:unitedway^2000+title:tutor^1000' +
-               '+title:(school+OR+children+OR+student+OR+classroom)^100')
+  boost += bqesc(' eventduration:[0 TO 10]^10')
+
+  if api.PARAM_KEY in args:
+     if args[api.PARAM_KEY] == 'liveunited':
+       boost += bqesc(' feed_providername:unitedway^2000 title:tutor^1000')
+       boost += bqesc(' title:(school OR children OR student OR classroom)^100')
+     elif args[api.PARAM_KEY] == 'amex':
+       boost += bqesc(' title:911day^1000 description:911day^100')
   
   return boost
 
@@ -93,9 +111,36 @@ def add_range_filter(field, min_val, max_val):
   return result
 
 
+def apply_api_key_query(q, api_key):
+  """ api key based query """ 
+  rtn = q
+  if api_key == 'amex':
+    rtn = '(%s) AND (%s)' % (q, '(feed_providername:handsonnetwork1800 OR feed_providername:handsonnetworkconnect) AND (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-16T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))')
+
+  if rtn != q:
+    logging.info(q + '|' + api_key + '|' + rtn)
+
+  return rtn
+
+def apply_category(q):
+  """ in &q= category: may be short hand for a real query """ 
+  categories = {
+    'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-11T23:59:59Z]) AND (eventrangeend:[2011-09-11T00:00:00Z TO *]))',
+  }
+
+  rtn = q
+  for tag, cq in categories.items():
+    rtn = rtn.replace(tag, cq)
+    
+  return rtn.replace('category:', '')
+
+
 def rewrite_query(query_str, api_key = None):
   """ Rewrites the query string from an easy to type and understand format
   into a Solr-readable format"""
+
+  query_str = apply_api_key_query(query_str, api_key)
+
   # Lower-case everything and make boolean operators upper-case, so they
   # are recognized by SOLR.
   # TODO: Don't lowercase field names.
@@ -111,14 +156,12 @@ def rewrite_query(query_str, api_key = None):
 
   rewritten_query = re.sub(r'[0-9]t[0-9]', reupcase, rewritten_query)
   rewritten_query = re.sub(r'[0-9]z', reupcase, rewritten_query)
-  #if rewritten_query.find('meetup') < 0 and api_key and api_key in private_keys.MEETUP_EXCLUDERS:
-  #  logging.info('solr_search.rewrite_query api key %s excludes meetup' % api_key)
-  #  rewritten_query = '(' + rewritten_query + ') AND -feed_providername:meetup'
 
   # Replace the category filter shortcut with its proper name.
   rewritten_query = rewritten_query.replace('category:', 'categories:')
 
   return rewritten_query
+
 
 def form_solr_query(args):
   solr_query = ''
@@ -185,11 +228,13 @@ def form_solr_query(args):
 
     query_boosts, filter_query = boosts.query_time_boosts(args)
     
-    # Remove categories from query parameter    
-    args[api.PARAM_Q] = args[api.PARAM_Q].replace('category:', '')
+    # was args[api.PARAM_Q] = args[api.PARAM_Q].replace('category:', '')
+    # a category in &q means expand to specific terms as opposed to the
+    # the solr field 'category' which atm may only be 'vetted'
+    args[api.PARAM_Q] = apply_category(args[api.PARAM_Q])
     
     if api.PARAM_CATEGORY in args:        
-        args[api.PARAM_Q] += (" AND " + args[api.PARAM_CATEGORY])
+      args[api.PARAM_Q] += (" AND " + args[api.PARAM_CATEGORY])
 
     if query_boosts:
       solr_query = query_boosts
