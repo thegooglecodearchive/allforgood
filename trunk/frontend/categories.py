@@ -18,9 +18,9 @@ A global list of categories for the SERP in the following format:
 """
 
 CATEGORIES = {  "military families":  "Military Families",
-                "september11":        "September 11",        
+                "(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-11T23:59:59Z]) AND (eventrangeend:[2011-09-11T00:00:00Z TO *]))":        "September 11",        
                 "veterans":           "Veterans",        
-                "education":          "Education",
+                "(education OR tutoring)":          "Education",
                 "hunger AND -animal": "Hunger",
                 "animals":            "Animals",
                 "health":             "Health",
