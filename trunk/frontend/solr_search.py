@@ -57,7 +57,7 @@ MAX_RESULTS = 1000
 MILES_PER_DEG = 69
 DEFAULT_VOL_DIST = 75
 
-def default_boosts(args):
+def apply_boosts(args, original_query = ''):
 
   def bqesc(s):
     # replace "+ signs" with %2B and spaces with "+ signs", leave else alone
@@ -94,11 +94,47 @@ def default_boosts(args):
   if api.PARAM_KEY in args:
      if args[api.PARAM_KEY] == 'liveunited':
        boost += bqesc(' feed_providername:unitedway^2000 title:tutor^1000')
-       boost += bqesc(' title:(school OR children OR student OR classroom)^100')
-     elif args[api.PARAM_KEY] == 'amex':
+     elif args[api.PARAM_KEY] == 'americanexpress':
        boost += bqesc(' title:911day^1000 description:911day^100')
+
+  if original_query and original_query.find('category:education') >= 0:
+    boost += bqesc(' title:(school OR children OR student OR classroom)^100')
   
   return boost
+
+
+def apply_api_key_query(q, api_key):
+  """ api key based query """ 
+  rtn = q
+
+  api_key_queries = {'americanexpress' : '(feed_providername:handsonnetwork1800 OR feed_providername:handsonnetworkconnect) AND (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-16T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))',
+  }
+
+  if api_key in api_key_queries:
+    rtn = '(%s) AND (%s)' % (q, api_key_queries[api_key])
+    
+  if rtn != q:
+    logging.info(q + '|' + api_key + '|' + rtn)
+
+  return rtn
+
+
+def apply_category(q):
+  """ in &q= category: may be short hand for a real query """ 
+
+  category_queries = {
+    'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-11T23:59:59Z]) AND (eventrangeend:[2011-09-11T00:00:00Z TO *]))',
+
+    'category:IAMS' : '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))',
+
+    'category:education' : '((education OR tutoring) -feed_providername:girlscouts -prison -prisoner -inmate -disaster -emergency)',
+  }
+
+  rtn = q
+  for tag, cq in category_queries.items():
+    rtn = rtn.replace(tag, cq)
+    
+  return rtn.replace('category:', '')
 
 
 def add_range_filter(field, min_val, max_val):
@@ -107,32 +143,8 @@ def add_range_filter(field, min_val, max_val):
   # TODO: Deal with escapification
   result = ' +AND+ '
   result += field
-  result += ':[' + str(min_val) +' TO ' + str(max_val) + ']'
+  result += ':[' + str(min_val) + ' TO ' + str(max_val) + ']'
   return result
-
-
-def apply_api_key_query(q, api_key):
-  """ api key based query """ 
-  rtn = q
-  if api_key == 'amex':
-    rtn = '(%s) AND (%s)' % (q, '(feed_providername:handsonnetwork1800 OR feed_providername:handsonnetworkconnect) AND (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-16T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))')
-
-  if rtn != q:
-    logging.info(q + '|' + api_key + '|' + rtn)
-
-  return rtn
-
-def apply_category(q):
-  """ in &q= category: may be short hand for a real query """ 
-  categories = {
-    'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-11T23:59:59Z]) AND (eventrangeend:[2011-09-11T00:00:00Z TO *]))',
-  }
-
-  rtn = q
-  for tag, cq in categories.items():
-    rtn = rtn.replace(tag, cq)
-    
-  return rtn.replace('category:', '')
 
 
 def rewrite_query(query_str, api_key = None):
@@ -211,9 +223,12 @@ def form_solr_query(args):
         args[api.PARAM_CATEGORY] = str(key)   
 
   # keyword
+  
+  original_query = ''
   filter_query = ''
   query_is_empty = False
   if (api.PARAM_Q in args and args[api.PARAM_Q] != ""):
+    original_query = args[api.PARAM_Q]
     qwords = args[api.PARAM_Q].split(" ")
     for qi, qw in enumerate(qwords):
       # it is common practice to use a substr of a url eg, volunteermatch 
@@ -226,8 +241,7 @@ def form_solr_query(args):
           qwords[qi] = qw
           args[api.PARAM_Q] = ' '.join(qwords)
 
-    query_boosts, filter_query = boosts.query_time_boosts(args)
-    
+    #query_boosts, filter_query = boosts.query_time_boosts(args)
     # was args[api.PARAM_Q] = args[api.PARAM_Q].replace('category:', '')
     # a category in &q means expand to specific terms as opposed to the
     # the solr field 'category' which atm may only be 'vetted'
@@ -236,10 +250,8 @@ def form_solr_query(args):
     if api.PARAM_CATEGORY in args:        
       args[api.PARAM_Q] += (" AND " + args[api.PARAM_CATEGORY])
 
-    if query_boosts:
-      solr_query = query_boosts
-    else:
-      solr_query += rewrite_query('*:* AND ' +  args[api.PARAM_Q], api_key)
+    solr_query += rewrite_query('*:* AND ' +  args[api.PARAM_Q], api_key)
+
   elif api.PARAM_CATEGORY in args:
       solr_query += rewrite_query('*:* AND ' +  args[api.PARAM_CATEGORY], api_key)
   else:
@@ -304,7 +316,7 @@ def form_solr_query(args):
     global BACKEND_GLOBAL
     BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
   
-  solr_query += default_boosts(args);
+  solr_query += apply_boosts(args, original_query);
   if filter_query:
     solr_query += '&fq=' + filter_query
 
@@ -397,15 +409,24 @@ def search(args, dumping = False):
       start_date = datetime.datetime.strptime(
                      args[api.PARAM_VOL_STARTDATE].strip(), "%m/%d/%Y")      
     except:
-      logging.info('solr_search.form_solr_query malformed start date: %s' %
+      try:
+        start_date = datetime.datetime.strptime(
+                     args[api.PARAM_VOL_STARTDATE].strip(), "%Y-%m-%d")      
+      except:
+        logging.info('solr_search.form_solr_query malformed start date: %s' %
                     args[api.PARAM_VOL_STARTDATE])
+
     end_date = None
     if api.PARAM_VOL_ENDDATE in args and args[api.PARAM_VOL_ENDDATE] != "":
       try:
         end_date = datetime.datetime.strptime(
                        args[api.PARAM_VOL_ENDDATE].strip(), "%m/%d/%Y")
       except:
-        logging.debug('solr_search.form_solr_query malformed end date: %s' %
+        try:
+          end_date = datetime.datetime.strptime(
+                       args[api.PARAM_VOL_ENDDATE].strip(), "%Y-%m-%d")
+        except:
+          logging.debug('solr_search.form_solr_query malformed end date: %s' %
                        args[api.PARAM_VOL_ENDDATE])
     if not end_date:
       end_date = start_date
