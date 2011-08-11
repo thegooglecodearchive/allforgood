@@ -42,18 +42,7 @@ DEFAULT_BOOSTS = [
 
   # boost short events
   ' eventduration:[0 TO 10]^10',
-
 ]
-
-API_KEY_BOOSTS = {
-  'liveunited' : ' feed_providername:unitedway^2000 title:tutor^1000',
-
-  'americanexpress' : ' title:911day^1000 description:911day^100',
-}
-
-CATEGORY_BOOSTS = {
-  'category:education' : ' title:(school OR children OR student OR classroom)^100',
-}
 
 CATEGORY_QUERIES = {
   'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-11T23:59:59Z]) AND (eventrangeend:[2011-09-11T00:00:00Z TO *]))',
@@ -63,7 +52,17 @@ CATEGORY_QUERIES = {
   'category:education' : '((education OR tutoring) -feed_providername:girlscouts -prison -prisoner -inmate -disaster -emergency)',
 }
 
+CATEGORY_BOOSTS = {
+  'category:education' : ' title:(school OR children OR student OR classroom)^100',
+}
+
 API_KEY_QUERIES = {'americanexpress' : '(feed_providername:handsonnetwork1800 OR feed_providername:handsonnetworkconnect) AND (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-16T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))',
+}
+
+API_KEY_BOOSTS = {
+  'liveunited' : ' feed_providername:unitedway^2000 title:tutor^1000',
+
+  'americanexpress' : ' title:911day^1000 description:911day^100',
 }
 
 FILTER_QUERIES = []
