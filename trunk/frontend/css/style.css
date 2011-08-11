@@ -1,4 +1,27 @@
-/* @group CSS Reset */
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2011.08.11.22.38.55;	author echo3;	state Exp;
+branches;
+next	;
+
+
+desc
+@quit
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@/* @@group CSS Reset */
 html,
 body,
 div,
@@ -123,8 +146,8 @@ section {
 a img {
   border: 0;
 }
-/* @end */
-/* @group Clears */
+/* @@end */
+/* @@group Clears */
 .clearfix {
   /* http://www.positioniseverything.net/easyclearing.html */
 
@@ -153,9 +176,9 @@ a img {
   width: 0;
   height: 0;
 }
-/* @end */
-/* @group LessCSS Helpers */
-@font-face {
+/* @@end */
+/* @@group LessCSS Helpers */
+@@font-face {
   font-family: 'RockwellStdRegular';
   src: url('fonts/rockwellstd-webfont.eot');
   src: url('fonts/rockwellstd-webfont.eot?iefix') format('eot'), url('fonts/rockwellstd-webfont.woff') format('woff'), url('fonts/rockwellstd-webfont.ttf') format('truetype'), url('fonts/rockwellstd-webfont.svg#webfontrQaxu6HA') format('svg');
@@ -179,8 +202,8 @@ a img {
   font-weight: bold;
   text-decoration: none;
 }
-/* @end */
-/* @group Typography */
+/* @@end */
+/* @@group Typography */
 body, input, textarea {
   color: #333;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -402,8 +425,8 @@ q {
   font-size: 13px;
   font-weight: bold;
 }
-/* @end */
-/* @group Structure */
+/* @@end */
+/* @@group Structure */
 body {
   background: #0281d1 url(images/body-bg.png) 0 0 repeat-x;
 }
@@ -616,8 +639,8 @@ body {
   text-align: right;
   width: 180px;
 }
-/* @end */
-/* @group Forms */
+/* @@end */
+/* @@group Forms */
 form#overlabel {
   display: block;
   overflow: hidden;
@@ -669,8 +692,8 @@ form#overlabel input#submit {
 form#overlabel input#submit:hover {
   cursor: pointer;
 }
-/* @end */
-/* @group Homepage Structure */
+/* @@end */
+/* @@group Homepage Structure */
 #main.main-home #content {
   background: #b9dff6;
 }
@@ -682,7 +705,7 @@ form#overlabel input#submit:hover {
   display: block;
   overflow: hidden;
 }
-/* @group Equal Height Columns */
+/* @@group Equal Height Columns */
 #col1, #col2, #col3 {
   background: url(images/home-col-bg-bottom.png) bottom left no-repeat;
   display: block;
@@ -699,8 +722,8 @@ form#overlabel input#submit:hover {
 #col3 {
   margin-left: 10px;
 }
-/* @end */
-/* @group Column Styling */
+/* @@end */
+/* @@group Column Styling */
 .main-home p.more-link {
   /*More links*/
 
@@ -966,9 +989,9 @@ form#overlabel input#submit:hover {
   height: 30px;
   width: 320px;
 }
-/* @end */
-/* @end */
-/* @group SERP */
+/* @@end */
+/* @@end */
+/* @@group SERP */
 #main.search-results #content {
   padding-top: 0;
 }
@@ -1025,7 +1048,7 @@ form#overlabel input#submit:hover {
   text-decoration: none;
   color:#3399CC;
 }
-/* @group Tabs */
+/* @@group Tabs */
 #tabs.ui-widget-content {
   background: none;
   border: 0;
@@ -1084,8 +1107,8 @@ form#overlabel input#submit:hover {
 #tabs .ui-tabs-panel {
   padding: 0;
 }
-/* @end */
-/* @group Search Aside */
+/* @@end */
+/* @@group Search Aside */
 .search-aside {
   float: left;
   margin: 10px 20px 0 21px;
@@ -1226,8 +1249,8 @@ form#overlabel input#submit:hover {
 .search-aside .box.search-refine ul {
   padding: 10px 0;
 }
-/* @end */
-/* @group Search Main */
+/* @@end */
+/* @@group Search Main */
 .search-main {
   float: left;
   margin-top: 10px;
@@ -1299,9 +1322,9 @@ form#overlabel input#submit:hover {
   background: url(images/serp-google-pin-d.png) 0 4px no-repeat;
 }
 
-/* @end */
-/* @end */
-/* @group Partners Page */
+/* @@end */
+/* @@end */
+/* @@group Partners Page */
 .partners-top {
   margin: 0 0 10px 0;
 }
@@ -1458,4 +1481,5 @@ form#overlabel input#submit:hover {
 
 #search_results_adspace {position:absolute;right:0px;top:0px;width:120px;height:50px;}
 
-/* @end */
+/* @@end */
+@
