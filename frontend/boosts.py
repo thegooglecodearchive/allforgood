@@ -15,22 +15,55 @@
 toss all the one-off boosts into one place (rather than a class file)
 """
 
-from datetime import datetime
-import solr_search
-import logging
-import api
+DEFAULT_BOOSTS = [
+  # boosting vetted categories
+  ' categories:vetted^15',
 
-def query_time_boosts(args):
-  logging.info("boosts.query_time_boosts enter")
+  # big penalty for events starting in the far future
+  ' eventrangestart:[* TO NOW+6MONTHS]^15',
 
-  solr_query = ""
-  fq = ""
-  if args[api.PARAM_Q].find('category:IAMS') >= 0:
-    solr_query = solr_search.rewrite_query('%s' %
-        '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))')
-  elif args[api.PARAM_Q].find('category:education') >= 0:
-    solr_query = solr_search.rewrite_query('(%s)' % 
-        '((education OR tutoring)'
-      + ' -feed_providername:girlscouts -prison -prisoner -inmate -disaster -emergency)')
+  # big boost for events starting in the near future
+  ' eventrangestart:[NOW TO NOW+1MONTHS]^10',
 
-  return solr_query, fq
+  # slight penalty for events started recently
+  ' eventrangestart:[NOW TO *]^5',
+
+  # modest penalty for events started long ago
+  ' eventrangestart:[NOW-6MONTHS TO *]^7',
+
+  # modest penalty for events ending in the far future
+  ' eventrangeend:[* TO NOW+6MONTHS]^7',
+
+  # big boost for events ending in the near future
+  ' eventrangeend:[NOW TO NOW+1MONTHS]^10',
+
+  # slight penalty for girl scout events
+  ' (*:* -feed_providername:girlscouts)^200',
+
+  # boost short events
+  ' eventduration:[0 TO 10]^10',
+
+]
+
+API_KEY_BOOSTS = {
+  'liveunited' : ' feed_providername:unitedway^2000 title:tutor^1000',
+
+  'americanexpress' : ' title:911day^1000 description:911day^100',
+}
+
+CATEGORY_BOOSTS = {
+  'category:education' : ' title:(school OR children OR student OR classroom)^100',
+}
+
+CATEGORY_QUERIES = {
+  'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-11T23:59:59Z]) AND (eventrangeend:[2011-09-11T00:00:00Z TO *]))',
+
+  'category:IAMS' : '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))',
+
+  'category:education' : '((education OR tutoring) -feed_providername:girlscouts -prison -prisoner -inmate -disaster -emergency)',
+}
+
+API_KEY_QUERIES = {'americanexpress' : '(feed_providername:handsonnetwork1800 OR feed_providername:handsonnetworkconnect) AND (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-16T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))',
+}
+
+FILTER_QUERIES = []
