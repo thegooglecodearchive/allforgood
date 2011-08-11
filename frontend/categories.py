@@ -18,11 +18,12 @@ A global list of categories for the SERP in the following format:
 """
 
 CATEGORIES = {  "military families":  "Military Families",
+                "september11":        "September 11",        
                 "veterans":           "Veterans",        
                 "education":          "Education",
                 "hunger AND -animal": "Hunger",
                 "animals":            "Animals",
                 "health":             "Health",
                 "seniors":            "Seniors",
-                "technology":         "Technology",
+                "disaster":           "Disaster Preparation",
                 "poverty":            "Poverty"}
