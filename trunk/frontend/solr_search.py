@@ -35,9 +35,10 @@ import models
 import modelutils
 import posting
 import private_keys
-import boosts
 import categories
 import searchresult
+
+from boosts import *
 
 RESULT_CACHE_TIME = 900 # seconds
 RESULT_CACHE_KEY = 'searchresult:'
@@ -57,48 +58,25 @@ MAX_RESULTS = 1000
 MILES_PER_DEG = 69
 DEFAULT_VOL_DIST = 75
 
-def apply_boosts(args, original_query = ''):
+def apply_boosts(args, original_query = None):
 
   def bqesc(s):
     # replace "+ signs" with %2B and spaces with "+ signs", leave else alone
-    # return urllib.quote_plus(s.replace('+', '%2B'), '^()[]:*-')
+    # maybe like urllib.quote_plus(s.replace('+', '%2B'), '^()[]:*-')
     return s.replace('+', '%2B').replace(' ', '+')
 
-  # boosting vetted categories
-  boost = bqesc('&bq=categories:vetted^15')
-
-  # big penalty for events starting in the far future
-  boost += bqesc(' eventrangestart:[* TO NOW+6MONTHS]^15')
-
-  # big boost for events starting in the near future
-  boost += bqesc(' eventrangestart:[NOW TO NOW+1MONTHS]^10')
-
-  # slight penalty for events started recently
-  boost += bqesc(' eventrangestart:[NOW TO *]^5')
-
-  # modest penalty for events started long ago
-  boost += bqesc(' eventrangestart:[NOW-6MONTHS TO *]^7')
-
-  # modest penalty for events ending in the far future
-  boost += bqesc(' eventrangeend:[* TO NOW+6MONTHS]^7')
-
-  # big boost for events ending in the near future
-  boost += bqesc(' eventrangeend:[NOW TO NOW+1MONTHS]^10')
-
-  # slight penalty for girl scout events
-  boost += bqesc(' (*:* -feed_providername:girlscouts)^200')
-
-  # boost short events
-  boost += bqesc(' eventduration:[0 TO 10]^10')
+  boost = '&bq='
+  for bq in DEFAULT_BOOSTS:
+    boost += bqesc(bq)
 
   if api.PARAM_KEY in args:
-     if args[api.PARAM_KEY] == 'liveunited':
-       boost += bqesc(' feed_providername:unitedway^2000 title:tutor^1000')
-     elif args[api.PARAM_KEY] == 'americanexpress':
-       boost += bqesc(' title:911day^1000 description:911day^100')
+    if args[api.PARAM_KEY] in API_KEY_BOOSTS:
+      boost += bqesc(API_KEY_BOOSTS[args[api.PARAM_KEY]])
 
-  if original_query and original_query.find('category:education') >= 0:
-    boost += bqesc(' title:(school OR children OR student OR classroom)^100')
+  if original_query:
+    for k, b in CATEGORY_BOOSTS.items():
+      if original_query.find(k) >= 0:
+        boost += bqesc(b)
   
   return boost
 
@@ -107,11 +85,8 @@ def apply_api_key_query(q, api_key):
   """ api key based query """ 
   rtn = q
 
-  api_key_queries = {'americanexpress' : '(feed_providername:handsonnetwork1800 OR feed_providername:handsonnetworkconnect) AND (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-16T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))',
-  }
-
-  if api_key in api_key_queries:
-    rtn = '(%s) AND (%s)' % (q, api_key_queries[api_key])
+  if api_key in API_KEY_QUERIES:
+    rtn = '(%s) AND (%s)' % (q, API_KEY_QUERIES[api_key])
     
   if rtn != q:
     logging.info(q + '|' + api_key + '|' + rtn)
@@ -119,22 +94,25 @@ def apply_api_key_query(q, api_key):
   return rtn
 
 
-def apply_category(q):
+def apply_category_query(q):
   """ in &q= category: may be short hand for a real query """ 
 
-  category_queries = {
-    'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-11T23:59:59Z]) AND (eventrangeend:[2011-09-11T00:00:00Z TO *]))',
-
-    'category:IAMS' : '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))',
-
-    'category:education' : '((education OR tutoring) -feed_providername:girlscouts -prison -prisoner -inmate -disaster -emergency)',
-  }
-
   rtn = q
-  for tag, cq in category_queries.items():
+  for tag, cq in CATEGORY_QUERIES.items():
     rtn = rtn.replace(tag, cq)
     
   return rtn.replace('category:', '')
+
+
+def apply_filter_query(args, original_query = ''):
+  """ """
+
+  rtn = ''
+  for fq in FILTER_QUERIES:
+    rtn += '&fq='
+
+  return rtn
+
 
 
 def add_range_filter(field, min_val, max_val):
@@ -225,7 +203,6 @@ def form_solr_query(args):
   # keyword
   
   original_query = ''
-  filter_query = ''
   query_is_empty = False
   if (api.PARAM_Q in args and args[api.PARAM_Q] != ""):
     original_query = args[api.PARAM_Q]
@@ -241,11 +218,9 @@ def form_solr_query(args):
           qwords[qi] = qw
           args[api.PARAM_Q] = ' '.join(qwords)
 
-    #query_boosts, filter_query = boosts.query_time_boosts(args)
-    # was args[api.PARAM_Q] = args[api.PARAM_Q].replace('category:', '')
     # a category in &q means expand to specific terms as opposed to the
     # the solr field 'category' which atm may only be 'vetted'
-    args[api.PARAM_Q] = apply_category(args[api.PARAM_Q])
+    args[api.PARAM_Q] = apply_category_query(args[api.PARAM_Q])
     
     if api.PARAM_CATEGORY in args:        
       args[api.PARAM_Q] += (" AND " + args[api.PARAM_CATEGORY])
@@ -317,8 +292,7 @@ def form_solr_query(args):
     BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
   
   solr_query += apply_boosts(args, original_query);
-  if filter_query:
-    solr_query += '&fq=' + filter_query
+  solr_query += apply_filter_query(args, original_query)
 
   # field list
   solr_query += '&fl='
