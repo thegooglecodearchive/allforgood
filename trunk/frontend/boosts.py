@@ -58,7 +58,7 @@ CATEGORY_BOOSTS = {
   'category:september11' : ' title:(september11)^100',
 }
 
-API_KEY_QUERIES = {'americanexpress' : '(feed_providername:handsonnetwork1800 OR feed_providername:handsonnetworkconnect) AND (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-16T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))',
+API_KEY_QUERIES = {'americanexpress' : '(feed_providername:handsonnetwork1800 OR feed_providername:handsonnetworkconnect) AND (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-18T00:00:00Z] AND eventrangeend:[2011-08-30T00:00:00Z TO *]))',
 }
 
 API_KEY_BOOSTS = {
