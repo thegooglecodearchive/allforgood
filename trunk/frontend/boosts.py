@@ -19,20 +19,8 @@ DEFAULT_BOOSTS = [
   # boosting vetted categories
   ' categories:vetted^15',
 
-  # big penalty for events starting in the far future
-  ' eventrangestart:[* TO NOW+6MONTHS]^15',
-
   # big boost for events starting in the near future
   ' eventrangestart:[NOW TO NOW+1MONTHS]^10',
-
-  # slight penalty for events started recently
-  ' eventrangestart:[NOW TO *]^5',
-
-  # modest penalty for events started long ago
-  ' eventrangestart:[NOW-6MONTHS TO *]^7',
-
-  # modest penalty for events ending in the far future
-  ' eventrangeend:[* TO NOW+6MONTHS]^7',
 
   # big boost for events ending in the near future
   ' eventrangeend:[NOW TO NOW+1MONTHS]^10',
@@ -40,8 +28,6 @@ DEFAULT_BOOSTS = [
   # slight penalty for girl scout events
   ' (*:* -feed_providername:girlscouts)^200',
 
-  # boost short events
-  ' eventduration:[0 TO 10]^10',
 ]
 
 CATEGORY_QUERIES = {
@@ -55,16 +41,22 @@ CATEGORY_QUERIES = {
 CATEGORY_BOOSTS = {
   'category:education' : ' title:(tutor OR school OR children OR student OR classroom)^100',
   
-  'category:september11' : ' title:(september11)^100',
+  'category:september11' : ' title:(september11)^100' description:911day^10',
 }
 
-API_KEY_QUERIES = {'americanexpress' : '(feed_providername:handsonnetwork1800 OR feed_providername:handsonnetworkconnect) AND (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-18T00:00:00Z] AND eventrangeend:[2011-08-30T00:00:00Z TO *]))',
+API_KEY_QUERIES = {
+	'americanexpress' : ' (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-25T00:00:00Z] AND eventrangeend:[2011-08-30T00:00:00Z TO *]))',
+	
+	'911Day' : ' (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-15T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))',
 }
 
 API_KEY_BOOSTS = {
   'liveunited' : ' feed_providername:unitedway^2000 title:tutor^1000',
 
   'americanexpress' : ' title:911day^1000 description:911day^100',
+  
+  '911Day' : ' title:911day^1000 description:911day^100',
+  
 }
 
 FILTER_QUERIES = []
