@@ -41,7 +41,7 @@ CATEGORY_QUERIES = {
 CATEGORY_BOOSTS = {
   'category:education' : ' title:(tutor OR school OR children OR student OR classroom)^100',
   
-  'category:september11' : ' title:(september11)^100' description:911day^10',
+  'category:september11' : ' title:(september11)^100 description:911day^10',
 }
 
 API_KEY_QUERIES = {
