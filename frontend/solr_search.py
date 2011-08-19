@@ -279,12 +279,13 @@ def form_solr_query(args):
   # set the solr instance we need to use if not given as an arg
   if api.PARAM_BACKEND_URL not in args:
     hr = datetime.datetime.now().hour
-    if ((hr >= 0 and hr < 3) or (hr >=6 and hr < 9) or
-        (hr >=12 and hr < 15) or (hr >=18 and hr < 21)):
-      #node 1 serves for 3 hours starting at 0,6,12,18
+    if hr < 6 or (hr >= 12 and hr < 18):
+      # node 1 process at 6, 18
+      # node 1 serves at 0, 12
       args[api.PARAM_BACKEND_URL] = private_keys.NODE1_DEFAULT_BACKEND_URL
     else:
-      #node 2 serves for 3 hours starting at 3,9,15,21
+      # node 2 process at 0, 12
+      # node 2 serves at 6, 18
       args[api.PARAM_BACKEND_URL] = private_keys.NODE2_DEFAULT_BACKEND_URL
 
     global BACKEND_GLOBAL
