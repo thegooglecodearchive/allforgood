@@ -278,16 +278,15 @@ def form_solr_query(args):
 
   # set the solr instance we need to use if not given as an arg
   if api.PARAM_BACKEND_URL not in args:
-    today = datetime.date.today()
-    weekday = datetime.date.today().weekday()
-    try:
-      if weekday in [0,2,4,6]:
-        args[api.PARAM_BACKEND_URL] = private_keys.NODE1_DEFAULT_BACKEND_URL
-      else:
-        args[api.PARAM_BACKEND_URL] = private_keys.NODE2_DEFAULT_BACKEND_URL
-    except:
-      raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- " +
-                      "please install correct private_keys.py file")
+    hr = datetime.datetime.now().hour
+    if ((hr >= 0 and hr < 3) or (hr >=6 and hr < 9) or
+        (hr >=12 and hr < 15) or (hr >=18 and hr < 21)):
+      #node 1 serves for 3 hours starting at 0,6,12,18
+      args[api.PARAM_BACKEND_URL] = private_keys.NODE1_DEFAULT_BACKEND_URL
+    else:
+      #node 2 serves for 3 hours starting at 3,9,15,21
+      args[api.PARAM_BACKEND_URL] = private_keys.NODE2_DEFAULT_BACKEND_URL
+
     global BACKEND_GLOBAL
     BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
   
