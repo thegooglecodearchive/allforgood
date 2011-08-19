@@ -31,7 +31,7 @@ DEFAULT_BOOSTS = [
 ]
 
 CATEGORY_QUERIES = {
-  'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-11T23:59:59Z]) AND (eventrangeend:[2011-09-11T00:00:00Z TO *]))',
+  'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-13T23:59:59Z]) AND (eventrangeend:[2011-09-09T00:00:00Z TO *]))',
 
   'category:IAMS' : '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))',
 
@@ -53,9 +53,9 @@ API_KEY_QUERIES = {
 API_KEY_BOOSTS = {
   'liveunited' : ' feed_providername:unitedway^2000 title:tutor^1000',
 
-  'americanexpress' : ' title:911day^1000 description:911day^100',
+  'americanexpress' : ' title:911day^1000 description:911day^100 feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000',
   
-  '911Day' : ' title:911day^1000 description:911day^100',
+  '911Day' : ' title:911day^1000 description:911day^100 feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000',
   
 }
 
