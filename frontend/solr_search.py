@@ -404,8 +404,16 @@ def search(args, dumping = False):
                        args[api.PARAM_VOL_ENDDATE])
     if not end_date:
       end_date = start_date
-    start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
-    end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
+
+    try:
+      start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
+    except:
+      start_datetime_str = None
+
+    try:
+      end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
+    except:
+      end_datetime_str = None
   
   global DATE_QUERY_GLOBAL
   if start_datetime_str:
