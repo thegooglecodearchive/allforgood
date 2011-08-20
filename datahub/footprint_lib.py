@@ -621,7 +621,6 @@ def get_feed_fields(feedinfo):
     feedinfo, "description", "feed_description")
   outstr += FIELDSEP + output_tag_value_renamed(
     feedinfo, "createdDateTime", "feed_createdDateTime")
-  # add volunteerHubOrganizationID here?
   return outstr, feed_providerName
 
 def output_opportunity(opp, feedinfo, known_orgs, totrecs):
@@ -632,15 +631,15 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
     print_progress("no opportunityID")
     return totrecs, ""
   org_id = xmlh.get_tag_val(opp, "sponsoringOrganizationID")
-  if (org_id not in known_orgs):
+  if org_id not in known_orgs:
     """
 <volunteerHubOrganizationIDs><volunteerHubOrganizationID>653</volunteerHubOrganizationID></volunteerHubOrganizationIDs>
     """
-    org_id = xmlh.get_tag_val(opp, "volunteerHubOrganizationID")
-    if (org_id not in known_orgs):
-      print_progress("unknown sponsoringOrganizationID: " +\
-          org_id + ".  skipping opportunity " + opp_id)
+    maybe_org_id = xmlh.get_tag_val(opp, "volunteerHubOrganizationID")
+    if maybe_org_id not in known_orgs:
+      print_progress('unknown sponsoringOrganizationID: "' + org_id + '"  skipping opportunity ' + opp_id)
       return totrecs, ""
+    org_id = maybe_org_id
 
   org = known_orgs[org_id]
   opp_locations = opp.getElementsByTagName("location")
@@ -996,6 +995,18 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
 
 def guess_shortname(filename):
   """from the input filename, guess which feed this is."""
+  if re.search("handsonnetwork1800", filename):
+    return "handsonnetwork1800"
+
+  if re.search("handsonnetworktechnologies", filename):
+    return "handsonnetworktechnologies"
+
+  if re.search("handsonnetworkconnect", filename):
+    return "handsonnetworkconnect"
+
+  if re.search("(handson|hot.footprint)", filename):
+    return "handsonnetwork"
+
   if re.search(r'onlinespreadsheet', filename):
     return "onlinespreadsheet"
   if re.search(r'rockthevote', filename):
@@ -1030,6 +1041,8 @@ def guess_shortname(filename):
     return "catchafire"
   if re.search(r'ymca', filename):
     return "ymca"
+  if re.search(r'uso', filename):
+    return "uso"
   if re.search(r'usaintlexp', filename):
     return "usaintlexp"
   if re.search(r'samaritan', filename):
@@ -1048,8 +1061,6 @@ def guess_shortname(filename):
     return "americansolutions"
   if re.search("spreadsheets[.]google[.]com", filename):
     return "gspreadsheet"
-  if re.search("(handson|hot.footprint)", filename):
-    return "handsonnetwork"
   if re.search("(volunteer[.]?gov)", filename):
     return "volunteergov"
   if re.search("(whichoneis.com|beextra|extraordinari)", filename):
@@ -1102,10 +1113,26 @@ def guess_parse_func(inputfmt, filename, feed_providername):
 
   # FPXML providers
   fp = parse_footprint
+  if shortname == "handsonnetwork1800":
+    return "fpxml", fp.parser(
+      '500', 'handsonnetwork1800', 'handsonnetwork1800', 'http://handsonnetwork.org/',
+      'HandsOn Network')
+
+  if shortname == "handsonnetworktechnologies":
+    return "fpxml", fp.parser(
+      '501', 'handsonnetworktechnologies', 'handsonnetworktechnologies', 'http://handsonnetwork.org/',
+      'HandsOn Network')
+
+  if shortname == "handsonnetworkconnect":
+    return "fpxml", fp.parser(
+      '502', 'handsonnetworkconnect', 'handsonnetworkconnect', 'http://handsonnetwork.org/',
+      'HandsOn Network')
+
   if shortname == "handsonnetwork":
     return "fpxml", fp.parser(
       '102', 'handsonnetwork', 'handsonnetwork', 'http://handsonnetwork.org/',
       'HandsOn Network')
+
   if shortname == "volunteermatch" or shortname == "vm-20101027":
     return "fpxml", fp.parser(
       '104', 'volunteermatch', 'volunteermatch',
@@ -1207,6 +1234,10 @@ def guess_parse_func(inputfmt, filename, feed_providername):
     return "fpxml", fp.parser(
       '140', 'samaritan', 'samaritan', 'http://ec.volunteernow.com/',
       'samaritan')
+  if shortname == "uso":
+    return "fpxml", fp.parser(
+      '141', 'USO', 'USO', 'http://www.usovolunteer.org/',
+      'USO')
   if shortname == "onlinespreadsheet":
     if not feed_providername:
       feed_providername = "6000"
@@ -1439,6 +1470,7 @@ def test_parse(footprint_xmlstr, maxrecs):
 def process_file(filename, options, providerName="", providerID="",
                  feedID="", providerURL=""):
   shortname = guess_shortname(filename)
+
   inputfmt, parsefunc = guess_parse_func(options.inputfmt, filename, options.feed_providername)
 
   try:
