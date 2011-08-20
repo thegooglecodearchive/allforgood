@@ -58,6 +58,10 @@ ProviderNames = {
   "1sky":{"name":"1Sky", "idx":38},
   "usaintlexp":{"name":"International Experience USA", "idx":39},
   "samaritan":{"name":"Samaritan Technologies", "idx":40},
+  "handsonnetworkconnect":{"name":"HandsOn Network", "idx":41}, 
+  "handsonnetworktechnologies":{"name":"HandsOn Network", "idx":42}, 
+  "handsonnetwork1800":{"name":"HandsOn Network", "idx":43}, 
+  "uso":{"name":"USO", "idx":44}, 
 }
 
 def updateProviderNamesScript():

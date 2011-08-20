@@ -431,9 +431,14 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
       print name+":RETCODE: "+str(retcode)
 
   print "reading TSV data..."
-  gzip_fh = gzip.open(tsv_filename, 'r')
-  tsv_data = gzip_fh.read()
-  gzip_fh.close()
+
+  try:
+    gzip_fh = gzip.open(tsv_filename, 'r')
+    tsv_data = gzip_fh.read()
+    gzip_fh.close()
+  except:
+    print_progress("Warning: %s could not be read." % tsv_filename)
+    return
 
   if len(tsv_data) == 0:
     print_progress("Warning: TSV file is empty.")
@@ -461,15 +466,13 @@ def test_loaders():
 
 def loaders():
   """put all loaders in one function for easier testing."""
-  # requires special crawling
-  if not FILENAMES or "gspreadsheets" in FILENAMES:
-    run_pipeline("gspreadsheets",
-                 "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
 
-  if not FILENAMES or "diy" in FILENAMES:
-    run_pipeline("diy", "diy.tsv")
-
-  for name in ["handsonnetwork", "unitedway", 
+  for name in [
+               "handsonnetworkconnect", 
+               "handsonnetwork1800", 
+               "handsonnetworktechnologies", 
+               "handsonnetwork", 
+               "unitedway", 
                "idealist", 
                "mentorpro", "aarp", 
                "americanredcross", "americansolutions",
@@ -480,7 +483,7 @@ def loaders():
                "rockthevote", "threefiftyorg", "catchafire",
                "servenet", "servicenation",
                "universalgiving", "volunteergov", "up2us",
-               "volunteertwo", "washoecounty", "ymca", 
+               "volunteertwo", "washoecounty", "ymca", "uso",
                "seniorcorps",
                "usaintlexp",
                "samaritan",
@@ -488,6 +491,14 @@ def loaders():
                ]:
     if not FILENAMES or name in FILENAMES:
       run_pipeline(name, name + ".xml")
+
+  if not FILENAMES or "diy" in FILENAMES:
+    run_pipeline("diy", "diy.tsv")
+
+  # requires special crawling
+  if not FILENAMES or "gspreadsheets" in FILENAMES:
+    run_pipeline("gspreadsheets",
+                 "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
 
   # note: craiglist crawler is run asynchronously, hence the local file
   if not FILENAMES or "craigslist" in FILENAMES:
