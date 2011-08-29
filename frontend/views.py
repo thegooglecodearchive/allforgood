@@ -1319,7 +1319,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
     js_data += "provider_chart = new google.visualization.ImageSparkLine("
     js_data += "  document.getElementById('provider_names'));\n"
     js_data += "provider_chart.draw(data,{width:160,height:50,showAxisLines:false,"
-    js_data += "  showValueLabels:false,labelPosition:'right'});\n"
+    js_data += "  showValueLabels:false,labelPosition:'left'});\n"
 
     # provider last loaded times are implemented as chart labels, so
     # they line up with the charts-- otherwise it just doesn't work.
@@ -1339,7 +1339,7 @@ class datahub_dashboard_view(webapp.RequestHandler):
     js_data += "var chart = new google.visualization.ImageSparkLine("
     js_data += "  document.getElementById('lastloaded'));\n"
     js_data += "chart.draw(data,{width:150,height:50,showAxisLines:false,"
-    js_data += "  showValueLabels:false,labelPosition:'right'});\n"
+    js_data += "  showValueLabels:false,labelPosition:'left'});\n"
 
     history_details = []
     totals = {}
