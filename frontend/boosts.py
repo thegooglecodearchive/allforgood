@@ -55,7 +55,7 @@ API_KEY_BOOSTS = {
 
   'americanexpress' : ' title:911day^1000 description:911day^100 feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000',
   
-  '911Day' : ' title:911day^1000 description:911day^100 feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000',
+  '911Day' : ' title:911day^1000 description:911day^100 feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000 feed_providername:handsonnetworktechnologies^2000',
   
 }
 
