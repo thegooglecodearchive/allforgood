@@ -102,6 +102,11 @@ handlers:
 - url: /googlehostedservice.html
   static_files: googlehostedservice.html
   upload: googlehostedservice.html
+
+# webmaster tools
+- url: /googleefe37a0bc2c2b0c0.html
+  static_files: googleefe37a0bc2c2b0c0.html
+  upload: googleefe37a0bc2c2b0c0.html
   
 # FPXML
 - url: /fpxml.xml
