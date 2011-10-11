@@ -27,6 +27,9 @@ DEFAULT_BOOSTS = [
 
   # slight penalty for girl scout events
   ' (*:* -feed_providername:girlscouts)^200',
+  
+  # slight penalty for idealist events until they can get date issue resolved
+  ' (*:* -feed_providername:idealist)^20',
 
 ]
 
@@ -48,6 +51,8 @@ API_KEY_QUERIES = {
 	'americanexpress' : ' (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-25T00:00:00Z] AND eventrangeend:[2011-08-30T00:00:00Z TO *]))',
 	
 	'911Day' : ' (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-15T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))',
+		
+	'joiningforces' : ' (military OR veteran)',
 }
 
 API_KEY_BOOSTS = {
@@ -56,6 +61,10 @@ API_KEY_BOOSTS = {
   'americanexpress' : ' title:911day^1000 description:911day^100 feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000',
   
   '911Day' : ' title:911day^1000 description:911day^100 feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000 feed_providername:handsonnetworktechnologies^2000',
+  
+  'daytabank' : ' feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000 feed_providername:handsonnetworktechnologies^2000 feed_providername:daytabank^1000',
+    
+  'joiningforces' : ' title:military^10 (*:* -org_name:spouse)^10',
   
 }
 
