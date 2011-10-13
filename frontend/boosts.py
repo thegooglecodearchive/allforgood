@@ -53,8 +53,8 @@ API_KEY_QUERIES = {
 	'911Day' : ' (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-15T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))',
 		
 	'joiningforces' : ' (military OR veteran)',
-	
-	'daytabank' : ' (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-22T00:00:00Z] AND eventrangeend:[2011-10-22T00:00:00Z TO *])',
+# commenting out new daytabank custom query pending confirmation on what is appropriate to show or not.	
+#	'daytabank' : ' (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-22T23:59:59Z] AND eventrangeend:[2011-10-22T00:00:00Z TO *])',
 }
 
 API_KEY_BOOSTS = {
