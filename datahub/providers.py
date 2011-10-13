@@ -62,8 +62,8 @@ ProviderNames = {
   "handsonnetworktechnologies":{"name":"HandsOn Network", "idx":42}, 
   "handsonnetwork1800":{"name":"HandsOn Network", "idx":43}, 
   "uso":{"name":"USO", "idx":44}, 
+  # added daytabank 10/12/2011
   "daytabank":{"name":"Make a Difference Day", "idx":45}, 
-# added daytabank 10/12/2011
 }
 
 def updateProviderNamesScript():

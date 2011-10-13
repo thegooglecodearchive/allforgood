@@ -471,10 +471,10 @@ def loaders():
                "handsonnetworkconnect", 
                "handsonnetwork1800", 
                "handsonnetworktechnologies", 
-# can stop processing legacy HON feed 10/12/2011
-               "handsonnetwork", 
+               # can stop processing legacy HON feed 10/12/2011
+               #"handsonnetwork", 
                "unitedway", 
-# added daytabank			   
+               # added daytabank			   
                "daytabank", 
                "mentorpro", "aarp", 
                "americanredcross", "americansolutions",
@@ -489,7 +489,7 @@ def loaders():
                "seniorcorps",
                "usaintlexp",
                "samaritan",
-# moved idealist down in order of feeds 10/12/2011
+               # moved idealist down in order of feeds 10/12/2011
                "idealist", 
                "onlinespreadsheet",
                ]:
