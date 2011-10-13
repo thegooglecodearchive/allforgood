@@ -471,9 +471,11 @@ def loaders():
                "handsonnetworkconnect", 
                "handsonnetwork1800", 
                "handsonnetworktechnologies", 
+# can stop processing legacy HON feed 10/12/2011
                "handsonnetwork", 
                "unitedway", 
-               "idealist", 
+# added daytabank			   
+               "daytabank", 
                "mentorpro", "aarp", 
                "americanredcross", "americansolutions",
                "americorps", "christianvolunteering", "1sky", "sparked", 
@@ -487,6 +489,8 @@ def loaders():
                "seniorcorps",
                "usaintlexp",
                "samaritan",
+# moved idealist down in order of feeds 10/12/2011
+               "idealist", 
                "onlinespreadsheet",
                ]:
     if not FILENAMES or name in FILENAMES:
