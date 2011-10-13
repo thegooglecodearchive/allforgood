@@ -1004,11 +1004,11 @@ def guess_shortname(filename):
   if re.search("handsonnetworkconnect", filename):
     return "handsonnetworkconnect"
 
-# could comment out legacy HON feed 10/12/2011
+  # could comment out legacy HON feed 10/12/2011
   if re.search("(handson|hot.footprint)", filename):
     return "handsonnetwork"
 
-# added daytabank 10/12/2011
+  # added daytabank 10/12/2011
   if re.search("daytabank", filename):
     return "daytabank"
 	
@@ -1133,13 +1133,13 @@ def guess_parse_func(inputfmt, filename, feed_providername):
       '502', 'handsonnetworkconnect', 'handsonnetworkconnect', 'http://handsonnetwork.org/',
       'HandsOn Network')
 
-# added daytabank 10/12/2011
+  # added daytabank 10/12/2011
   if shortname == "daytabank":
     return "fpxml", fp.parser(
       '503', 'daytabank', 'daytabank', 'http://daytabank.handsonnetwork.org/',
       'Make a Difference Day')
 
-	  # can comment out legacy HON feed 10/12/2011
+  # can comment out legacy HON feed 10/12/2011
   if shortname == "handsonnetwork":
     return "fpxml", fp.parser(
       '102', 'handsonnetwork', 'handsonnetwork', 'http://handsonnetwork.org/',
