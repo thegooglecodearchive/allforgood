@@ -266,6 +266,7 @@ class home_page_view(webapp.RequestHandler):
         self.response.out.write(render_template(HOME_PAGE_TEMPLATE,
                                           template_values))
       except:
+        logging.warning('home_page_view: ' + path)
         self.error(404)
         return
 
@@ -290,6 +291,7 @@ class partner_page_view(webapp.RequestHandler):
         self.response.out.write(render_template(PARTNER_PAGE_TEMPLATE,
                                           template_values))
       except:
+        logging.warning('partner_page_view: ' + path)
         self.error(404)
         return
 
@@ -1173,6 +1175,7 @@ class static_content(webapp.RequestHandler):
         self.response.out.write(render_template(CONTENT_TEMPLATE,
                                           template_values))
       except:
+        logging.warning('static_content: ' + path)
         self.error(404)
         return
 
