@@ -107,13 +107,13 @@
     </tr>
     <tr>
       <td><code>type</code></td>
-      <td>All for Good supports querying for a variety of opportunity types (geographically based, virtual, and self-directed/DIY toolkits).  Note that the “type” parameter is optional, but if it is passed, it must be filled in with one of the expected values. Also note that "micro" opportunities as shown on the All for Good site search page are a type of "virtual" opportunity and considered as such in the API queries using the "type" parameter.</td>
+      <td>All for Good supports querying for a variety of opportunity types (geographically based, virtual, and self-directed/DIY toolkits).  Note that the <code>type</code> parameter is optional, but if it is passed, it must be filled in with one of the expected values. Also note that "micro" opportunities as shown on the All for Good site search page are a type of "virtual" opportunity and considered as such in the API queries using the "type" parameter.</td>
       <td><p>Default value: none</p>
       <p>Expected values: all, virtual, self_directed.  Note that "all" returns geographically based opportunities only, not virtual or self-directed ones.</p></td>
     </tr>
     <tr>
       <td><code>merge</code></td>
-      <td>The API by default returns individual results for each occurrence of a reoccurring data event and does not merge together opportunities that occur in multiple locations within the search radius.  However, since to the end user of your application recurring or multi-geo opportunities may appear as “duplicates” or overly similar to each other, the API supports returning only the single most relevant instance of such opportunities via the optional “merge” parameter.</td>
+      <td>The API by default returns individual results for each occurrence of a reoccurring data event and does not merge together opportunities that occur in multiple locations within the search radius.  However, since to the end user of your application recurring or multi-geo opportunities may appear as <code>duplicates</code> or overly similar to each other, the API supports returning only the single most relevant instance of such opportunities via the optional <code>merge</code> parameter.</td>
       <td><p>Default value: none</p>
       <p>Expected values: 0 (no merging), 1 (merges recurring/multi-geo opps into one result)</p></td>
     </tr>
