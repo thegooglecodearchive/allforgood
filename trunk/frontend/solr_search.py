@@ -819,7 +819,11 @@ def get_geo_counts():
   except:
       logging.info('error receiving solr facet counts')
   
-  result_content = fetch_result.content  
+  try:
+    result_content = fetch_result.content  
+  except:
+    result_content = ''
+
   # undo comma encoding -- see datahub/footprint_lib.py
   result_content = re.sub(r';;', ',', result_content)
   return simplejson.loads(result_content)
