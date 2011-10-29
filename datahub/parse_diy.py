@@ -35,7 +35,7 @@ def get_field(field, row, header):
       try:
         return row[i]
       except:
-        print "bad row: (%s)" % str(row)
+        print "parse_diy: bad row: (%s)" % str(row)
   return ""
 
 # pylint: disable-msg=R0915

@@ -97,11 +97,21 @@ def parse_fast(instr, maxrecs, progress):
     set_default_time_elem(opp, opp, "expires", 
         xmlh.current_ts(DEFAULT_EXPIRATION))
    
-    for loc in opp.getElementsByTagName("location"):
+    try:
+      opplocs = opp.getElementsByTagName("location")
+    except:
+      opplocs = []
+
+    for loc in opplocs:
       xmlh.set_default_value(opp, loc, "virtual", "No")
       xmlh.set_default_value(opp, loc, "country", "US")
 
-    for dttm in opp.getElementsByTagName("dateTimeDurations"):
+    try:
+      dttms = opp.getElementsByTagName("dateTimeDurations")
+    except:
+      dttms = []
+
+    for dttm in dttms:
       # redundant xmlh.set_default_value(opp, dttm, "openEnded", "No")
       xmlh.set_default_value(opp, dttm, "iCalRecurrence", "")
       if (dttm.getElementsByTagName("startTime") == None and
@@ -111,8 +121,12 @@ def parse_fast(instr, maxrecs, progress):
         set_default_time_elem(opp, dttm, "timeFlexible", "No")
       xmlh.set_default_value(opp, dttm, "openEnded", "No")
 
-    time_elems = opp.getElementsByTagName("startTime")
-    time_elems += opp.getElementsByTagName("endTime")
+    try:
+      time_elems = opp.getElementsByTagName("startTime")
+      time_elems += opp.getElementsByTagName("endTime")
+    except:
+      time_elems = []
+
     for el in time_elems:
       xmlh.set_default_attr(opp, el, "olsonTZ", "America/Los_Angeles")
 

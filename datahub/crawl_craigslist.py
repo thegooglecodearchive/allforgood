@@ -25,7 +25,8 @@ import urllib2
 import re
 import thread
 import time
-import datetime
+from datetime import datetime
+
 import socket
 
 DEFAULT_TIMEOUT = 10
@@ -201,8 +202,8 @@ def parse_cache_file(s, listings_only=False, printerrors=True):
         pages[url] = page
     except:
       if printerrors:
-        print "error parsing cache file on line",i+1
-        print line
+        print print datetime.now(), "error parsing cache file on line", i+1
+        #print line
     
 def load_cache():
   global CACHE_FN

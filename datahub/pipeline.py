@@ -491,7 +491,8 @@ def loaders():
                "samaritan",
                # moved idealist down in order of feeds 10/12/2011
                "idealist", 
-               "onlinespreadsheet",
+               # moved
+               #"onlinespreadsheet",
                ]:
     if not FILENAMES or name in FILENAMES:
       run_pipeline(name, name + ".xml")
@@ -638,10 +639,13 @@ rows
     return
 
   fnames = csv_reader.fieldnames[:]
+
   fnames.append("c:eventrangestart:dateTime")
   fnames.append("c:eventrangeend:dateTime")
   fnames.append("c:eventduration:integer")
+
   fnames.append("c:aggregatefield:string")
+
   fnames.append("c:randomsalt:float")
   fnamesdict = dict([(x, x) for x in fnames])
   data_file = open(fname, "r")
@@ -654,6 +658,7 @@ rows
     fnamesdict[field_name] = fnamesdict[field_name].lower()
     if fnamesdict[field_name].startswith('c:'):
       fnamesdict[field_name] = fnamesdict[field_name].split(':')[1]
+
   csv_writer.writerow(fnamesdict)
   now = parser.parse(commands.getoutput("date"))
   today = now.date()
@@ -686,15 +691,17 @@ rows
     rows["description"] = footprint_lib.cleanse_snippet(rows["description"])
     rows["c:detailURL:URL"] = rows["c:detailURL:URL"].replace("&amp;", '&'); 
 
+    rows["c:org_missionStatement:string"] = footprint_lib.cleanse_snippet(
+                                               rows["c:org_missionStatement:string"])
+    rows["c:org_description:string"] = footprint_lib.cleanse_snippet(
+                                               rows["c:org_description:string"])
+
     rows["c:aggregatefield:string"] = footprint_lib.cleanse_snippet(' '.join([rows["description"],
                                                rows["c:provider_proper_name:string"],
                                                rows["c:skills:string"],
                                                rows["c:org_name:string"],
                                                rows["title"]]))
-    rows["c:org_missionStatement:string"] = footprint_lib.cleanse_snippet(
-                                               rows["c:org_missionStatement:string"])
-    rows["c:org_description:string"] = footprint_lib.cleanse_snippet(
-                                               rows["c:org_description:string"])
+
 
     for key in rows.keys():
       # Fix to the "double semicolons instead of commas" Base hack.
@@ -750,7 +757,7 @@ rows
         #temp = rows["c:eventrangestart:dateTime"]
         #rows["c:eventrangestart:dateTime"] = rows["c:eventrangeend:dateTime"]
         #rows["c:eventrangeend:dateTime"] = temp
-        print_progress("start>end: rejecting record.")
+        print_progress("start date after end date: rejecting record.")
         continue
 
       # Fix for events that are ongoing or whose dates were unsucessfully
