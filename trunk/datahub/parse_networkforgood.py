@@ -98,7 +98,11 @@ def parser(providerID, providerName, feedID, providerURL, feedDescription):
       volopps += xmlh.output_node('detailURL', item, "DetailURL")
       volopps += xmlh.output_val('volunteersNeeded', "-8888")
   
-      oppdates = item.getElementsByTagName("OpportunityDate")
+      try:
+        oppdates = item.getElementsByTagName("OpportunityDate")
+      except:
+        oppdates = []
+      
       if oppdates.length > 1:
         print datetime.now(), \
             "parse_servenet.py: only 1 OpportunityDate supported."
@@ -124,7 +128,10 @@ def parser(providerID, providerName, feedID, providerURL, feedDescription):
       volopps += '</dateTimeDuration></dateTimeDurations>'
   
       volopps += '<locations>'
-      opplocs = item.getElementsByTagName("Location")
+      try:
+        opplocs = item.getElementsByTagName("Location")
+      except:
+        opplocs = []
       for opploc in opplocs:
         volopps += '<location>'
         virtual_tag = opploc.getElementsByTagName("Virtual")

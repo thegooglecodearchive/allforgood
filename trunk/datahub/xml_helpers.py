@@ -99,15 +99,20 @@ def get_tag_val(entity, tag):
   #print "----------------------------------------"
   if not entity:
     return ""
-  nodes = entity.getElementsByTagName(tag)
-  #print "nodes:", nodes
+  try:
+    nodes = entity.getElementsByTagName(tag)
+  except:
+    return ""
+  
   if (nodes.length == 0):
     return ""
-  #print nodes[0]
+  
   if (nodes[0] == None):
     return ""
+
   if (nodes[0].firstChild == None):
     return ""
+
   try:
     if (nodes[0].firstChild.data == None):
       return ""
@@ -146,7 +151,11 @@ def set_default_value(parent, entity, tagname, default_value):
   """add the element if not already present in the DOM tree."""
   if not parent or not entity:
     return 
-  nodes = entity.getElementsByTagName(tagname)
+  try:
+    nodes = entity.getElementsByTagName(tagname)
+  except:
+    return
+
   if len(nodes) == 0:
     newnode = parent.createElement(tagname)
     newnode.appendChild(parent.createTextNode(str(default_value)))
@@ -160,34 +169,28 @@ def set_default_attr(doc, entity, attrname, default_value):
   if entity.getAttributeNode(attrname) == None:
     entity.setAttribute(attrname, default_value)
 
+
 def validate_xml(xmldoc, known_elnames):
   """a simple XML validator, given known tagnames."""
-  for node in xmldoc.childNodes:
-    if (node.nodeType == node.ELEMENT_NODE and
-        node.tagName not in known_elnames):
-      #print "unknown tagName '"+node.tagName+"'"
-      pass
-      # TODO: spellchecking...
-    validate_xml(node, known_elnames)
+  if xmldoc and xmldoc.childNodes:
+    for node in xmldoc.childNodes:
+      if (node.nodeType == node.ELEMENT_NODE and
+          node.tagName not in known_elnames):
+        #print "unknown tagName '"+node.tagName+"'"
+        pass
+        # TODO: spellchecking...
+      validate_xml(node, known_elnames)
+
 
 def simple_parser(instr, known_elnames_list, progress):
   """a simple wrapper for parsing XML which attempts to handle errors."""
+
+  xmldoc = None
+  if progress:
+    print datetime.now(), "parsing XML"
+
   try:
-    if known_elnames_list:
-      known_elnames_dict = {}
-      for item in known_elnames_list:
-        known_elnames_dict[item] = True
-    if progress:
-      print datetime.now(), "parsing XML"
     xmldoc = minidom.parseString(instr)
-    # this stuff is in a try-block to avoid use-before-def on xmldoc
-    if progress:
-      print datetime.now(), "validating XML..."
-    if known_elnames_list:
-      validate_xml(xmldoc, known_elnames_dict)
-    if progress:
-      print datetime.now(), "done."
-    return xmldoc
   except xml.parsers.expat.ExpatError, err:
     print datetime.now(), "XML parsing error on line ", err.lineno,
     print ":", xml.parsers.expat.ErrorString(err.code),
@@ -197,10 +200,31 @@ def simple_parser(instr, known_elnames_list, progress):
       if i >= 0 and i < len(lines):
         print "%6d %s" % (i+1, lines[i])
     print "writing string to xmlerror.out..."
-    outfh = open("xmlerror.out", "w+")
-    outfh.write(instr)
-    outfh.close()
+    print "attempt to process it anyway..."
+    from BeautifulSoup import BeautifulStoneSoup
+    try:
+      xmldoc = BeautifulStoneSoup(instr)
+    except:
+      pass
+
+  if not xmldoc:
+    print "this feed is unparseable -- contact provider"
     sys.exit(0)
+  else:
+    if progress:
+      print datetime.now(), "validating XML..."
+
+    if known_elnames_list:
+      known_elnames_dict = {}
+      for item in known_elnames_list:
+        known_elnames_dict[item] = True
+      validate_xml(xmldoc, known_elnames_dict)
+
+    if progress:
+      print datetime.now(), "done."
+
+    return xmldoc
+
 
 def prettyxml(doc, strip_header = False):
   """return pretty-printed XML for doc."""

@@ -24,6 +24,7 @@ import urllib2
 import re
 import htmlentitydefs
 import xml.sax.saxutils as saxutils
+import json
 
 import subprocess
 import sys
@@ -178,6 +179,13 @@ FIELDTYPES = {
   "org_nationalEIN":"string",
   "org_guidestarID":"string",
   "venue_name":"string",
+
+  "city":"string",
+  "state":"string",
+  "zip":"string",
+  "country":"string",
+  "statewide":"string",
+
   "location_string":"string",
   "orgLocation":"string",
   "provider_proper_name":"string",
@@ -308,6 +316,7 @@ def output_field(name, value):
     return convert_dt_to_gbase(value, "", "UTC")
   return value
 
+
 def get_addr_field(node, field):
   """assuming a node is named (field), return it with optional trailing spc."""
   addr = xmlh.get_tag_val(node, field)
@@ -337,6 +346,36 @@ def get_full_addr_str(node):
   loc = get_street_addr_str(node)
   loc += get_city_addr_str(node)
   return loc
+
+
+def get_city_state_zip(lat, lng, given_city, given_state, given_zip, given_country):
+  
+  city = given_city
+  state = given_state 
+  zip = given_zip
+  country = given_country
+  if not country:
+    country = 'US'
+
+  jo = geocoder.rev_geocode_json(lat, lng)
+  if jo and 'status' in jo:
+    #print "rev_geocode_json: says " + jo['status']
+    if jo['status'] == "OK":
+      for d in jo['results'][0]['address_components']:
+        if 'locality' in d['types']:
+          city = d['long_name']
+        elif 'postal_code' in d['types']:
+          zip = d['short_name']
+        elif 'administrative_area_level_1' in d['types']:
+          state = d['short_name']
+        elif 'country' in d['types']:
+          country = d['short_name']
+
+  if state and country and country != 'US':
+     state += '-' + country
+
+  return city, state, zip, country
+  
 
 def find_geocoded_location(node):
   """Try a multitude of field combinations to get a geocode.  Returns:
@@ -394,6 +433,7 @@ def find_geocoded_location(node):
   print_debug("failed: " + str(result))
   return result
 
+
 def output_loc_field(node, mapped_name):
   """macro for output_field( convert node to loc field )"""
   return output_field(mapped_name, 
@@ -407,13 +447,13 @@ def output_tag_value_renamed(node, xmlname, newname):
   """macro for output_field( get node value ) then emitted as newname"""
   return output_field(newname, xmlh.get_tag_val(node, xmlname))
 
-def duplicate_opp(opp, locstr, startend):
+def duplicate_opp(opp, loc_str, startend):
   rtn = False
   title = get_title(opp).lower()
   abstract = get_abstract(opp).lower()
   #detailURL = xmlh.get_tag_val(opp, 'detailURL')
-  #dedup_str = "".join([title, desc, detailURL, locstr, startend])
-  dedup_str = "".join([title, abstract, locstr, startend])
+  #dedup_str = "".join([title, desc, detailURL, loc_str, startend])
+  dedup_str = "".join([title, abstract, loc_str, startend])
   dedup_file = 'dups/' + hashlib.md5(dedup_str).hexdigest()
   if os.path.exists(dedup_file): 
      rtn = True
@@ -426,7 +466,7 @@ def duplicate_opp(opp, locstr, startend):
   return rtn
 
 
-def compute_stable_id(opp, org, locstr, openended, duration,
+def compute_stable_id(opp, org, loc_str, openended, duration,
                       hrs_per_week, startend):
   """core algorithm for computing an opportunity's unique id."""
   if DEBUG:
@@ -439,7 +479,7 @@ def compute_stable_id(opp, org, locstr, openended, duration,
   # locations will be slightly different...
   # Strip numbers from listings to prevent identical locations 
   # varying only by postcode.
-  stripped_loc = stripped_string = re.sub('\d+', '', locstr)
+  stripped_loc = stripped_string = re.sub('\d+', '', loc_str)
 
   # TODO: if two providers have same listing, the time info
   # is unlikely to be exactly the same, incl. missing fields
@@ -695,21 +735,36 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
     for opploc in opp_locations:
       # unwind multiple locations
       if opploc is None:
-        locstr, latlng, geocoded_loc = ("", "", "")
+        loc_str, latlng, geocoded_loc = ("", "", "")
         loc_fields = get_loc_fields(virtual="No", latitude="0.0", longitude="0.0")
       else:
-        locstr = get_full_addr_str(opploc)
+        loc_str = get_full_addr_str(opploc)
         addr, lat, lng, acc = find_geocoded_location(opploc)
+
+        given_address = get_street_addr_str(opploc)
+        given_city = get_addr_field(opploc, "city")
+        given_state = get_addr_field(opploc, "region")
+        given_zip = get_addr_field(opploc, "postalCode")
+        given_country = get_addr_field(opploc, "country")
+
+        city, state, zip, country = get_city_state_zip(lat, lng, given_city, given_state, given_zip, given_country)
+        statewide = ''
+        if given_state and not given_address and not given_city and not given_zip:
+          statewide = state
+
         virtual = xmlh.get_tag_val(opploc, "virtual")
         loc_fields = get_loc_fields(virtual=virtual,
                                     latitude=str(float(lat) + 1000.0),
                                     longitude=str(float(lng) + 1000.0),
                                     location_string=addr,
-                                    venue_name=xmlh.get_tag_val(opploc, "name"))
+                                    venue_name=xmlh.get_tag_val(opploc, "name"),
+                                    city = city, state = state, zip = zip, country = country, 
+                                    statewide = statewide)
 
-      opp_id = compute_stable_id(opp, org, locstr, openended, 
+
+      opp_id = compute_stable_id(opp, org, loc_str, openended, 
                                  duration, hrs_per_week, startend)
-      if duplicate_opp(opp, locstr, startend):
+      if duplicate_opp(opp, loc_str, startend):
         print_progress("dedup: skipping duplicate " + opp_id)
         return totrecs, ""
 
@@ -766,7 +821,8 @@ def get_time_fields(openended, duration, hrs_per_week, event_date_range, ical_re
   time_fields += FIELDSEP + output_field("commitmentHoursPerWeek", hrs_per_week)
   return time_fields
 
-def get_loc_fields(virtual, location="", latitude="", longitude="", location_string="", venue_name=""):
+def get_loc_fields(virtual, location="", latitude="", longitude="", location_string="", venue_name="",
+  city = "", state = "", zip = "", country = "US", statewide = ""):
   """output location-related fields, e.g. for multiple locations per event."""
   # note: we don't use Google Base's "location" field because it tries to
   # geocode it (even if we pre-geocode it) then for bogus reasons, rejects
@@ -776,15 +832,37 @@ def get_loc_fields(virtual, location="", latitude="", longitude="", location_str
     virtual_bool = "True"
   else:
     virtual_bool = "False"
+
   loc_fields += FIELDSEP + output_field("virtual", virtual_bool)
   loc_fields += FIELDSEP + output_field("location", location)
   loc_fields += FIELDSEP + output_field("latitude", latitude)
   loc_fields += FIELDSEP + output_field("longitude", longitude)
   loc_fields += FIELDSEP + output_field("location_string", location_string)
-  if ABRIDGED:
-    return loc_fields
   loc_fields += FIELDSEP + output_field("venue_name", venue_name)
+
+  L = [ {'field' : 'city', 'value': city},
+        {'field' : 'state', 'value': state},
+        {'field' : 'zip', 'value': zip},
+        {'field' : 'country', 'value': country},
+        {'field' : 'statewide', 'value': statewide},
+      ]
+
+  for d in L:
+    field = d['field']
+    value = d['value']
+    try:
+      loc_fields += FIELDSEP + output_field(field, value)
+    except:
+      try:
+        value = value.encode('ascii', 'ignore')
+        loc_fields += FIELDSEP + output_field(field, value)
+        print datetime.now(), 'converted ' + field + ' to ' + value
+      except:
+        print datetime.now(), 'check facet count for "' + field + '"'
+        loc_fields += FIELDSEP + output_field(field, field)
+
   return loc_fields
+
 
 def get_repeated_fields(feedinfo, opp, org):
   """output all fields that are repeated for each time and location."""

@@ -346,6 +346,9 @@ def get_taggers():
   vetted_tagger = FeedProviderIDTagger('Vetted', [
       #UGC '101', # usaservice (no longer active)
       '102', # handsonnetwork
+      '500', # handsonnetwork
+      '501', # handsonnetwork
+      '502', # handsonnetwork
       '103', # idealist
       '104', # volunteermatch
       #UGC '105', # craigslist
@@ -375,6 +378,7 @@ def get_taggers():
       #UGC '131', 911dayofservice
       #'132', newyorkcares
       '134', #samaritan
+      '141', #uso
       #'1002', # girl scouts
       '1003', # united jewish communities
       '1004', # sierra club

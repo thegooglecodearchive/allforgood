@@ -18,10 +18,15 @@ Geocoder and address functions for backend, using Google Maps API.
 """
 import re
 import time
+import math
+import json
 import urllib
 import urllib2
 import xml_helpers as xmlh
 from datetime import datetime
+
+#API_KEY = "ABQIAAAAxq97AW0x5_CNgn6-nLxSrxQuOQhskTx7t90ovP5xOuY_YrlyqBQajVan2ia99rD9JgAcFrdQnTD4JQ"
+CLIENT_ID = "gme-craigslistfoundation"
 
 # Show status messages (also applies to xml parsing)
 SHOW_PROGRESS = False
@@ -78,9 +83,10 @@ def geocode(query):
           else:
             result = False
           GEOCODE_CACHE[key] = result
-          if len(GEOCODE_CACHE) % 250 == 0:
-            print_debug("read " + str(len(GEOCODE_CACHE)) +
-                        " geocode cache entries.")
+
+          #if GEOCODE_DEBUG:
+          #  if len(GEOCODE_CACHE) % 250 == 0:
+          #    print_debug("read " + str(len(GEOCODE_CACHE)) + " geocode cache entries.")
     finally:
       geocode_fh.close()
 
@@ -91,7 +97,7 @@ def geocode(query):
 
   # call Google Maps API
   result = geocode_call(query)
-  print_debug("geocode result: " + str(result))
+  #print_debug("geocode result: " + str(result))
   if result == False:
     return False  # do not cache
 
@@ -111,6 +117,7 @@ def geocode(query):
   GEOCODE_CACHE[key] = result
   return result
 
+
 def geocode_call(query, retries=4):
   """Queries the Google Maps geocoder and returns: address, latitude,
   longitude, accuracy (as strings).  Returns None if the query is
@@ -120,36 +127,32 @@ def geocode_call(query, retries=4):
     print_debug("geocoder retry limit exceeded")
     return False
 
-  print_debug("geocoding '" + query + "'...")
+  #print_debug("geocoding '" + query + "'...")
 
-  params = urllib.urlencode(
-    {'q':query, 'output':'xml',
-     'oe':'utf8', 'sensor':'false',
-     'key':'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxQuOQhskTx7t90ovP5xOuY' + \
-       '_YrlyqBQajVan2ia99rD9JgAcFrdQnTD4JQ'})
+  params = urllib.urlencode({'q':query, 'output':'xml','oe':'utf8', 'sensor':'false', 'clientID':CLIENT_ID})
   try:
     maps_fh = urllib2.urlopen("http://maps.google.com/maps/geo?%s" % params)
     res = maps_fh.read()
     maps_fh.close()
   except IOError, err:
-    print_debug("Error contacting Maps API. Sleeping. " + str(err))
+    print_debug("geocode_call: Error contacting Maps API. Sleeping. " + str(err))
     time.sleep(1)
     return geocode_call(query, retries - 1)
 
-  print_debug("response length: "+str(len(res)))
+  #print_debug("response length: "+str(len(res)))
   if re.search(r'403 Forbidden', res):
     respcode = 403
   else:
     node = xmlh.simple_parser(res, [], SHOW_PROGRESS)
     respcode = xmlh.get_tag_val(node, "code")
     if respcode == "":
-      print_debug("unparseable response: "+res)
+      #print_debug("unparseable response: "+res)
       return False
   respcode = int(respcode)
   if respcode in (400, 601, 602, 603):  # problem with the query
     return None
   if respcode in (403, 500, 620):  # problem with the server
-    print_debug("Connection problem or quota exceeded.  Sleeping...")
+    print_debug("geocode_call: Connection problem or quota exceeded.  Sleeping...")
     if retries == 4:
       xmlh.print_progress("geocoder: %d" % respcode, "", SHOW_PROGRESS)
     time.sleep(1)
@@ -173,3 +176,75 @@ def geocode_call(query, retries=4):
   if accuracy == "":
     accuracy = "0"
   return (addr, lat, lng, accuracy)
+
+
+def rev_geocode_json(lat, lng, key = None, retries = 0):
+  """ """
+
+  jo = None
+  if not key:
+    try:
+      lat_str = str(round(float(lat) * 100.0)/100.0).replace('.', '_')
+      lng_str = str(round(float(lng) + 100.0)/100.0).replace('.', '_')
+    except:
+      # most likely given junk lat/lng
+      return jo
+    key = 'revgeo/' + 'lat' + lat_str + 'lng' + lng_str + '.json'
+
+  if key:
+    try:
+      fh = open(key, 'r')
+      json_str = fh.read()
+      fh.close()
+      try:
+        jo = json.loads(json_str.encode('ascii', 'xmlcharrefreplace'))
+        return jo
+      except:
+        print_debug("rev_geocode_json: could not loads cached " + key)
+    except:
+      # not cached
+      pass
+  
+  latlng = str(lat) + ',' + str(lng)
+  url = "http://maps.googleapis.com/maps/api/geocode/json"
+  params = urllib.urlencode({'latlng':latlng, 'sensor':'false', 'clientID':CLIENT_ID})
+
+  json_str = ""
+  try:
+    fh = urllib2.urlopen("%s?%s" % (url, params))
+    json_str = fh.read()
+    fh.close()
+    retries = 0
+  except IOError, err:
+    print_debug("rev_geocode_json: error contacting Maps API. Sleeping. " + str(err))
+    if retries < 2:
+      retries += 1
+      time.sleep(1)
+      return rev_geocode_json(lat, lng, key, retries)
+
+  if json_str:
+    try:
+      jo = json.loads(json_str.encode('ascii', 'xmlcharrefreplace'))
+    except:
+      print_debug("rev_geocode_json: could not loads " + key)
+
+    if jo:
+      if jo['status'] == 'OK' or jo['status'] == 'ZERO_RESULTS':
+        try:
+          fh = open(key, 'w')
+          fh.write(json_str)
+          fh.close()
+        except:
+          print_debug("rev_geocode_json: could not cache " + key)
+
+      elif jo['status'] == 'OVER_QUERY_LIMIT':
+        print_debug("rev_geocode_json: OVER_QUERY_LIMIT " + key)
+        #if retries >= 3:
+        #  print_debug("rev_geocode_json: OVER_QUERY_LIMIT " + key)
+        #else:
+        #  retries += 1
+        #  time.sleep(1)
+        #  return rev_geocode_json(lat, lng, key, retries)
+
+  return jo
+
