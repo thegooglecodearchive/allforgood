@@ -202,7 +202,7 @@ def parse_cache_file(s, listings_only=False, printerrors=True):
         pages[url] = page
     except:
       if printerrors:
-        print print datetime.now(), "error parsing cache file on line", i+1
+        print datetime.now(), "error parsing cache file on line", i+1
         #print line
     
 def load_cache():
