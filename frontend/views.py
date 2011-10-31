@@ -912,6 +912,11 @@ class redirect_view(webapp.RequestHandler):
         views = pagecount.GetPageCount(pagecount.VIEWS_PREFIX + id)
         logging.debug("click: merge_key=%s  clicks=%d  views=%d  ctr=%.1f%%" %
                       (id, clicks, views, float(clicks)/float(views+0.1)))
+
+      # this is 301, permanent
+      #self.redirect(url, permanent=True)
+
+      # this is 302 temporary
       self.redirect(url)
       return
 
