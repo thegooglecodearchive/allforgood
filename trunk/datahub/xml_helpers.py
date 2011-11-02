@@ -228,7 +228,10 @@ def simple_parser(instr, known_elnames_list, progress):
 
 def prettyxml(doc, strip_header = False):
   """return pretty-printed XML for doc."""
-  outstr = doc.toxml("UTF-8")
+  if doc:
+    outstr = doc.toxml("UTF-8")
+  else:
+    outstr = ''
   if strip_header:
     outstr = re.sub(r'<\?xml version="1.0" encoding="UTF-8"\?>', r'', outstr)
   outstr = re.sub(r'><', r'>\n<', outstr)
