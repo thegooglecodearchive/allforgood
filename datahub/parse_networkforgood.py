@@ -103,12 +103,12 @@ def parser(providerID, providerName, feedID, providerURL, feedDescription):
       except:
         oppdates = []
       
-      if oppdates.length > 1:
+      if len(oppdates) > 1:
         print datetime.now(), \
             "parse_servenet.py: only 1 OpportunityDate supported."
         #return None
         oppdate = oppdates[0]
-      elif oppdates.length == 0:
+      elif len(oppdates) == 0:
         oppdate = None
       else:
         oppdate = oppdates[0]
