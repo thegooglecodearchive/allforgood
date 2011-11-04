@@ -18,13 +18,16 @@ geocode client, which uses Google Maps API
 
 import re
 import urllib
+import urllib2
 import logging
+import simplejson as json
 import time
 from datetime import datetime
 from google.appengine.api import urlfetch
 from versioned_memcache import memcache
 
 import api
+import private_keys
 
 def parse_geo_response(res):
   if "," not in res:
@@ -81,7 +84,7 @@ def geocode(addr, usecache=True, retrying = False):
        'oe':'utf8', 
        'sensor':'false', 
        'gl':'us',
-       'client':'gme-craigslistfoundation'
+       'client':private_keys.MAPS_API_CLIENT_ID
       })
     fetchurl = "http://maps.google.com/maps/geo?%s" % params
     logging.info("geocode: cache miss, trying " + fetchurl)
@@ -119,3 +122,49 @@ def geocode(addr, usecache=True, retrying = False):
 
   logging.info("geocode: failed " + loc)
   return ""
+
+
+def rev_geocode_json(lat, lng):
+  """ """
+
+  jo = None
+  latlng = str(lat) + ',' + str(lng)
+  url = "http://maps.googleapis.com/maps/api/geocode/json"
+  params = urllib.urlencode({'latlng':latlng, 'sensor':'false', 'clientID':private_keys.MAPS_API_CLIENT_ID})
+
+  json_str = ""
+  try:
+    fh = urllib2.urlopen("%s?%s" % (url, params))
+    json_str = fh.read()
+    fh.close()
+  except:
+    return jo
+
+  if json_str:
+    try:
+      jo = json.loads(json_str.encode('ascii', 'xmlcharrefreplace'))
+    except:
+      return jo
+
+  return jo
+
+
+def get_statewide(lat, lng):
+  """ """
+
+  rtn = 'CA'
+  country = 'US'
+
+  jo = rev_geocode_json(lat, lng)
+  if jo and 'status' in jo:
+    if jo['status'] == 'OK':
+      for d in jo['results'][0]['address_components']:
+        if 'administrative_area_level_1' in d['types']:
+          rtn = d['short_name']
+        elif 'country' in d['types']:
+          country = d['short_name']
+
+  if country and country != 'US':
+     rtn += '-' + country
+
+  return rtn

@@ -78,12 +78,14 @@ $(document).ready(function() {
   function getSelectedTab() {
   	var type = getHashParam('type', '');
 	var index = 0;		
-	if (type == "virtual")
+	if (type == "statewide")
 		index = 1;
-	else if (type == "micro")
+	else if (type == "virtual")
 		index = 2;
-	else if (type == "self_directed")
+	else if (type == "micro")
 		index = 3;
+	else if (type == "self_directed")
+		index = 4;
 	else
 		index = 0;
 	return index;
@@ -256,10 +258,12 @@ Query.prototype.getDistance = function() {
 
 Query.prototype.setType = function(type) {
   if (type == "1")
-  	this.type_ = "virtual";
+  	this.type_ = "statewide";
   else if (type == "2")
-  	this.type_ = "micro";
+  	this.type_ = "virtual";
   else if (type == "3")
+  	this.type_ = "micro";
+  else if (type == "4")
     this.type_ = "self_directed";
   else
     this.type_ = "all";	
@@ -754,12 +758,6 @@ function submitForm(invoker, value) {
   if (location) {
     setSessionCookie('user_vol_loc', location);
   }
-  /*
-  if (invoker == 'map') {
-    setSessionCookie('user_vol_loc', location);
-  }
-  */
-  
   if (invoker == "reset") {
 	  loadNumber = 0;
   }
@@ -796,7 +794,7 @@ function submitForm(invoker, value) {
 	$(".top_search").show();
 	$("#location_distance_date").show();
 	
-	if (type == "all") {		
+	if (type == "all" || type == "statewide") {		
 		$("#location_box").show();
         $("#map").show();
         $("#location_distance_date").show();

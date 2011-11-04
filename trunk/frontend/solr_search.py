@@ -44,6 +44,7 @@ RESULT_CACHE_TIME = 900 # seconds
 RESULT_CACHE_KEY = 'searchresult:'
 KEYWORD_GLOBAL = ""
 GEO_GLOBAL = ""
+STATEWIDE_GLOBAL = ""
 PROVIDER_GLOBAL = ""
 FULL_QUERY_GLOBAL = ""
 DATE_QUERY_GLOBAL = ""
@@ -235,19 +236,23 @@ def form_solr_query(args):
     query_is_empty = True
 
   # geo params go in first
-  global KEYWORD_GLOBAL
+  global KEYWORD_GLOBAL, STATEWIDE_GLOBAL
   KEYWORD_GLOBAL = urllib.quote_plus(solr_query)
   solr_query = geo_params + solr_query
   solr_query = urllib.quote_plus(solr_query)
   
-  # Type
+  # Type: these map to the tabs on the search results page
   if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
+    # quote plus
     if args[api.PARAM_TYPE] == "self_directed":
-      solr_query += "+AND+self_directed:true"    
+      solr_query += urllib.quote_plus(" AND self_directed:true")
+    elif args[api.PARAM_TYPE] == "statewide":
+      STATEWIDE_GLOBAL = geocode.get_statewide(lat, lng)
+      solr_query += urllib.quote_plus(" AND statewide:" + STATEWIDE_GLOBAL + " AND micro:false AND self_directed:false")
     elif args[api.PARAM_TYPE] == "virtual":
-      solr_query += "+AND+virtual:true+AND+micro:false+AND+self_directed:false"
+      solr_query += urllib.quote_plus(" AND virtual:true AND micro:false AND self_directed:false")
     elif args[api.PARAM_TYPE] == "micro":
-      solr_query += "+AND+micro:true"
+      solr_query += urllib.quote_plus(" AND micro:true")
   else:
       solr_query += "&fq=self_directed:false+AND+virtual:false+AND+micro:false"
   global FULL_QUERY_GLOBAL
@@ -377,7 +382,10 @@ def search(args, dumping = False):
   # date range
   date_string = ""
   start_datetime_str = None
-  if api.PARAM_VOL_STARTDATE in args and args[api.PARAM_VOL_STARTDATE] != "" and args[api.PARAM_VOL_STARTDATE] != "everything":    
+  if (api.PARAM_VOL_STARTDATE in args and 
+      args[api.PARAM_VOL_STARTDATE] != "" and 
+      args[api.PARAM_VOL_STARTDATE] != "everything"):
+
     start_date = datetime.datetime.today()
     try:
       start_date = datetime.datetime.strptime(
@@ -417,7 +425,8 @@ def search(args, dumping = False):
   
   global DATE_QUERY_GLOBAL
   if start_datetime_str:
-    DATE_QUERY_GLOBAL = "&fq=(eventrangeend:[" + start_datetime_str + "+TO+*]+AND+eventrangestart:[*+TO+" + end_datetime_str + "])"
+    DATE_QUERY_GLOBAL = ("&fq=(eventrangeend:[" + start_datetime_str + 
+                         "+TO+*]+AND+eventrangestart:[*+TO+" + end_datetime_str + "])")
     query_url += DATE_QUERY_GLOBAL
   else:
     DATE_QUERY_GLOBAL = "&fq=(eventrangeend:[NOW-1DAYS%20TO%20*]+OR+expires:[NOW-1DAYS%20TO%20*])"
@@ -503,17 +512,18 @@ def query(query_url, args, cache, dumping = False):
     facet_counts = dict()    
     facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false"])
     facet_counts.update(get_type_counts())    
-    
     count = 0;
     if api.PARAM_TYPE in args:
-        if args[api.PARAM_TYPE] == "virtual":
-            count = facet_counts["virtual"]
-        elif args[api.PARAM_TYPE] == "self_directed":
-            count = facet_counts["self_directed"]
-        elif args[api.PARAM_TYPE] == "micro":
-            count = facet_counts["micro"]
-        else:
-            count = facet_counts["all"]
+      if args[api.PARAM_TYPE] == "statewide":
+        count = facet_counts["statewide"]
+      elif args[api.PARAM_TYPE] == "virtual":
+        count = facet_counts["virtual"]
+      elif args[api.PARAM_TYPE] == "self_directed":
+        count = facet_counts["self_directed"]
+      elif args[api.PARAM_TYPE] == "micro":
+        count = facet_counts["micro"]
+      else:
+        count = facet_counts["all"]
 
     facet_counts["count"] = count
     
@@ -780,7 +790,9 @@ def get_facet_counts():
       query.append("facet.query=" + urllib.quote_plus(key))  
 
     try:
-        query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + '&facet.mincount=1&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query)
+        query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + 
+                     '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + 
+                     '&facet.mincount=1&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query))
         logging.info("facets: " + query_url)
     except:
         raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -806,11 +818,14 @@ def get_facet_counts():
         else:
             provider_fields.append({str(v) : str(providers[k + 1])})
     
-    return {'category_fields': sorted(category_fields.iteritems(), key=itemgetter(1), reverse=True), 'provider_fields': provider_fields}    
+    return {'category_fields': sorted(category_fields.iteritems(), 
+             key=itemgetter(1), reverse=True), 'provider_fields': provider_fields}    
 
 def get_geo_counts():
   try:
-    query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.mincount=1&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0'
+    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + 
+                 '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + 
+                 '&facet=on&facet.mincount=1&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0')
     logging.info("all: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -831,7 +846,9 @@ def get_geo_counts():
 
 def get_type_counts():
   try:
-    query_url = BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + '&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.limit=2&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0'
+    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + 
+                 '&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.limit=100'
+                 '&facet.field=statewide&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0')
     logging.info("type: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -844,11 +861,20 @@ def get_type_counts():
   # undo comma encoding -- see datahub/footprint_lib.py
   result_content = re.sub(r';;', ',', result_content)
   result = simplejson.loads(result_content)
-  #facet_counts
   if "facet_counts" in result:
     facet_fields = result["facet_counts"]["facet_fields"]
     facet_counts = dict()
     for k, v in facet_fields.iteritems():
+      if k == "statewide" and STATEWIDE_GLOBAL:
+        facet_counts[k] = 0
+        for idx, st in enumerate(facet_fields["statewide"]):
+          if st == STATEWIDE_GLOBAL:
+            try:
+              facet_counts[k] = facet_fields["statewide"][idx + 1]
+            except:
+              pass
+            break
+      else:
         if "true" in v:
           index = v.index("true")
         else:
@@ -857,6 +883,10 @@ def get_type_counts():
           facet_counts[k] = v[index + 1]
         else:
           facet_counts[k] = 0
-    facet_counts["virtual"] -= facet_counts["micro"] #hack to remove micro counts because they were incorrectly tagged as virtual
-    facet_counts["virtual"] -= facet_counts["self_directed"] #hack to remove self_directed counts because they were incorrectly tagged as virtual
+
+    #hack to remove micro counts because they were incorrectly tagged as virtual
+    facet_counts["virtual"] -= facet_counts["micro"] 
+    #hack to remove self_directed counts because they were incorrectly tagged as virtual
+    facet_counts["virtual"] -= facet_counts["self_directed"] 
+
   return facet_counts
