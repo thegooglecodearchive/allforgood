@@ -750,6 +750,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
         city, state, zip, country = get_city_state_zip(lat, lng, given_city, given_state, given_zip, given_country)
         statewide = ''
         if given_state and not given_address and not given_city and not given_zip:
+          #print given_state, ',', given_address , ',', given_city , ',', given_zip
           statewide = state
 
         virtual = xmlh.get_tag_val(opploc, "virtual")

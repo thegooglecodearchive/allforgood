@@ -18,7 +18,6 @@ Geocoder and address functions for backend, using Google Maps API.
 """
 import re
 import time
-import math
 import json
 import urllib
 import urllib2
