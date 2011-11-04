@@ -1,8 +1,8 @@
-application: footprint2009dev
-#application: servicefootprint
+#application: footprint2009dev
+application: servicefootprint
 
-version: trunk
-#version: testing
+#version: trunk
+version: testing
 #version: backup
 runtime: python
 api_version: 1

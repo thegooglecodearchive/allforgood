@@ -72,12 +72,15 @@
 			$('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");
 		}
 		if (loadNumber == 0 || getSelectedTab() == 1) {
+			$('#in_your_state').html("(" + {{ result_set.facet_counts.statewide }} + ")");
+		}
+		if (loadNumber == 0 || getSelectedTab() == 2) {
 			$('#virtual').html("(" + {{result_set.facet_counts.virtual}} + ")");
 		}		
-		if (loadNumber == 0 || getSelectedTab() == 2) {
+		if (loadNumber == 0 || getSelectedTab() == 3) {
 			$('#micro').html("(" + {{result_set.facet_counts.micro}} + ")");
 		}		
-		if (loadNumber == 0 || getSelectedTab() == 3) {
+		if (loadNumber == 0 || getSelectedTab() == 4) {
 			$('#self_directed').html("(" + {{result_set.facet_counts.self_directed}} + ")");
 		}		
 	}();
