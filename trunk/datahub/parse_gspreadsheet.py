@@ -63,14 +63,18 @@ def get_dtval(record, field_name):
   """get a field, and check that it's a legal date string."""
   val = recordval(record, field_name)
   if val != "" and not re.match(r'\d\d?/\d\d?/\d\d\d\d', val):
-    parser_error("bad value in "+field_name+": '"+val+"'-- try MM/DD/YYYY")
+    val = ""
+    # instead of discarding the opp, just disregard the date
+    #parser_error("bad value in "+field_name+": '"+val+"'-- try MM/DD/YYYY")
   return val
 
 def get_tmval(record, field_name):
   """get a field, and check that it's a legal time string."""
   val = recordval(record, field_name)
   if val != "" and not re.match(r'\d?\d:\d\d(:\d\d)?', val):
-    parser_error("bad value in "+field_name+": '"+val+"'-- try HH:MM:SS")
+    val = ""
+    # instead of discarding the opp, just disregard the time
+    #parser_error("bad value in "+field_name+": '"+val+"'-- try HH:MM:SS")
   return val
 
 def record_to_fpxml(record):
@@ -117,8 +121,10 @@ def record_to_fpxml(record):
   elif freq.find("monthly") >= 0:
     fpxml += '<iCalRecurrence>FREQ=MONTHLY</iCalRecurrence>'
   else:
-    parser_error("unsupported frequency: '"+
-                 recordval(record,'Frequency')+"'-- skipping")
+    fpxml += '<iCalRecurrence/>'
+    # just disregard the bad value instead of discarding the opp
+    #parser_error("unsupported frequency: '"+
+    #             recordval(record,'Frequency')+"'-- skipping")
   fpxml += xmlh.output_val('commitmentHoursPerWeek',
                            recordval(record,'CommitmentHours'))
   fpxml += '</dateTimeDuration>'
