@@ -302,12 +302,8 @@ def output_field(name, value):
     print_progress("replaced nationalservice")
     
   if OUTPUTFMT == "basetsv":
-    # grr: Base tries to treat commas in custom fields as being lists ?!
-    # http://groups.google.com/group/base-help-basics/browse_thread/thread/
-    #   c4f51447191a6741
-    # TODO: note that this may cause fields to expand beyond their maxlen
-    # (e.g. abstract)
     value = re.sub(r',', ';;', value)
+
   if DEBUG:
     if (len(value) > 70):
       value = value[0:67] + "... (" + str(len(value)) + " bytes)"
@@ -478,14 +474,8 @@ def compute_stable_id(opp, org, loc_str, openended, duration,
   if (eid == ""):
     # support informal "organizations" that lack EINs
     eid = xmlh.get_tag_val(org, "organizationURL")
-  # TODO: if two providers have same listing, good odds the
-  # locations will be slightly different...
-  # Strip numbers from listings to prevent identical locations 
-  # varying only by postcode.
   stripped_loc = stripped_string = re.sub('\d+', '', loc_str)
 
-  # TODO: if two providers have same listing, the time info
-  # is unlikely to be exactly the same, incl. missing fields
   timestr = openended + duration + hrs_per_week + startend
   title = get_title(opp)
   abstract = get_abstract(opp)
@@ -504,13 +494,13 @@ def compute_stable_id(opp, org, loc_str, openended, duration,
 
 
 def get_abstract(opp):
-  """process abstract-- shorten, strip newlines and formatting.
-  TODO: cache/memoize this."""
+  """process abstract-- shorten, strip newlines and formatting."""
   abstract = xmlh.get_tag_val(opp, "abstract")
   if abstract == "":
     abstract = xmlh.get_tag_val(opp, "description")
   abstract = cleanse_snippet(abstract)
   return abstract[:MAX_ABSTRACT_LEN]
+
 
 def get_direct_mapped_fields(opp, org, feed_providerName):
   """map a field directly from FPXML to Google Base."""
@@ -632,7 +622,7 @@ def cleanse_snippet(instr):
 
 
 def get_title(opp):
-  """compute a clean title.  TODO: do this once and cache/memoize it"""
+  """compute a clean title. """
   title = cleanse_snippet(output_tag_value(opp, "title"))
   for str in re.finditer(lcword_rx, title):
     title = re.sub(lcword_rx, str.group(1)+str.group(2).upper(), title, 1)
@@ -780,8 +770,8 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
         pass
 
       totrecs = totrecs + 1
-      if PROGRESS and totrecs % 250 == 0:
-        print_progress(str(totrecs)+" records generated.")
+      #if PROGRESS and totrecs % 250 == 0:
+      #  print_progress(str(totrecs)+" records generated.")
 
       outstr_list.append(output_field("id", opp_id))
       outstr_list.append(repeated_fields)
@@ -809,17 +799,18 @@ def get_time_fields(openended, duration, hrs_per_week, event_date_range, ical_re
     if match.group(2):
       startstr = match.group(1) + match.group(2)
     else:
-      # TODO: exception (but need a way to throw exceptions in general)
-      # e.g. ignore this record, stop this feed, etc.
       pass
     if match.group(3):
       endstr = match.group(4) + match.group(5)
+
   time_fields = FIELDSEP + output_field("event_date_range", event_date_range)
   time_fields += FIELDSEP + output_field("startTime", startstr)
   time_fields += FIELDSEP + output_field("endTime", endstr)
   time_fields += FIELDSEP + output_field("ical_recurrence", ical_recurrence)
+
   if ABRIDGED:
     return time_fields
+
   time_fields += FIELDSEP + output_field("openended", openended_bool)
   time_fields += FIELDSEP + output_field("duration", duration)
   time_fields += FIELDSEP + output_field("commitmentHoursPerWeek", hrs_per_week)
@@ -896,36 +887,14 @@ def output_header(feedinfo, opp, org):
 
 def convert_to_footprint_xml(instr, do_fastparse, maxrecs, progress):
   """macro for parsing an FPXML string to XML then format it."""
-  #if False:
-  #  # grr: RAM explosion, even with pulldom...
-  #  totrecs = 0
-  #  nodes = xml.dom.pulldom.parseString(instr)
-  #  outstr = '<?xml version="1.0" ?>'
-  #  outstr += '<FootprintFeed schemaVersion="0.1">'
-  #  for eltype, node in nodes:
-  #    if eltype == 'START_ELEMENT':
-  #      if node.nodeName == 'VolunteerOpportunity':
-  #        if progress and totrecs > 0 and totrecs % 250 == 0:
-  #          print datetime.now(), ": ", totrecs, " opps processed."
-  #        totrecs = totrecs + 1
-  #        if maxrecs > 0 and totrecs > maxrecs:
-  #          break
-  #      if (node.nodeName == 'FeedInfo' or
-  #          node.nodeName == 'Organization' or
-  #          node.nodeName == 'VolunteerOpportunity'):
-  #        nodes.expandNode(node)
-  #        prettyxml = xmlh.prettyxml(node)
-  #        outstr += prettyxml
-  #  outstr += '</FootprintFeed>'
-  #  return outstr
   if do_fastparse:
     res, numorgs, numopps = parse_footprint.parse_fast(instr, maxrecs, progress)
     return res
   else:
     # slow parse
     xmldoc = parse_footprint.parse(instr, maxrecs, progress)
-    # TODO: maxrecs
     return xmlh.prettyxml(xmldoc)
+
 
 def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
   """non-trivial logic for converting FPXML to google base formatting."""
@@ -1014,28 +983,24 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
           extractedPhone = m.group(1)
           if m.group(5):
             extractedPhone += " ext."+ m.group(5)
-          #print_progress("extracted phone: "+extractedPhone)
           newnode = opp.createElement('contactPhone')
           newnode.appendChild(opp.createTextNode(extractedPhone))
           opp.firstChild.appendChild(newnode)
       else:
         pass
-        #print_progress("already had phone: "+contactPhone)
           
       # extractor/guesser for contactEmail-- see notes above in phone
       contactEmail = xmlh.get_tag_val(opp, "contactEmail")
       if contactEmail == "":
-        #print "searching for email:" # in "+re.sub(r'\n',' ',oppchunk)
         m = re.search(r'[^a-z]([a-z0-9.+!-]+@([a-z0-9-]+[.])+[a-z]+)',
                       oppmatch.group(0), re.IGNORECASE)
         if m:
-          #print_progress("extracted email: "+m.group(1))
           newnode = opp.createElement('contactEmail')
           newnode.appendChild(opp.createTextNode(m.group(1)))
           opp.firstChild.appendChild(newnode)
       else:
         pass
-        #print_progress("already had email: "+contactEmail)
+
       rec = XMLRecord(opp)
       #add tags
       for tagger in taggers:
@@ -1045,8 +1010,10 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       opp = rec.opp
       if not HEADER_ALREADY_OUTPUT:
         outstr = output_header(feedinfo, opp, example_org)
+
       numopps, spiece = output_opportunity(opp, feedinfo, known_orgs, numopps)
       oppslist_output.append(spiece)
+
       if (maxrecs > 0 and numopps > maxrecs):
         break
       
@@ -1056,18 +1023,20 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
     outstr += "".join(oppslist_output)
   else:
     # not fastparse
+
     footprint_xml = parse_footprint.parse(instr, maxrecs, progress)    
     feedinfos = footprint_xml.getElementsByTagName("FeedInfo")
     if (feedinfos.length != 1):
       print datetime.now(), "bad FeedInfo: should only be one section"
-      # TODO: throw error
       sys.exit(1)
+
     feedinfo = feedinfos[0]
     organizations = footprint_xml.getElementsByTagName("Organization")
     for org in organizations:
       org_id = xmlh.get_tag_val(org, "organizationID")
       if (org_id != ""):
         known_orgs[org_id] = org
+
     opportunities = footprint_xml.getElementsByTagName("VolunteerOpportunity")
     numopps = 0
     for opp in opportunities:
@@ -1077,6 +1046,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       outstr += spiece
 
   print_progress("duplicate(s): " + str(DUPS))
+  print_progress(" good opp(s): " + str(numopps))
 
   return outstr, len(known_orgs), numopps
 
@@ -1203,6 +1173,7 @@ def guess_parse_func(inputfmt, filename, feed_providername):
     return "fpxml", parse_footprint.parse_fast
 
   shortname = guess_shortname(filename)
+  #TODO: make these a dictionary object with shortname as the key
 
   # FPXML providers
   fp = parse_footprint
@@ -1420,6 +1391,7 @@ def guess_parse_func(inputfmt, filename, feed_providername):
   print datetime.now(), "couldn't guess input format-- try --inputfmt"
   sys.exit(1)
 
+
 def clean_input_string(instr):
   """run various cleanups for low-level encoding issues."""
   def cleaning_progress(msg):
@@ -1633,7 +1605,6 @@ def process_file(filename, options, providerName="", providerID="",
 
   fastparse = not options.debug_input
   if OUTPUTFMT == "fpxml":
-    # TODO: pretty printing option
     print convert_to_footprint_xml(footprint_xmlstr, fastparse,
                                    int(options.maxrecs), PROGRESS)
     print "exiting because outputfmt = fpxml"
