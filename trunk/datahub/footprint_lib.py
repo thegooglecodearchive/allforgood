@@ -447,6 +447,7 @@ def output_tag_value_renamed(node, xmlname, newname):
   """macro for output_field( get node value ) then emitted as newname"""
   return output_field(newname, xmlh.get_tag_val(node, xmlname))
 
+DUPS = 0
 def duplicate_opp(opp, loc_str, startend):
   rtn = False
   title = get_title(opp).lower()
@@ -456,7 +457,9 @@ def duplicate_opp(opp, loc_str, startend):
   dedup_str = "".join([title, abstract, loc_str, startend])
   dedup_file = 'dups/' + hashlib.md5(dedup_str).hexdigest()
   if os.path.exists(dedup_file): 
-     rtn = True
+    global DUPS
+    DUPS += 1
+    rtn = True
   else:
     try:
       open(dedup_file, 'w').close()
@@ -766,7 +769,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       opp_id = compute_stable_id(opp, org, loc_str, openended, 
                                  duration, hrs_per_week, startend)
       if duplicate_opp(opp, loc_str, startend):
-        print_progress("dedup: skipping duplicate " + opp_id)
+        #print_progress("dedup: skipping duplicate " + opp_id)
         return totrecs, ""
 
       # make a file indicating to us that this 
@@ -927,6 +930,9 @@ def convert_to_footprint_xml(instr, do_fastparse, maxrecs, progress):
 def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
   """non-trivial logic for converting FPXML to google base formatting."""
   # todo: maxrecs
+  global DUPS
+  DUPS = 0
+
   outstr = ""
   print_progress("convert_to_gbase_events_type...", "", progress)
 
@@ -954,8 +960,8 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       'volunteerHubOrganizationID', 'volunteerOpportunityID',
       'volunteersFilled', 'volunteersSlots', 'volunteersNeeded', 'yesNoEnum'
       ]
-    numopps = 0
 
+    numopps = 0
     feedinfo = None
     for match in re.finditer(re.compile('<FeedInfo>.+?</FeedInfo>',
                                         re.DOTALL), instr):
@@ -1070,7 +1076,10 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       numopps, spiece = output_opportunity(opp, feedinfo, known_orgs, numopps)
       outstr += spiece
 
+  print_progress("duplicate(s): " + str(DUPS))
+
   return outstr, len(known_orgs), numopps
+
 
 def guess_shortname(filename):
   """from the input filename, guess which feed this is."""
