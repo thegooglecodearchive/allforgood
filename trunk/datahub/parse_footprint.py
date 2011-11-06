@@ -84,8 +84,8 @@ def parse_fast(instr, maxrecs, progress):
     numopps += 1
     if (maxrecs > 0 and numopps > maxrecs):
       break
-    if progress and numopps % 250 == 0:
-      print datetime.now(), ": ", numopps, " records generated."
+    #if progress and numopps % 250 == 0:
+    #  print datetime.now(), ": ", numopps, " records generated."
 
     # these set_default_* functions dont do anything if the field
     # doesnt already exists
@@ -142,8 +142,6 @@ def parse_fast(instr, maxrecs, progress):
 def parse(instr, maxrecs, progress):
   """return python DOM object given FPXML"""
   # parsing footprint format is the identity operation
-  # TODO: maxrecs
-  # TODO: progress
   if progress:
     print datetime.now(), "parse_footprint: parsing ", len(instr), " bytes."
   xmldoc = xmlh.simple_parser(instr, KNOWN_ELNAMES, progress)

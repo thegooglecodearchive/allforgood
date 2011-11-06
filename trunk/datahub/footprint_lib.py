@@ -949,8 +949,8 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
         known_orgs[org_id] = org
       if example_org is None:
         example_org = org
-      if progress and len(known_orgs) % 250 == 0:
-        print_progress(str(len(known_orgs))+" organizations seen.")
+      #if progress and len(known_orgs) % 250 == 0:
+      #  print_progress(str(len(known_orgs))+" organizations seen.")
 
     taggers = get_taggers()
     phoneRx = re.compile(

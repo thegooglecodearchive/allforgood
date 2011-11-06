@@ -194,8 +194,8 @@ def parse_gspreadsheet(instr, data, updated, progress):
                       '<content.*?>(.+?)</content>.+?</entry>', re.DOTALL)
   maxrow = maxcol = 0
   for i, match in enumerate(re.finditer(regexp, instr)):
-    if progress and i > 0 and i % 250 == 0:
-      print str(datetime.now())+": ", maxrow, "rows and", i, " cells processed."
+    #if progress and i > 0 and i % 250 == 0:
+    #  print str(datetime.now())+": ", maxrow, "rows and", i, " cells processed."
     lastupd = re.sub(r'([.][0-9]+)?Z?$', '', match.group(4)).strip()
     #print "lastupd='"+lastupd+"'"
     updated[match.group(1)] = lastupd.strip("\r\n\t ")
