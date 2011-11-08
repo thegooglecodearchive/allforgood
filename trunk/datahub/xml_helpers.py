@@ -187,7 +187,7 @@ def simple_parser(instr, known_elnames_list, progress):
 
   xmldoc = None
   if progress:
-    print datetime.now(), "parsing XML"
+    print datetime.now(), "xml_helpers.simple_parser: parsing XML"
 
   try:
     xmldoc = minidom.parseString(instr)
@@ -208,11 +208,11 @@ def simple_parser(instr, known_elnames_list, progress):
       pass
 
   if not xmldoc:
-    print "this feed is unparseable -- contact provider"
+    print "xml_helpers.simple_parser: this feed is unparseable -- contact provider"
     sys.exit(0)
   else:
     if progress:
-      print datetime.now(), "validating XML..."
+      print datetime.now(), "xml_helpers.simple_parser: validating XML..."
 
     if known_elnames_list:
       known_elnames_dict = {}
@@ -221,7 +221,7 @@ def simple_parser(instr, known_elnames_list, progress):
       validate_xml(xmldoc, known_elnames_dict)
 
     if progress:
-      print datetime.now(), "done."
+      print datetime.now(), "xml_helpers.simple_parser: done parsing"
 
     return xmldoc
 

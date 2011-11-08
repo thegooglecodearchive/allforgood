@@ -77,8 +77,8 @@ def parser(providerID, providerName, feedID, providerURL, feedDescription):
                       instr, re.DOTALL)
     volopps = ""
     for i, oppstr in enumerate(opps):
-      if progress and i > 0 and i % 250 == 0:
-        print str(datetime.now())+": ", i, " opportunities processed."
+      #if progress and i > 0 and i % 250 == 0:
+      #  print str(datetime.now())+": ", i, " opportunities processed."
       if (maxrecs > 0 and i > maxrecs):
         break
       xmlh.print_rps_progress("opps", progress, i, maxrecs)

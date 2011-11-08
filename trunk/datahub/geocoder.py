@@ -142,7 +142,7 @@ def geocode_call(query, retries=4):
   if re.search(r'403 Forbidden', res):
     respcode = 403
   else:
-    node = xmlh.simple_parser(res, [], SHOW_PROGRESS)
+    node = xmlh.simple_parser(res, [], False)
     respcode = xmlh.get_tag_val(node, "code")
     if respcode == "":
       #print_debug("unparseable response: "+res)

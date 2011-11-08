@@ -181,6 +181,7 @@ FIELDTYPES = {
   "venue_name":"string",
 
   "city":"string",
+  "county":"string",
   "state":"string",
   "zip":"string",
   "country":"string",
@@ -344,9 +345,10 @@ def get_full_addr_str(node):
   return loc
 
 
-def get_city_state_zip(lat, lng, given_city, given_state, given_zip, given_country):
+def get_revgeo_fields(lat, lng, given_city, given_county, given_state, given_zip, given_country):
   
   city = given_city
+  county = given_county
   state = given_state 
   zip = given_zip
   country = given_country
@@ -364,13 +366,15 @@ def get_city_state_zip(lat, lng, given_city, given_state, given_zip, given_count
           zip = d['short_name']
         elif 'administrative_area_level_1' in d['types']:
           state = d['short_name']
+        elif 'administrative_area_level_2' in d['types']:
+          county = d['short_name']
         elif 'country' in d['types']:
           country = d['short_name']
 
   if state and country and country != 'US':
      state += '-' + country
 
-  return city, state, zip, country
+  return city, county, state, zip, country
   
 
 def find_geocoded_location(node):
@@ -736,13 +740,15 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
 
         given_address = get_street_addr_str(opploc)
         given_city = get_addr_field(opploc, "city")
+        given_county = ''
         given_state = get_addr_field(opploc, "region")
         given_zip = get_addr_field(opploc, "postalCode")
         given_country = get_addr_field(opploc, "country")
 
-        city, state, zip, country = get_city_state_zip(lat, lng, given_city, given_state, given_zip, given_country)
+        city, county, state, zip, country = get_revgeo_fields(lat, lng, given_city, 
+                              given_county, given_state, given_zip, given_country)
         statewide = ''
-        if given_state and not given_address and not given_city and not given_zip:
+        if given_state and country == 'US' and not given_address and not given_city and not given_zip:
           #print given_state, ',', given_address , ',', given_city , ',', given_zip
           statewide = state
 
@@ -752,7 +758,8 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
                                     longitude=str(float(lng) + 1000.0),
                                     location_string=addr,
                                     venue_name=xmlh.get_tag_val(opploc, "name"),
-                                    city = city, state = state, zip = zip, country = country, 
+                                    city = city, county = county, state = state, 
+                                    zip = zip, country = country, 
                                     statewide = statewide)
 
 
@@ -817,7 +824,7 @@ def get_time_fields(openended, duration, hrs_per_week, event_date_range, ical_re
   return time_fields
 
 def get_loc_fields(virtual, location="", latitude="", longitude="", location_string="", venue_name="",
-  city = "", state = "", zip = "", country = "US", statewide = ""):
+  city = "", county = "", state = "", zip = "", country = "US", statewide = ""):
   """output location-related fields, e.g. for multiple locations per event."""
   # note: we don't use Google Base's "location" field because it tries to
   # geocode it (even if we pre-geocode it) then for bogus reasons, rejects
@@ -836,6 +843,7 @@ def get_loc_fields(virtual, location="", latitude="", longitude="", location_str
   loc_fields += FIELDSEP + output_field("venue_name", venue_name)
 
   L = [ {'field' : 'city', 'value': city},
+        {'field' : 'county', 'value': county},
         {'field' : 'state', 'value': state},
         {'field' : 'zip', 'value': zip},
         {'field' : 'country', 'value': country},
