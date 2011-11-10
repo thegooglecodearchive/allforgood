@@ -914,10 +914,10 @@ class redirect_view(webapp.RequestHandler):
                       (id, clicks, views, float(clicks)/float(views+0.1)))
 
       # this is 301, permanent
-      #self.redirect(url, permanent=True)
+      self.redirect(url, permanent=True)
 
       # this is 302 temporary
-      self.redirect(url)
+      #self.redirect(url)
       return
 
     # TODO: Use a proper template so this looks nicer.
