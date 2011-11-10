@@ -186,6 +186,7 @@ FIELDTYPES = {
   "zip":"string",
   "country":"string",
   "statewide":"string",
+  "nationwide":"string",
 
   "location_string":"string",
   "orgLocation":"string",
@@ -752,6 +753,10 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
           #print given_state, ',', given_address , ',', given_city , ',', given_zip
           statewide = state
 
+        nationwide = ''
+        if country and not given_address and not given_city and not given_zip and not given_state:
+          nationwide = country
+
         virtual = xmlh.get_tag_val(opploc, "virtual")
         loc_fields = get_loc_fields(virtual=virtual,
                                     latitude=str(float(lat) + 1000.0),
@@ -760,7 +765,8 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
                                     venue_name=xmlh.get_tag_val(opploc, "name"),
                                     city = city, county = county, state = state, 
                                     zip = zip, country = country, 
-                                    statewide = statewide)
+                                    statewide = statewide,
+                                    nationwide = nationwide)
 
 
       opp_id = compute_stable_id(opp, org, loc_str, openended, 
@@ -824,7 +830,7 @@ def get_time_fields(openended, duration, hrs_per_week, event_date_range, ical_re
   return time_fields
 
 def get_loc_fields(virtual, location="", latitude="", longitude="", location_string="", venue_name="",
-  city = "", county = "", state = "", zip = "", country = "US", statewide = ""):
+  city = "", county = "", state = "", zip = "", country = "US", statewide = "", nationwide = ""):
   """output location-related fields, e.g. for multiple locations per event."""
   # note: we don't use Google Base's "location" field because it tries to
   # geocode it (even if we pre-geocode it) then for bogus reasons, rejects
@@ -848,6 +854,7 @@ def get_loc_fields(virtual, location="", latitude="", longitude="", location_str
         {'field' : 'zip', 'value': zip},
         {'field' : 'country', 'value': country},
         {'field' : 'statewide', 'value': statewide},
+        {'field' : 'nationwide', 'value': nationwide},
       ]
 
   for d in L:
