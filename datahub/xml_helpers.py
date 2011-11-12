@@ -81,6 +81,8 @@ def print_status(msg, filename="", progress=True):
 
 def print_rps_progress(noun, progress, recno, maxrecs):
   """print a progress indicator."""
+  return 
+
   maxrecs_str = ""
   if maxrecs > 0:
     maxrecs_str = " of " + str(maxrecs)
