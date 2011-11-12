@@ -24,6 +24,7 @@ from csv import DictReader, DictWriter, excel_tab, register_dialect, QUOTE_NONE
 from datetime import datetime
 import footprint_lib
 import xml_helpers as xmlh
+import check_links
 
 HOMEDIR = "/home/footprint/allforgood-read-only/datahub"
 LOGPATH = HOMEDIR + "/dashboard.ing/"
@@ -686,10 +687,13 @@ rows
         rows["c:eventrangeend:dateTime"] = rows["c:eventrangestart:dateTime"]
 
     # in case we somehow got here without already doing this
-
     rows["title"] = footprint_lib.cleanse_snippet(rows["title"])
     rows["description"] = footprint_lib.cleanse_snippet(rows["description"])
     rows["c:detailURL:URL"] = rows["c:detailURL:URL"].replace("&amp;", '&'); 
+
+    if check_links.is_bad_link(rows["c:detailURL:URL"]):
+      print_progress("bad link: rejecting record.")
+      continue
 
     rows["c:org_missionStatement:string"] = footprint_lib.cleanse_snippet(
                                                rows["c:org_missionStatement:string"])
