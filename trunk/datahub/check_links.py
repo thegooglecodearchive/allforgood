@@ -25,7 +25,7 @@ def is_bad_link(url):
   """ """
 
   rtn = False
-  if os.path.isfile(DIR_BAD + get_link_file_name(url)):
+  if not url or os.path.isfile(DIR_BAD + get_link_file_name(url)):
     rtn = True
 
   return rtn
