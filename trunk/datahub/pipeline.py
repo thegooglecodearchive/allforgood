@@ -465,6 +465,7 @@ def test_loaders():
                False, False)
   run_pipeline("craigslist", "craigslist-cache.txt", False, False)
 
+
 def loaders():
   """put all loaders in one function for easier testing."""
 
@@ -475,25 +476,49 @@ def loaders():
                # can stop processing legacy HON feed 10/12/2011
                #"handsonnetwork", 
                "unitedway", 
-               # added daytabank			   
                "daytabank", 
-               "mentorpro", "aarp", 
-               "americanredcross", "americansolutions",
-               "americorps", "christianvolunteering", "1sky", "sparked", 
-               "citizencorps", "extraordinaries", "givingdupage",
-               "greentheblock", "habitat", "mlk_day", 
-               "myproj_servegov", "newyorkcares", 
-               "rockthevote", "threefiftyorg", "catchafire",
-               "servenet", "servicenation",
-               "universalgiving", "volunteergov", "up2us",
-               "volunteertwo", "washoecounty", "ymca", "uso",
+               "mentorpro", 
+               "aarp", 
+               "americanredcross", 
+               # need to contact feed provider 2011-11-12
+               #"americansolutions",
+               "americorps", 
+               "christianvolunteering", 
+               # need to contact feed provider 2011-11-12
+               #"1sky", 
+               "sparked", 
+               "citizencorps", 
+               # need to contact feed provider 2011-11-12
+               #"extraordinaries", 
+               "givingdupage",
+               "greentheblock", 
+               "habitat", 
+               # need to contact feed provider 2011-11-12
+               #"mlk_day", 
+               # need to contact feed provider 2011-11-12
+               #"myproj_servegov", 
+               "newyorkcares", 
+               "rockthevote", 
+               "threefiftyorg", 
+               "catchafire",
+               # need to contact feed provider 2011-11-12
+               #"servenet", 
+               # need to contact feed provider 2011-11-12
+               #"servicenation",
+               "universalgiving", 
+               "volunteergov", 
+               "up2us",
+               # need to contact feed provider 2011-11-12
+               #"volunteertwo", 
+               # need to contact feed provider 2011-11-12
+               #"washoecounty", 
+               "ymca", 
+               "uso",
                "seniorcorps",
                "usaintlexp",
                "samaritan",
                # moved idealist down in order of feeds 10/12/2011
                "idealist", 
-               # moved
-               #"onlinespreadsheet",
                ]:
     if not FILENAMES or name in FILENAMES:
       run_pipeline(name, name + ".xml")
@@ -506,9 +531,11 @@ def loaders():
     run_pipeline("gspreadsheets",
                  "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
 
+  # if we ever want to try craigslist again, uncomment these
   # note: craiglist crawler is run asynchronously, hence the local file
-  if not FILENAMES or "craigslist" in FILENAMES:
-    run_pipeline("craigslist", "craigslist-cache.txt")
+  #if not FILENAMES or "craigslist" in FILENAMES:
+  #  run_pipeline("craigslist", "craigslist-cache.txt")
+
 
 def ftp_to_base(filename, ftpinfo, instr):
   """ftp the string to base, guessing the feed name from the orig filename."""
