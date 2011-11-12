@@ -919,6 +919,8 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
 
   outstr = ""
   print_progress("convert_to_gbase_events_type...", "", progress)
+  if not instr:
+    return '', 0, 0
 
   example_org = None
   known_orgs = {}
@@ -1001,8 +1003,6 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
           newnode = opp.createElement('contactPhone')
           newnode.appendChild(opp.createTextNode(extractedPhone))
           opp.firstChild.appendChild(newnode)
-      else:
-        pass
           
       # extractor/guesser for contactEmail-- see notes above in phone
       contactEmail = xmlh.get_tag_val(opp, "contactEmail")

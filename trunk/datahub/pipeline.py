@@ -692,7 +692,7 @@ rows
     rows["c:detailURL:URL"] = rows["c:detailURL:URL"].replace("&amp;", '&'); 
 
     if check_links.is_bad_link(rows["c:detailURL:URL"]):
-      print_progress("bad link: rejecting record.")
+      print_progress("bad link: " + str(rows["c:detailURL:URL"]))
       continue
 
     rows["c:org_missionStatement:string"] = footprint_lib.cleanse_snippet(
