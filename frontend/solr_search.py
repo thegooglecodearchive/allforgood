@@ -238,6 +238,7 @@ def form_solr_query(args):
   # geo params go in first
   global KEYWORD_GLOBAL, STATEWIDE_GLOBAL
   KEYWORD_GLOBAL = urllib.quote_plus(solr_query)
+  STATEWIDE_GLOBAL = geocode.get_statewide(lat, lng)
   solr_query = geo_params + solr_query
   solr_query = urllib.quote_plus(solr_query)
   
@@ -247,7 +248,6 @@ def form_solr_query(args):
     if args[api.PARAM_TYPE] == "self_directed":
       solr_query += urllib.quote_plus(" AND self_directed:true")
     elif args[api.PARAM_TYPE] == "statewide":
-      STATEWIDE_GLOBAL = geocode.get_statewide(lat, lng)
       solr_query += urllib.quote_plus(" AND statewide:" + STATEWIDE_GLOBAL + " AND micro:false AND self_directed:false")
     elif args[api.PARAM_TYPE] == "virtual":
       solr_query += urllib.quote_plus(" AND virtual:true AND micro:false AND self_directed:false")
