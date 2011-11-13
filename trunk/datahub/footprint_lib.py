@@ -1633,7 +1633,11 @@ def process_file(filename, options, providerName="", providerID="",
   outstr, numorgs, numopps = convert_to_gbase_events_type(
     footprint_xmlstr, shortname, fastparse, int(options.maxrecs), PROGRESS)
 
-  return len(footprint_xmlstr), numorgs, numopps, outstr
+  ln = 0
+  if footprint_xmlstr:
+    ln = len(footprint_xmlstr)
+
+  return ln, numorgs, numopps, outstr
 
 
 def main():
