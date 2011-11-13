@@ -201,8 +201,33 @@ def simple_parser(instr, known_elnames_list, progress):
     for i in range(err.lineno - 3, err.lineno + 3):
       if i >= 0 and i < len(lines):
         print "%6d %s" % (i+1, lines[i])
-    print "writing string to xmlerror.out..."
-    print "attempt to process it anyway..."
+
+  if not xmldoc:
+    print "trying CDATA detailURL..."
+    instr = instr.replace('<detailURL>', '<detailURL><![CDATA[').replace('</detailURL>', ']]></detailURL>')
+    try:
+      xmldoc = minidom.parseString(instr)
+    except:
+      pass
+
+  if not xmldoc:
+    print "trying CDATA description..."
+    instr = instr.replace('<description>', '<description><![CDATA[').replace('</description>', ']]></description>')
+    try:
+      xmldoc = minidom.parseString(instr)
+    except:
+      pass
+
+  if not xmldoc:
+    print "trying CDATA title..."
+    instr = instr.replace('<title>', '<title><![CDATA[').replace('</title>', ']]></title>')
+    try:
+      xmldoc = minidom.parseString(instr)
+    except:
+      pass
+
+  if not xmldoc:
+    print "trying anyway ..."
     from BeautifulSoup import BeautifulStoneSoup
     try:
       xmldoc = BeautifulStoneSoup(instr)
