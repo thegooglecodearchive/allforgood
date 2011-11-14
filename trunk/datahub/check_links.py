@@ -8,6 +8,7 @@ import re
 import urlparse
 import hashlib
 import httplib
+import urllib
 
 from datetime import datetime
 
@@ -18,6 +19,7 @@ DIR_CHK = 'links/'
 
 def get_link_file_name(url):
   """ """
+
   return hashlib.md5(url).hexdigest() + '.url'
 
 
@@ -40,13 +42,15 @@ def get_file_age(file):
   return delta.seconds
 
 
-def check_link(url):
+def check_link(url, recheck = False):
   """ """
 
-  file_name = get_link_file_name(url)
+  rtn = 'unknown error'
 
+  file_name = get_link_file_name(url)
   if os.path.isfile(DIR_CHK + file_name):
-    if get_file_age(DIR_CHK + file_name) > (30 * 24 * 3600):
+    rtn = 'checked'
+    if recheck or get_file_age(DIR_CHK + file_name) > (30 * 24 * 3600):
       os.remove(DIR_CHK + file_name)
       if os.path.isfile(DIR_BAD + file_name):
         os.remove(DIR_BAD + file_name)
@@ -64,29 +68,42 @@ def check_link(url):
     socket.setdefaulttimeout(MAX_WAIT)
 
     rsp = None
+    connection = None
     try:
       connection = httplib.HTTPConnection(url_d.netloc)
-      connection.request('HEAD', url_d.path, params, headers)
-      rsp = connection.getresponse()
     except:
-      pass
+      rtn = 'could not connect to %s' % (str(url_d.netloc))
+
+    if connection:
+      try:
+        connection.request('HEAD', url_d.path, urllib.urlencode(params), headers)
+      except:
+        rtn = 'could not req response from %s, %s, %s' % (str(url_d.netloc), str(url_d.path), str(params))
+
+    if connection:
+      try:
+        rsp = connection.getresponse()
+      except:
+        rtn = 'could not get response from %s, %s, %s' % (str(url_d.netloc), str(url_d.path), str(params))
 
     socket.setdefaulttimeout(default_timeout)
+
+    if rsp:
+      rtn = str(rsp.status)
 
     if not rsp or not rsp.status in [200, 301, 302]:
       fh = open(DIR_BAD + file_name, 'w')
       if fh:
-        fh.write(url)
+        fh.write(rtn + '\t' + url + '\n')
         fh.close()
+
+  return rtn
 
 
 def main():
-  #check_link('https://www.sss.gov/FSlocal.htm')
-  #check_link('http://echo3.net')
-  #check_link('http://echo3zzzzzzzzz.net')
   for arg in sys.argv[1:]:
     if arg and len(arg) > 10:
-      check_link(arg)
+      print check_link(arg, True)
 
 if __name__ == "__main__":
   main()
