@@ -477,7 +477,8 @@ def loaders():
                #"handsonnetwork", 
                "unitedway", 
                "daytabank", 
-               "mentorpro", 
+               # need to contact feed provider 2011-11-16
+               #"mentorpro", 
                "aarp", 
                "americanredcross", 
                # need to contact feed provider 2011-11-12
