@@ -718,6 +718,8 @@ rows
     rows["title"] = footprint_lib.cleanse_snippet(rows["title"])
     rows["description"] = footprint_lib.cleanse_snippet(rows["description"])
     rows["c:detailURL:URL"] = rows["c:detailURL:URL"].replace("&amp;", '&'); 
+    if rows["c:detailURL:URL"].find('http') != 0:
+      rows["c:detailURL:URL"] = 'http://' + rows["c:detailURL:URL"]
 
     if check_links.is_bad_link(rows["c:detailURL:URL"]):
       if rows["c:detailURL:URL"]:
