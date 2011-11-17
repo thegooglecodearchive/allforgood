@@ -26,6 +26,8 @@ then
 		./notify_michael.sh download started 
 		./download.sh
 		./notify_michael.sh download complete 
+		# clear previous processing
+		rm -f *.transformed
 	fi
 
 	# clear list of duplicated opps
@@ -56,6 +58,17 @@ then
 	./notify_michael.sh pipeline uploading
 	if [ "$*" = "" ]
 	then
+		# clean out any who gave us no results
+                for FILE in `ls -1 current/*.transformed 2>/dev/null`
+		do
+			OFILE=`echo $FILE | sed s!current/!!`
+			if [ ! -s $OFILE ]
+			then
+                                ./notify_team.sh manually check $FILE
+				rm -f $FILE
+			fi
+		done
+
 		# evaluate processing results before uploading
                 for FILE in `ls -1 *.transformed`
                 do
@@ -80,6 +93,7 @@ then
 	else
 		for IT in $*
 		do
+        		./xmeetup.sh $IT
         		./upload.sh `ls -1 $IT*.transformed`
 		done
 	fi
@@ -99,5 +113,6 @@ then
 	./notify_michael.sh pipeline stopped
 else
 	echo -n "pipline lapped " ; date
+	cd $DIR
 	./notify_michael.sh pipeline lapped
 fi
