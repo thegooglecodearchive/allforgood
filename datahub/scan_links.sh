@@ -9,7 +9,7 @@ DIR=/home/footprint/allforgood-read-only/datahub
 ALL_TSV=$*
 if [ "$ALL_TSV" = "" ]
 then
-	$ALL_TSV="gspreadsheets1.transformed"
+	ALL_TSV=`ls -1 *.transformed`
 fi
 
 cd $DIR
