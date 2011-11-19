@@ -66,6 +66,9 @@ PRINTHEAD = False
 ABRIDGED = False
 OUTPUTFMT = "fpxml"
 
+DUPS = 0
+NOLOC = 0
+
 # set a nice long timeout
 import socket
 socket.setdefaulttimeout(600.0)
@@ -448,7 +451,6 @@ def output_tag_value_renamed(node, xmlname, newname):
   """macro for output_field( get node value ) then emitted as newname"""
   return output_field(newname, xmlh.get_tag_val(node, xmlname))
 
-DUPS = 0
 def duplicate_opp(opp, loc_str, startend):
   rtn = False
   title = get_title(opp).lower()
@@ -750,14 +752,20 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
                               given_county, given_state, given_zip, given_country)
         statewide = ''
         if given_state and country == 'US' and not given_address and not given_city and not given_zip:
-          #print given_state, ',', given_address , ',', given_city , ',', given_zip
           statewide = state
 
         nationwide = ''
-        if country and not given_address and not given_city and not given_zip and not given_state:
+        if given_country and not given_address and not given_city and not given_zip and not given_state:
           nationwide = country
 
         virtual = xmlh.get_tag_val(opploc, "virtual")
+        if not given_country and not given_address and not given_city and not given_zip and not given_state:
+          if virtual.lower() != 'yes':
+            global NOLOC
+            NOLOC += 1
+            #print_progress("location info missing from non-virtual opp")
+          virtual = 'Yes'
+
         loc_fields = get_loc_fields(virtual=virtual,
                                     latitude=str(float(lat) + 1000.0),
                                     longitude=str(float(lng) + 1000.0),
@@ -914,8 +922,8 @@ def convert_to_footprint_xml(instr, do_fastparse, maxrecs, progress):
 def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
   """non-trivial logic for converting FPXML to google base formatting."""
   # todo: maxrecs
-  global DUPS
-  DUPS = 0
+  global DUPS, NOLOC
+  DUPS = NOLOC = 0
 
   outstr = ""
   print_progress("convert_to_gbase_events_type...", "", progress)
@@ -1060,8 +1068,9 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       numopps, spiece = output_opportunity(opp, feedinfo, known_orgs, numopps)
       outstr += spiece
 
-  print_progress("duplicate(s): " + str(DUPS))
-  print_progress(" good opp(s): " + str(numopps))
+  print_progress("no location: " + str(NOLOC))
+  print_progress(" duplicates: " + str(DUPS))
+  print_progress("parsed opps: " + str(numopps))
 
   return outstr, len(known_orgs), numopps
 

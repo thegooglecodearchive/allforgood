@@ -691,7 +691,7 @@ rows
   csv_writer.writerow(fnamesdict)
   now = parser.parse(commands.getoutput("date"))
   today = now.date()
-  expired_by_end_date = 0
+  expired_by_end_date = bad_links = 0
   for rows in csv_reader:
     # The random salt is added to the result score during ranking to prevent
     # groups of near-identical results with identical scores from appearing
@@ -723,6 +723,7 @@ rows
 
     if check_links.is_bad_link(rows["c:detailURL:URL"]):
       if rows["c:detailURL:URL"]:
+        bad_links += 1
         print_progress("bad link: " + str(rows["c:detailURL:URL"]))
       continue
 
@@ -816,7 +817,8 @@ rows
     csv_writer.writerow(rows)
 
   data_file.close()
-  print_progress("expired by end date: %d" % expired_by_end_date)
+  print_progress("bad links: %d" % bad_links)
+  print_progress("  expired: %d" % expired_by_end_date)
   return out_filename
 
   

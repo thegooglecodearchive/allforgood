@@ -89,7 +89,8 @@ def check_link(url, recheck = False):
       try:
         connection.request('HEAD', url_d.path, urllib.urlencode(params), headers)
       except:
-        rtn = 'could not req response from %s, %s, %s' % (str(url_d.netloc), str(url_d.path), str(params))
+        socket.setdefaulttimeout(default_timeout)
+        return 'could not req response from %s, %s, %s' % (str(url_d.netloc), str(url_d.path), str(params))
 
     if connection:
       try:
