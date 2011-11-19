@@ -45,6 +45,7 @@ RESULT_CACHE_KEY = 'searchresult:'
 KEYWORD_GLOBAL = ""
 GEO_GLOBAL = ""
 STATEWIDE_GLOBAL = ""
+NATIONWIDE_GLOBAL = "US"
 PROVIDER_GLOBAL = ""
 FULL_QUERY_GLOBAL = ""
 DATE_QUERY_GLOBAL = ""
@@ -236,9 +237,9 @@ def form_solr_query(args):
     query_is_empty = True
 
   # geo params go in first
-  global KEYWORD_GLOBAL, STATEWIDE_GLOBAL
+  global KEYWORD_GLOBAL, STATEWIDE_GLOBAL, NATIONWIDE_GLOBAL
   KEYWORD_GLOBAL = urllib.quote_plus(solr_query)
-  STATEWIDE_GLOBAL = geocode.get_statewide(lat, lng)
+  STATEWIDE_GLOBAL, NATIONWIDE_GLOBAL = geocode.get_statewide(lat, lng)
   solr_query = geo_params + solr_query
   solr_query = urllib.quote_plus(solr_query)
   
@@ -248,7 +249,8 @@ def form_solr_query(args):
     if args[api.PARAM_TYPE] == "self_directed":
       solr_query += urllib.quote_plus(" AND self_directed:true")
     elif args[api.PARAM_TYPE] == "statewide":
-      solr_query += urllib.quote_plus(" AND statewide:" + STATEWIDE_GLOBAL + " AND micro:false AND self_directed:false")
+      solr_query += urllib.quote_plus(" AND (statewide:" + STATEWIDE_GLOBAL + " OR nationwide:" + NATIONWIDE_GLOBAL + ")"
+                    + " AND micro:false AND self_directed:false")
     elif args[api.PARAM_TYPE] == "virtual":
       solr_query += urllib.quote_plus(" AND virtual:true AND micro:false AND self_directed:false")
     elif args[api.PARAM_TYPE] == "micro":
@@ -846,9 +848,10 @@ def get_geo_counts():
 
 def get_type_counts():
   try:
-    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + 
-                 '&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.limit=100'
-                 '&facet.field=statewide&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0')
+    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
+              + '&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.limit=100' 
+              + '&facet.field=statewide&facet.field=nationwide'
+              + '&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0')
     logging.info("type: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -865,7 +868,16 @@ def get_type_counts():
     facet_fields = result["facet_counts"]["facet_fields"]
     facet_counts = dict()
     for k, v in facet_fields.iteritems():
-      if k == "statewide" and STATEWIDE_GLOBAL:
+      if k == "nationwide" and NATIONWIDE_GLOBAL:
+        facet_counts[k] = 0
+        for idx, st in enumerate(facet_fields["nationwide"]):
+          if st == NATIONWIDE_GLOBAL:
+            try:
+              facet_counts[k] = facet_fields["nationwide"][idx + 1]
+            except:
+              pass
+            break
+      elif k == "statewide" and STATEWIDE_GLOBAL:
         facet_counts[k] = 0
         for idx, st in enumerate(facet_fields["statewide"]):
           if st == STATEWIDE_GLOBAL:
@@ -883,6 +895,9 @@ def get_type_counts():
           facet_counts[k] = v[index + 1]
         else:
           facet_counts[k] = 0
+
+    if 'statewide' in facet_counts and 'nationwide' in facet_counts:
+      facet_counts['statewide'] += facet_counts['nationwide']
 
     #hack to remove micro counts because they were incorrectly tagged as virtual
     facet_counts["virtual"] -= facet_counts["micro"] 
