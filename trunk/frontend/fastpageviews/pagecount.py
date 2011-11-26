@@ -67,6 +67,8 @@ def GetPageCount(pagename):
 
 def IncrPageCount(pagename, delta):
   """ increment page count """
+  return
+
   logging.debug("pagecount.IncrPageCount(pagename='"+pagename+"')")
   memcache_id = KeyName(pagename)
   if memcache.get(memcache_id) == None:

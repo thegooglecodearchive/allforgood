@@ -24,7 +24,6 @@ import hashlib
 import logging
 
 from xml.sax.saxutils import escape
-from fastpageviews import pagecount
 
 import models
 import modelutils
@@ -62,7 +61,8 @@ class SearchResult(object):
   """class to hold the results of a search to the backend."""
   def __init__(self, url, title, snippet, location, item_id, base_url,
                volunteers_needed = 0, virtual = False, self_directed = False,
-               micro = False, categories = None, org_name = ''):
+               micro = False, categories = None, org_name = '', 
+               vetted = False, is_5013c = False):
     # TODO: HACK: workaround for issue 404-- broken servegov links
     # hack added here so the urlsig's come out correctly and the fix
     # applies everywhere including xml_url, API calls, etc.
@@ -83,6 +83,8 @@ class SearchResult(object):
     self.title = title
     self.snippet = snippet
     self.location = location
+    self.vetted = vetted
+    self.is_5013c = is_5013c
     self.item_id = item_id
     self.base_url = base_url
     self.virtual = virtual
@@ -231,19 +233,6 @@ class SearchResultSet(object):
     """clip to start/num using the unmerged (original) results."""
     return self.clip_set(start, num, self.results)
 
-
-  def track_views(self, num_to_incr=1):
-    """increment impression counts for items in the set."""
-    logging.debug(str(datetime.datetime.now())+" track_views: start")
-    for primary_res in self.clipped_results:
-      #logging.debug("track_views: key="+primary_res.merge_key)
-      primary_res.merged_impressions = pagecount.IncrPageCount(
-        pagecount.VIEWS_PREFIX+primary_res.merge_key, num_to_incr)
-      # TODO: for now (performance), only track merge_keys, not individual items
-      #primary_res.impressions = pagecount.IncrPageCount(primary_res.item_id, 1)
-      #for res in primary_res.merged_list:
-      #  res.impressions = pagecount.IncrPageCount(res.item_id, 1)
-    logging.debug(str(datetime.datetime.now())+" track_views: end")
 
   def dedup(self, merge_by_date_and_location):
     """modify in place, merged by title and snippet."""

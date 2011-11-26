@@ -21,7 +21,6 @@ from xml.dom.minidom import Document
 
 import template_helpers
 import api
-from fastpageviews import pagecount
 from templatetags.dateutils_tags import custom_date_format
 
 SEARCH_RESULTS_DEBUG_TEMPLATE = 'search_results_debug.html'
@@ -90,14 +89,7 @@ class DebugHtmlApiWriter(DjangoTemplateApiWriter):
     self.template = SEARCH_RESULTS_DEBUG_TEMPLATE
           
   def add_result(self, result):
-    """Add the per-result debug information."""
-    result.merged_clicks = pagecount.GetPageCount(
-      pagecount.CLICKS_PREFIX+result.merge_key)
-    if result.merged_impressions < 1.0:
-      result.merged_ctr = "0"
-    else:
-      result.merged_ctr = "%.2f" % (
-        100.0 * float(result.merged_clicks) / float(result.merged_impressions))
+    pass
       
 class JsonApiWriter(ApiWriter):
   """Outputs the search results as JSON."""
