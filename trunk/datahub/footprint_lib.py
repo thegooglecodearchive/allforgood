@@ -139,6 +139,8 @@ FIELDTYPES = {
   "self_directed":"boolean",
   "micro":"boolean",
 
+  "is_501c3":"string",
+
   "providerURL":"URL",
   "detailURL":"URL",
   "org_organizationURL":"URL",
@@ -509,17 +511,27 @@ def get_abstract(opp):
   return abstract[:MAX_ABSTRACT_LEN]
 
 
+def get_501c3_status(ein):
+  return ''
+
 def get_direct_mapped_fields(opp, org, feed_providerName):
   """map a field directly from FPXML to Google Base."""
   outstr = output_field("abstract", get_abstract(opp))
   if ABRIDGED:
     return outstr
+
   paid = xmlh.get_tag_val(opp, "paid")
   if (paid == "" or paid.lower()[0] != "y"):
     paid = "n"
   else:
     paid = "y"
   outstr += FIELDSEP + output_field("paid", paid)
+
+  is_501c3 = ""
+  ein = xmlh.get_tag_val(opp, "ein")
+  if ein:
+    is_501c3 = get_501c3_status(ein)
+  outstr += FIELDSEP + output_field("is_501c3", is_501c3)
 
   self_directed = xmlh.get_tag_val(opp, "self_directed")
   if (self_directed == "" or self_directed.lower()[0] != "y"):
@@ -763,8 +775,8 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
           if virtual.lower() != 'yes':
             global NOLOC
             NOLOC += 1
-            #print_progress("location info missing from non-virtual opp")
-          virtual = 'Yes'
+            print_progress("discarding non-virtual opp for missing location info")
+            return totrecs, ""
 
         loc_fields = get_loc_fields(virtual=virtual,
                                     latitude=str(float(lat) + 1000.0),
@@ -946,7 +958,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       'iCalRecurrence', 'language', 'latitude', 'lastUpdated', 'location',
       'locationType', 'locations', 'logoURL', 'longitude', 'minimumAge',
       'missionStatement', 'name', 'nationalEIN', 'openEnded',
-      'organizationID', 'organizationURL', 'paid', 'phone', 'postalCode',
+      'organizationID', 'organizationURL', 'paid', 'ein', 'phone', 'postalCode',
       'providerID', 'providerName', 'providerURL', 'region',
       'schemaVersion', 'self_directed', 'sexRestrictedEnum', 'sexRestrictedTo', 'skills',
       'sponsoringOrganizationID', 'startDate', 'startTime', 'streetAddress1',
