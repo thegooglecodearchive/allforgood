@@ -47,7 +47,6 @@ from google.appengine.ext.webapp import template
 
 from google.appengine.runtime import DeadlineExceededError
 
-from fastpageviews import pagecount
 from third_party.recaptcha.client import captcha
 
 import api
@@ -231,24 +230,6 @@ def deadline_exceeded(request_handler, fx_name):
   logging.error('views.%s exceeded deadline' % fx_name)
 
 
-class test_page_views_view(webapp.RequestHandler):
-  """testpage for pageviews counter."""
-  @expires(0)
-  def get(self):
-    """HTTP get method."""
-    try:
-      pagename = "testpage%s" % (self.request.get('pagename'))
-      pc = pagecount.IncrPageCount(pagename, 1)
-      template_values = pagecount.GetStats()
-      template_values["pagename"] = pagename
-      template_values["pageviews"] = pc
-
-      self.response.out.write(render_template(TEST_PAGEVIEWS_TEMPLATE,
-                                           template_values))
-    except DeadlineExceededError:
-      deadline_exceeded(self, "test_page_views_view")
-
-
 class home_page_view(webapp.RequestHandler):
   """ default homepage for consumer UI."""
   @expires(0)  # User specific. Maybe we should remove that so it's cacheable.
@@ -430,11 +411,9 @@ class search_view(webapp.RequestHandler):
 
         tplresult = render_template(SEARCH_RESULTS_MISSING_KEY_TEMPLATE, {})
         self.response.out.write(tplresult)
-        pagecount.IncrPageCount("key.missing", 1)
         return
 
 
-      pagecount.IncrPageCount("key.%s.searches" % unique_args[api.PARAM_KEY], 1)
       ga.track("API", "search", unique_args[api.PARAM_KEY])
 
       dumping = False
@@ -904,15 +883,6 @@ class redirect_view(webapp.RequestHandler):
     expected_sig = utils.signature(url+id)
     logging.debug('url: %s s: %s xs: %s' % (url, sig, expected_sig))
     if sig == expected_sig:
-      if id:
-        # note: testapi calls don't test clicks...
-        clicks = pagecount.IncrPageCount(pagecount.CLICKS_PREFIX + id, 1)
-        # note: clicks are relatively rare-- we can trivially afford the
-        # cost of CTR computation, and it helps development.
-        views = pagecount.GetPageCount(pagecount.VIEWS_PREFIX + id)
-        logging.debug("click: merge_key=%s  clicks=%d  views=%d  ctr=%.1f%%" %
-                      (id, clicks, views, float(clicks)/float(views+0.1)))
-
       # this is 301, permanent
       self.redirect(url, permanent=True)
 

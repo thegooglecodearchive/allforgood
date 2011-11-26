@@ -562,13 +562,21 @@ def query(query_url, args, cache, dumping = False):
     title = entry.get('title', '')
     location = entry.get('location_string', '')
 
-    cat = entry.get('categories', '')
-    if type(cat).__name__ != 'list':
+    categories = entry.get('categories', '')
+    if type(categories).__name__ != 'list':
       try:
-        cat = cat.split(',')
+        categories = categories.split(',')
       except:
-        cat = []
-    
+        categories = []
+
+    vetted = False
+    if 'Vetted' in categories:
+      vetted = True
+
+    is_5013c = False
+    if entry.get('is_5013c', ''):
+      is_5013c = True
+
     org_name = entry.get('org_name', '')
     if re.search(r'[^a-z]acorn[^a-z]', " "+org_name+" ", re.IGNORECASE):
       logging.debug('solr_search.query skipping: ACORN in org_name')
@@ -581,7 +589,8 @@ def query(query_url, args, cache, dumping = False):
     volunteers_needed = entry.get("volunteersneeded")
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
                                     base_url, volunteers_needed, virtual,
-                                    self_directed, micro, cat, org_name)
+                                    self_directed, micro, categories, org_name, 
+                                    vetted, is_5013c)
 
     # TODO: escape?
     res.provider = entry["feed_providername"]

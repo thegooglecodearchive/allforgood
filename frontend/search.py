@@ -27,7 +27,6 @@ from utils import safe_str, safe_int
 
 import api
 import geocode
-from fastpageviews import pagecount
 import solr_search
 import re
 
@@ -101,20 +100,6 @@ def search(args, dumping = False):
   result_set.clip_merged_results(start, num)
   logging.info("search.search clip_merged_results completed")
 
-  # TODO: for better results, we should segment CTR computation by
-  # homepage vs. search views, etc. -- but IMHO it's better to give
-  # up and outsource stats to a web-hosted service.
-  if 'key' in args and args['key'] == pagecount.TEST_API_KEY:
-    logging.debug("search(): not tracking testapi key views")
-    # needed to populate stats
-    result_set.track_views(num_to_incr=0)
-  else:
-    if not dumping:
-      result_set.track_views(num_to_incr=1)
-    else:
-      result_set.merged_impressions = 0
-
-  logging.info("search.search completed")
   return result_set
 
 def min_max(val, minval, maxval):
@@ -300,7 +285,6 @@ def fetch_and_dedup(args, dumping = False):
       result_set.merged_results[idx].merge_key = ''
       result_set.merged_results[idx].merged_list = []
       result_set.merged_results[idx].merged_debug = []
-      result_set.merged_results[idx].merged_impressions = 0
   else:
     merge_by_date_and_location = True
     if "key" in args:
