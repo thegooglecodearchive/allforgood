@@ -512,7 +512,12 @@ def get_abstract(opp):
 
 
 def get_501c3_status(ein):
-  return ''
+  """ a place holder until we get access to real data """
+  if not ein:
+    return ''
+  else:
+    return ein
+
 
 def get_direct_mapped_fields(opp, org, feed_providerName):
   """map a field directly from FPXML to Google Base."""
@@ -527,12 +532,6 @@ def get_direct_mapped_fields(opp, org, feed_providerName):
     paid = "y"
   outstr += FIELDSEP + output_field("paid", paid)
 
-  is_501c3 = ""
-  ein = xmlh.get_tag_val(opp, "ein")
-  if ein:
-    is_501c3 = get_501c3_status(ein)
-  outstr += FIELDSEP + output_field("is_501c3", is_501c3)
-
   self_directed = xmlh.get_tag_val(opp, "self_directed")
   if (self_directed == "" or self_directed.lower()[0] != "y"):
     self_directed = "False"
@@ -546,6 +545,9 @@ def get_direct_mapped_fields(opp, org, feed_providerName):
   else:
     micro = "True"
   outstr += FIELDSEP + output_field("micro", micro)
+
+  is_501c3 = get_501c3_status(xmlh.get_tag_val(opp, "nationalEIN"))
+  outstr += FIELDSEP + output_field("is_501c3", is_501c3)
 
   detailURL = xmlh.get_tag_val(opp, "detailURL")
   outstr += FIELDSEP + output_field("detailURL", detailURL)
@@ -958,7 +960,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       'iCalRecurrence', 'language', 'latitude', 'lastUpdated', 'location',
       'locationType', 'locations', 'logoURL', 'longitude', 'minimumAge',
       'missionStatement', 'name', 'nationalEIN', 'openEnded',
-      'organizationID', 'organizationURL', 'paid', 'ein', 'phone', 'postalCode',
+      'organizationID', 'organizationURL', 'paid', 'phone', 'postalCode',
       'providerID', 'providerName', 'providerURL', 'region',
       'schemaVersion', 'self_directed', 'sexRestrictedEnum', 'sexRestrictedTo', 'skills',
       'sponsoringOrganizationID', 'startDate', 'startTime', 'streetAddress1',
