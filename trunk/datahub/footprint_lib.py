@@ -513,10 +513,14 @@ def get_abstract(opp):
 
 def get_501c3_status(ein):
   """ a place holder until we get access to real data """
-  if not ein:
-    return ''
-  else:
-    return ein
+  rtn = 'False'
+  if ein:
+    match = re.search(r'(\b\d{2}-\d{7}\b)', ein)
+    if match:
+      print_progress('verify 501c3 status: ' + match.group(1))
+      rtn = 'True'
+
+  return rtn
 
 
 def get_direct_mapped_fields(opp, org, feed_providerName):
@@ -546,7 +550,10 @@ def get_direct_mapped_fields(opp, org, feed_providerName):
     micro = "True"
   outstr += FIELDSEP + output_field("micro", micro)
 
-  is_501c3 = get_501c3_status(xmlh.get_tag_val(opp, "nationalEIN"))
+  ein = xmlh.get_tag_val(opp, "nationalEIN")
+  outstr += FIELDSEP + output_field("org_nationalEIN", ein)
+
+  is_501c3 = get_501c3_status(ein)
   outstr += FIELDSEP + output_field("is_501c3", is_501c3)
 
   detailURL = xmlh.get_tag_val(opp, "detailURL")
@@ -1607,7 +1614,7 @@ def process_file(filename, options, providerName="", providerID="",
 
   print_progress("inputfmt: "+inputfmt)
   print_progress("outputfmt: "+options.outputfmt)
-  print_status("input data: "+str(len(instr))+" bytes", shortname)
+  print_progress("input data: "+str(len(instr))+" bytes", shortname)
 
   print_progress("parsing...")
   footprint_xmlstr, numorgs, numopps = \
