@@ -36,12 +36,3 @@ do
 		rm -f links/scan.lis.$$
 	fi
 done
-
-#for SUBDIR in links bad-links
-#do
-#	cd $DIR/$SUBDIR
-#	if [ $? -eq 0 ]
-#	then
-#		scp *.url $OTHER:`pwd`
-#	fi
-#done

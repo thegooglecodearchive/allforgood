@@ -28,6 +28,7 @@ then
 		./notify_michael.sh download complete 
 		# clear previous processing
 		rm -f *.transformed
+		cp gscouts/girlscouts1.transformed .
 	fi
 
 	# clear list of duplicated opps
