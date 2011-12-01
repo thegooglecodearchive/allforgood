@@ -55,6 +55,7 @@ from taggers import get_taggers, XMLRecord
 FIELDSEP = "\t"
 RECORDSEP = "\n"
 FED_DIR = 'fed/'
+EIN_DIR = 'ein/'
 # 7 days
 DEFAULT_EXPIRES = (7 * 86400)
 
@@ -63,11 +64,11 @@ MAX_ABSTRACT_LEN = 300
 DEBUG = False
 PROGRESS = False
 PRINTHEAD = False
-ABRIDGED = False
 OUTPUTFMT = "fpxml"
 
 DUPS = 0
 NOLOC = 0
+EIN501 = 0
 
 # set a nice long timeout
 import socket
@@ -99,6 +100,7 @@ SEARCHFIELDS = {
   "virtual":"boolean",
   "self_directed":"boolean",
   "micro":"boolean",
+  "is_501c3":"boolean",
   # needed for query by time-of-day
   "startTime":"integer",
   "endTime":"integer",
@@ -138,8 +140,7 @@ FIELDTYPES = {
   "virtual":"boolean",
   "self_directed":"boolean",
   "micro":"boolean",
-
-  "is_501c3":"string",
+  "is_501c3":"boolean",
 
   "providerURL":"URL",
   "detailURL":"URL",
@@ -268,10 +269,10 @@ def flatten_to_csv(nodelist):
   return ",".join(filter(lambda x: x != "",
                          map(flattener_value, nodelist)))
 
-def output_field(name, value):
+def output_field(name, given_value):
   """print a field value, handling long strings, header lines and
   custom datatypes."""
-  #global PRINTHEAD, DEBUG
+
   if PRINTHEAD:
     if name not in FIELDTYPES:
       print datetime.now(), "no type for field: " + name + FIELDTYPES[name]
@@ -283,6 +284,8 @@ def output_field(name, value):
     else:
       return name+":"+FIELDTYPES[name]
 
+  value = given_value
+
   # common fixup for URL fields
   if re.search(r'url', name, re.IGNORECASE):
     # common error in datafeeds: http:///
@@ -293,16 +296,19 @@ def output_field(name, value):
     # common error in datafeeds: http://http://
     value = re.sub(r'http://http://', 'http://', value)
 
-  # fix for Scott Stewart 
+  # fixes for Scott Stewart 
   if re.search(r'americorps\.org', value, re.IGNORECASE):
     value = re.sub(r'(?i)americorps\.org', 'americorps.gov', value)
     print_progress("replaced americorps")
+
   if re.search(r'learnandserve\.org', value, re.IGNORECASE):
     value = re.sub(r'(?i)learnandserve\.org', 'learnandserve.gov', value)
     print_progress("replaced learnandserve")
+
   if re.search(r'seniorcorps\.org', value, re.IGNORECASE):
     value = re.sub(r'(?i)seniorcorps\.org', 'seniorcorps.gov', value)
     print_progress("replaced seniorcorps")
+
   if (not re.search(r'musicnationalservice\.org', value, re.IGNORECASE)
       and re.search(r'nationalservice\.org', value, re.IGNORECASE)):
     value = re.sub(r'(?i)nationalservice\.org', 'nationalservice.gov', value)
@@ -311,12 +317,9 @@ def output_field(name, value):
   if OUTPUTFMT == "basetsv":
     value = re.sub(r',', ';;', value)
 
-  if DEBUG:
-    if (len(value) > 70):
-      value = value[0:67] + "... (" + str(len(value)) + " bytes)"
-    return name.rjust(22) + " : " + value
   if (FIELDTYPES[name] == "dateTime"):
     return convert_dt_to_gbase(value, "", "UTC")
+
   return value
 
 
@@ -515,10 +518,14 @@ def get_501c3_status(ein):
   """ a place holder until we get access to real data """
   rtn = 'False'
   if ein:
-    match = re.search(r'(\b\d{2}-\d{7}\b)', ein)
+    match = re.search(r'(\b\d{2}-?\d{7}\b)', ein)
     if match:
-      print_progress('verify 501c3 status: ' + match.group(1))
-      rtn = 'True'
+      ein9 = match.group(1).replace('-', '')
+      if os.path.isfile(EIN_DIR + ein9):
+        #print_progress('501(c)3: ' + ein9)
+        global EIN501
+        EIN501 += 1
+        rtn = 'True'
 
   return rtn
 
@@ -526,8 +533,6 @@ def get_501c3_status(ein):
 def get_direct_mapped_fields(opp, org, feed_providerName):
   """map a field directly from FPXML to Google Base."""
   outstr = output_field("abstract", get_abstract(opp))
-  if ABRIDGED:
-    return outstr
 
   paid = xmlh.get_tag_val(opp, "paid")
   if (paid == "" or paid.lower()[0] != "y"):
@@ -550,12 +555,6 @@ def get_direct_mapped_fields(opp, org, feed_providerName):
     micro = "True"
   outstr += FIELDSEP + output_field("micro", micro)
 
-  ein = xmlh.get_tag_val(opp, "nationalEIN")
-  outstr += FIELDSEP + output_field("org_nationalEIN", ein)
-
-  is_501c3 = get_501c3_status(ein)
-  outstr += FIELDSEP + output_field("is_501c3", is_501c3)
-
   detailURL = xmlh.get_tag_val(opp, "detailURL")
   outstr += FIELDSEP + output_field("detailURL", detailURL)
 
@@ -572,7 +571,12 @@ def get_direct_mapped_fields(opp, org, feed_providerName):
 
   for field in ORGANIZATION_FIELDS:
     outstr += FIELDSEP + output_field("org_"+field,
-                                      xmlh.get_tag_val(org, field))
+                                       xmlh.get_tag_val(org, field))
+    if field == 'nationalEIN':
+      ein = xmlh.get_tag_val(org, field)
+      is_501c3 = get_501c3_status(ein)
+      outstr += FIELDSEP + output_field("is_501c3", is_501c3)
+
   for field in CSV_REPEATED_FIELDS:
     outstr += FIELDSEP
     fieldval = opp.getElementsByTagName(field)
@@ -605,8 +609,6 @@ def get_base_other_fields(opp, org):
   feeds.  Since we're talking about a small overlap, these fields are
   populated *as well as* direct mapping of the footprint XML fields."""
   outstr = output_field("employer", xmlh.get_tag_val(org, "name"))
-  if ABRIDGED:
-    return outstr
   outstr += FIELDSEP + output_field("quantity",
                          xmlh.get_tag_val(opp, "volunteersNeeded"))
   outstr += FIELDSEP + output_field("image_link",
@@ -662,7 +664,6 @@ def get_event_reqd_fields(opp):
   used by the FP app."""
   outstr = get_title(opp)
   outstr += FIELDSEP + output_tag_value(opp, "description")
-  #outstr += FIELDSEP + output_field("link", BASE_PUB_URL)
   return outstr
 
 def get_feed_fields(feedinfo):
@@ -671,8 +672,6 @@ def get_feed_fields(feedinfo):
                                     "providerName", "feed_providerName")
   outstr = feed_providerName
 
-  if ABRIDGED:
-    return outstr, feed_providerName
   outstr += FIELDSEP + output_tag_value(feedinfo, "feedID")
   outstr += FIELDSEP + output_tag_value_renamed(
     feedinfo, "providerID", "feed_providerID")
@@ -683,6 +682,7 @@ def get_feed_fields(feedinfo):
   outstr += FIELDSEP + output_tag_value_renamed(
     feedinfo, "createdDateTime", "feed_createdDateTime")
   return outstr, feed_providerName
+
 
 def output_opportunity(opp, feedinfo, known_orgs, totrecs):
   """main function for outputting a complete opportunity."""
@@ -784,7 +784,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
           if virtual.lower() != 'yes':
             global NOLOC
             NOLOC += 1
-            print_progress("discarding non-virtual opp for missing location info")
+            #print_progress("discarding non-virtual opp for missing location info")
             return totrecs, ""
 
         loc_fields = get_loc_fields(virtual=virtual,
@@ -850,9 +850,6 @@ def get_time_fields(openended, duration, hrs_per_week, event_date_range, ical_re
   time_fields += FIELDSEP + output_field("endTime", endstr)
   time_fields += FIELDSEP + output_field("ical_recurrence", ical_recurrence)
 
-  if ABRIDGED:
-    return time_fields
-
   time_fields += FIELDSEP + output_field("openended", openended_bool)
   time_fields += FIELDSEP + output_field("duration", duration)
   time_fields += FIELDSEP + output_field("commitmentHoursPerWeek", hrs_per_week)
@@ -906,9 +903,7 @@ def get_loc_fields(virtual, location="", latitude="", longitude="", location_str
 def get_repeated_fields(feedinfo, opp, org):
   """output all fields that are repeated for each time and location."""
   rsp, feed_providerName = get_feed_fields(feedinfo)
-  #repeated_fields = FIELDSEP + get_feed_fields(feedinfo)
   repeated_fields = FIELDSEP + rsp
-  
   repeated_fields += FIELDSEP + get_event_reqd_fields(opp)
   repeated_fields += FIELDSEP + get_base_other_fields(opp, org)
   repeated_fields += FIELDSEP + get_direct_mapped_fields(opp, org, feed_providerName)
@@ -943,11 +938,11 @@ def convert_to_footprint_xml(instr, do_fastparse, maxrecs, progress):
 def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
   """non-trivial logic for converting FPXML to google base formatting."""
   # todo: maxrecs
-  global DUPS, NOLOC
-  DUPS = NOLOC = 0
+  global DUPS, NOLOC, EIN501
+  DUPS = NOLOC = EIN501 = 0
 
   outstr = ""
-  print_progress("convert_to_gbase_events_type...", "", progress)
+  #print_progress("convert_to_gbase_events_type...", "", progress)
   if not instr:
     return '', 0, 0
 
@@ -980,7 +975,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
     feedinfo = None
     for match in re.finditer(re.compile('<FeedInfo>.+?</FeedInfo>',
                                         re.DOTALL), instr):
-      print_progress("found FeedInfo.", progress=progress)
+      #print_progress("found FeedInfo.", progress=progress)
       feedinfo = xmlh.simple_parser(match.group(0), known_elnames, False)
 
     if not feedinfo:
@@ -1062,12 +1057,11 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
         break
       
     for tag, tag_count in tag_count_dict.iteritems():
-      print "tagged %s: %d" % (tag, tag_count)
+      print_progress("tagged %s: %d" % (tag, tag_count))
 
     outstr += "".join(oppslist_output)
   else:
     # not fastparse
-
     footprint_xml = parse_footprint.parse(instr, maxrecs, progress)    
     feedinfos = footprint_xml.getElementsByTagName("FeedInfo")
     if (feedinfos.length != 1):
@@ -1091,6 +1085,7 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
 
   print_progress("no location: " + str(NOLOC))
   print_progress(" duplicates: " + str(DUPS))
+  print_progress("    501(c)3: " + str(EIN501))
   print_progress("parsed opps: " + str(numopps))
 
   return outstr, len(known_orgs), numopps
@@ -1441,7 +1436,9 @@ def clean_input_string(instr):
   """run various cleanups for low-level encoding issues."""
   def cleaning_progress(msg):
     """macro"""
-    print_progress(msg+": "+str(len(instr))+" bytes.")
+    if DEBUG:
+      print_progress(msg+": "+str(len(instr))+" bytes.")
+
   cleaning_progress("read file")
   instr = re.sub(r'\r\n?', "\n", instr)
   cleaning_progress("filtered DOS newlines")
@@ -1459,7 +1456,7 @@ def clean_input_string(instr):
 
 def parse_options():
   """parse cmdline options"""
-  global DEBUG, PROGRESS, FIELDSEP, RECORDSEP, ABRIDGED, OUTPUTFMT
+  global DEBUG, PROGRESS, FIELDSEP, RECORDSEP, OUTPUTFMT
   parser = OptionParser("usage: %prog [options] sample_data.xml ...")
   parser.set_defaults(geocode_debug=False)
   parser.set_defaults(debug=False)
@@ -1507,8 +1504,6 @@ def parse_options():
     PROGRESS = True
     geocoder.SHOW_PROGRESS = True
     FIELDSEP = "\n"
-  if (options.abridged):
-    ABRIDGED = True
   if (options.geocode_debug):
     geocoder.GEOCODE_DEBUG = True
   if options.test:
@@ -1605,15 +1600,15 @@ def process_file(filename, options, providerName="", providerID="",
 
   # remove bad encodings etc.
   if options.clean:
-    print_progress("cleaning input.")
+    #print_progress("cleaning input.")
     instr = clean_input_string(instr)
 
   # split nasty XML inputs, to help isolate problems
   if options.debug_input:
     instr = re.sub(r'><', r'>\n<', instr)
 
-  print_progress("inputfmt: "+inputfmt)
-  print_progress("outputfmt: "+options.outputfmt)
+  #print_progress("inputfmt: "+inputfmt)
+  #print_progress("outputfmt: "+options.outputfmt)
   print_progress("input data: "+str(len(instr))+" bytes", shortname)
 
   print_progress("parsing...")
