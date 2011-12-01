@@ -62,7 +62,7 @@ class SearchResult(object):
   def __init__(self, url, title, snippet, location, item_id, base_url,
                volunteers_needed = 0, virtual = False, self_directed = False,
                micro = False, categories = None, org_name = '', 
-               vetted = False, is_5013c = False):
+               vetted = False, is_501c3 = False):
     # TODO: HACK: workaround for issue 404-- broken servegov links
     # hack added here so the urlsig's come out correctly and the fix
     # applies everywhere including xml_url, API calls, etc.
@@ -84,7 +84,7 @@ class SearchResult(object):
     self.snippet = snippet
     self.location = location
     self.vetted = vetted
-    self.is_5013c = is_5013c
+    self.is_501c3 = is_501c3
     self.item_id = item_id
     self.base_url = base_url
     self.virtual = virtual

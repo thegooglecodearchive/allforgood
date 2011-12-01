@@ -9,12 +9,6 @@
   {% for result in result_set.clipped_results %}    
 <li class="{% if forloop.counter0 == 0 %}first{% endif %} result-{{ forloop.counter1 }}">
 <h4 {% if forloop.counter0 == 0 %} style="width:480px"{% endif %}>
-    {% if result.vetted %} 
-<span class="marker-vetted"></span>
-    {% endif %}
-    {% if result.is_5013c %} 
-<span class="marker-5013c"></span>
-    {% endif %}
     {% if result.latlong %}
 	<img style="position:relative;left:-5px;top:8px;" src='http://www.google.com/mapfiles/marker_midblue{{ forloop.counter0|as_letter }}.png' />
 	<script type='text/javascript'>
@@ -24,6 +18,17 @@
     	});
 	</script>
     {% endif %}
+<div style="display:inline-block;line-height:12px;">
+    {% if result.vetted %} 
+<div class="marker-vetted"> Vetted</div>
+    {% endif %}
+    {% if result.vetted and result.is_501c3 %} 
+<br/>
+    {% endif %}
+    {% if result.is_501c3 %} 
+<div class="marker-501c3"> 501(c)3</div>
+    {% endif %}
+</div>
 
 <a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title }}</a></h4>
      {% if result.location or result.startdate %}

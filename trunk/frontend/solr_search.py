@@ -573,9 +573,9 @@ def query(query_url, args, cache, dumping = False):
     if 'Vetted' in categories:
       vetted = True
 
-    is_5013c = False
-    if entry.get('is_5013c', ''):
-      is_5013c = True
+    is_501c3 = False
+    if entry.get('is_501c3', ''):
+      is_501c3 = True
 
     org_name = entry.get('org_name', '')
     if re.search(r'[^a-z]acorn[^a-z]', " "+org_name+" ", re.IGNORECASE):
@@ -590,7 +590,7 @@ def query(query_url, args, cache, dumping = False):
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
                                     base_url, volunteers_needed, virtual,
                                     self_directed, micro, categories, org_name, 
-                                    vetted, is_5013c)
+                                    vetted, is_501c3)
 
     # TODO: escape?
     res.provider = entry["feed_providername"]
