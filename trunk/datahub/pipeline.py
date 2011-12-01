@@ -431,7 +431,7 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
     if retcode and retcode != 0:
       print name+":RETCODE: "+str(retcode)
 
-  print "reading TSV data..."
+  print_progress("reading TSV data...")
 
   try:
     gzip_fh = gzip.open(tsv_filename, 'r')
@@ -472,7 +472,8 @@ def loaders():
   for name in [
                "handsonnetworkconnect", 
                "handsonnetwork1800", 
-               "handsonnetworktechnologies", 
+               # 12/1 moved to handsonconnect
+               #"handsonnetworktechnologies", 
                # can stop processing legacy HON feed 10/12/2011
                #"handsonnetwork", 
                "unitedway", 
