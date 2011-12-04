@@ -18,15 +18,15 @@
     	});
 	</script>
     {% endif %}
-<div style="display:inline-block;line-height:12px;">
+<div style="position:relative;left:-3px;display:inline-block;line-height:12px;text-align:center;">
     {% if result.vetted %} 
-<div class="marker-vetted"> Vetted</div>
+<a class="tip" href="javascript:return false;" title="About vetted..."><div class="marker-vetted">Vetted</div></a>
     {% endif %}
     {% if result.vetted and result.is_501c3 %} 
 <br/>
     {% endif %}
     {% if result.is_501c3 %} 
-<div class="marker-501c3"> 501(c)3</div>
+<a class="tip" href="javascript:return false;" title="About 501(c)3..."><div class="marker-501c3">501(c)3</div></a>
     {% endif %}
 </div>
 

@@ -57,6 +57,11 @@
 <!--#wrapper-->
 <div id="wrapper">
 {% include 'content_header.html' %}
+{% if is_report %}
+<div id="report-header">
+NOTE: This is a report view displaying opportunity counts from the entire index.
+</div>
+{% endif %}
 {% block subheader %}{% endblock %}
     <!--#main-->
     <div id="main" class="clearfix search-results">
@@ -100,6 +105,16 @@
 <link type="text/css" href="/js/jqueryui/jquery-ui-1.8.10.custom.css" rel="stylesheet" />	
 <script type="text/javascript">
   loadGA();
+{% if is_report %}
+  var it = document.getElementById('map');
+  if (it) {
+    it.style.display = 'none';
+  }
+  var it = document.getElementById('location_distance_date');
+  if (it) {
+    it.style.display = 'none';
+  }
+{% endif %}
 </script>
 </body>
 {% endblock %}

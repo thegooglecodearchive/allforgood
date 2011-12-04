@@ -193,8 +193,10 @@ def form_solr_query(args):
 
   global GEO_GLOBAL
   GEO_GLOBAL = urllib.quote_plus(geo_params)
-  if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
-      geo_params = ""       
+  if args['is_report'] or (api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all"):
+    geo_params = ""       
+    if args['is_report']:
+      GEO_GLOBAL = ''
 
   # Running our keyword through our categories dictionary to see if we need to adjust our keyword param   
   if api.PARAM_CATEGORY in args:
@@ -256,9 +258,11 @@ def form_solr_query(args):
     elif args[api.PARAM_TYPE] == "micro":
       solr_query += urllib.quote_plus(" AND micro:true")
   else:
-      solr_query += "&fq=self_directed:false+AND+virtual:false+AND+micro:false"
+    solr_query += '&fq='
+    solr_query += urllib.quote('self_directed:false AND virtual:false AND micro:false')
+    solr_query += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
   global FULL_QUERY_GLOBAL
-  FULL_QUERY_GLOBAL =  solr_query
+  FULL_QUERY_GLOBAL = solr_query
     
   # Source
   global PROVIDER_GLOBAL
@@ -361,9 +365,12 @@ def search(args, dumping = False):
     return valid_query
 
   if api.PARAM_SOLR_PATH in args and args[api.PARAM_SOLR_PATH]:
-    solr_query = form_solr_query(args, args[api.PARAM_SOLR_PATH])
-  else:
-    solr_query = form_solr_query(args)
+    args[api.PARAM_BACKEND_URL] = args[api.PARAM_SOLR_PATH]
+
+  if not 'is_report' in args:
+    args['is_report'] = False
+
+  solr_query = form_solr_query(args)
 
   query_url = args[api.PARAM_BACKEND_URL]
   if query_url.find("?") < 0:
@@ -508,11 +515,10 @@ def query(query_url, args, cache, dumping = False):
   result_content = re.sub(r';;', ',', result_content)
   result = simplejson.loads(result_content)
   
-  #facet_counts
   all_facets = get_geo_counts()
   if "facet_counts" in all_facets:    
     facet_counts = dict()    
-    facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false"])
+    facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false AND -statewide:[* TO *] AND -nationwide:[* TO *]"])
     facet_counts.update(get_type_counts())    
     count = 0;
     if api.PARAM_TYPE in args:
@@ -603,6 +609,11 @@ def query(query_url, args, cache, dumping = False):
     res.orig_idx = i+1
     res.latlong = ""
     if latstr and longstr and latstr != "" and longstr != "":
+      res.latlong = str(latstr) + "," + str(longstr)
+
+    """
+    # this is really not needed as we rely on solr !spatial now
+    if latstr and longstr and latstr != "" and longstr != "":
       if ( not dumping and
            api.PARAM_VOL_DIST in args and args[api.PARAM_VOL_DIST] != "" and
            api.PARAM_LAT in args and args[api.PARAM_LAT] != "" and
@@ -631,6 +642,7 @@ def query(query_url, args, cache, dumping = False):
     if not dumping and "geocode_responses" in args:
       res.latlong = geocode.geocode(location,
             args["geocode_responses"]!="nocache" )
+    """
 
     # res.event_date_range follows one of these two formats:
     #     <start_date>T<start_time> <end_date>T<end_time>
@@ -834,9 +846,11 @@ def get_facet_counts():
 
 def get_geo_counts():
   try:
-    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + 
-                 '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL + 
-                 '&facet=on&facet.mincount=1&facet.query=self_directed:false+AND+virtual:false+AND+micro:false&rows=0')
+    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
+                + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
+                + '&facet=on&facet.mincount=1&facet.query='
+                + 'self_directed:false+AND+virtual:false+AND+micro:false+AND+-statewide:[*+TO+*]+AND+-nationwide:[*+TO+*]'
+                + '&rows=0')
     logging.info("all: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
