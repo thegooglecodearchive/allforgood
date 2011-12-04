@@ -326,73 +326,15 @@ class consumer_ui_search_view(webapp.RequestHandler):
       template_values['template'] = 'serp.html'
       template_values['is_main_page'] = True
       template_values['private_keys'] = private_keys
-      #self.handle_sponsored(template_values)
+
+      template_values['is_report'] = False
+      if self.request.url.find('/report') >= 0:
+        template_values['is_report'] = True
+
       self.response.out.write(render_template(SEARCH_RESULTS_TEMPLATE,
                                            template_values))
     except DeadlineExceededError:
       deadline_exceeded(self, "static_content")
-
-  def handle_sponsored(self, template_values):
-    #temp hack, need to find best way to pass campaign_id
-    campaign_id = template_values.get('campaign_id', None)
-    if campaign_id:
-      try:
-        logging.debug('Campaign ID is %s' % campaign_id)
-        template_values['campaign_id'] = campaign_id
-        import gdata
-        import gdata.service
-        import gdata.spreadsheet
-        import gdata.spreadsheet.service
-        import gdata.alt
-        import gdata.alt.appengine
-        query = gdata.spreadsheet.service.DocumentQuery()
-        # We use the structured query option to get back a minimal
-        # result set.  This is preferable to getting the whole sheet
-        # and parsing on our end.
-        # NOTE: GData API strips whitespace (including underscores) from
-        # column names.  So the column 'campaign_id' is actually 'campaignid'
-        # when using the GData API.
-        query['sq'] = 'campaignid==%s' % (campaign_id)
-        gd_client = gdata.spreadsheet.service.SpreadsheetsService()
-        gdata.alt.appengine.run_on_appengine(gd_client, store_tokens=False,
-                                             single_user_mode=True)
-        gd_client.email = private_keys.AFG_GOOGLE_DOCS_LOGIN['username']
-        gd_client.password = private_keys.AFG_GOOGLE_DOCS_LOGIN['password']
-        gd_client.source = CAMPAIGN_SPREADSHEET.NAME
-        gd_client.ProgrammaticLogin()
-        rows = gd_client.GetListFeed(
-          key= CAMPAIGN_SPREADSHEET.KEY,
-          # wksht_id is the 1s based index of which sheet to use
-          wksht_id = '1',
-          query = query )
-        # make sure we get some results
-        if rows and len(rows.entry):
-          row = rows.entry[0]
-          content_type = row.custom['contenttype'].text
-          content_data = row.custom['contentdata'].text
-          content_target = row.custom['contenttarget'].text
-          content_action = row.custom['contentcalltoaction'].text
-          if content_type and content_data:
-            template_values['campaign_branding_type'] = content_type
-            template_values['campaign_branding_source'] = content_data
-            if content_target:
-              template_values['campaign_branding_target'] = content_target
-              template_values['campaign_branding_target_sig'] = utils.signature(
-                content_target + campaign_id
-              )
-            if content_action:
-              #TODO: replace any external links with redirect links
-              template_values['campaign_branding_action'] = content_action
-            return True
-      except:
-        # log the exception, but continue normally
-        import traceback
-        tb = traceback.format_exc()
-        logging.error('views.handle_sponsored campaign: ' + str(tb))
-
-    if template_values.has_key('campaign_id'):
-      del template_values['campaign_id']
-    return False
 
 
 class search_view(webapp.RequestHandler):
@@ -412,7 +354,6 @@ class search_view(webapp.RequestHandler):
         tplresult = render_template(SEARCH_RESULTS_MISSING_KEY_TEMPLATE, {})
         self.response.out.write(tplresult)
         return
-
 
       ga.track("API", "search", unique_args[api.PARAM_KEY])
 
@@ -492,6 +433,12 @@ class ui_snippets_view(webapp.RequestHandler):
           for kf in private_keys.KEYED_REFERRERS:
             if unique_args[api.PARAM_REFERRER].lower().find(kf['id']) >= 0:
               unique_args[api.PARAM_KEY] = kf['key']
+
+      unique_args['is_report'] = False
+      for line in str(self.request).split('\n'):
+        if line.find('Referer:') >= 0 and line.find('/report') >= 0:
+          unique_args['is_report'] = True
+          break
 
       result_set = search.search(unique_args)
       result_set.request_url = self.request.url
@@ -626,6 +573,7 @@ class ui_my_snippets_view(webapp.RequestHandler):
                                             template_values))
     except DeadlineExceededError:
       deadline_exceeded(self, "ui_my_snippets_view")
+
 
 class my_events_view(webapp.RequestHandler):
   """Shows events that you and your friends like or are doing."""
