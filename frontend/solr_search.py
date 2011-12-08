@@ -225,18 +225,19 @@ def form_solr_query(args):
     # a category in &q means expand to specific terms as opposed to the
     # the solr field 'category' which atm may only be 'vetted'
     args[api.PARAM_Q] = apply_category_query(args[api.PARAM_Q])
-    
     if api.PARAM_CATEGORY in args:        
       args[api.PARAM_Q] += (" AND " + args[api.PARAM_CATEGORY])
 
-    solr_query += rewrite_query('*:* AND ' +  args[api.PARAM_Q], api_key)
-
+    solr_query += rewrite_query('*:* AND ' + args[api.PARAM_Q], api_key)
+    ga.track("API", args.get(api.PARAM_KEY, 'UI'), args[api.PARAM_Q])
   elif api.PARAM_CATEGORY in args:
-      solr_query += rewrite_query('*:* AND ' +  args[api.PARAM_CATEGORY], api_key)
+    solr_query += rewrite_query('*:* AND ' + args[api.PARAM_CATEGORY], api_key)
+    ga.track("API", args.get(api.PARAM_KEY, 'UI'), args[api.PARAM_CATEGORY])
   else:
     # Query is empty, search for anything at all.
-    solr_query += rewrite_query('*:*', api_key)
     query_is_empty = True
+    solr_query += rewrite_query('*:*', api_key)
+    ga.track("API", args.get(api.PARAM_KEY, 'UI'), '*:*')
 
   # geo params go in first
   global KEYWORD_GLOBAL, STATEWIDE_GLOBAL, NATIONWIDE_GLOBAL
