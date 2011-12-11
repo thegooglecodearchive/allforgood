@@ -29,6 +29,9 @@ def is_bad_link(url):
   rtn = False
   if not url or os.path.isfile(DIR_BAD + get_link_file_name(url)):
     rtn = True
+  else:
+    if url.lower().find('http://localhost') >= 0:
+      rtn = True
 
   return rtn
 

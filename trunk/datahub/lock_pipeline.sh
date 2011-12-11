@@ -31,6 +31,11 @@ then
 		cp gscouts/girlscouts1.transformed .
 	fi
 
+	if [ ! -d feeds ]
+	then
+		mkdir feeds
+	fi
+
 	# clear list of duplicated opps
 	rm -fr dups; mkdir dups
 	if [ $? -ne 0 ]
@@ -52,6 +57,7 @@ then
         if [ $? -ne 0 ]
         then
                 ./notify_michael.sh pipeline FAIL
+                ./notify_dan.sh pipeline FAIL
                 exit 1
         fi
 
@@ -66,6 +72,7 @@ then
 			if [ ! -s $OFILE ]
 			then
                                 ./notify_team.sh manually check $FILE
+                                echo manually check $FILE
 				rm -f $FILE
 			fi
 		done
@@ -85,6 +92,7 @@ then
                                 if [ $RATIO -lt 70 ]
                                 then
                                         ./notify_team.sh manually check $FILE
+                                	echo manually check $FILE
                                 fi
                                 cp $FILE $CFILE
                         fi
@@ -111,9 +119,14 @@ then
         # update the pipeline_common.js
 	./common.py
 
+	# feed dashboards
+	./make_feed_js.py
+
+	./notify_dan.sh pipeline stopped
 	./notify_michael.sh pipeline stopped
 else
 	echo -n "pipline lapped " ; date
 	cd $DIR
+	./notify_dan.sh pipeline lapped
 	./notify_michael.sh pipeline lapped
 fi
