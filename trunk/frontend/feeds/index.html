@@ -1,0 +1,434 @@
+<head>
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<style>
+BODY {font-family:Arial;background:url(/images/body-bg.png) repeat-x scroll 0 0 #0281D1;}
+H1 {display:inline;padding:0;margin:0;color:#333333;}
+H2 {font-family:Droid Sans Mono,mono;padding:0;margin:0;color:#111111;}
+#logo {cursor:pointer;}
+#feed_provider {position:relative;left:-160px;}
+#bar {position:relative;background-color:#f3f3f3;height:48px;text-align:left;z-index:1;
+  background-image:url(knurl-background.png);}
+
+.drag {position:relative;cursor:pointer;background-color:#ccccff;z-index:2;
+       filter:alpha(opacity=0);opacity:0;-moz-opacity:0;}
+#needle {position:absolute;width:32px;height:435px;z-index:0;background-color:transparent;z-index:1;}
+#needle-img {filter:alpha(opacity=40);opacity:0.4;-moz-opacity:0.4;}
+#wrapper {padding-left:200px;margin-left:200px;margin-top:18px;padding-top:8px;width:800px;background-color:#ffffff;}
+
+.title {padding:4px;}
+.graph {display:inline-block;margin-left:16px;margin-right:16px;background-color:#ffffdd;}
+.value {padding:4px;}
+.title-cell {width:100px;height:32px;overflow:hidden;text-align:right;}
+.graph-cell {width:600px;background-color:#f0f0f0;}
+.value-cell {width:100px;overflow:hidden;text-align:left;font-size:13px;}
+.spacer-cell {height:12px;}
+</style>
+<script>
+// processed, elapsed, bytes, numorgs, numopps, expired, bad_links, noloc, dups, ein501c3
+var GX = 568;
+
+var arGraphs = new Array(
+  new Array('processing-graph', 1, '333333', ' mins', 1),
+  new Array('feed-size-graph', 2, '666666', ' Kb', 0.001),
+
+  new Array('orgs-graph', 3, 'cc00cc', '', 1),
+  new Array('opps-graph', 4, '0000ff', '', 1),
+
+  new Array('expired-graph', 5, 'FF9900', '', 1),
+  new Array('bad-links-graph', 6, 'ff0000', '', 1),
+  new Array('noloc-graph', 7, '6666ff', '', 1),
+  new Array('dups-graph', 8, '6666ff', '', 1),
+
+  new Array('ein501c3-graph', 9, '6666ff', '', 1),
+null);
+
+var _startX = 0; // mouse starting positions 
+var _startY = 0; 
+
+var _offsetX = 0; // current element offset 
+var _offsetY = 0; 
+var _dragElement; // needs to be passed from onMouseDown to onMouseMove 
+var _oldZIndex = 0; // we temporarily increase the z-index during drag 
+
+var _minX = 0;
+var _maxX = 0;
+
+function getArgs() {
+  var paramString = window.location.search.substring(1);
+  var params = {};
+  var pairs = paramString.split('&');
+  for (var i = 0; i < pairs.length; i++) {
+    var p = pairs[i].split('=');
+    var paramval = '';
+    var decodedName = decodeURIComponent(p[0]);
+    if (decodedName.length > 0) {
+      if (p.length > 1) {
+        paramval = decodeURIComponent(p[1]);
+      }
+      params[decodedName] = paramval;
+    }
+  }
+  return params;
+}
+
+function _gel(id) {
+  return document.getElementById(id);
+}
+
+function getElementPosition(obj) {
+  var curleft = curtop = 0;
+  if (obj && obj.offsetParent) {
+    do {
+      curleft += obj.offsetLeft;
+      curtop += obj.offsetTop;
+    } while (obj = obj.offsetParent);
+  }
+  return {x:curleft, y:curtop};
+}
+
+function ExtractNumber(value) { 
+  var n = parseInt(value); 
+  return n == null || isNaN(n) ? 0 : n; 
+}
+
+function onMouseUp(e) { 
+  if (_dragElement != null) { 
+    _dragElement.style.zIndex = _oldZIndex; 
+    document.onmousemove = null; 
+    document.onselectstart = null; 
+    _dragElement.ondragstart = null; 
+    _dragElement = null; 
+  } 
+}
+
+function UTC2Local(ts) {
+  var rtn = ts;
+  try {
+    // var someDate = new Date(yyyy,base_zero_mon,d,hh,mn,sec,msec);
+    var dts = ts.split(' ');
+    var ymd = dts[0].split('-');
+    var hms = dts[1].split(':');
+    var utc = new Date(ymd[0], ymd[1] - 1, ymd[2], hms[0], hms[1], hms[2], 0);
+    var utc_epoch = utc.getTime(); // msecs
+
+    var local = new Date();
+    var tzo_mins = local.getTimezoneOffset();
+    utc_epoch -= 1000 * (60 * tzo_mins);
+
+    rtn = new Date(utc_epoch);
+  } catch(err) {
+  }
+  if (rtn == 'Invalid Date') {
+    rtn = ts;
+  }
+
+  return rtn;
+}
+
+function addCommas(nStr) {
+  nStr += '';
+  x = nStr.split('.');
+  x1 = x[0];
+  x2 = x.length > 1 ? '.' + x[1] : '';
+  var rgx = /(\d+)(\d{3})/;
+  while (rgx.test(x1)) {
+    x1 = x1.replace(rgx, '$1' + ',' + '$2');
+  }
+  return x1 + x2;
+}
+
+var moving = false;
+var current_x = 0;
+function doMove(x) {
+  if (moving) {
+    return;
+  }
+  moving = true;
+  current_x = x;
+
+  _dragElement.style.left = x + 'px';
+  //_dragElement.style.top = (_offsetY + e.clientY - _startY) + 'px';
+
+  var p = getElementPosition(_dragElement);
+  var it = _gel('needle');
+  if (it) {
+    it.style.left = p.x + 'px';
+  }
+
+  if (procs && x >= 0 && x < procs.length && procs[x]) {
+    for (var i in arGraphs) {
+      if (arGraphs[i]) {
+        var id = arGraphs[i][0].replace('graph', 'value');
+        var it = _gel(id);
+        if (it) {
+          var v = addCommas(Math.round(ExtractNumber(procs[x][arGraphs[i][1]]) * arGraphs[i][4]));
+          it.innerHTML = v + arGraphs[i][3];
+        }
+      }
+    }
+    var it = _gel('timestamp');
+    if (it) {
+      it.innerHTML = UTC2Local(procs[x][0]); // + 'UTC';
+    }
+  }
+
+  moving = false;
+}
+
+function onMouseMove(e) { 
+  if (e == null) {
+    var e = window.event;
+  }
+  x = (_offsetX + e.clientX - _startX);
+  if (x < _minX) {
+    x = _minX;
+  } else if (x > _maxX) {
+    x = _maxX;
+  }
+  doMove(x);
+}
+
+function onMouseDown(e) { 
+  if (e == null) {
+    e = window.event; 
+  }
+  var target = e.target != null ? e.target : e.srcElement; 
+
+  if ((e.button == 1 && window.event != null || e.button == 0) && target.className == 'drag') { 
+    _startX = e.clientX; 
+    _startY = e.clientY; 
+    _offsetX = ExtractNumber(target.style.left); 
+    _offsetY = ExtractNumber(target.style.top); 
+    _oldZIndex = target.style.zIndex; 
+    target.style.zIndex = 10000; 
+    _dragElement = target; 
+    document.onmousemove = onMouseMove; 
+    document.body.focus(); 
+    document.onselectstart = function () { return false; }; 
+    target.ondragstart = function() { return false; }; 
+    return false; 
+  } 
+}
+
+// Same as simple encoding, but for extended encoding.
+var EXTENDED_MAP= 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.';
+var EXTENDED_MAP_LENGTH = EXTENDED_MAP.length;
+function extendedEncode(arrVals) {
+  maxVal = 0;
+  for (var i in arrVals) {
+    if (arrVals[i] > maxVal) {
+      maxVal = arrVals[i];
+    }
+  }
+
+  var chartData = 'e:';
+
+  for(i = 0, len = arrVals.length; i < len; i++) {
+    // In case the array vals were translated to strings.
+    var numericVal = new Number(arrVals[i]);
+    // Scale the value to maxVal.
+    var scaledVal = Math.floor(EXTENDED_MAP_LENGTH * 
+        EXTENDED_MAP_LENGTH * numericVal / maxVal);
+
+    if(scaledVal > (EXTENDED_MAP_LENGTH * EXTENDED_MAP_LENGTH) - 1) {
+      chartData += "..";
+    } else if (scaledVal < 0) {
+      chartData += '__';
+    } else {
+      // Calculate first and second digits and add them to the output.
+      var quotient = Math.floor(scaledVal / EXTENDED_MAP_LENGTH);
+      var remainder = scaledVal - EXTENDED_MAP_LENGTH * quotient;
+      chartData += EXTENDED_MAP.charAt(quotient) + EXTENDED_MAP.charAt(remainder);
+    }
+  }
+
+  return chartData;
+}
+
+var waiting = 0;
+var max_wait = 3.0;
+function boot() { 
+  if (typeof(provider_proper_name) == 'undefined') {
+    waiting += 0.333;
+    if (waiting > max_wait) {
+      waiting = 0;
+      if (!confirm('Keep waiting?')) {
+        window.top.location.href = '/';
+      }
+      max_wait *= 3;
+    }
+    setTimeout(function(){boot();}, 333);
+    return;
+  }
+
+/*
+  var it = _gel('feed_provider');
+  if (it) {
+    it.innerHTML = provider_proper_name;
+  }
+*/
+
+  var bar_div = _gel('bar');
+  _dragElement = _gel('slider');
+  if (bar_div && _dragElement) {
+    document.onmousedown = onMouseDown; 
+    document.onmouseup = onMouseUp; 
+
+    _startX = _maxX = ExtractNumber(bar_div.style.width) - ExtractNumber(_dragElement.style.width);
+
+    var needle_div = _gel('needle');
+    if (needle_div) {
+      var p = getElementPosition(_gel('opps-graph'));
+      needle_div.style.top = p.y + 'px';
+    }
+    var knurl = _gel('knurl-img');
+    if (knurl) {
+      knurl.style.bottom = (document.all ? 2 : 0) + 'px';
+    }
+  }
+
+  if (procs) {
+    procs.pop(); // the last procs item is null
+    n_fields = procs[0].length;
+    first_date = procs[0][0];
+    while (procs.length < (GX + 1)) {
+      var ar = new Array('pre ' + first_date);
+      for (i = 1; i < n_fields; i++) {
+        ar.push('');
+      }
+      procs.unshift(ar);
+    }
+    while (procs.length > (GX + 1)) {
+      procs.shift();
+    }
+    for (var gidx in arGraphs) {
+      if (arGraphs[gidx]) {
+        var id = arGraphs[gidx][0]; 
+        var idx = arGraphs[gidx][1];
+        var color = arGraphs[gidx][2];
+
+        var ar = new Array();
+        for (var i in procs) {
+          if (procs[i]) {
+            ar.push(ExtractNumber(procs[i][idx]));
+          }
+        }
+
+        var url = 'http://chart.googleapis.com/chart?';
+        url += '&cht=ls'; // spark chart
+        url += '&chs=' + GX + 'x24';
+        url += '&chco=' + color;
+        url += '&chds=a'; // auto scale
+        url += '&chd=' + extendedEncode(ar);
+
+        var it = _gel(id);
+        if (it) {
+          var html = new Array();
+          html.push('<img src="', url, '" width="', GX, '" height="24" />');
+          it.innerHTML = html.join('');
+          it.style.width = GX + 'px';
+        }
+      }
+    }
+  }
+
+  doMove(GX);
+}
+  
+var arNodes = new Array('http://li169-139.members.linode.com/',
+                        'http://li67-22.members.linode.com/');
+function init() {
+  var args = getArgs();
+  var provider = (args['provider'] || 'aarp');
+
+  var it = _gel('feed_provider');
+  if (it) {
+    it.innerHTML = provider;
+  }
+
+  var script_url = arNodes[0];
+  script_url += '~footprint/feeds/';
+  script_url += provider + '-history.js';
+  script_url += '?r=' + Math.random();
+  var head = document.getElementsByTagName('head')[0];
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = script_url;
+  head.appendChild(script);
+
+  boot();
+}
+</script>
+</head>
+<body onload="init()">
+<div id="logo"><img src="/images/all-for-good.png" alt="All for Good" title="All for Good"
+  onclick="window.top.location.href='/'" />
+</div>
+<div id="wrapper">
+<center>
+<table cellpadding="0" cellspacing="0" border="0" ><tr><td>
+<h1 id="feed_provider">Provider</h1>
+<table cellpadding="0" cellspacing="0" border="0" style="position:relative;left:-100px;width:800px;">
+<tr><td></td>
+<td>
+<h2 id="timestamp">timestamp</h1>
+</td>
+<td></td>
+</tr>
+<tr>
+<td class="title-cell"><span class="title">Opps</span></td>
+<td class="graph-cell"><span id="opps-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td class="value-cell""><span class="value" id="opps-value">-</span></td>
+</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+<tr>
+<td class="title-cell"><span class="title">Expired</span></td>
+<td class="graph-cell"><span id="expired-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td class="value-cell""><span class="value" id="expired-value">-</span></td>
+</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+<tr>
+<td class="title-cell"><span class="title">Bad Links</span></td>
+<td class="graph-cell"><span id="bad-links-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td class="value-cell""><span class="value" id="bad-links-value">-</span></td>
+</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+<tr>
+<td class="title-cell"><span class="title">Orgs</span></td>
+<td class="graph-cell"><span id="orgs-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td class="value-cell""><span class="value" id="orgs-value">-</span></td>
+</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+<tr>
+<td class="title-cell"><span class="title">Duplicates</span></td>
+<td class="graph-cell"><span id="dups-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td class="value-cell""><span class="value" id="dups-value">-</span></td>
+</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+<tr>
+<td class="title-cell"><span class="title">No Location</span></td>
+<td class="graph-cell"><span id="noloc-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td class="value-cell""><span class="value" id="noloc-value">-</span></td>
+</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+<tr>
+<td class="title-cell"><span class="title">501(c)3</span></td>
+<td class="graph-cell"><span id="ein501c3-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td class="value-cell""><span class="value" id="ein501c3-value">-</span></td>
+</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+<tr>
+<td class="title-cell"><span class="title">Feed size</span></td>
+<td class="graph-cell"><span id="feed-size-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td class="value-cell""><span class="value" id="feed-size-value">-</span></td>
+</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+<tr>
+<td class="title-cell"><span class="title">Processing</span></td>
+<td class="graph-cell"><span id="processing-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td class="value-cell""><span class="value" id="processing-value">-</span></td>
+</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+</table>
+<div id="bar" style="width:600px;"></div>
+<div id="slider" class="drag" style="width:32px;height:42px;top:-42px;"></div>
+</td></tr></table>
+</td></tr></table>
+</center>
+<div id="needle">
+<img id="needle-img" height="435" width="1" src="red.gif" style="margin-left:16px;" />
+<img id="knurl-img" height="40" width="32" src="knurl.png" style="position:absolute;left:0;bottom:0;" />
+</div>
+</div>
+</body>

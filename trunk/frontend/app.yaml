@@ -78,6 +78,11 @@ handlers:
   expiration: "1h"
   static_dir: html/gadget
 
+# feeds dashboard
+- url: /feeds
+  expiration: "30s"
+  static_dir: feeds
+
 # autocompleter for search
 - url: /autocomplete/.*
   script: autocomplete/main.py
