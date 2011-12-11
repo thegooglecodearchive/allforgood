@@ -2,32 +2,39 @@
 #
 
 """
-script for loading into googlebase.
-Usage: pipeline.py username password
+script for processing downloaded feeds
+Usage: pipeline.py 
 """
 
+import os
 import sys
 import re
 import gzip
 import bz2
+import time
+from datetime import datetime
+import random
 import commands
+import subprocess
+
 from dateutil import parser
 from dateutil import relativedelta
+
 import logging
 import optparse
-import os
+
+import providers
 import pipeline_keys
-import random
-import subprocess
-import time
+
 from csv import DictReader, DictWriter, excel_tab, register_dialect, QUOTE_NONE
-from datetime import datetime
+
 import footprint_lib
 import xml_helpers as xmlh
 import check_links
 
 HOMEDIR = "/home/footprint/allforgood-read-only/datahub"
 LOGPATH = HOMEDIR + "/dashboard.ing/"
+FEEDSDIR = "feeds"
 
 # if you rename these remember that the dashboard has to be updated first...
 LOG_FN = "load_gbase.log"
@@ -400,9 +407,16 @@ def run_shell(command, silent_ok=False, universal_newlines=True,
     error_exit("No output from %s" % command)
   return stdout, stderr, retcode
 
+
 def run_pipeline(name, url, do_processing=True, do_ftp=True):
   """shutup pylint."""
+
+  start_time = datetime.now()
   print_progress("loading "+name+" from "+url)
+
+  feed_file_size = 0
+  if os.path.isfile(url):
+    feed_file_size = os.path.getsize(url)
 
   # run as a subprocess so we can ignore failures and keep going.
   # later, we'll run these concurrently, but for now we're RAM-limited.
@@ -453,7 +467,7 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
 
   if OPTIONS.use_solr:
     #print_progress('creating Solr tsv file')
-    create_solr_TSV(name+'1')
+    create_solr_TSV(name+'1', start_time, feed_file_size)
 
 
 def test_loaders():
@@ -479,7 +493,7 @@ def loaders():
                "unitedway", 
                "daytabank", 
                # need to contact feed provider 2011-11-16
-               #"mentorpro", 
+               "mentorpro", 
                "aarp", 
                "americanredcross", 
                # need to contact feed provider 2011-11-12
@@ -588,8 +602,9 @@ def ftp_to_base(filename, ftpinfo, instr):
     print_progress("giving up.")
   ftp.quit()
   data_fh.close()
+
   
-def solr_retransform(fname):
+def solr_retransform(fname, start_time, feed_file_size):
   """Create Solr-compatible versions of a datafile"""
   """
 rows
@@ -657,6 +672,8 @@ rows
  'c:contactPhone:string': '', 
  'quantity': '15'}
 """
+
+  numopps = 0
 
   print_progress('Creating Solr transformed file for: ' + fname)
   out_filename = fname + '.transformed'
@@ -816,24 +833,60 @@ rows
       rows['c:longitude:float'] = float(rows['c:longitude:float']) - 1000.0
 
     csv_writer.writerow(rows)
+    numopps += 1
 
   data_file.close()
   print_progress("bad links: %d" % bad_links)
   print_progress("  expired: %d" % expired_by_end_date)
+
+
+  # NOTE: if you change this, you also need to update datahub/load_gbase.py
+  # and frontend/views.py to avoid breaking the dashboard-- other status
+  # messages don't matter.
+  shortname = footprint_lib.guess_shortname(fname)
+  elapsed = datetime.now() - start_time
+  xmlh.print_status("done parsing: output " + str(footprint_lib.NUMORGS) + " organizations" +
+                    " and " + str(numopps) + " opportunities" +
+                    " (" + str(feed_file_size) + " bytes): " +
+                    str(int(elapsed.seconds/60)) + " minutes.",
+                    shortname)
+
+  proper_name = shortname
+  if shortname in providers.ProviderNames:
+    proper_name = providers.ProviderNames[shortname].get('name', shortname)
+
+  # do the per-provider summary
+  if shortname:
+    processed = str(datetime.now()).split('.')[0]
+    fh = open(FEEDSDIR + '/' + shortname + '-history.txt', 'a')
+    if fh:
+      fh.write('processed\t' + processed + '\n')
+      fh.write('elapsed\t' + str(int(elapsed.seconds/60)) + '\n')
+      fh.write('bytes\t' + str(feed_file_size) + '\n')
+      fh.write('numorgs\t' + str(footprint_lib.NUMORGS) + '\n')
+      fh.write('numopps\t' + str(numopps) + '\n')
+      fh.write('expired\t' + str(expired_by_end_date) + '\n')
+      fh.write('badlinks\t' + str(bad_links) + '\n')
+      fh.write('noloc\t' + str(footprint_lib.NOLOC) + '\n')
+      fh.write('dups\t' + str(footprint_lib.DUPS) + '\n')
+      fh.write('ein501c3\t' + str(footprint_lib.EIN501) + '\n')
+      fh.write('proper_name\t' + proper_name + '\n')
+      fh.close()
+
   return out_filename
 
-  
-def create_solr_TSV(filename):
+
+def create_solr_TSV(filename, start_time, feed_file_size):
   """ Transform FPXML to SOLR TSV """
   in_fname = filename + '.gz'
   f_out = open(filename, 'wb')
   f_in = gzip.open(in_fname, 'rb')
-  
+
   f_out.writelines(f_in)
   f_out.close()
   f_in.close()
-  
-  solr_filename = solr_retransform(filename)
+
+  solr_filename = solr_retransform(filename, start_time, feed_file_size)
 
 
 def main():

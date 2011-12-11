@@ -66,6 +66,7 @@ PROGRESS = False
 PRINTHEAD = False
 OUTPUTFMT = "fpxml"
 
+NUMORGS = 0
 DUPS = 0
 NOLOC = 0
 EIN501 = 0
@@ -938,8 +939,8 @@ def convert_to_footprint_xml(instr, do_fastparse, maxrecs, progress):
 def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
   """non-trivial logic for converting FPXML to google base formatting."""
   # todo: maxrecs
-  global DUPS, NOLOC, EIN501
-  DUPS = NOLOC = EIN501 = 0
+  global DUPS, NOLOC, EIN501, NUMORGS
+  DUPS = NOLOC = EIN501 = NUMORGS = 0
 
   outstr = ""
   #print_progress("convert_to_gbase_events_type...", "", progress)
@@ -1087,6 +1088,8 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
   print_progress(" duplicates: " + str(DUPS))
   print_progress("    501(c)3: " + str(EIN501))
   print_progress("parsed opps: " + str(numopps))
+
+  NUMORGS = len(known_orgs)
 
   return outstr, len(known_orgs), numopps
 
@@ -1753,6 +1756,8 @@ def main():
     outfh.write(outstr)
     outfh.close()
 
+  """
+  This is now in pipeline.py
   elapsed = datetime.now() - start_time
   # NOTE: if you change this, you also need to update datahub/load_gbase.py
   # and frontend/views.py to avoid breaking the dashboard-- other status
@@ -1763,6 +1768,7 @@ def main():
                     " (" + str(bytes) + " bytes): " +
                     str(int(elapsed.seconds/60)) + " minutes.",
                     shortname, PROGRESS)
+  """
 
 if __name__ == "__main__":
   main()

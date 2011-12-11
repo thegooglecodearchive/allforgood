@@ -39,12 +39,14 @@ from datetime import datetime
 
 MAX_BLANKROWS = 2
 CURRENT_ROW = None
+DEBUG = False
 
 def parser_error(msg):
   """print a parser error in a machine-readable format."""
   if CURRENT_ROW != None:
     msg = "row "+str(CURRENT_ROW)+": "+msg
-  print "parse_gspreadsheet ERROR: "+msg
+  if DEBUG:
+    print "parse_gspreadsheet ERROR: "+msg
 
 def raw_recordval(record, key):
   """strip and stringify the value if there is one, else return empty string."""
@@ -208,7 +210,7 @@ def parse_gspreadsheet(instr, data, updated, progress):
     if col > maxcol:
       maxcol = col
     #print row, col, val
-  if progress:
+  if DEBUG and progress:
     print str(datetime.now())+": found ", maxrow, "rows and", maxcol, "columns."
   return maxrow, maxcol
 
@@ -245,7 +247,7 @@ def parse(instr, maxrecs, progress):
   data = {}
   updated = {}
   maxrow, maxcol = parse_gspreadsheet(instr, data, updated, progress)
-  if progress:
+  if DEBUG and progress:
     print str(datetime.now())+": maxrow="+str(maxrow)+" maxcol="+str(maxcol)
   # find header row: look for "opportunity title" (case insensitive)
   header_row, header_startcol = find_header_row(data, 'opportunity\s*title')
@@ -378,7 +380,7 @@ def parse(instr, maxrecs, progress):
     row += 1
     CURRENT_ROW = row
   CURRENT_ROW = None
-  if progress:
+  if DEBUG and progress:
     print str(datetime.now())+": ", numopps, "opportunities found."
   volopps += '</VolunteerOpportunities>'
 
