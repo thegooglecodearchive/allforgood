@@ -858,18 +858,29 @@ rows
   # do the per-provider summary
   if shortname:
     processed = str(datetime.now()).split('.')[0]
+    
+    try:
+      fh = open(FEEDSDIR + '/' + shortname + '-last.txt', 'r')
+    except:
+      fh = None
+
+    if fh:
+      footprint_stats = fh.read()
+      fh.close()
+
     fh = open(FEEDSDIR + '/' + shortname + '-history.txt', 'a')
     if fh:
       fh.write('processed\t' + processed + '\n')
       fh.write('elapsed\t' + str(int(elapsed.seconds/60)) + '\n')
       fh.write('bytes\t' + str(feed_file_size) + '\n')
-      fh.write('numorgs\t' + str(footprint_lib.NUMORGS) + '\n')
       fh.write('numopps\t' + str(numopps) + '\n')
       fh.write('expired\t' + str(expired_by_end_date) + '\n')
       fh.write('badlinks\t' + str(bad_links) + '\n')
-      fh.write('noloc\t' + str(footprint_lib.NOLOC) + '\n')
-      fh.write('dups\t' + str(footprint_lib.DUPS) + '\n')
-      fh.write('ein501c3\t' + str(footprint_lib.EIN501) + '\n')
+      fh.write(footprint_stats)
+      #fh.write('numorgs\t' + str(footprint_lib.NUMORGS) + '\n')
+      #fh.write('noloc\t' + str(footprint_lib.NOLOC) + '\n')
+      #fh.write('dups\t' + str(footprint_lib.DUPS) + '\n')
+      #fh.write('ein501c3\t' + str(footprint_lib.EIN501) + '\n')
       fh.write('proper_name\t' + proper_name + '\n')
       fh.close()
 
