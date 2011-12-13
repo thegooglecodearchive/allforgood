@@ -193,7 +193,7 @@ def make_js_and_csv(subdir = 'feeds'):
 
               if pipeline_keys.PRIMARY_WEB_NODE.find(socket.gethostname()) < 0:
                 ofile = ofile.replace('.ing', '')
-                cmd = 'scp -q %s %s' % (ofile, pipeline_keys.PRIMARY_WEB_NODE)
+                cmd = 'scp -q %s %s/feeds/' % (ofile, pipeline_keys.PRIMARY_WEB_NODE)
                 subprocess.call(cmd, shell=True)
 
 
