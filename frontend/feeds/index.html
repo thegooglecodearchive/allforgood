@@ -1,19 +1,22 @@
 <head>
+<title>Feed Detail View</title>
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
 <style>
 BODY {font-family:Arial;background:url(/images/body-bg.png) repeat-x scroll 0 0 #0281D1;}
 H1 {display:inline;padding:0;margin:0;color:#333333;}
 H2 {font-family:Droid Sans Mono,mono;padding:0;margin:0;color:#111111;}
+#wrapper {padding-left:200px;margin-left:200px;margin-top:18px;padding-top:8px;width:800px;background-color:#ffffff;}
 #logo {cursor:pointer;}
 #feed_provider {position:relative;left:-160px;}
 #bar {position:relative;background-color:#f3f3f3;height:48px;text-align:left;z-index:1;
   background-image:url(knurl-background.png);}
 
-.drag {position:relative;cursor:pointer;background-color:#ccccff;z-index:2;
+.drag {position:relative;cursor:pointer;background-color:#ccccff;z-index:10000;
        filter:alpha(opacity=0);opacity:0;-moz-opacity:0;}
 #needle {position:absolute;width:32px;height:435px;z-index:0;background-color:transparent;z-index:1;}
-#needle-img {filter:alpha(opacity=40);opacity:0.4;-moz-opacity:0.4;}
-#wrapper {padding-left:200px;margin-left:200px;margin-top:18px;padding-top:8px;width:800px;background-color:#ffffff;}
+#needle-img {filter:alpha(opacity=70);opacity:0.7;-moz-opacity:0.7;}
+#nodes {font-size:12px;text-align:left;height:24px;}
+#legend {position:relative;top:-24px;font-size:13px;text-align:left;}
 
 .title {padding:4px;}
 .graph {display:inline-block;margin-left:16px;margin-right:16px;background-color:#ffffdd;}
@@ -22,36 +25,56 @@ H2 {font-family:Droid Sans Mono,mono;padding:0;margin:0;color:#111111;}
 .graph-cell {width:600px;background-color:#f0f0f0;}
 .value-cell {width:100px;overflow:hidden;text-align:left;font-size:13px;}
 .spacer-cell {height:12px;}
+.tip {font-size:13px;color:#666666;}
 </style>
 <script>
 // processed, elapsed, bytes, numorgs, numopps, expired, bad_links, noloc, dups, ein501c3
+var arProcs = null;
+
 var GX = 568;
+var os_pos = false;
 
 var arGraphs = new Array(
   new Array('processing-graph', 1, '333333', ' mins', 1),
   new Array('feed-size-graph', 2, '666666', ' Kb', 0.001),
-
   new Array('orgs-graph', 3, 'cc00cc', '', 1),
   new Array('opps-graph', 4, '0000ff', '', 1),
-
   new Array('expired-graph', 5, 'FF9900', '', 1),
   new Array('bad-links-graph', 6, 'ff0000', '', 1),
   new Array('noloc-graph', 7, '6666ff', '', 1),
   new Array('dups-graph', 8, '6666ff', '', 1),
-
   new Array('ein501c3-graph', 9, '6666ff', '', 1),
 null);
 
-var _startX = 0; // mouse starting positions 
-var _startY = 0; 
+var dragX = 0; // mouse starting positions 
+var dragY = 0; 
 
-var _offsetX = 0; // current element offset 
-var _offsetY = 0; 
-var _dragElement; // needs to be passed from onMouseDown to onMouseMove 
-var _oldZIndex = 0; // we temporarily increase the z-index during drag 
+var offsetX = 0; // current element offset 
+var offsetY = 0; 
+var dragElement; // needs to be passed from onMouseDown to onMouseMove 
+var zIndexWas = 0; // we temporarily increase the z-index during drag 
 
 var _minX = 0;
-var _maxX = 0;
+var max_X = 0;
+
+function checkOS() {
+   if(navigator.userAgent.indexOf('Linux') != -1) { var OpSys = "Linux"; }
+   else if((navigator.userAgent.indexOf('Win') != -1) &&
+   (navigator.userAgent.indexOf('95') != -1))
+     { var OpSys = "Windows95"; }
+   else if((navigator.userAgent.indexOf('Win') != -1) &&
+   (navigator.userAgent.indexOf('NT') != -1)) 
+     { var OpSys = "Windows NT"; }
+   else if(navigator.userAgent.indexOf('Win') != -1) 
+    { var OpSys = "Windows 3.1"; }
+   else if(navigator.userAgent.indexOf('Mac') != -1)
+     { var OpSys = "Macintosh"; }
+   else { var OpSys = "operating system not recognised"; }
+
+   return OpSys;
+}
+ 
+ var OpSys = checkOS();
 
 function getArgs() {
   var paramString = window.location.search.substring(1);
@@ -86,19 +109,9 @@ function getElementPosition(obj) {
   return {x:curleft, y:curtop};
 }
 
-function ExtractNumber(value) { 
+function toNumber(value) { 
   var n = parseInt(value); 
   return n == null || isNaN(n) ? 0 : n; 
-}
-
-function onMouseUp(e) { 
-  if (_dragElement != null) { 
-    _dragElement.style.zIndex = _oldZIndex; 
-    document.onmousemove = null; 
-    document.onselectstart = null; 
-    _dragElement.ondragstart = null; 
-    _dragElement = null; 
-  } 
 }
 
 function UTC2Local(ts) {
@@ -146,44 +159,67 @@ function doMove(x) {
   moving = true;
   current_x = x;
 
-  _dragElement.style.left = x + 'px';
-  //_dragElement.style.top = (_offsetY + e.clientY - _startY) + 'px';
+  dragElement.style.left = x + 'px';
+  //dragElement.style.top = (offsetY + e.clientY - dragY) + 'px';
 
-  var p = getElementPosition(_dragElement);
+  var p = getElementPosition(dragElement);
   var it = _gel('needle');
   if (it) {
     it.style.left = p.x + 'px';
   }
 
-  if (procs && x >= 0 && x < procs.length && procs[x]) {
+  if (arProcs && x >= 0 && x < arProcs.length && arProcs[x]) {
     for (var i in arGraphs) {
       if (arGraphs[i]) {
         var id = arGraphs[i][0].replace('graph', 'value');
         var it = _gel(id);
         if (it) {
-          var v = addCommas(Math.round(ExtractNumber(procs[x][arGraphs[i][1]]) * arGraphs[i][4]));
-          it.innerHTML = v + arGraphs[i][3];
+          var v = addCommas(Math.round(toNumber(arProcs[x][arGraphs[i][1]]) * arGraphs[i][4]));
+          if (arGraphs[i][1] == 1 && v <= 1) {
+            v = '< 1 min';
+          } else {
+            v += arGraphs[i][3];
+          }
+          it.innerHTML = v;
         }
       }
     }
     var it = _gel('timestamp');
     if (it) {
-      it.innerHTML = UTC2Local(procs[x][0]); // + 'UTC';
+      it.innerHTML = UTC2Local(arProcs[x][0]); // + 'UTC';
     }
   }
 
   moving = false;
 }
 
+function setNeedle(img_src) {
+  var it = _gel('needle-img');
+  if (it) {
+    it.src = img_src;
+  }
+}
+
+function onMouseUp(e) {
+  if (dragElement != null) {
+    //dragElement.style.zIndex = zIndexWas;
+    document.onmousemove = null;
+    document.onselectstart = null;
+    dragElement.ondragstart = null;
+    dragElement = null;
+    setNeedle('black.gif');
+  }
+}
+
 function onMouseMove(e) { 
   if (e == null) {
     var e = window.event;
   }
-  x = (_offsetX + e.clientX - _startX);
+  x = (offsetX + e.clientX - dragX);
   if (x < _minX) {
     x = _minX;
-  } else if (x > _maxX) {
-    x = _maxX;
+  } else if (x > max_X) {
+    x = max_X;
   }
   doMove(x);
 }
@@ -195,22 +231,23 @@ function onMouseDown(e) {
   var target = e.target != null ? e.target : e.srcElement; 
 
   if ((e.button == 1 && window.event != null || e.button == 0) && target.className == 'drag') { 
-    _startX = e.clientX; 
-    _startY = e.clientY; 
-    _offsetX = ExtractNumber(target.style.left); 
-    _offsetY = ExtractNumber(target.style.top); 
-    _oldZIndex = target.style.zIndex; 
+    dragX = e.clientX; 
+    dragY = e.clientY; 
+    offsetX = toNumber(target.style.left); 
+    offsetY = toNumber(target.style.top); 
+    zIndexWas = target.style.zIndex; 
     target.style.zIndex = 10000; 
-    _dragElement = target; 
+    dragElement = target; 
     document.onmousemove = onMouseMove; 
     document.body.focus(); 
     document.onselectstart = function () { return false; }; 
     target.ondragstart = function() { return false; }; 
+
+    setNeedle('red.gif');
     return false; 
   } 
 }
 
-// Same as simple encoding, but for extended encoding.
 var EXTENDED_MAP= 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.';
 var EXTENDED_MAP_LENGTH = EXTENDED_MAP.length;
 function extendedEncode(arrVals) {
@@ -224,18 +261,14 @@ function extendedEncode(arrVals) {
   var chartData = 'e:';
 
   for(i = 0, len = arrVals.length; i < len; i++) {
-    // In case the array vals were translated to strings.
     var numericVal = new Number(arrVals[i]);
-    // Scale the value to maxVal.
     var scaledVal = Math.floor(EXTENDED_MAP_LENGTH * 
         EXTENDED_MAP_LENGTH * numericVal / maxVal);
-
     if(scaledVal > (EXTENDED_MAP_LENGTH * EXTENDED_MAP_LENGTH) - 1) {
       chartData += "..";
     } else if (scaledVal < 0) {
       chartData += '__';
     } else {
-      // Calculate first and second digits and add them to the output.
       var quotient = Math.floor(scaledVal / EXTENDED_MAP_LENGTH);
       var remainder = scaledVal - EXTENDED_MAP_LENGTH * quotient;
       chartData += EXTENDED_MAP.charAt(quotient) + EXTENDED_MAP.charAt(remainder);
@@ -246,13 +279,13 @@ function extendedEncode(arrVals) {
 }
 
 var waiting = 0;
-var max_wait = 3.0;
+var max_wait = 5.0;
 function boot() { 
   if (typeof(provider_proper_name) == 'undefined') {
     waiting += 0.333;
     if (waiting > max_wait) {
       waiting = 0;
-      if (!confirm('Keep waiting?')) {
+      if (!confirm('There appears to be a problem.\nKeep waiting?')) {
         window.top.location.href = '/';
       }
       max_wait *= 3;
@@ -261,45 +294,44 @@ function boot() {
     return;
   }
 
-/*
-  var it = _gel('feed_provider');
-  if (it) {
-    it.innerHTML = provider_proper_name;
+  arProcs = new Array();
+  for (var i in procs) {
+    arProcs.push(procs[i]);
   }
-*/
 
   var bar_div = _gel('bar');
-  _dragElement = _gel('slider');
-  if (bar_div && _dragElement) {
+  dragElement = _gel('slider');
+  if (bar_div && dragElement) {
     document.onmousedown = onMouseDown; 
     document.onmouseup = onMouseUp; 
 
-    _startX = _maxX = ExtractNumber(bar_div.style.width) - ExtractNumber(_dragElement.style.width);
+    dragX = max_X = toNumber(bar_div.style.width) - toNumber(dragElement.style.width);
 
     var needle_div = _gel('needle');
     if (needle_div) {
       var p = getElementPosition(_gel('opps-graph'));
-      needle_div.style.top = p.y + 'px';
+      needle_div.style.top = ((os_pos && !document.all? 32 : 0) + p.y) + 'px';
+      needle_div.style.display = 'block';
     }
     var knurl = _gel('knurl-img');
     if (knurl) {
-      knurl.style.bottom = (document.all ? 2 : 0) + 'px';
+      knurl.style.bottom = (document.all ? 6 : 2) + 'px';
     }
   }
 
-  if (procs) {
-    procs.pop(); // the last procs item is null
-    n_fields = procs[0].length;
-    first_date = procs[0][0];
-    while (procs.length < (GX + 1)) {
+  if (arProcs) {
+    arProcs.pop(); // the last arProcs item is null
+    n_fields = arProcs[0].length;
+    first_date = arProcs[0][0];
+    while (arProcs.length < (GX + 1)) {
       var ar = new Array('pre ' + first_date);
       for (i = 1; i < n_fields; i++) {
         ar.push('');
       }
-      procs.unshift(ar);
+      arProcs.unshift(ar);
     }
-    while (procs.length > (GX + 1)) {
-      procs.shift();
+    while (arProcs.length > (GX + 1)) {
+      arProcs.shift();
     }
     for (var gidx in arGraphs) {
       if (arGraphs[gidx]) {
@@ -308,9 +340,9 @@ function boot() {
         var color = arGraphs[gidx][2];
 
         var ar = new Array();
-        for (var i in procs) {
-          if (procs[i]) {
-            ar.push(ExtractNumber(procs[i][idx]));
+        for (var i in arProcs) {
+          if (arProcs[i]) {
+            ar.push(toNumber(arProcs[i][idx]));
           }
         }
 
@@ -336,8 +368,16 @@ function boot() {
 }
   
 var arNodes = new Array('http://li169-139.members.linode.com/',
+                        'http://li169-139.members.linode.com/',
                         'http://li67-22.members.linode.com/');
 function init() {
+  var os = checkOS();
+  if (os.indexOf('Wind') >= 0) {
+    os_pos = true;
+  }
+  var img = new Image();
+  img.src = 'red.gif';
+
   var args = getArgs();
   var provider = (args['provider'] || 'aarp');
 
@@ -346,13 +386,41 @@ function init() {
     it.innerHTML = provider;
   }
 
-  var script_url = arNodes[0];
+  var node = (toNumber(args['node']) || 0);
+  if (node < 0 || node >= arNodes.length) {
+    node = 0;
+  }
+
+  var which = (node == 0 ? '-common' : '-history');
+  var it = _gel('nodes');
+  if (it) {
+    var html = new Array();
+    html.push('<a href="', arNodes[node], '~footprint/feeds/', provider, which, '.csv">CSV</a> ');
+    for (var i = 0; i < arNodes.length; i++) {
+      var title = (i == 0 ? 'All' : 'Node' + i);
+      if (i == node) {
+        html.push(title, ' ');
+      } else {
+        var url = window.location.href.split('?')[0];
+        url += '?';
+        url += '&provider=' + provider;
+        if (i > 0) {
+          url += '&node=' + i;
+        }
+        html.push('<a href="', url, '">', title, '</a> ');
+      }
+    }
+    it.innerHTML = html.join('');
+  }
+
+  var script_url = arNodes[node];
   script_url += '~footprint/feeds/';
-  script_url += provider + '-history.js';
+  script_url += provider;
+  script_url += which + '.js';
   script_url += '?r=' + Math.random();
   var head = document.getElementsByTagName('head')[0];
   var script = document.createElement('script');
-  script.type = 'text/javascript';
+  script.type = 'text/javascript'
   script.src = script_url;
   head.appendChild(script);
 
@@ -391,11 +459,6 @@ function init() {
 <td class="value-cell""><span class="value" id="bad-links-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell"></td></tr>
 <tr>
-<td class="title-cell"><span class="title">Orgs</span></td>
-<td class="graph-cell"><span id="orgs-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
-<td class="value-cell""><span class="value" id="orgs-value">-</span></td>
-</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
-<tr>
 <td class="title-cell"><span class="title">Duplicates</span></td>
 <td class="graph-cell"><span id="dups-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="dups-value">-</span></td>
@@ -404,6 +467,11 @@ function init() {
 <td class="title-cell"><span class="title">No Location</span></td>
 <td class="graph-cell"><span id="noloc-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="noloc-value">-</span></td>
+</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+<tr>
+<td class="title-cell"><span class="title">Orgs</span></td>
+<td class="graph-cell"><span id="orgs-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td class="value-cell""><span class="value" id="orgs-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell"></td></tr>
 <tr>
 <td class="title-cell"><span class="title">501(c)3</span></td>
@@ -424,10 +492,24 @@ function init() {
 <div id="bar" style="width:600px;"></div>
 <div id="slider" class="drag" style="width:32px;height:42px;top:-42px;"></div>
 </td></tr></table>
+<div class="tip" 
+  style="position:relative;margin-right:150px;top:-32px;text-align:right;">Drag the slider to see past dates.</div>
+<div id="legend">
+<li>Opps - volunteer opportunities derived from the feed</li>
+<li>Expired - opportunities discarded because the end date was in the past</li>
+<li>Bad Links - opportunities discarded because the link to it was not valid</li>
+<li>Duplicates - opportunities discarded as duplications</li>
+<li>No Location - opportunities discarded for lack of location</li>
+<li>Orgs - organizations referenced by the opportunities</li>
+<li>501(c)3 - organizations appearing to be designated 501(c)3</li>
+<li>Feed Size - size of feed provided</li>
+<li>Processing - approx. minutes required to process feed</li>
+</div>
+<div id="nodes"></div>
 </td></tr></table>
 </center>
-<div id="needle">
-<img id="needle-img" height="435" width="1" src="red.gif" style="margin-left:16px;" />
+<div id="needle" style="display:none;top:0;">
+<img id="needle-img" height="435" width="1" src="black.gif" style="margin-left:15px;" />
 <img id="knurl-img" height="40" width="32" src="knurl.png" style="position:absolute;left:0;bottom:0;" />
 </div>
 </div>
