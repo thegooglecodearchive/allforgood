@@ -71,6 +71,8 @@ DUPS = 0
 NOLOC = 0
 EIN501 = 0
 
+FEEDSDIR = "feeds"
+
 # set a nice long timeout
 import socket
 socket.setdefaulttimeout(600.0)
@@ -936,7 +938,7 @@ def convert_to_footprint_xml(instr, do_fastparse, maxrecs, progress):
     return xmlh.prettyxml(xmldoc)
 
 
-def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
+def convert_to_gbase_events_type(instr, shortname, fastparse, maxrecs, progress):
   """non-trivial logic for converting FPXML to google base formatting."""
   # todo: maxrecs
   global DUPS, NOLOC, EIN501, NUMORGS
@@ -950,7 +952,6 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
   example_org = None
   known_orgs = {}
   if fastparse:
-
     known_elnames = [
       'FeedInfo', 'FootprintFeed', 'Organization', 'Organizations',
       'VolunteerOpportunities', 'VolunteerOpportunity', 'abstract',
@@ -1084,12 +1085,20 @@ def convert_to_gbase_events_type(instr, origname, fastparse, maxrecs, progress):
       numopps, spiece = output_opportunity(opp, feedinfo, known_orgs, numopps)
       outstr += spiece
 
+  NUMORGS = len(known_orgs)
   print_progress("no location: " + str(NOLOC))
   print_progress(" duplicates: " + str(DUPS))
   print_progress("    501(c)3: " + str(EIN501))
   print_progress("parsed opps: " + str(numopps))
 
-  NUMORGS = len(known_orgs)
+  if shortname:
+    fh = open(FEEDSDIR + '/' + shortname + '-last.txt', 'w')
+    if fh:
+      fh.write('numorgs\t' + str(NUMORGS) + '\n')
+      fh.write('noloc\t' + str(NOLOC) + '\n')
+      fh.write('dups\t' + str(DUPS) + '\n')
+      fh.write('ein501c3\t' + str(EIN501) + '\n')
+      fh.close()
 
   return outstr, len(known_orgs), numopps
 
