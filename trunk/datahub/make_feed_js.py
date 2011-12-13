@@ -36,7 +36,7 @@ def make_js_and_csv(subdir = 'feeds'):
         out = []
         csv = []
         lines = fh.readlines()
-        processed = numorgs = numopps = expired = bad_links = dups = noloc = ein501c3 = proper_name = ''
+        processed = numorgs = numopps = expired = badlinks = dups = noloc = ein501c3 = proper_name = ''
         for line in lines:
           line = line.rstrip()
           #print line
@@ -45,18 +45,18 @@ def make_js_and_csv(subdir = 'feeds'):
             ar = ar[0].split('\t')
             if processed:
               out.append("  new Array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" % 
-                           (processed, elapsed, bytes, numorgs, numopps, expired, bad_links,
+                           (processed, elapsed, bytes, numorgs, numopps, expired, badlinks,
                             noloc, dups, ein501c3)
                         )
               if not csv:
                  csv.append('"processed", "elapsed", "bytes", "numorgs", "numopps",'
-                          + '"expired, "bad_links", "noloc, "dups, "ein501c3"')
+                          + '"expired, "badlinks", "noloc, "dups, "ein501c3"')
               csv.append('"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"' % 
-                           (processed, elapsed, bytes, numorgs, numopps, expired, bad_links,
+                           (processed, elapsed, bytes, numorgs, numopps, expired, badlinks,
                             noloc, dups, ein501c3)
                         )
             processed = ar[1]
-            numorgs = numopps = expired = bad_links = dups = noloc = ein501c3 = ''
+            numorgs = numopps = expired = badlinks = dups = noloc = ein501c3 = ''
           elif line.startswith('elapsed\t'):
             ar = line.split('\t')
             elapsed = ar[1]
@@ -72,9 +72,9 @@ def make_js_and_csv(subdir = 'feeds'):
           elif line.startswith('expired\t'):
             ar = line.split('\t')
             expired = ar[1]
-          elif line.startswith('bad_links\t'):
+          elif line.startswith('badlinks\t'):
             ar = line.split('\t')
-            bad_links = ar[1]
+            badlinks = ar[1]
           elif line.startswith('noloc\t'):
             ar = line.split('\t')
             noloc = ar[1]
@@ -90,11 +90,11 @@ def make_js_and_csv(subdir = 'feeds'):
   
         if processed:
           out.append("  new Array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" % 
-                       (processed, elapsed, bytes, numorgs, numopps, expired, bad_links, 
+                       (processed, elapsed, bytes, numorgs, numopps, expired, badlinks, 
                         noloc, dups, ein501c3)
                     )
           csv.append('"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"' % 
-                       (processed, elapsed, bytes, numorgs, numopps, expired, bad_links,
+                       (processed, elapsed, bytes, numorgs, numopps, expired, badlinks,
                         noloc, dups, ein501c3)
                     )
   
