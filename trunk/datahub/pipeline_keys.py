@@ -29,3 +29,9 @@ SOLR_USER = 'footprint'
 SOLR_PASS = 'GoogObama'
 SOLR_URLS = ['http://74.207.225.22:8080/solr/']
 
+WEB_NODES = [
+  'http://li169-139.members.linode.com/~footprint/',
+  'http://li67-22.members.linode.com/~footprint/',
+]
+
+PRIMARY_WEB_NODE = 'footprint@li169-139.members.linode.com:~/public_html'

@@ -3,6 +3,10 @@
 import os
 import sys
 import urllib
+import socket
+import subprocess
+
+import pipeline_keys
 
 """
   processed       2011-12-12 13:09:40
@@ -17,11 +21,7 @@ import urllib
   ein501c3        9425
   proper_name     United Way
 """
-  
-NODES = [
-  'http://li169-139.members.linode.com/~footprint/',
-  'http://li67-22.members.linode.com/~footprint/',
-]
+
   
 def make_js_and_csv(subdir = 'feeds'):
 
@@ -134,7 +134,7 @@ def make_js_and_csv(subdir = 'feeds'):
             ofile = csv_file.replace('-history', '-common')
 
           lines_list = []
-          for node in NODES:
+          for node in pipeline_keys.WEB_NODES:
             url = node + ufile.replace('.ing', '')
 
             ufh = None
@@ -190,7 +190,12 @@ def make_js_and_csv(subdir = 'feeds'):
               fh.write(''.join(unique_lines))
               fh.close()
               os.rename(ofile, ofile.replace('.ing', ''))
-            
+
+              if pipeline_keys.PRIMARY_WEB_NODE.find(socket.gethostname()) < 0:
+                ofile = ofile.replace('.ing', '')
+                cmd = 'scp -q %s %s' % (ofile, pipeline_keys.PRIMARY_WEB_NODE)
+                subprocess.call(cmd, shell=True)
+
 
 def main():
   make_js_and_csv()
