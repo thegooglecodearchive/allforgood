@@ -651,11 +651,6 @@ executeSearchFromHashParams = function(currentLocation) {
       if(el('loading-bottom')){
         el('loading-bottom').style.display = 'none';
       }
-      // Load analytics, done here to ensure search is finished first
-      // Only loading for search result pages here and loaded in
-      // homepage.js for the hp and in base.html for static pages
-      loadGA();
-	  //populateSearchHistory();
     };
 
     var error = function (XMLHttpRequest, textStatus, errorThrown) {

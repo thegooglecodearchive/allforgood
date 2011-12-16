@@ -13,3 +13,4 @@ Disallow: /post
 Disallow: /search
 Disallow: /ui
 Disallow: /url
+Disallow: /feeds
