@@ -93,8 +93,9 @@ then
                                 then
                                         ./notify_team.sh manually check $FILE
                                 	echo manually check $FILE
+				else
+                                	cp $FILE $CFILE
                                 fi
-                                cp $FILE $CFILE
                         fi
                 done
 
@@ -116,7 +117,12 @@ then
                 cp dashboard.ing/* $DASHBOARD_DIR
         fi
 
-        # update the pipeline_common.js
+	if [ $# -lt 1 ]
+	then
+		nohup ./all_scan.sh > $DATAHUB/scan.log 2>&1 &
+	fi
+
+        # update pipeline_common.js
 	./common.py
 
 	# feed dashboards

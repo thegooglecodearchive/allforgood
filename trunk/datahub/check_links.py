@@ -11,11 +11,17 @@ import httplib
 import urllib
 
 from datetime import datetime
+from time import sleep
 
 MAX_WAIT = 6
 USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
 DIR_BAD = 'bad-links/'
 DIR_CHK = 'links/'
+
+HOUR = (3600)
+DAY = (24 * HOUR)
+WEEK = (7 * DAY)
+DELAY = 0.75
 
 def get_link_file_name(url):
   """ """
@@ -30,7 +36,7 @@ def is_bad_link(url):
   if not url or os.path.isfile(DIR_BAD + get_link_file_name(url)):
     rtn = True
   else:
-    if url.lower().find('http://localhost') >= 0:
+    if url.lower().startswith('http://localhost'):
       rtn = True
 
   return rtn
@@ -50,23 +56,27 @@ def check_link(url, recheck = False):
 
   #http://getinvolved.volunteermatch.org/
   if url and url.find('volunteermatch.org') >= 0:
-    return 'currently unverifiable'
+    return 'unchecked currently unverifiable'
 
   if url and url.find('truist.com') >= 0:
-    return 'currently unverifiable'
+    return 'unchecked currently unverifiable'
 
-  rtn = 'unknown error'
+  rtn = 'unchecked unknown error'
 
   file_name = get_link_file_name(url)
   if os.path.isfile(DIR_CHK + file_name):
     rtn = 'checked'
-    if recheck and get_file_age(DIR_CHK + file_name) < 3600:
-      return rtn
-
-    if recheck or get_file_age(DIR_CHK + file_name) > (6 * 24 * 3600):
-      os.remove(DIR_CHK + file_name)
-      if os.path.isfile(DIR_BAD + file_name):
-        os.remove(DIR_BAD + file_name)
+    last_check = get_file_age(DIR_CHK + file_name)
+    # dont need to check again for at least a week
+    if not is_bad_link(url) and last_check < WEEK:
+      # unless we insist
+      if not recheck:
+        return rtn
+       
+    # clear last results and recheck
+    os.remove(DIR_CHK + file_name)
+    if os.path.isfile(DIR_BAD + file_name):
+      os.remove(DIR_BAD + file_name)
 
   if not os.path.isfile(DIR_CHK + file_name):
     fh = open(DIR_CHK + file_name, 'w')
@@ -117,13 +127,25 @@ def check_link(url, recheck = False):
 
 
 def main():
-  for arg in sys.argv[1:]:
-    if arg:
-      arg = arg.strip()
+
+  if not sys.argv[1:]:
+    for line in sys.stdin:
+      url = line.strip()
+      if url:
+        if not url.lower().startswith('http'):
+          url = 'http://' + url
+        rsp = check_link(url)
+        print rsp + '\t' + url
+        if rsp.find('checked') < 0:
+          sleep(DELAY)
+  else:
+    for arg in sys.argv[1:]:
       if arg:
-        if arg.find('http') != 0:
-          arg = 'http://' + arg
-        print check_link(arg, True) + '\t' + arg
+        url = arg.strip()
+        if url:
+          if not url.lower().startswith('http'):
+            url = 'http://' + url
+          print check_link(url, True) + '\t' + url
 
 if __name__ == "__main__":
   main()

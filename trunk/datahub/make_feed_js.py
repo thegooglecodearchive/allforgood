@@ -22,6 +22,14 @@ import pipeline_keys
   proper_name     United Way
 """
 
+def make_row(processed, elapsed, bytes, numorgs, numopps, expired, badlinks, noloc, dups, ein501c3):
+  js = ("  new Array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" %
+          (processed, elapsed, bytes, numorgs, numopps, expired, badlinks, noloc, dups, ein501c3))
+  csv = ('"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"' %
+          (processed, elapsed, bytes, numorgs, numopps, expired, badlinks, noloc, dups, ein501c3))
+
+  return js, csv
+
   
 def make_js_and_csv(subdir = 'feeds'):
 
@@ -44,17 +52,10 @@ def make_js_and_csv(subdir = 'feeds'):
             ar = line.split('.')
             ar = ar[0].split('\t')
             if processed:
-              out.append("  new Array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" % 
-                           (processed, elapsed, bytes, numorgs, numopps, expired, badlinks,
-                            noloc, dups, ein501c3)
-                        )
-              if not csv:
-                 csv.append('"processed", "elapsed", "bytes", "numorgs", "numopps",'
-                          + '"expired, "badlinks", "noloc, "dups, "ein501c3"')
-              csv.append('"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"' % 
-                           (processed, elapsed, bytes, numorgs, numopps, expired, badlinks,
-                            noloc, dups, ein501c3)
-                        )
+              js_str, csv_str = make_row(processed, elapsed, bytes, numorgs, numopps, 
+                                         expired, badlinks, noloc, dups, ein501c3)
+              out.append(js_str)
+              csv.append(csv_str)
             processed = ar[1]
             numorgs = numopps = expired = badlinks = dups = noloc = ein501c3 = ''
           elif line.startswith('elapsed\t'):
@@ -89,21 +90,16 @@ def make_js_and_csv(subdir = 'feeds'):
             proper_name = ar[1]
   
         if processed:
-          out.append("  new Array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" % 
-                       (processed, elapsed, bytes, numorgs, numopps, expired, badlinks, 
-                        noloc, dups, ein501c3)
-                    )
-          csv.append('"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"' % 
-                       (processed, elapsed, bytes, numorgs, numopps, expired, badlinks,
-                        noloc, dups, ein501c3)
-                    )
-  
+          js_str, csv_str = make_row(processed, elapsed, bytes, numorgs, numopps, 
+                                         expired, badlinks, noloc, dups, ein501c3)
+          out.append(js_str)
+          csv.append(csv_str)
+
         fh.close()
-  
+
         out.append('  null);')
         js = 'var procs = new Array(\n' + ',\n'.join(out)
         js += "\nvar provider_proper_name = '" + proper_name + "';\n"
-       
         js_file = feed_file.replace('.txt', '.js.ing')
         fh = open(js_file, 'w')
         if fh:
@@ -111,21 +107,24 @@ def make_js_and_csv(subdir = 'feeds'):
           fh.close()
           os.rename(js_file, js_file.replace('.ing', ''))
   
+
+        rows = ('"processed", "elapsed", "bytes", "numorgs", "numopps"' 
+              + '"expired, "badlinks", "noloc, "dups, "ein501c3"' 
+              + '\n' + '\n'.join(csv))
         csv_file = feed_file.replace('.txt', '.csv.ing')
         fh = open(csv_file, 'w')
         if fh:
-          fh.write('\n'.join(csv) + '\n')
+          fh.write(rows + '\n')
           fh.close()
           os.rename(csv_file, csv_file.replace('.ing', ''))
   
         out = []
         csv = []
 
-
         # make combined versions of the js, csv files
         for ext in ['csv', 'js']:
           if ext == 'js':
-            marker = 'new Array'
+            marker = '  new Array('
             ufile = js_file
 	    ofile = js_file.replace('-history', '-common')
           else:
