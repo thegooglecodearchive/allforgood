@@ -18,17 +18,6 @@
     	});
 	</script>
     {% endif %}
-<div style="position:relative;left:-3px;display:inline-block;line-height:12px;text-align:center;">
-    {% if result.vetted %} 
-<a class="tip" href="javascript:return false;" title="About vetted..."><div class="marker-vetted">Vetted</div></a>
-    {% endif %}
-    {% if result.vetted and result.is_501c3 %} 
-<br/>
-    {% endif %}
-    {% if result.is_501c3 %} 
-<a class="tip" href="javascript:return false;" title="About 501(c)3..."><div class="marker-501c3">501(c)3</div></a>
-    {% endif %}
-</div>
 
 <a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title }}</a></h4>
      {% if result.location or result.startdate %}
@@ -53,6 +42,8 @@
 </p>
      {% endif %}
      <p id="brief_{{ forloop.counter0 }}B" class="teaser">{{ result.purged_snippet|escape }}</p>
+<table width="100%"><tr>
+<td>
 <p class="links"><a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
 | 
 <a href="javascript:void(0);" id='share_{{ forloop.counter0 }}'>Share</a>
@@ -60,6 +51,14 @@
   addthis.button('#share_{{ forloop.counter0 }}', { username: "footprint2009dev", services_compact: "email, twitter, facebook, myspace, friendfeed, bebo", ui_click: true }, { title: "{{ result.title|escape }}", url: "{{ result.url }}", templates: {twitter: '\{\{url\}\} via www.allforgood.org'} });
 </script>
 </p>
+</td><td align="right">
+{% if result.vetted %} 
+<a class="tip" href="javascript:return false;" title="VDP (vetted data partner) designates organizations that have demonstrat
+ed to All for Good that the opportunities they list on All for Good follow rigorous creation, management and supervision guid
+elines.  This may involve the use of special volunteer coordinators, project leaders, or oversight by a national sponsoring o
+rganization.">VDP</a>
+{% endif %}
+</td></tr></table>
 </li>	
   {% endfor %}
   {% endif %}

@@ -8,42 +8,49 @@ H2 {font-family:Droid Sans Mono,mono;padding:0;margin:0;color:#111111;}
 #wrapper {padding-left:200px;margin-left:200px;margin-top:18px;padding-top:8px;width:800px;background-color:#ffffff;}
 #logo {cursor:pointer;}
 #feed_provider {position:relative;left:-160px;}
-#bar {position:relative;background-color:#f3f3f3;height:48px;text-align:left;z-index:1;
-  background-image:url(knurl-background.png);}
+#subtitle {font-size:20px;font-weight:normal;}
+#bar {position:relative;background-color:#f3f3f3;height:48px;text-align:left;z-index:1;background-image:url(knurl-background.png);}
 
 .drag {position:relative;cursor:pointer;background-color:#ccccff;z-index:10000;
        filter:alpha(opacity=0);opacity:0;-moz-opacity:0;}
 #needle {position:absolute;width:32px;height:435px;z-index:0;background-color:transparent;z-index:1;}
 #needle-img {filter:alpha(opacity=70);opacity:0.7;-moz-opacity:0.7;}
-#nodes {font-size:12px;text-align:left;height:24px;}
-#legend {position:relative;top:-24px;font-size:13px;text-align:left;}
+#nodes {position:relative;top:-48px;font-size:12px;text-align:left;height:24px;}
+#legend {position:relative;top:-24px;font-size:13px;text-align:left;display:none;}
+#footnote {position:relative;font-size:13px;text-align:left;}
 
-.title {padding:4px;}
+.title {font-size:12px;padding:0px;}
 .graph {display:inline-block;margin-left:16px;margin-right:16px;background-color:#ffffdd;}
 .value {padding:4px;}
-.title-cell {width:100px;height:32px;overflow:hidden;text-align:right;}
+TD.title-cell {padding:0;text-align:left;height:32px;}
+.group2 {font-weight:bold;color:#661133;}
+DIV.title-cell {white-space:nowrap;width:100px;overflow:hidden;}
 .graph-cell {width:600px;background-color:#f0f0f0;}
+.graph-cell-group2 {width:600px;background-color:#ffffcc;}
 .value-cell {width:100px;overflow:hidden;text-align:left;font-size:13px;}
 .spacer-cell {height:12px;}
-.tip {font-size:13px;color:#666666;}
+.help {cursor:pointer;margin-right:4px;}
+#slider-tip {position:relative;top:-32px;margin-right:150px;text-align:right;font-size:14px;color:#111111;}
 </style>
 <script>
 // processed, elapsed, bytes, numorgs, numopps, expired, bad_links, noloc, dups, ein501c3
 var arProcs = null;
+var timerID = null;
 
 var GX = 568;
 var os_pos = false;
+var bShowNodeLinks = false;
 
 var arGraphs = new Array(
-  new Array('processing-graph', 1, '333333', ' mins', 1),
+  new Array('processing-graph', 1, '666666', ' mins', 1),
   new Array('feed-size-graph', 2, '666666', ' Kb', 0.001),
-  new Array('orgs-graph', 3, 'cc00cc', '', 1),
+  new Array('orgs-graph', 3, '666666', '', 1),
   new Array('opps-graph', 4, '0000ff', '', 1),
-  new Array('expired-graph', 5, 'FF9900', '', 1),
+  new Array('expired-graph', 5, 'ff0000', '', 1),
   new Array('bad-links-graph', 6, 'ff0000', '', 1),
-  new Array('noloc-graph', 7, '6666ff', '', 1),
-  new Array('dups-graph', 8, '6666ff', '', 1),
-  new Array('ein501c3-graph', 9, '6666ff', '', 1),
+  new Array('noloc-graph', 7, 'ff0000', '', 1),
+  new Array('dups-graph', 8, 'ff0000', '', 1),
+  new Array('ein501c3-graph', 9, '666666', '', 1),
 null);
 
 var dragX = 0; // mouse starting positions 
@@ -278,9 +285,31 @@ function extendedEncode(arrVals) {
   return chartData;
 }
 
+var gx = Math.round(GX/3);
+function run_intro() {
+  if (timerID) {
+    clearTimeout(timerID);
+    timerID = null;
+  }
+  if (gx <= GX) {
+    doMove(gx);
+  } 
+  if (gx < GX) {
+    gx += 4;
+    if (gx > GX) {
+      gx = GX - 4;
+    }
+    timerID = setTimeout(run_intro, 24);
+  }
+}
+
 var waiting = 0;
 var max_wait = 5.0;
 function boot() { 
+  if (timerID) {
+    clearTimeout(timerID);
+    timerID = null;
+  }
   if (typeof(provider_proper_name) == 'undefined') {
     waiting += 0.333;
     if (waiting > max_wait) {
@@ -290,7 +319,7 @@ function boot() {
       }
       max_wait *= 3;
     }
-    setTimeout(function(){boot();}, 333);
+    timerID = setTimeout(function(){boot();}, 333);
     return;
   }
 
@@ -364,7 +393,7 @@ function boot() {
     }
   }
 
-  doMove(GX);
+  run_intro();
 }
   
 var arNodes = new Array('http://li169-139.members.linode.com/',
@@ -383,7 +412,7 @@ function init() {
 
   var it = _gel('feed_provider');
   if (it) {
-    it.innerHTML = provider;
+    it.innerHTML = provider + ' <span id="subtitle">- feed processing results</span>';
   }
 
   var node = (toNumber(args['node']) || 0);
@@ -395,19 +424,24 @@ function init() {
   var it = _gel('nodes');
   if (it) {
     var html = new Array();
-    html.push('<a href="', arNodes[node], '~footprint/feeds/', provider, which, '.csv">CSV</a> ');
-    for (var i = 0; i < arNodes.length; i++) {
-      var title = (i == 0 ? 'All' : 'Node' + i);
-      if (i == node) {
-        html.push(title, ' ');
-      } else {
-        var url = window.location.href.split('?')[0];
-        url += '?';
-        url += '&provider=' + provider;
-        if (i > 0) {
-          url += '&node=' + i;
+    html.push('<a href="', arNodes[node], '~footprint/feeds/', provider, which, '.csv">');
+    html.push('<img align="absmiddle" src="excel.png" style="margin-right:6px;" border="0"/>');
+    html.push('Download CSV for Excel');
+    html.push('</a> ');
+    if (bShowNodeLinks) {
+      for (var i = 0; i < arNodes.length; i++) {
+        var title = (i == 0 ? 'All' : 'Node' + i);
+        if (i == node) {
+          html.push(title, ' ');
+        } else {
+          var url = window.location.href.split('?')[0];
+          url += '?';
+          url += '&provider=' + provider;
+          if (i > 0) {
+            url += '&node=' + i;
+          }
+          html.push('<a href="', url, '">', title, '</a> ');
         }
-        html.push('<a href="', url, '">', title, '</a> ');
       }
     }
     it.innerHTML = html.join('');
@@ -438,53 +472,86 @@ function init() {
 <h1 id="feed_provider">Provider</h1>
 <table cellpadding="0" cellspacing="0" border="0" style="position:relative;left:-100px;width:800px;">
 <tr><td></td>
-<td>
-<h2 id="timestamp">timestamp</h1>
-</td>
+<td style="height:40px;"><h2 id="timestamp">timestamp</h1></td>
 <td></td>
 </tr>
 <tr>
-<td class="title-cell"><span class="title">Opps</span></td>
-<td class="graph-cell"><span id="opps-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td valign="center" class="title-cell"><div class="title-cell"><img class="help"
+  title="  volunteer opportunities derived from the feed" alt="  volunteer opportunities derived from the feed" 
+  align="absmiddle" class="help" src="help.png" border="0" /><span class="title">Net Indexed<br/>Opportunities</span>
+</div></td>
+<td class="graph-cell"><span id="opps-graph" class="graph" style="width:0;"><img 
+  height="24" src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="opps-value">-</span></td>
-</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+</tr><tr><td colspan="3" class="spacer-cell" style="height:28px;"></td></tr>
+
 <tr>
-<td class="title-cell"><span class="title">Expired</span></td>
-<td class="graph-cell"><span id="expired-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td valign="center" class="title-cell"><div class="title-cell"><img class="help"
+  title="  discarded because the end date was in the past" alt="  discarded because the end date was in the past"
+  align="absmiddle" class="help" src="help.png" alt="" border="0" /><span class="title group2">Expired</span>
+</div></td>
+<td class="graph-cell"><span id="expired-graph" class="graph" style="width:0;"><img 
+  height="24" src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="expired-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell"></td></tr>
 <tr>
-<td class="title-cell"><span class="title">Bad Links</span></td>
-<td class="graph-cell"><span id="bad-links-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
+  title="  discarded because the link to it was not valid" alt="  discarded because the link to it was not valid"
+  align="absmiddle" src="help.png" alt="" border="0" /><span class="title group2">Bad Links</span>
+</div></td>
+<td class="graph-cell"><span id="bad-links-graph" class="graph" style="width:0;"><img 
+  height="24" src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="bad-links-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell"></td></tr>
 <tr>
-<td class="title-cell"><span class="title">Duplicates</span></td>
-<td class="graph-cell"><span id="dups-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
+  title="  discarded as duplication" alt="  discarded as duplication"
+  align="absmiddle" src="help.png" alt="" border="0" /><span class="title group2">Duplicates</span>
+</div></td>
+<td class="graph-cell"><span id="dups-graph" class="graph" style="width:0;"><img height="24" 
+  src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="dups-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell"></td></tr>
 <tr>
-<td class="title-cell"><span class="title">No Location</span></td>
-<td class="graph-cell"><span id="noloc-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
+  title="  discarded for lack of location" alt="  discarded for lack of location"
+  src="help.png" alt="" border="0" /><span class="title group2">No Location</span>
+</div></td>
+<td class="graph-cell"><span id="noloc-graph" class="graph" style="width:0;"><img height="24" 
+  src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="noloc-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+<tr style="display:none;">
+<td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
+  title="  organizations appearing to be designated 501(c)3" alt="  organizations appearing to be designated 501(c)3"
+  align="absmiddle" src="help.png" alt="" border="0" /><span class="title">NPO</span>
+</div></td>
+<td class="graph-cell"><span id="ein501c3-graph" class="graph" style="width:0;"><img height="24" 
+  src="loading.gif" /></span></td>
+<td class="value-cell""><span class="value" id="ein501c3-value">-</span></td>
+</tr><tr><td colspan="3" class="spacer-cell" style="height:28px;"></td></tr>
 <tr>
-<td class="title-cell"><span class="title">Orgs</span></td>
-<td class="graph-cell"><span id="orgs-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
+<td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
+  title=" number organizations referenced by the opportunities" alt=" number organizations referenced by the opportunities"
+  align="absmiddle" src="help.png" alt="" border="0" /><span class="title">Organizations</span>
+</div></td>
+<td class="graph-cell"><span id="orgs-graph" class="graph" style="width:0;"><img height="24" 
+  src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="orgs-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell"></td></tr>
 <tr>
-<td class="title-cell"><span class="title">501(c)3</span></td>
-<td class="graph-cell"><span id="ein501c3-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
-<td class="value-cell""><span class="value" id="ein501c3-value">-</span></td>
-</tr><tr><td colspan="3" class="spacer-cell"></td></tr>
-<tr>
-<td class="title-cell"><span class="title">Feed size</span></td>
+<td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
+  title="  size of feed provided" alt="  size of feed provided"
+  align="absmiddle" src="help.png" alt="" border="0" /><span class="title">Feed size</span>
+</div></td>
 <td class="graph-cell"><span id="feed-size-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="feed-size-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell"></td></tr>
 <tr>
-<td class="title-cell"><span class="title">Processing</span></td>
+<td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
+  title="  approx. minutes required to process feed" alt="  approx. minutes required to process feed"
+  src="help.png" alt="" border="0" /><span class="title">Processing</span>
+</div></td>
 <td class="graph-cell"><span id="processing-graph" class="graph" style="width:0;"><img height="24" src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="processing-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell"></td></tr>
@@ -492,17 +559,18 @@ function init() {
 <div id="bar" style="width:600px;"></div>
 <div id="slider" class="drag" style="width:32px;height:42px;top:-42px;"></div>
 </td></tr></table>
-<div class="tip" 
-  style="position:relative;margin-right:150px;top:-32px;text-align:right;">Drag the slider to see past dates.</div>
+<div id="slider-tip">Drag the slider <img align="bottom" src="knurl-icon.png" /> to see past dates.</div>
+
+<div id="footnote">* Opportunity counts logged prior to 08-Dec-2011 included expired volunteer opportunities. </div>
 <div id="legend">
-<li>Opps - volunteer opportunities derived from the feed</li>
+<li>Net Opportunities - volunteer opportunities derived from the feed</li>
 <li>Expired - opportunities discarded because the end date was in the past</li>
 <li>Bad Links - opportunities discarded because the link to it was not valid</li>
 <li>Duplicates - opportunities discarded as duplications</li>
 <li>No Location - opportunities discarded for lack of location</li>
-<li>Orgs - organizations referenced by the opportunities</li>
-<li>501(c)3 - organizations appearing to be designated 501(c)3</li>
-<li>Feed Size - size of feed provided</li>
+<li>Organizations - organizations referenced by the opportunities</li>
+<li>NPO - organizations appearing to be designated 501(c)3</li>
+<li>Feed size - size of feed provided</li>
 <li>Processing - approx. minutes required to process feed</li>
 </div>
 <div id="nodes"></div>

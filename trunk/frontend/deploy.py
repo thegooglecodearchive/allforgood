@@ -45,7 +45,8 @@ GA_KEYS = {
   'www.allforgood.org' : 'UA-8689219-2',
   'allforgood.org' : 'UA-8689219-2',
   'footprint2009dev.appspot.com' : 'UA-8689219-3',
-  'footprint2009qa.appspot.com' : 'UA-8689219-4'
+  'footprint2009qa.appspot.com' : 'UA-8689219-4',
+  'staging.servicefootprint.appspot.com' : 'UA-8689219-7',
 }
 
 # These are the public Facebook API keys.

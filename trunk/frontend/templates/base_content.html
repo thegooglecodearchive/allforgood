@@ -44,28 +44,11 @@
 
   (function() {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/u/ga_debug.js';
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/u/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 
 </script>
-<!--
-<script type="text/javascript">
-  function loadGA() {
-	  $.getScript('/zx{{version}}/js/third_party/ga.js');
-  }
-  function callGA(){
-    if (typeof _gat != "undefined") {
-      pageTracker = _gat._getTracker('{{ ga_key }}');
-      //custom cookie timeout at 30min - also set in custom ga.js
-      pageTracker._setCookieTimeout(30);
-      pageTracker._trackPageview();
-    } else {
-      $.get('/google_analytics_error');
-    }
-}
-</script>
--->
 {% endblock %}{# head #}
 
 {% block body %}
@@ -102,22 +85,6 @@
 <script>
   $("#keywords").autocomplete("/autocomplete/query");
 </script>
-<script type="text/javascript">
-  // Load analytics on static pages only, done in homepage.js for
-  // the homepage and search_results.js for search pages.
-  loadGA();
-</script>
-
-{# setup google analytics on static pages #}
-{% ifequal current_page 'STATIC_PAGE' %}
-  {% ifnotequal ga_key 'unknown' %}
-    <script type="text/javascript">
-       // Load analytics on static pages only, done in homepage.js for
-       // the homepage and search_results.js for search pages.
-      loadGA();
-    </script>
-  {% endifnotequal %}
-{% endifequal %}
 
 </body>
 

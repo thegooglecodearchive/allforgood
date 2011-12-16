@@ -1478,8 +1478,8 @@ form#overlabel input#submit:hover {
 .partner-intro {height:110px;}
 
 .moreless {color:#3399CC;cursor:pointer;}
-.marker-vetted {display:inline-block;width:32px;font-size:8px;border:solid 1px #999999;padding:1px;color:#333333;background-color:#ddffdd;}
-.marker-501c3 {display:inline-block;width:32px;font-size:8px;border:solid 1px #999999;padding:1px;color:#333333;background-color:#ffffdd;}
+.marker-vetted {display:inline-block;width:32px;font-size:8px;border:solid 1px #999999;padding:1px;color:#333333;background-color:#F1F2E8;}
+.marker-501c3 {display:inline-block;width:32px;font-size:8px;border:solid 1px #999999;padding:1px;color:#333333;background-color:#B9DFF6;}
 
 .tip, 
 .tip a,
