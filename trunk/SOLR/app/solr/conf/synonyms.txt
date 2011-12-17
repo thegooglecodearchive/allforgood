@@ -14,7 +14,7 @@
 # AFG Synonyms
 September11,9/11,september 11,september 11th,september eleventh,day of service and remembrance,911org,911day,911
 Disaster,Preparedness,CERT
-MLK,mlk,martin luther,mlktech,king day,day on not a day off,ml king,MLKDay
+MLK,mlk,martin luther,mlktech,king day,day on not a day off,ml king,MLKDay,drum major service,drum major award
 OilSpill,oil spill,bp,gulf cleanup,oil cleanup,spill cleanup
 EarthDay,environment,nature,environmental,outdoors,gardening,garden,wetlands,forest,forests,tree,trees,sierra club
 Moms,mom,mother,mothers

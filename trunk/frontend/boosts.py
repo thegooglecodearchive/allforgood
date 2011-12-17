@@ -34,6 +34,8 @@ DEFAULT_BOOSTS = [
 ]
 
 CATEGORY_QUERIES = {
+  'category:mlkday' : '(mlkday OR -2009 OR -2010 OR -2011 OR -feed_providername:girlscouts OR (-feed_providername:idealist AND eventrangestart:[0001-01-01T00:00:00Z TO 2012-01-22T23:59:59Z] AND eventrangeend:[2012-01-07T00:00:00Z TO *]))',
+
   'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-13T23:59:59Z]) AND (eventrangeend:[2011-09-09T00:00:00Z TO *]))',
 
   'category:IAMS' : '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))',
@@ -42,6 +44,8 @@ CATEGORY_QUERIES = {
 }
 
 CATEGORY_BOOSTS = {
+  'category:mlkday' : ' aggregatefield:(mlkday)^100 eventrangestart:[2012-01-16T00:00:00Z TO 2012-01-16T23:59:59Z]^20 eventrangeend:[2012-01-16T00:00:00Z TO 2012-01-16T23:59:59Z]^10' ,
+
   'category:education' : ' title:(tutor OR school OR children OR student OR classroom)^100',
   
   'category:september11' : ' title:(september11)^100 description:911day^10',
@@ -58,7 +62,7 @@ API_KEY_QUERIES = {
 }
 
 API_KEY_BOOSTS = {
-  'liveunited' : ' feed_providername:unitedway^2000 title:tutor^1000',
+  'liveunited' : ' feed_providername:unitedway^2000 feed_providername:handsonnetwork1800^10 feed_providername:handsonnetworkconnect^10',
 
   'americanexpress' : ' title:911day^1000 description:911day^100 feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000',
   
