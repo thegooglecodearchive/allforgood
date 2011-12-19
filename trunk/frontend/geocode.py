@@ -24,10 +24,17 @@ import simplejson as json
 import time
 from datetime import datetime
 from google.appengine.api import urlfetch
+from google.appengine.ext import db
+
 from versioned_memcache import memcache
 
 import api
 import private_keys
+
+class RevGeo(db.Model):
+  """ key = lat.###,lng.### """
+  json = db.TextProperty()
+
 
 def parse_geo_response(res):
   if "," not in res:
@@ -74,10 +81,6 @@ def geocode(addr, usecache=True, retrying = False):
     return val
 
   if not retrying:
-    #params = urllib.urlencode(
-    #  {'q':loc.lower(), 'output':'csv', 'oe':'utf8', 'sensor':'false', 'gl':'us',
-    #   'key':'ABQIAAAAxq97AW0x5_CNgn6-nLxSrxQuOQhskTx7t90ovP5xOuY'+\
-    #   '_YrlyqBQajVan2ia99rD9JgAcFrdQnTD4JQ'})
     params = urllib.urlencode(
       {'q':loc.lower(), 
        'output':'csv', 
@@ -128,21 +131,34 @@ def rev_geocode_json(lat, lng):
   """ """
 
   jo = None
-  latlng = str(lat) + ',' + str(lng)
-  url = "http://maps.googleapis.com/maps/api/geocode/json"
-  params = urllib.urlencode({'latlng':latlng, 'sensor':'false', 'clientID':private_keys.MAPS_API_CLIENT_ID})
-
   json_str = ""
-  try:
-    fh = urllib2.urlopen("%s?%s" % (url, params))
-    json_str = fh.read()
-    fh.close()
-  except:
-    return jo
+
+  db_key = str(round(float(lat) * 1000.0)/1000.0) + ',' + str(round(float(lng) + 1000.0)/1000.0)
+  rec = RevGeo.get_by_key_name(db_key)
+  if rec:
+    json_str = rec.json
+  else:
+    latlng = str(lat) + ',' + str(lng)
+    url = "http://maps.googleapis.com/maps/api/geocode/json"
+    params = urllib.urlencode({'latlng':latlng, 'sensor':'false', 'clientID':private_keys.MAPS_API_CLIENT_ID})
+
+    try:
+      fh = urllib2.urlopen("%s?%s" % (url, params))
+      json_str = fh.read()
+      fh.close()
+    except:
+      return jo
 
   if json_str:
     try:
       jo = json.loads(json_str.encode('ascii', 'xmlcharrefreplace'))
+      if jo['status'] == 'OK':
+        try:
+          rec = RevGeo.get_or_insert(db_key)
+          rec.json = json_str
+          rec.put()
+        except:
+          pass
     except:
       return jo
 
@@ -156,13 +172,18 @@ def get_statewide(lat, lng):
   country = 'US'
 
   jo = rev_geocode_json(lat, lng)
-  if jo and 'status' in jo:
-    if jo['status'] == 'OK':
-      for d in jo['results'][0]['address_components']:
-        if 'administrative_area_level_1' in d['types']:
-          rtn = d['short_name']
-        elif 'country' in d['types']:
-          country = d['short_name']
+  if jo:
+    try:
+      if jo['status'] != 'OK':
+        logging.warning('geocode.get_statewide: rev_geo says ' + jo['status'])
+      else:
+        for d in jo['results'][0]['address_components']:
+          if 'administrative_area_level_1' in d['types']:
+            rtn = d['short_name']
+          elif 'country' in d['types']:
+            country = d['short_name']
+    except:
+      logging.warning('geocode.get_statewide: rev_geo call failed')
 
   if country and country != 'US':
      rtn += '-' + country
