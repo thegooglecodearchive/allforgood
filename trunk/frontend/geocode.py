@@ -152,7 +152,7 @@ def rev_geocode_json(lat, lng):
   if json_str:
     try:
       jo = json.loads(json_str.encode('ascii', 'xmlcharrefreplace'))
-      if jo['status'] == 'OK':
+      if jo['status'] == 'OK' or jo['status'] == 'ZERO_RESULTS':
         try:
           rec = RevGeo.get_or_insert(db_key)
           rec.json = json_str
