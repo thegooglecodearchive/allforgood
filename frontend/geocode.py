@@ -131,36 +131,58 @@ def rev_geocode_json(lat, lng):
   """ """
 
   jo = None
-  json_str = ""
+  json_str = ''
 
+  # see if we have a record of this
   db_key = str(round(float(lat) * 1000.0)/1000.0) + ',' + str(round(float(lng) + 1000.0)/1000.0)
   rec = RevGeo.get_by_key_name(db_key)
   if rec:
     json_str = rec.json
   else:
-    latlng = str(lat) + ',' + str(lng)
-    url = "http://maps.googleapis.com/maps/api/geocode/json"
-    params = urllib.urlencode({'latlng':latlng, 'sensor':'false', 'clientID':private_keys.MAPS_API_CLIENT_ID})
-
+    # try the pipeline cache
     try:
-      fh = urllib2.urlopen("%s?%s" % (url, params))
-      json_str = fh.read()
-      fh.close()
+      lat_str = str(round(float(lat) * 1000.0)/1000.0).replace('.', '_').rstrip('0')
+      lng_str = str(round(float(lng) + 1000.0)/1000.0).replace('.', '_').rstrip('0')
     except:
+      # most likely given junk lat/lng
       return jo
 
-  if json_str:
+    url = private_keys.NODE2 + '/~footprint/revgeo/' + 'lat' + lat_str + 'lng' + lng_str + '.json'
     try:
+      fh = urllib2.urlopen(url)
+      json_str = fh.read()
+      fh.close()
       jo = json.loads(json_str.encode('ascii', 'xmlcharrefreplace'))
-      if jo['status'] == 'OK' or jo['status'] == 'ZERO_RESULTS':
+    except:
+      json_str = ''
+
+    if not json_str:
+      # try Maps API
+      latlng = str(lat) + ',' + str(lng)
+      url = "http://maps.googleapis.com/maps/api/geocode/json"
+      params = urllib.urlencode({'latlng':latlng, 'sensor':'false', 'clientID':private_keys.MAPS_API_CLIENT_ID})
+      try:
+        fh = urllib2.urlopen("%s?%s" % (url, params))
+        json_str = fh.read()
+        fh.close()
+      except:
+        return jo
+
+  if json_str:
+    if not jo:
+      try:
+        jo = json.loads(json_str.encode('ascii', 'xmlcharrefreplace'))
+      except:
+        return jo
+
+    if jo['status'] == 'OK' or jo['status'] == 'ZERO_RESULTS':
+      if not rec:
         try:
           rec = RevGeo.get_or_insert(db_key)
           rec.json = json_str
           rec.put()
         except:
           pass
-    except:
-      return jo
 
   return jo
 
