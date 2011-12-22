@@ -37,9 +37,9 @@ def track(category = "", action = "", label = ""):
     node = private_keys.NODE2
 
   url = ("%s/~footprint/track.php?category=%s&action=%s&label=%s&nocache=%s" % 
-          (node, urllib.quote_plus(category.replace(' ', '_'), 
-                 urllib.quote_plus(action.replace(' ', '_'), 
-                 urllib.quote_plus(label.replace(' ', '_'), str(random.random())
+          (node, urllib.quote_plus(category.replace(' ', '_')), 
+                 urllib.quote_plus(action.replace(' ', '_')), 
+                 urllib.quote_plus(label.replace(' ', '_')), str(random.random())
           )
         )
 
