@@ -37,7 +37,7 @@ ProviderNames = {
   "idealist":{"name":"Idealist", "idx":17}, 
   "meetup":{"name":"MeetUp", "idx":18}, 
   #"mentor":{"name":"MENTOR", "idx":19}, 
-  "mentorpro":{"name":"MENTOR", "idx":19}, 
+  "mentor":{"name":"MENTOR", "idx":19}, 
   "mlk_day":{"name":"MLK Day", "idx":20}, 
   "mybarackobama":{"name":"My Barack Obama","idx":21}, 
   "myproj_servegov":{"name":"Serve.gov MyProject", "idx":22}, 

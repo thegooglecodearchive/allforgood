@@ -787,8 +787,9 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
           if virtual.lower() != 'yes':
             global NOLOC
             NOLOC += 1
-            title = output_tag_value(opp, "title")
-            print_progress("missing location: " % title)
+            title = str(get_title(opp))
+            if title:
+              print_progress("missing location: %s" % title)
             return totrecs, ""
 
         loc_fields = get_loc_fields(virtual=virtual,
