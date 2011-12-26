@@ -84,18 +84,18 @@ def record_to_fpxml(record):
   fpxml = ""
   fpxml += '<VolunteerOpportunity>'
   fpxml += xmlh.output_val("volunteerOpportunityID", recordval(record, 'oppid'))
-  orgname = recordval(record,'SponsoringOrganization')
+  orgname = recordval(record, 'SponsoringOrganization')
   if orgname not in KNOWN_ORGS:
     KNOWN_ORGS[orgname] = len(KNOWN_ORGS)
   fpxml += xmlh.output_val("sponsoringOrganizationID", KNOWN_ORGS[orgname])
-  title = recordval(record,'OpportunityTitle')
+  title = recordval(record, 'OpportunityTitle')
   if title == "":
     parser_error("missing OpportunityTitle-- this field is required.")
   fpxml += xmlh.output_val("title", title)
   fpxml += '<dateTimeDurations>'
   fpxml += '<dateTimeDuration>'
   if ('StartDate' in record and
-      recordval(record,'StartDate').lower().find("ongoing") >= 0):
+      recordval(record, 'StartDate').lower().find("ongoing") >= 0):
     fpxml += xmlh.output_val('openEnded', 'Yes')
   else:
     fpxml += xmlh.output_val('openEnded', 'No')
@@ -111,7 +111,7 @@ def record_to_fpxml(record):
     endtmval = get_tmval(record, 'EndTime')
     if endtmval != "":
       fpxml += xmlh.output_val('endTime', endtmval)
-  freq = recordval(record,'Frequency').lower()
+  freq = recordval(record, 'Frequency').lower()
   if freq == "" or freq.find("once") >= 0:
     fpxml += '<iCalRecurrence/>'
   elif freq.find("daily") >= 0:
@@ -126,31 +126,31 @@ def record_to_fpxml(record):
     fpxml += '<iCalRecurrence/>'
     # just disregard the bad value instead of discarding the opp
     #parser_error("unsupported frequency: '"+
-    #             recordval(record,'Frequency')+"'-- skipping")
+    #             recordval(record, 'Frequency')+"'-- skipping")
   fpxml += xmlh.output_val('commitmentHoursPerWeek',
-                           recordval(record,'CommitmentHours'))
+                           recordval(record, 'CommitmentHours'))
   fpxml += '</dateTimeDuration>'
   fpxml += '</dateTimeDurations>'
   fpxml += '<locations>'
   fpxml += '<location>'
-  if recordval(record,'LocationName').find("virtual") >= 0:
+  if recordval(record, 'LocationName').find("virtual") >= 0:
     fpxml += xmlh.output_val('virtual', 'Yes')
   else:
     fpxml += xmlh.output_val('virtual', 'No')
-    fpxml += xmlh.output_val('name', recordval(record,'LocationName'))
+    fpxml += xmlh.output_val('name', recordval(record, 'LocationName'))
     fpxml += xmlh.output_val('streetAddress1',
-                             recordval(record,'LocationStreet'))
-    fpxml += xmlh.output_val('city', recordval(record,'LocationCity'))
+                             recordval(record, 'LocationStreet'))
+    fpxml += xmlh.output_val('city', recordval(record, 'LocationCity'))
     fpxml += xmlh.output_val('region',
-                             recordval(record,'LocationProvince'))
+                             recordval(record, 'LocationProvince'))
     fpxml += xmlh.output_val('postalCode',
-                             recordval(record,'LocationPostalCode'))
-    fpxml += xmlh.output_val('country', recordval(record,'LocationCountry'))
+                             recordval(record, 'LocationPostalCode'))
+    fpxml += xmlh.output_val('country', recordval(record, 'LocationCountry'))
   fpxml += '</location>'
   fpxml += '</locations>'
-  fpxml += xmlh.output_val('paid', recordval(record,'Paid'))
-  fpxml += xmlh.output_val('self_directed', recordval(record,'self_directed'))
-  v = recordval(record,'MinimumAge')
+  fpxml += xmlh.output_val('paid', recordval(record, 'Paid'))
+  fpxml += xmlh.output_val('self_directed', recordval(record, 'self_directed'))
+  v = recordval(record, 'MinimumAge')
   if v:
     try:
       v = int(v)
@@ -160,16 +160,21 @@ def record_to_fpxml(record):
  
   # TODO: seniors only, kidfriendly
   fpxml += xmlh.output_val('sexRestrictedTo',
-                           recordval(record,'SexRestrictedTo'))
-  fpxml += xmlh.output_val('skills', recordval(record,'Skills'))
-  fpxml += xmlh.output_val('contactName', recordval(record,'ContactName'))
-  fpxml += xmlh.output_val('contactPhone', recordval(record,'ContactPhone'))
-  fpxml += xmlh.output_val('contactEmail', recordval(record,'ContactEmail'))
-  fpxml += xmlh.output_val('detailURL', recordval(record,'URL'))
+                           recordval(record, 'SexRestrictedTo'))
+  fpxml += xmlh.output_val('skills', recordval(record, 'Skills'))
+  fpxml += xmlh.output_val('contactName', recordval(record, 'ContactName'))
+  fpxml += xmlh.output_val('contactPhone', recordval(record, 'ContactPhone'))
+  fpxml += xmlh.output_val('contactEmail', recordval(record, 'ContactEmail'))
+
+  url = recordval(record, 'URL')
+  if not url.startswith('http'):
+    url = 'http://' + url
+  fpxml += xmlh.output_val('detailURL', url)
+
   # note: preserve whitespace in description
-  fpxml += xmlh.output_val('description', raw_recordval(record,'Description'))
+  fpxml += xmlh.output_val('description', raw_recordval(record, 'Description'))
   fpxml += '<lastUpdated olsonTZ="Etc/UTC">'
-  fpxml += recordval(record,'LastUpdated') + '</lastUpdated>'
+  fpxml += recordval(record, 'LastUpdated') + '</lastUpdated>'
   fpxml += '</VolunteerOpportunity>'
   return fpxml
 
