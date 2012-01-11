@@ -117,7 +117,6 @@ def apply_filter_query(args, original_query = ''):
   return rtn
 
 
-
 def add_range_filter(field, min_val, max_val):
   """ Convert colons in the field name and build a range specifier
   in SOLR query syntax"""
