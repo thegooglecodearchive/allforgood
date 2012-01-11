@@ -56,16 +56,13 @@
 <!--#wrapper-->
 <div id="wrapper">
 {% include 'content_header.html' %}
-{% if is_report %}
-<div id="report-header">
-NOTE: This is a report view displaying opportunity counts from the entire index.
-</div>
-{% endif %}
 {% block subheader %}{% endblock %}
     <!--#main-->
     <div id="main" class="clearfix search-results">
 
+{% if not is_report %}
 {% include 'nav.html' %}
+{% endif %}
 {% include 'serp.html' %}
 {% block prefooter %}{% endblock %}
 {% block footer %}{% include 'footer_home.html' %}{% endblock %}

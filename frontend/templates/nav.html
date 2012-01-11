@@ -1,4 +1,4 @@
-{% if path in '/search' %}
+{% if path in '/search' or path in '/report' %}
         <!--.nav-->
         <div id="nav">
             <!--.primary-->
@@ -9,7 +9,7 @@
                     <li><a href="/posting">Add Opportunities</a></li>
                     <li><a href="/gettingstarted">Use Our Data</a></li>
                     <li><a href="http://blog.allforgood.org/">Blog</a></li>
-                    <li class="last"><a href="/about">About</a></li>
+                    <li class="last" style="margin-right:32px;"><a href="/about">About</a></li>
                 </ul>
             </div>
             <!--.primary-->
@@ -31,7 +31,8 @@
 
                     <li {% if path in '/gettingstarted/apps/spec/api.html/api_tos/apps/gmail/apps/blogger/apps/typepad/apps/wordpress/apps/googlesites' %}class="active"{%endif%}><a href="/gettingstarted">Use Our Data</a></li>
                     <li><a href="http://blog.allforgood.org/">Blog</a></li>
-                    <li class="last{% if path in '/about/faq/team/tos/help/contactus' %} active{% endif %}"><a href="/about">About</a></li>
+                    <li class="last{% if path in '/about/faq/team/tos/help/contactus' %} active{% endif %}"
+ style="margin-right:32px;"><a href="/about">About</a></li>
                 </ul>
             </div>
             <!--.primary-->

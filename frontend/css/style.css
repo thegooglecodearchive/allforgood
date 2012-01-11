@@ -1489,7 +1489,11 @@ form#overlabel input#submit:hover {
 
 #search_results_adspace {position:absolute;right:0px;top:0px;width:120px;height:50px;}
 
-#report-header {text-align:center;font-size:14pt;font-weight:bold;background-color:#ffffdd;margin:10px;padding:6px;}
+#report-header {text-align:center;font-size:14pt;font-weight:bold;background-color:#ffffdd;padding:6px;}
+
+.hint {font-size:9pt;color:#119966;}
+.btn-small {height:22px;width:32px;}
+.search_by {white-space:nowrap;padding-left:12px;height:28px;background-color:#F1F1E8;font-size:9pt;}
 
 /* @@end */
 @
