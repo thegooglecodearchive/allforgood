@@ -117,10 +117,6 @@ def get_unique_args_from_request(request):
     dictionary of URL parameters.
   """
 
-  if request.remote_addr in private_keys.BAD_IPS:
-    sys.exit(0)
-
-
   args = request.arguments()
   unique_args = {}
   for arg in args:
