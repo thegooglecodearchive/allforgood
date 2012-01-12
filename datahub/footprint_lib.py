@@ -71,7 +71,10 @@ DUPS = 0
 NOLOC = 0
 EIN501 = 0
 
-FEEDSDIR = "feeds"
+FEED = ''
+FEEDSDIR = 'feeds'
+DUPDIR = 'dups' 
+
 
 # set a nice long timeout
 import socket
@@ -181,6 +184,7 @@ FIELDTYPES = {
   "providerID":"string",
   "feed_providerID":"string",
   "feedID":"string",
+  "volunteerOpportunityID":"string",
   "opportunityID":"string",
   "organizationID":"string",
   "sponsoringOrganizationID":"strng",
@@ -276,11 +280,12 @@ def output_field(name, given_value):
   """print a field value, handling long strings, header lines and
   custom datatypes."""
 
+  if name not in FIELDTYPES:
+    print datetime.now(), "no type for field? " + name 
+    return name
+    
   if PRINTHEAD:
-    if name not in FIELDTYPES:
-      print datetime.now(), "no type for field: " + name + FIELDTYPES[name]
-      sys.exit(1)
-    elif FIELDTYPES[name] == "builtin":
+    if FIELDTYPES[name] == "builtin":
       return name
     elif OUTPUTFMT == "basetsv":
       return "c:"+name+":"+FIELDTYPES[name]
@@ -375,7 +380,10 @@ def get_revgeo_fields(lat, lng, given_city, given_county, given_state, given_zip
         if 'locality' in d['types']:
           city = d['long_name']
         elif 'postal_code' in d['types']:
-          zip = d['short_name']
+          if not given_zip or len(given_zip) < 5:
+            zip = d['short_name']
+          else:
+            zip = given_zip[:5]
         elif 'administrative_area_level_1' in d['types']:
           state = d['short_name']
         elif 'administrative_area_level_2' in d['types']:
@@ -459,6 +467,25 @@ def output_tag_value_renamed(node, xmlname, newname):
   """macro for output_field( get node value ) then emitted as newname"""
   return output_field(newname, xmlh.get_tag_val(node, xmlname))
 
+
+def feed_report(id, detail, feed = None):
+  """ """
+
+  if not feed:
+    feed = FEED
+
+  if id and detail and feed:
+    file = FEEDSDIR + '/' + feed + '-' + detail + '-last.txt'
+    try:
+      fh = open(file, 'a')
+    except:
+      fh = None
+
+    if fh:
+      fh.write(str(id) + '\n')
+      fh.close()
+  
+
 def duplicate_opp(opp, loc_str, startend):
   rtn = False
   title = get_title(opp).lower()
@@ -466,10 +493,13 @@ def duplicate_opp(opp, loc_str, startend):
   #detailURL = xmlh.get_tag_val(opp, 'detailURL')
   #dedup_str = "".join([title, desc, detailURL, loc_str, startend])
   dedup_str = "".join([title, abstract, loc_str, startend])
-  dedup_file = 'dups/' + hashlib.md5(dedup_str).hexdigest()
+  dedup_file = DUPDIR + '/' + hashlib.md5(dedup_str).hexdigest()
   if os.path.exists(dedup_file): 
     global DUPS
     DUPS += 1
+    opp_id = xmlh.get_tag_val(opp, "volunteerOpportunityID")
+    if opp_id:
+      feed_report(opp_id, 'duplicates')
     rtn = True
   else:
     try:
@@ -562,15 +592,23 @@ def get_direct_mapped_fields(opp, org, feed_providerName):
   outstr += FIELDSEP + output_field("detailURL", detailURL)
 
   for field in DIRECT_MAP_FIELDS:
-    if field != "expires":
-      outstr += FIELDSEP + output_tag_value(opp, field)
-    else:
+    if field == 'opportunityID':
+      if PRINTHEAD:
+        outstr += FIELDSEP + output_tag_value(opp, field)
+      else:
+        opp_id = xmlh.get_tag_val(opp, "volunteerOpportunityID")
+        if not opp_id:
+          opp_id = 'volunteerOpportunityID'
+        outstr += FIELDSEP + output_field('opportunityID', opp_id)
+    elif field == "expires":
       # we need to have a expires value
       expires = xmlh.get_tag_val(opp, "expires")
       if PRINTHEAD or len(expires) > 0:
         outstr += FIELDSEP + output_tag_value(opp, field)
       else:
         outstr += FIELDSEP + xmlh.current_ts(DEFAULT_EXPIRES)
+    else:
+      outstr += FIELDSEP + output_tag_value(opp, field)
 
   for field in ORGANIZATION_FIELDS:
     outstr += FIELDSEP + output_field("org_"+field,
@@ -694,6 +732,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
   if (opp_id == ""):
     print_progress("no opportunityID")
     return totrecs, ""
+
   org_id = xmlh.get_tag_val(opp, "sponsoringOrganizationID")
   if org_id not in known_orgs:
     """
@@ -790,6 +829,9 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
             title = str(get_title(opp))
             if title:
               print_progress("missing location: %s" % title)
+            opp_id = xmlh.get_tag_val(opp, "volunteerOpportunityID")
+            if opp_id:
+              feed_report(opp_id, 'nolocation')
             return totrecs, ""
 
         loc_fields = get_loc_fields(virtual=virtual,
@@ -879,11 +921,11 @@ def get_loc_fields(virtual, location="", latitude="", longitude="", location_str
   loc_fields += FIELDSEP + output_field("location_string", location_string)
   loc_fields += FIELDSEP + output_field("venue_name", venue_name)
 
-  L = [ {'field' : 'city', 'value': city},
-        {'field' : 'county', 'value': county},
-        {'field' : 'state', 'value': state},
+  L = [ {'field' : 'city', 'value': city.lower()},
+        {'field' : 'county', 'value': county.lower()},
+        {'field' : 'state', 'value': state.lower()},
         {'field' : 'zip', 'value': zip},
-        {'field' : 'country', 'value': country},
+        {'field' : 'country', 'value': country.lower()},
         {'field' : 'statewide', 'value': statewide},
         {'field' : 'nationwide', 'value': nationwide},
       ]
@@ -1044,11 +1086,18 @@ def convert_to_gbase_events_type(instr, shortname, fastparse, maxrecs, progress)
       else:
         pass
 
-      rec = XMLRecord(opp)
       #add tags
+      given_tags = []
+      opp_categories = opp.getElementsByTagName("categoryTags")
+      for opp_category in opp_categories:
+        tag = xmlh.get_tag_val(opp_category, 'categoryTag').strip().lower()
+        if tag:
+          given_tags.append(tag)
+
+      rec = XMLRecord(opp)
       for tagger in taggers:
         rec = XMLRecord(opp)
-        rec, tag_count_dict = tagger.do_tagging(rec, feedinfo, tag_count_dict)
+        rec, tag_count_dict = tagger.do_tagging(rec, feedinfo, tag_count_dict, given_tags)
 
       opp = rec.opp
       if not HEADER_ALREADY_OUTPUT:
@@ -1093,8 +1142,8 @@ def convert_to_gbase_events_type(instr, shortname, fastparse, maxrecs, progress)
   print_progress("    501(c)3: " + str(EIN501))
   print_progress("parsed opps: " + str(numopps))
 
-  if shortname:
-    fh = open(FEEDSDIR + '/' + shortname + '-last.txt', 'w')
+  if FEED:
+    fh = open(FEEDSDIR + '/' + FEED + '-last.txt', 'w')
     if fh:
       fh.write('numorgs\t' + str(NUMORGS) + '\n')
       fh.write('noloc\t' + str(NOLOC) + '\n')
@@ -1595,7 +1644,10 @@ def test_parse(footprint_xmlstr, maxrecs):
 
 def process_file(filename, options, providerName="", providerID="",
                  feedID="", providerURL=""):
+  global FEED
+
   shortname = guess_shortname(filename)
+  FEED = shortname
 
   inputfmt, parsefunc = guess_parse_func(options.inputfmt, filename, options.feed_providername)
 
@@ -1656,6 +1708,7 @@ def process_file(filename, options, providerName="", providerID="",
     test_parse(footprint_xmlstr, options.maxrecs)
     print "exiting because of options.test"
     sys.exit(0)
+
 
   fastparse = not options.debug_input
   if OUTPUTFMT == "fpxml":

@@ -33,7 +33,7 @@ def is_bad_link(url):
   """ """
 
   rtn = False
-  if not url or os.path.isfile(DIR_BAD + get_link_file_name(url)):
+  if not url or len(url) < 11 or os.path.isfile(DIR_BAD + get_link_file_name(url)):
     rtn = True
   else:
     if url.lower().startswith('http://localhost'):
@@ -67,11 +67,18 @@ def check_link(url, recheck = False):
   if os.path.isfile(DIR_CHK + file_name):
     rtn = 'checked'
     last_check = get_file_age(DIR_CHK + file_name)
-    # dont need to check again for at least a week
-    if not is_bad_link(url) and last_check < WEEK:
-      # unless we insist
-      if not recheck:
-        return rtn
+    if is_bad_link(url):
+      # recheck if over a day old in case it got fixed
+      if False and last_check < DAY:
+        # unless we insist
+        if not recheck:
+          return rtn
+    else:
+      # dont need to check again for at least a week
+      if last_check < WEEK:
+        # unless we insist
+        if not recheck:
+          return rtn
        
     # clear last results and recheck
     os.remove(DIR_CHK + file_name)
@@ -103,14 +110,14 @@ def check_link(url, recheck = False):
         connection.request('HEAD', url_d.path, urllib.urlencode(params), headers)
       except:
         socket.setdefaulttimeout(default_timeout)
-        return 'could not req response from %s, %s, %s' % (str(url_d.netloc), str(url_d.path), str(params))
+        rtn = 'could not req response from %s, %s, %s' % (str(url_d.netloc), str(url_d.path), str(params))
 
     if connection:
       try:
         rsp = connection.getresponse()
       except:
         socket.setdefaulttimeout(default_timeout)
-        return 'could not get response from ' + url
+        rtn = 'could not get response from ' + url
 
     socket.setdefaulttimeout(default_timeout)
 
@@ -118,6 +125,7 @@ def check_link(url, recheck = False):
       rtn = str(rsp.status)
 
     if not rsp or not rsp.status in [200, 301, 302]:
+      rtn = 'bad: ' + rtn
       fh = open(DIR_BAD + file_name, 'w')
       if fh:
         fh.write(rtn + '\t' + url + '\n')
