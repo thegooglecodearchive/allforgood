@@ -519,8 +519,7 @@ def loaders():
                "catchafire",
                # need to contact feed provider 2011-11-12
                #"servenet", 
-               # need to contact feed provider 2011-11-12
-               #"servicenation",
+               "servicenation",
                "universalgiving", 
                "volunteergov", 
                "up2us",
@@ -604,9 +603,8 @@ def ftp_to_base(filename, ftpinfo, instr):
   data_fh.close()
 
   
-def solr_retransform(fname, start_time, feed_file_size):
-  """Create Solr-compatible versions of a datafile"""
-  """
+# row dictionary reference
+"""
 rows
 {'c:self_directed:boolean': 'False', 
  'event_date_range': '2010-06-11T00:00:00/2011-06-30T00:00:00', 
@@ -673,6 +671,8 @@ rows
  'quantity': '15'}
 """
 
+def solr_retransform(fname, start_time, feed_file_size):
+  """Create Solr-compatible versions of a datafile"""
   numopps = 0
 
   print_progress('Creating Solr transformed file for: ' + fname)
@@ -685,16 +685,16 @@ rows
     print_progress("error processing %s" % str(fname))
     return
 
-  fnames = csv_reader.fieldnames[:]
+  shortname = footprint_lib.guess_shortname(fname)
 
+  fnames = csv_reader.fieldnames[:]
   fnames.append("c:eventrangestart:dateTime")
   fnames.append("c:eventrangeend:dateTime")
   fnames.append("c:eventduration:integer")
-
   fnames.append("c:aggregatefield:string")
-
   fnames.append("c:randomsalt:float")
   fnamesdict = dict([(x, x) for x in fnames])
+
   data_file = open(fname, "r")
   # TODO: Switch to TSV - Faster and simpler
   csv_reader = DictReader(data_file, dialect='our-dialect')
@@ -711,11 +711,6 @@ rows
   today = now.date()
   expired_by_end_date = bad_links = 0
   for rows in csv_reader:
-    # The random salt is added to the result score during ranking to prevent
-    # groups of near-identical results with identical scores from appearing
-    # together in the same result pages without harming quality.
-    rows["c:randomsalt:float"] = str(random.uniform(0.0, 1.0))
-
     if rows["title"] and rows["title"].lower().find('anytown museum') >= 0:
       #bogus event
       continue
@@ -743,6 +738,7 @@ rows
       if rows["c:detailURL:URL"]:
         bad_links += 1
         print_progress("bad link: " + str(rows["c:detailURL:URL"]))
+        footprint_lib.feed_report(rows['c:opportunityID:string'], 'badlinks', shortname)
       continue
 
     rows["c:org_missionStatement:string"] = footprint_lib.cleanse_snippet(
@@ -750,12 +746,14 @@ rows
     rows["c:org_description:string"] = footprint_lib.cleanse_snippet(
                                                rows["c:org_description:string"])
 
-    rows["c:aggregatefield:string"] = footprint_lib.cleanse_snippet(' '.join([rows["description"],
+    rows["c:aggregatefield:string"] = footprint_lib.cleanse_snippet(' '.join([
+                                               rows["title"],
+                                               rows["description"],
                                                rows["c:provider_proper_name:string"],
                                                rows["c:skills:string"],
                                                rows["c:org_name:string"],
-                                               rows["title"]]))
-
+                                               rows["c:categories:string"],
+                                               ]))
 
     for key in rows.keys():
       # Fix to the "double semicolons instead of commas" Base hack.
@@ -791,6 +789,7 @@ rows
       if delta_days < -2 and delta_days > -3000:
         # more than 3000? it's the 1971 thing
         # else it expired at least two days ago
+        footprint_lib.feed_report(rows['c:opportunityID:string'], 'expired', shortname)
         expired_by_end_date += 1
         continue
 
@@ -832,6 +831,11 @@ rows
     if not rows['c:longitude:float'] is None:
       rows['c:longitude:float'] = float(rows['c:longitude:float']) - 1000.0
 
+    # The random salt is added to the result score during ranking to prevent
+    # groups of near-identical results with identical scores from appearing
+    # together in the same result pages without harming quality.
+    rows["c:randomsalt:float"] = str(random.uniform(0.0, 1.0))
+
     csv_writer.writerow(rows)
     numopps += 1
 
@@ -843,7 +847,6 @@ rows
   # NOTE: if you change this, you also need to update datahub/load_gbase.py
   # and frontend/views.py to avoid breaking the dashboard-- other status
   # messages don't matter.
-  shortname = footprint_lib.guess_shortname(fname)
   elapsed = datetime.now() - start_time
   xmlh.print_status("done parsing: output " + str(footprint_lib.NUMORGS) + " organizations" +
                     " and " + str(numopps) + " opportunities" +
@@ -863,6 +866,7 @@ rows
       fh = open(FEEDSDIR + '/' + shortname + '-last.txt', 'r')
     except:
       fh = None
+      footprint_stats = None
 
     if fh:
       footprint_stats = fh.read()
@@ -876,11 +880,8 @@ rows
       fh.write('numopps\t' + str(numopps) + '\n')
       fh.write('expired\t' + str(expired_by_end_date) + '\n')
       fh.write('badlinks\t' + str(bad_links) + '\n')
-      fh.write(footprint_stats)
-      #fh.write('numorgs\t' + str(footprint_lib.NUMORGS) + '\n')
-      #fh.write('noloc\t' + str(footprint_lib.NOLOC) + '\n')
-      #fh.write('dups\t' + str(footprint_lib.DUPS) + '\n')
-      #fh.write('ein501c3\t' + str(footprint_lib.EIN501) + '\n')
+      if footprint_stats:
+        fh.write(footprint_stats)
       fh.write('proper_name\t' + proper_name + '\n')
       fh.close()
 

@@ -23,12 +23,27 @@ import pipeline_keys
 """
 
 def make_row(processed, elapsed, bytes, numorgs, numopps, expired, badlinks, noloc, dups, ein501c3):
+
   js = ("  new Array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" %
           (processed, elapsed, bytes, numorgs, numopps, expired, badlinks, noloc, dups, ein501c3))
   csv = ('"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"' %
           (processed, elapsed, bytes, numorgs, numopps, expired, badlinks, noloc, dups, ein501c3))
 
   return js, csv
+
+
+def make_detail_file(processed, feed_file):
+
+  # claim the last set of details for this processing time
+  ts = str(processed).replace('-', '').replace(':', '').replace(' ', '')
+  for detail in ['badlinks', 'duplicates', 'expired', 'nolocation']:
+    last_file = feed_file.replace('-history.txt', '-' + detail + '-last.txt')
+    if os.path.isfile(last_file):
+      detail_file = feed_file.replace('-history.txt', '-' + ts + '-' + detail + '.txt')
+      os.rename(last_file, detail_file)
+      if pipeline_keys.PRIMARY_WEB_NODE.find(socket.gethostname()) < 0:
+        cmd = 'scp -q %s %s/feeds/' % (detail_file, pipeline_keys.PRIMARY_WEB_NODE)
+        subprocess.call(cmd, shell=True)
 
   
 def make_js_and_csv(subdir = 'feeds'):
@@ -56,7 +71,8 @@ def make_js_and_csv(subdir = 'feeds'):
                                          expired, badlinks, noloc, dups, ein501c3)
               out.append(js_str)
               csv.append(csv_str)
-            processed = ar[1]
+
+            last_processed = processed = ar[1]
             numorgs = numopps = expired = badlinks = dups = noloc = ein501c3 = ''
           elif line.startswith('elapsed\t'):
             ar = line.split('\t')
@@ -90,8 +106,9 @@ def make_js_and_csv(subdir = 'feeds'):
             proper_name = ar[1]
   
         if processed:
+          last_processed = processed
           js_str, csv_str = make_row(processed, elapsed, bytes, numorgs, numopps, 
-                                         expired, badlinks, noloc, dups, ein501c3)
+                                     expired, badlinks, noloc, dups, ein501c3)
           out.append(js_str)
           csv.append(csv_str)
 
@@ -106,7 +123,10 @@ def make_js_and_csv(subdir = 'feeds'):
           fh.write(js + '\n')
           fh.close()
           os.rename(js_file, js_file.replace('.ing', ''))
-  
+
+        # claim the last set of details for this processing time
+        if last_processed:
+          make_detail_file(last_processed, feed_file)
 
         rows = ('"processed", "elapsed", "bytes", "numorgs", "numopps"' 
               + '"expired, "badlinks", "noloc, "dups, "ein501c3"' 

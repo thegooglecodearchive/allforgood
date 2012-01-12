@@ -71,7 +71,7 @@ class Tagger(object):
     # from multiple types of Taggers.
     self.tagging_functions = []
 
-  def do_tagging(self, rec, feedinfo, tag_count_dict):
+  def do_tagging(self, rec, feedinfo, tag_count_dict, given_tags = []):
     """takes a record to be tagged, runs tagging functions"""
     scores = [f(rec, feedinfo) for f in self.tagging_functions]
 
@@ -80,6 +80,9 @@ class Tagger(object):
       score = sum(scores) / len(scores)
     else:
       score = 0.0
+
+    for tag in given_tags:
+      rec.add_tag(tag)
 
     # add tag if the score, after all tagging functions, exceeds the threshold
     if score > self.score_threshold:
