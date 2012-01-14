@@ -66,14 +66,8 @@ def check_link(url, recheck = False):
   file_name = get_link_file_name(url)
   if os.path.isfile(DIR_CHK + file_name):
     rtn = 'checked'
-    last_check = get_file_age(DIR_CHK + file_name)
-    if is_bad_link(url):
-      # recheck if over a day old in case it got fixed
-      if False and last_check < DAY:
-        # unless we insist
-        if not recheck:
-          return rtn
-    else:
+    if not is_bad_link(url):
+      last_check = get_file_age(DIR_CHK + file_name)
       # dont need to check again for at least a week
       if last_check < WEEK:
         # unless we insist

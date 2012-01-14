@@ -49,6 +49,7 @@ import parse_sparked
 import parse_diy
 import parse_volunteermatch
 import providers
+import check_links
 
 from taggers import get_taggers, XMLRecord
 
@@ -463,12 +464,13 @@ def output_tag_value(node, fieldname):
   """macro for output_field( get node value )"""
   return output_field(fieldname, xmlh.get_tag_val(node, fieldname))
 
+
 def output_tag_value_renamed(node, xmlname, newname):
   """macro for output_field( get node value ) then emitted as newname"""
   return output_field(newname, xmlh.get_tag_val(node, xmlname))
 
 
-def feed_report(id, detail, feed = None):
+def feed_report(id, detail, feed = None, link = None):
   """ """
 
   if not feed:
@@ -482,7 +484,13 @@ def feed_report(id, detail, feed = None):
       fh = None
 
     if fh:
-      fh.write(str(id) + '\n')
+      fh.write(str(id).ljust(23))
+      if link:
+        link = str(link)
+        fh.write('\t<a target='_blank' href="' + link + '">' + link + '</a>')
+        #link_file = check_links.DIR_BAD + check_links.get_link_file_name(link)
+        #fh.write('\t' + time.mtime(os.path.getmtime(link_file)))
+      fh.write('\n')
       fh.close()
   
 
@@ -490,7 +498,6 @@ def duplicate_opp(opp, loc_str, startend):
   rtn = False
   title = get_title(opp).lower()
   abstract = get_abstract(opp).lower()
-  #detailURL = xmlh.get_tag_val(opp, 'detailURL')
   #dedup_str = "".join([title, desc, detailURL, loc_str, startend])
   dedup_str = "".join([title, abstract, loc_str, startend])
   dedup_file = DUPDIR + '/' + hashlib.md5(dedup_str).hexdigest()
@@ -499,7 +506,8 @@ def duplicate_opp(opp, loc_str, startend):
     DUPS += 1
     opp_id = xmlh.get_tag_val(opp, "volunteerOpportunityID")
     if opp_id:
-      feed_report(opp_id, 'duplicates')
+      link = xmlh.get_tag_val(opp, 'detailURL')
+      feed_report(opp_id, 'duplicates', FEED, link)
     rtn = True
   else:
     try:
@@ -757,6 +765,8 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
                           "unwound %g dates from %s:%s" 
                           % (number_of_opptimes, org_id, opp_id))
 
+  link = xmlh.get_tag_val(opp, 'detailURL')
+
   for opptime in opp_times:
     # unwind multiple dates
     if opptime is None:
@@ -831,7 +841,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
               print_progress("missing location: %s" % title)
             opp_id = xmlh.get_tag_val(opp, "volunteerOpportunityID")
             if opp_id:
-              feed_report(opp_id, 'nolocation')
+              feed_report(opp_id, 'nolocation', FEED, link)
             return totrecs, ""
 
         loc_fields = get_loc_fields(virtual=virtual,

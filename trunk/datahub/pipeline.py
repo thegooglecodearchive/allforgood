@@ -671,6 +671,8 @@ rows
  'quantity': '15'}
 """
 
+BAD_LINKS = {}
+
 def solr_retransform(fname, start_time, feed_file_size):
   """Create Solr-compatible versions of a datafile"""
   numopps = 0
@@ -734,11 +736,15 @@ def solr_retransform(fname, start_time, feed_file_size):
     if rows["c:detailURL:URL"].find('http') != 0:
       rows["c:detailURL:URL"] = 'http://' + rows["c:detailURL:URL"]
 
-    if check_links.is_bad_link(rows["c:detailURL:URL"]):
-      if rows["c:detailURL:URL"]:
-        bad_links += 1
-        print_progress("bad link: " + str(rows["c:detailURL:URL"]))
-        footprint_lib.feed_report(rows['c:opportunityID:string'], 'badlinks', shortname)
+    link = str(rows["c:detailURL:URL"])
+    if check_links.is_bad_link(link):
+      bad_links += 1
+      footprint_lib.feed_report(rows['c:opportunityID:string'], 'badlinks', shortname, link)
+      if link:
+        if link not in BAD_LINKS:
+          BAD_LINKS[link] = 0
+          print_progress("bad link: " + link)
+        BAD_LINKS[link] += 1
       continue
 
     rows["c:org_missionStatement:string"] = footprint_lib.cleanse_snippet(
@@ -789,7 +795,7 @@ def solr_retransform(fname, start_time, feed_file_size):
       if delta_days < -2 and delta_days > -3000:
         # more than 3000? it's the 1971 thing
         # else it expired at least two days ago
-        footprint_lib.feed_report(rows['c:opportunityID:string'], 'expired', shortname)
+        footprint_lib.feed_report(rows['c:opportunityID:string'], 'expired', shortname, link)
         expired_by_end_date += 1
         continue
 
