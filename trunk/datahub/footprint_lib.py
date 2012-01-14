@@ -788,7 +788,8 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
         start_date = "2000-01-01"
         start_time = "00:00:00-00:00"
       startend = convert_dt_to_gbase(start_date, start_time, "UTC")
-      if (end_date != "" and end_date + end_time > start_date + start_time):
+      #if (end_date != "" and end_date + end_time > start_date + start_time):
+      if end_date:
         endstr = convert_dt_to_gbase(end_date, end_time, "UTC")
         startend += "/" + endstr
 
