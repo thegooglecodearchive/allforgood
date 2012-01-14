@@ -4,16 +4,23 @@
 <style>
 BODY {font-family:Arial;background:url(/images/body-bg.png) repeat-x scroll 0 0 #0281D1;}
 H1 {display:inline;padding:0;margin:0;color:#333333;}
-H2 {font-family:Droid Sans Mono,mono;padding:0;margin:0;color:#111111;font-size:16px;}
+H2 {font-family:Droid Sans Mono,mono;padding:0;margin:0;color:#111111;font-size:14px;}
 #wrapper {padding-left:200px;margin-left:200px;margin-top:18px;padding-top:8px;width:800px;background-color:#ffffff;}
+#iframe_wrapper {position:absolute;background-color:#ffffff;top:-20px;width:660px;z-index:999999;}
+#iframe_details {position:absolute;left:0;top:20;width:660px;height:600px;z-index:999999;border:solid 1px;}
+#iframe_title {background-color:#cccccc;width:660px;height:26px;border:solid 1px;}
+.redx {cursor:pointer;font-weight:bold;color:#ff3333;}
+.clickable {cursor:pointer;text-decoration:underline;}
+
 #logo {cursor:pointer;}
 #feed_provider {position:relative;left:-160px;}
 #subtitle {font-size:20px;font-weight:normal;}
 #bar {position:relative;background-color:#f3f3f3;height:48px;text-align:left;z-index:1;background-image:url(knurl-background.png);}
 
+
 .drag {position:relative;cursor:pointer;background-color:#ccccff;z-index:10000;
        filter:alpha(opacity=0);opacity:0;-moz-opacity:0;}
-#needle {position:absolute;width:32px;height:435px;z-index:0;background-color:transparent;z-index:1;}
+#needle {position:absolute;width:32px;height:400px;z-index:0;background-color:transparent;z-index:1;}
 #needle-img {filter:alpha(opacity=70);opacity:0.7;-moz-opacity:0.7;}
 #nodes {position:relative;top:-48px;font-size:12px;text-align:left;height:24px;}
 #legend {position:relative;top:-24px;font-size:13px;text-align:left;display:none;}
@@ -34,24 +41,28 @@ DIV.title-cell {white-space:nowrap;width:100px;overflow:hidden;}
 </style>
 <script>
 // processed, elapsed, bytes, numorgs, numopps, expired, bad_links, noloc, dups, ein501c3
+var provider = '';
+
 var arProcs = null;
 var timerID = null;
 
 var GX = 568;
 var os_pos = false;
 var bShowNodeLinks = false;
+var ts_prime = '20120107000000';
 
 var arGraphs = new Array(
-  new Array('processing-graph', 1, '666666', ' mins', 1),
-  new Array('feed-size-graph', 2, '666666', ' Kb', 0.001),
-  new Array('orgs-graph', 3, '666666', '', 1),
-  new Array('opps-graph', 4, '0000ff', '', 1),
-  new Array('expired-graph', 5, 'ff0000', '', 1),
-  new Array('bad-links-graph', 6, 'ff0000', '', 1),
-  new Array('noloc-graph', 7, 'ff0000', '', 1),
-  new Array('dups-graph', 8, 'ff0000', '', 1),
-  new Array('ein501c3-graph', 9, '666666', '', 1),
+  new Array('processing-graph', 1, '666666', ' mins', 1, null),
+  new Array('feed-size-graph', 2, '666666', ' Kb', 0.001, null),
+  new Array('orgs-graph', 3, '666666', '', 1, null),
+  new Array('opps-graph', 4, '0000ff', '', 1, null),
+  new Array('expired-graph', 5, 'ff0000', '', 1, 'expired'),
+  new Array('bad-links-graph', 6, 'ff0000', '', 1, 'badlinks'),
+  new Array('noloc-graph', 7, 'ff0000', '', 1, 'nolocations'),
+  new Array('dups-graph', 8, 'ff0000', '', 1, 'duplicates'),
+  new Array('ein501c3-graph', 9, '666666', '', 1, null),
 null);
+
 
 var dragX = 0; // mouse starting positions 
 var dragY = 0; 
@@ -116,6 +127,31 @@ function getElementPosition(obj) {
   return {x:curleft, y:curtop};
 }
 
+function hideDetails() {
+  var it = _gel('iframe_wrapper');
+  if (it) {
+    it.style.display = 'none';
+  }
+}
+
+function showDetails(me) {
+  var file = me.the_file;
+  var ts = me.the_ts;
+  if (file && ts) {
+    var it = _gel('iframe_details');
+    if (it) {
+      it.src = 'blank.html';
+      var url = arNodes[0] + '~footprint/feeds/ids.php?q=' + file + '&ts=' + encodeURIComponent(ts);
+      it.src = url;
+    }
+
+    var it = _gel('iframe_wrapper');
+    if (it) {
+      it.style.display = 'block';
+    }
+  }
+}
+
 function toNumber(value) { 
   var n = parseInt(value); 
   return n == null || isNaN(n) ? 0 : n; 
@@ -167,7 +203,6 @@ function doMove(x) {
   current_x = x;
 
   dragElement.style.left = x + 'px';
-  //dragElement.style.top = (offsetY + e.clientY - dragY) + 'px';
 
   var p = getElementPosition(dragElement);
   var it = _gel('needle');
@@ -180,8 +215,9 @@ function doMove(x) {
       if (arGraphs[i]) {
         var id = arGraphs[i][0].replace('graph', 'value');
         var it = _gel(id);
+        var n = toNumber(arProcs[x][arGraphs[i][1]]);
         if (it) {
-          var v = addCommas(Math.round(toNumber(arProcs[x][arGraphs[i][1]]) * arGraphs[i][4]));
+          var v = addCommas(Math.round(n * arGraphs[i][4]));
           if (arGraphs[i][1] == 1 && v <= 1) {
             v = '< 1 min';
           } else {
@@ -189,11 +225,29 @@ function doMove(x) {
           }
           it.innerHTML = v;
         }
+
+        if (arGraphs[i][5]) {
+          var it = _gel(arGraphs[i][5]);
+          if (it) {
+            var ts = arProcs[x][0].replace(/ /g, '').replace(/:/g, '').replace(/-/g, '');
+            if (n < 1 || ts < ts_prime) {
+              it.className = '';
+              it.onclick = null;
+            } else {
+              var file = provider + '-' + ts + '-' + arGraphs[i][5];
+              it.className = 'clickable';
+              it.the_file = file;
+              it.the_ts = UTC2Local(arProcs[x][0]);
+              it.onclick = function(){showDetails(this);};
+            }
+          }
+        }
       }
     }
+
     var it = _gel('timestamp');
     if (it) {
-      it.innerHTML = UTC2Local(arProcs[x][0]); // + 'UTC';
+      it.innerHTML = UTC2Local(arProcs[x][0]);
     }
   }
 
@@ -209,7 +263,6 @@ function setNeedle(img_src) {
 
 function onMouseUp(e) {
   if (dragElement != null) {
-    //dragElement.style.zIndex = zIndexWas;
     document.onmousemove = null;
     document.onselectstart = null;
     dragElement.ondragstart = null;
@@ -339,7 +392,8 @@ function boot() {
     var needle_div = _gel('needle');
     if (needle_div) {
       var p = getElementPosition(_gel('opps-graph'));
-      needle_div.style.top = ((os_pos && !document.all? 32 : 0) + p.y) + 'px';
+      //needle_div.style.top = ((os_pos && !document.all? 32 : 0) + p.y) + 'px';
+      needle_div.style.top = p.y + 'px';
       needle_div.style.display = 'block';
     }
     var knurl = _gel('knurl-img');
@@ -404,11 +458,12 @@ function init() {
   if (os.indexOf('Wind') >= 0) {
     os_pos = true;
   }
+
   var img = new Image();
   img.src = 'red.gif';
 
   var args = getArgs();
-  var provider = (args['provider'] || 'aarp');
+  provider = (args['provider'] || 'aarp');
 
   var it = _gel('feed_provider');
   if (it) {
@@ -488,7 +543,8 @@ function init() {
 <tr>
 <td valign="center" class="title-cell"><div class="title-cell"><img class="help"
   title="  discarded because the end date was in the past" alt="  discarded because the end date was in the past"
-  align="absmiddle" class="help" src="help.png" alt="" border="0" /><span class="title group2">Expired</span>
+  align="absmiddle" class="help" src="help.png" alt="" border="0" /><span class="title group2"
+><span id="expired">Expired</span></span>
 </div></td>
 <td class="graph-cell"><span id="expired-graph" class="graph" style="width:0;"><img 
   height="24" src="loading.gif" /></span></td>
@@ -497,7 +553,8 @@ function init() {
 <tr>
 <td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
   title="  discarded because the link to it was not valid" alt="  discarded because the link to it was not valid"
-  align="absmiddle" src="help.png" alt="" border="0" /><span class="title group2">Bad Links</span>
+  align="absmiddle" src="help.png" alt="" border="0" /><span class="title group2"
+><span id="badlinks">Bad Links</span></span>
 </div></td>
 <td class="graph-cell"><span id="bad-links-graph" class="graph" style="width:0;"><img 
   height="24" src="loading.gif" /></span></td>
@@ -506,7 +563,8 @@ function init() {
 <tr>
 <td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
   title="  discarded as duplication" alt="  discarded as duplication"
-  align="absmiddle" src="help.png" alt="" border="0" /><span class="title group2">Duplicates</span>
+  align="absmiddle" src="help.png" alt="" border="0" /><span class="title group2"
+><span id="duplicates">Duplicates</span></span>
 </div></td>
 <td class="graph-cell"><span id="dups-graph" class="graph" style="width:0;"><img height="24" 
   src="loading.gif" /></span></td>
@@ -515,12 +573,14 @@ function init() {
 <tr>
 <td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
   title="  discarded for lack of location" alt="  discarded for lack of location"
-  src="help.png" alt="" border="0" /><span class="title group2">No Location</span>
+  src="help.png" alt="" border="0" /><span class="title group2"
+><span id="nolocations">No Location</span></span>
 </div></td>
 <td class="graph-cell"><span id="noloc-graph" class="graph" style="width:0;"><img height="24" 
   src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="noloc-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+
 <tr style="display:none;">
 <td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
   title="  organizations appearing to be designated 501(c)3" alt="  organizations appearing to be designated 501(c)3"
@@ -530,7 +590,8 @@ function init() {
   src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="ein501c3-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell" style="height:28px;"></td></tr>
-<tr>
+
+<tr style="display:none;">
 <td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
   title=" number organizations referenced by the opportunities" alt=" number organizations referenced by the opportunities"
   align="absmiddle" src="help.png" alt="" border="0" /><span class="title">Organizations</span>
@@ -539,6 +600,7 @@ function init() {
   src="loading.gif" /></span></td>
 <td class="value-cell""><span class="value" id="orgs-value">-</span></td>
 </tr><tr><td colspan="3" class="spacer-cell"></td></tr>
+
 <tr>
 <td valign="center" class="title-cell"><div class="title-cell"><img class="help" 
   title="  size of feed provided" alt="  size of feed provided"
@@ -577,8 +639,19 @@ function init() {
 </td></tr></table>
 </center>
 <div id="needle" style="display:none;top:0;">
-<img id="needle-img" height="435" width="1" src="black.gif" style="margin-left:15px;" />
+<img id="needle-img" height="400" width="1" src="black.gif" style="margin-left:15px;" />
 <img id="knurl-img" height="40" width="32" src="knurl.png" style="position:absolute;left:0;bottom:0;" />
 </div>
 </div>
+
+<div style="position:absolute;left:400px;top:40px;z-index:999999;">
+<div id="iframe_wrapper" style="display:none;">
+<div id="iframe_title"><table cellpadding="0" cellpadding="0" border="0" width="100%"><tr>
+<td>&nbsp;Details</td>
+<td align="right"><span class="redx" onclick="hideDetails()
+;">X</span></td></tr></table>
+</div>
+<iframe id="iframe_details" src="blank.html" style="display:block;"></iframe></div>
+</div>
+
 </body>
