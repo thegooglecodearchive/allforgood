@@ -479,7 +479,7 @@ function init() {
   var it = _gel('nodes');
   if (it) {
     var html = new Array();
-    html.push('<a href="', arNodes[node], '~footprint/feeds/', provider, which, '.csv">');
+    html.push('<a href="', arNodes[node], '~footprint/feeds/csv.php?q=', provider, which, '.csv">');
     html.push('<img align="absmiddle" src="excel.png" style="margin-right:6px;" border="0"/>');
     html.push('Download CSV for Excel');
     html.push('</a> ');
