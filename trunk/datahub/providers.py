@@ -65,6 +65,8 @@ ProviderNames = {
   "uso":{"name":"USO", "idx":44}, 
   # added daytabank 10/12/2011
   "daytabank":{"name":"Make a Difference Day", "idx":45}, 
+  # added daytabank 10/12/2011
+  "getinvolved":{"name":"GetInvolved.ca", "idx":46}, 
 }
 
 def updateProviderNamesScript():
