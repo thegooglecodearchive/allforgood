@@ -128,9 +128,8 @@ def make_js_and_csv(subdir = 'feeds'):
         if last_processed:
           make_detail_file(last_processed, feed_file)
 
-        rows = ('"processed", "elapsed", "bytes", "numorgs", "numopps"' 
-              + '"expired, "badlinks", "noloc, "dups, "ein501c3"' 
-              + '\n' + '\n'.join(csv))
+        rows = ('"processed", "elapsed", "bytes", "numorgs", "numopps", "expired", "badlinks", "noloc", "dups", "ein501c3"' 
+             + '\n' + '\n'.join(csv))
         csv_file = feed_file.replace('.txt', '.csv.ing')
         fh = open(csv_file, 'w')
         if fh:

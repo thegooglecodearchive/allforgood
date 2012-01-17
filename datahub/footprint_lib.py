@@ -487,7 +487,7 @@ def feed_report(id, detail, feed = None, link = None):
       fh.write(str(id).ljust(23))
       if link:
         link = str(link)
-        fh.write('\t<a target='_blank' href="' + link + '">' + link + '</a>')
+        fh.write('\t<a target="_blank" href="' + link + '">' + link + '</a>')
         #link_file = check_links.DIR_BAD + check_links.get_link_file_name(link)
         #fh.write('\t' + time.mtime(os.path.getmtime(link_file)))
       fh.write('\n')
@@ -1216,6 +1216,8 @@ def guess_shortname(filename):
     return "samaritan"
   if re.search(r'catchafire', filename):
     return "catchafire"
+  if re.search(r'getinvolved', filename):
+    return "getinvolved"
   if re.search(r'ymca', filename):
     return "ymca"
   if re.search(r'uso', filename):
@@ -1423,6 +1425,10 @@ def guess_parse_func(inputfmt, filename, feed_providername):
     return "fpxml", fp.parser(
       '141', 'USO', 'USO', 'http://www.usovolunteer.org/',
       'USO')
+  if shortname == "getinvolved":
+    return "fpxml", fp.parser(
+      '142', 'getinvolved', 'getinvolved', 'http://www.getinvolved.ca/',
+      'getinvolved')
   if shortname == "onlinespreadsheet":
     if not feed_providername:
       feed_providername = "6000"
