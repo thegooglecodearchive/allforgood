@@ -269,7 +269,7 @@ def form_solr_query(args):
     # this keeps the non-geo counts out of the refine by counts
     fq = '&fq='
     fq += urllib.quote('self_directed:false AND virtual:false AND micro:false')
-    if not 'is_report' in args:
+    if args['is_report']:
       fq += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
     solr_query += fq
     
@@ -530,7 +530,7 @@ def query(query_url, args, cache, dumping = False):
   all_facets = get_geo_counts(args)
   if "facet_counts" in all_facets:    
     facet_counts = dict()    
-    if 'is_report' in args:
+    if args['is_report']:
       facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false"])
     else:
       facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false AND -statewide:[* TO *] AND -nationwide:[* TO *]"])
@@ -862,7 +862,7 @@ def get_facet_counts():
 
 def get_geo_counts(args):
   try:
-    if 'is_report' in args:
+    if args['is_report']:
       query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
                 + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
                 + '&facet=on&facet.mincount=1&facet.query='
