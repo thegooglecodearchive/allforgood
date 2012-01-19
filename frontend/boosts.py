@@ -52,14 +52,16 @@ CATEGORY_BOOSTS = {
 }
 
 API_KEY_QUERIES = {
-	'americanexpress' : ' (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-25T00:00:00Z] AND eventrangeend:[2011-08-30T00:00:00Z TO *]))',
+  'americanexpress' : '(911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-25T00:00:00Z] AND eventrangeend:[2011-08-30T00:00:00Z TO *]))',
 	
-	'911Day' : ' (911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-15T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))',
+  '911Day' : '(911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-15T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))',
 		
-	'joiningforces' : ' (military OR veteran)',
-# commenting out new daytabank custom query pending confirmation on what is appropriate to show or not.	
-#	'daytabank' : ' (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-22T23:59:59Z] AND eventrangeend:[2011-10-22T00:00:00Z TO *])',
+  'joiningforces' : '(military OR veteran)',
+  
+  # commenting out new daytabank custom query pending confirmation on what is appropriate to show or not.	
+  #'daytabank':'(eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-22T23:59:59Z] AND eventrangeend:[2011-10-22T00:00:00Z TO *])',
 }
+
 
 API_KEY_BOOSTS = {
   'liveunited' : ' feed_providername:unitedway^2000 feed_providername:handsonnetwork1800^10 feed_providername:handsonnetworkconnect^10',
@@ -74,4 +76,13 @@ API_KEY_BOOSTS = {
   
 }
 
-FILTER_QUERIES = []
+API_KEY_FILTER_QUERIES = {
+}
+
+API_KEY_NEGATED_FILTER_QUERIES = {
+  # eg, "if not starbucks..."
+  'starbucks' : '-feed_providername:unitedway',
+}
+
+FILTER_QUERIES = [
+]
