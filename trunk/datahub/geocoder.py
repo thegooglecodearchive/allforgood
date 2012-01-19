@@ -154,7 +154,7 @@ def geocode_call(query, retries=4):
     print_debug("geocode_call: Connection problem or quota exceeded.  Sleeping...")
     if retries == 4:
       xmlh.print_progress("geocoder: %d" % respcode, "", SHOW_PROGRESS)
-    time.sleep(1)
+    time.sleep(5)
     return geocode_call(query, retries - 1)
   if respcode != 200:
     return False
