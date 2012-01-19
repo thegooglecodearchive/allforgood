@@ -246,22 +246,25 @@ def form_solr_query(args):
   solr_query = geo_params + solr_query
   solr_query = urllib.quote_plus(solr_query)
   
-  # Type: these map to the tabs on the search results page
   if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
-    # quote plus
+    # Type: these map to the tabs on the search results page
     if args[api.PARAM_TYPE] == "self_directed":
       solr_query += urllib.quote_plus(" AND self_directed:true")
     elif args[api.PARAM_TYPE] == "statewide":
-      solr_query += urllib.quote_plus(" AND (statewide:" + STATEWIDE_GLOBAL + " OR nationwide:" + NATIONWIDE_GLOBAL + ")"
-                    + " AND micro:false AND self_directed:false")
+      solr_query += urllib.quote_plus(" AND (statewide:" + STATEWIDE_GLOBAL 
+                                             + " OR nationwide:" + NATIONWIDE_GLOBAL + ")"
+                                             + " AND micro:false AND self_directed:false")
     elif args[api.PARAM_TYPE] == "virtual":
       solr_query += urllib.quote_plus(" AND virtual:true AND micro:false AND self_directed:false")
     elif args[api.PARAM_TYPE] == "micro":
       solr_query += urllib.quote_plus(" AND micro:true")
   else:
-    solr_query += '&fq='
-    solr_query += urllib.quote('self_directed:false AND virtual:false AND micro:false')
-    solr_query += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
+    # this keeps the non-geo counts out of the refine by counts
+    fq = '&fq='
+    fq += urllib.quote('self_directed:false AND virtual:false AND micro:false')
+    fq += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
+    solr_query += fq
+    
   global FULL_QUERY_GLOBAL
   FULL_QUERY_GLOBAL = solr_query
     
