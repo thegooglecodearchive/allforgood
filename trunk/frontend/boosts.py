@@ -77,11 +77,12 @@ API_KEY_BOOSTS = {
 }
 
 API_KEY_FILTER_QUERIES = {
+  'starbucks' : '-feed_providername:unitedway',
 }
 
 API_KEY_NEGATED_FILTER_QUERIES = {
   # eg, "if not starbucks..."
-  'starbucks' : '-feed_providername:unitedway',
+  'starbucks' : '-feed_providername:getinvolved',
 }
 
 FILTER_QUERIES = [
