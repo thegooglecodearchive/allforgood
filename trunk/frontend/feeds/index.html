@@ -22,7 +22,7 @@ H2 {font-family:Droid Sans Mono,mono;padding:0;margin:0;color:#111111;font-size:
        filter:alpha(opacity=0);opacity:0;-moz-opacity:0;}
 #needle {position:absolute;width:32px;height:400px;z-index:0;background-color:transparent;z-index:1;}
 #needle-img {filter:alpha(opacity=70);opacity:0.7;-moz-opacity:0.7;}
-#nodes {position:relative;top:-48px;font-size:12px;text-align:left;height:24px;}
+#nodes {font-size:12px;text-align:left;height:32px;}
 #legend {position:relative;top:-24px;font-size:13px;text-align:left;display:none;}
 #footnote {position:relative;font-size:13px;text-align:left;}
 
@@ -621,9 +621,12 @@ function init() {
 <div id="bar" style="width:600px;"></div>
 <div id="slider" class="drag" style="width:32px;height:42px;top:-42px;"></div>
 </td></tr></table>
-<div id="slider-tip">Drag the slider <img align="bottom" src="knurl-icon.png" /> to see past dates.</div>
-
-<div id="footnote">* Opportunity counts logged prior to 08-Dec-2011 included expired volunteer opportunities. </div>
+<div id="slider-tip">Drag the slider <img align="bottom" src="knurl-icon.png" /> to see detail results for past dates.</div>
+<div id="footnote">
+Click the Expired, Bad Links, Duplicates or No Location links to view a detailed list of those discarded opportunities.  If the link is not underlined then no detailed data is available for the selected feed run.
+<p>
+* The Net Indexed Opportunities counts logged prior to December 8, 2011, include Expired opportunities even though those discarded opportunities were at no point ever included in the search results.
+</div>
 <div id="legend">
 <li>Net Opportunities - volunteer opportunities derived from the feed</li>
 <li>Expired - opportunities discarded because the end date was in the past</li>
