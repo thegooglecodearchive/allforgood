@@ -269,8 +269,7 @@ def form_solr_query(args):
     # this keeps the non-geo counts out of the refine by counts
     fq = '&fq='
     fq += urllib.quote('self_directed:false AND virtual:false AND micro:false')
-    if args['is_report']:
-      fq += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
+    fq += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
     solr_query += fq
     
   global FULL_QUERY_GLOBAL
