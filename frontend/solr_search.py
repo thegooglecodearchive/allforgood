@@ -212,7 +212,6 @@ def form_solr_query(args):
         args[api.PARAM_CATEGORY] = str(key)   
 
   # keyword
-  
   original_query = ''
   query_is_empty = False
   if (api.PARAM_Q in args and args[api.PARAM_Q] != ""):
@@ -526,7 +525,11 @@ def query(query_url, args, cache, dumping = False):
   result_content = re.sub(r';;', ',', result_content)
   result = simplejson.loads(result_content)
   
-  all_facets = get_geo_counts(args)
+  api_key = None
+  if api.PARAM_KEY in args:
+    api_key = args[api.PARAM_KEY]
+  all_facets = get_geo_counts(args, api_key)
+
   if "facet_counts" in all_facets:    
     facet_counts = dict()    
     if args['is_report']:
@@ -551,7 +554,7 @@ def query(query_url, args, cache, dumping = False):
     facet_counts["count"] = count
     
     result_set.facet_counts = facet_counts
-    facets = get_facet_counts()
+    facets = get_facet_counts(api_key)
     result_set.categories = facets['category_fields']
     result_set.providers = facets['provider_fields']
     
@@ -820,7 +823,7 @@ def get_from_ids(ids):
 
   return result_set
 
-def get_facet_counts():
+def get_facet_counts(api_key):
     category_fields = dict()
     provider_fields = []
     query = []
@@ -831,6 +834,7 @@ def get_facet_counts():
         query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + 
                      '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + 
                      '&facet.mincount=1&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query))
+        query_url += apply_filter_query(api_key)
         logging.info("facets: " + query_url)
     except:
         raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
@@ -839,6 +843,7 @@ def get_facet_counts():
     except:
         logging.info('error receiving solr facet counts')
         return
+
 
     result_content = fetch_result.content
     result_content = re.sub(r';;', ',', result_content)
@@ -859,7 +864,7 @@ def get_facet_counts():
     return {'category_fields': sorted(category_fields.iteritems(), 
              key=itemgetter(1), reverse=True), 'provider_fields': provider_fields}    
 
-def get_geo_counts(args):
+def get_geo_counts(args, api_key):
   try:
     if args['is_report']:
       query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
@@ -873,6 +878,8 @@ def get_geo_counts(args):
                 + '&facet=on&facet.mincount=1&facet.query='
                 + 'self_directed:false+AND+virtual:false+AND+micro:false+AND+-statewide:[*+TO+*]+AND+-nationwide:[*+TO+*]'
                 + '&rows=0')
+
+    query_url += apply_filter_query(api_key)
     logging.info("all: " + query_url)
   except:
     raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
