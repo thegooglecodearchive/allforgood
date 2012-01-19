@@ -112,15 +112,15 @@ def apply_filter_query(api_key):
 
   rtn = ''
   for fq in FILTER_QUERIES:
-    rtn += '&fq=(' + fq + ')'
+    rtn += '&fq=' + urllib.quote_plus(fq)
 
   for k,fq in API_KEY_FILTER_QUERIES.items():
     if k == api_key:
-      rtn += '&fq=(' + fq + ')'
+      rtn += '&fq=' + urllib.quote_plus(fq)
 
   for k,fq in API_KEY_NEGATED_FILTER_QUERIES.items():
     if k != api_key:
-      rtn += '&fq=(' + fq + ')'
+      rtn += '&fq=' + urllib.quote_plus(fq)
 
   return rtn
 
@@ -128,8 +128,7 @@ def apply_filter_query(api_key):
 def add_range_filter(field, min_val, max_val):
   """ Convert colons in the field name and build a range specifier
   in SOLR query syntax"""
-  # TODO: Deal with escapification
-  result = ' +AND+ '
+  result = ' AND '
   result += field
   result += ':[' + str(min_val) + ' TO ' + str(max_val) + ']'
   return result
