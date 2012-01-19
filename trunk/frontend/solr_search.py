@@ -92,7 +92,7 @@ def apply_api_key_query(q, api_key):
     rtn = '(%s) AND (%s)' % (q, API_KEY_QUERIES[api_key])
     
   if rtn != q:
-    logging.info(q + '|' + api_key + '|' + rtn)
+    logging.info(q + '|' + str(api_key) + '|' + rtn)
 
   return rtn
 
@@ -107,12 +107,20 @@ def apply_category_query(q):
   return rtn.replace('category:', '')
 
 
-def apply_filter_query(args, original_query = ''):
+def apply_filter_query(api_key):
   """ """
 
   rtn = ''
   for fq in FILTER_QUERIES:
-    rtn += '&fq='
+    rtn += '&fq=(' + fq + ')'
+
+  for k,fq in API_KEY_FILTER_QUERIES.items():
+    if k == api_key:
+      rtn += '&fq=(' + fq + ')'
+
+  for k,fq in API_KEY_NEGATED_FILTER_QUERIES.items():
+    if k != api_key:
+      rtn += '&fq=(' + fq + ')'
 
   return rtn
 
@@ -262,7 +270,8 @@ def form_solr_query(args):
     # this keeps the non-geo counts out of the refine by counts
     fq = '&fq='
     fq += urllib.quote('self_directed:false AND virtual:false AND micro:false')
-    fq += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
+    if not 'is_report' in args:
+      fq += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
     solr_query += fq
     
   global FULL_QUERY_GLOBAL
@@ -307,7 +316,7 @@ def form_solr_query(args):
     BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
   
   solr_query += apply_boosts(args, original_query);
-  solr_query += apply_filter_query(args, original_query)
+  solr_query += apply_filter_query(api_key)
 
   # field list
   solr_query += '&fl='
@@ -519,10 +528,14 @@ def query(query_url, args, cache, dumping = False):
   result_content = re.sub(r';;', ',', result_content)
   result = simplejson.loads(result_content)
   
-  all_facets = get_geo_counts()
+  all_facets = get_geo_counts(args)
   if "facet_counts" in all_facets:    
     facet_counts = dict()    
-    facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false AND -statewide:[* TO *] AND -nationwide:[* TO *]"])
+    if 'is_report' in args:
+      facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false"])
+    else:
+      facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false AND -statewide:[* TO *] AND -nationwide:[* TO *]"])
+
     facet_counts.update(get_type_counts())    
     count = 0;
     if api.PARAM_TYPE in args:
@@ -848,9 +861,16 @@ def get_facet_counts():
     return {'category_fields': sorted(category_fields.iteritems(), 
              key=itemgetter(1), reverse=True), 'provider_fields': provider_fields}    
 
-def get_geo_counts():
+def get_geo_counts(args):
   try:
-    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
+    if 'is_report' in args:
+      query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
+                + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
+                + '&facet=on&facet.mincount=1&facet.query='
+                + 'self_directed:false+AND+virtual:false+AND+micro:false'
+                + '&rows=0')
+    else:
+      query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
                 + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
                 + '&facet=on&facet.mincount=1&facet.query='
                 + 'self_directed:false+AND+virtual:false+AND+micro:false+AND+-statewide:[*+TO+*]+AND+-nationwide:[*+TO+*]'
