@@ -30,7 +30,6 @@ URL_ADMIN = '/admin'
 URL_MODERATE = '/moderate'
 URL_MODERATE_BLACKLIST = '/moderateblacklist'
 URL_UI_SNIPPETS = '/ui_snippets'
-URL_UI_MY_SNIPPETS = '/ui_my_snippets'
 URL_REDIRECT = '/url'
 URL_DATAHUB_DASHBOARD = '/dashboard/datahub'
 URL_ACTION = '/action'  # User actions like starring
