@@ -77,7 +77,7 @@ API_KEY_BOOSTS = {
 }
 
 API_KEY_FILTER_QUERIES = {
-  'starbucks' : '-feed_providername:unitedway',
+  'starbucks' : '-provider_proper_name_str:[* TO F*] AND  -provider_proper_name_str:[Gir* TO H*] AND  -provider_proper_name_str:[I* TO *]',
 }
 
 API_KEY_NEGATED_FILTER_QUERIES = {
