@@ -42,6 +42,7 @@ DIV.title-cell {white-space:nowrap;width:100px;overflow:hidden;}
 <script>
 // processed, elapsed, bytes, numorgs, numopps, expired, bad_links, noloc, dups, ein501c3
 var provider = '';
+var pnbl = false;
 
 var arProcs = null;
 var timerID = null;
@@ -216,6 +217,7 @@ function doMove(x) {
         var id = arGraphs[i][0].replace('graph', 'value');
         var it = _gel(id);
         var n = toNumber(arProcs[x][arGraphs[i][1]]);
+        n = (i == 5 && pnbl ? 0 : n);
         if (it) {
           var v = addCommas(Math.round(n * arGraphs[i][4]));
           if (arGraphs[i][1] == 1 && v <= 1) {
@@ -416,6 +418,7 @@ function boot() {
     while (arProcs.length > (GX + 1)) {
       arProcs.shift();
     }
+
     for (var gidx in arGraphs) {
       if (arGraphs[gidx]) {
         var id = arGraphs[gidx][0]; 
@@ -425,7 +428,9 @@ function boot() {
         var ar = new Array();
         for (var i in arProcs) {
           if (arProcs[i]) {
-            ar.push(toNumber(arProcs[i][idx]));
+            var n = toNumber(arProcs[i][idx]);
+            n = (gidx == 5 && pnbl ? 0 : n);
+            ar.push(n);
           }
         }
 
@@ -464,6 +469,7 @@ function init() {
 
   var args = getArgs();
   provider = (args['provider'] || 'aarp');
+  pnbl = (provider == 'aarp' ? true : false);
 
   var it = _gel('feed_provider');
   if (it) {
