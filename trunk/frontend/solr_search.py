@@ -268,7 +268,8 @@ def form_solr_query(args):
     # this keeps the non-geo counts out of the refine by counts
     fq = '&fq='
     fq += urllib.quote('self_directed:false AND virtual:false AND micro:false')
-    fq += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
+    #if not args['is_report']:
+    #fq += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
     solr_query += fq
     
   global FULL_QUERY_GLOBAL
@@ -277,7 +278,7 @@ def form_solr_query(args):
   # Source
   global PROVIDER_GLOBAL
   if api.PARAM_SOURCE in args and args[api.PARAM_SOURCE] != "all":    
-    PROVIDER_GLOBAL = "+AND+provider_proper_name:" + urllib.quote_plus("(" + args[api.PARAM_SOURCE] + ")")
+    PROVIDER_GLOBAL = urllib.quote_plus(" AND provider_proper_name: (" + args[api.PARAM_SOURCE] + ")")
     solr_query += PROVIDER_GLOBAL
   else:
     PROVIDER_GLOBAL = ""  
@@ -493,8 +494,7 @@ def query(query_url, args, cache, dumping = False):
   """run the actual SOLR query (no filtering or sorting)."""
   logging.debug("Query URL: " + query_url + '&debugQuery=on')
   result_set = searchresult.SearchResultSet(urllib.unquote(query_url),
-                                            query_url,
-                                            [])
+                                            query_url, [])
 
   result_set.query_url = query_url
   result_set.args = args
@@ -503,14 +503,13 @@ def query(query_url, args, cache, dumping = False):
   
   fetch_start = time.time()
   status_code = 999
-  fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
   try:
-    #fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
+    fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
     status_code = fetch_result.status_code
   except:
     # can get a response too large error here
     if status_code == 999:
-      logging.info('solr_search.query error')
+      logging.warning('solr_search.query error')
     else:
       logging.info('solr_search.query responded %s' % str(status_code))
 
@@ -530,14 +529,16 @@ def query(query_url, args, cache, dumping = False):
     api_key = args[api.PARAM_KEY]
   all_facets = get_geo_counts(args, api_key)
 
-  if "facet_counts" in all_facets:    
+  if not "facet_counts" in all_facets:    
+      result_set.facet_counts = None
+  else:
     facet_counts = dict()    
-    if args['is_report']:
-      facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false"])
-    else:
-      facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"]["self_directed:false AND virtual:false AND micro:false AND -statewide:[* TO *] AND -nationwide:[* TO *]"])
+    ks = "self_directed:false AND virtual:false AND micro:false"
+    if not args['is_report']:
+      ks += " AND -statewide:[* TO *] AND -nationwide:[* TO *]"
+    facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"][ks])
 
-    facet_counts.update(get_type_counts())    
+    facet_counts.update(get_type_counts(args, api_key))    
     count = 0;
     if api.PARAM_TYPE in args:
       if args[api.PARAM_TYPE] == "statewide":
@@ -558,9 +559,6 @@ def query(query_url, args, cache, dumping = False):
     result_set.categories = facets['category_fields']
     result_set.providers = facets['provider_fields']
     
-  else:
-      result_set.facet_counts = None
-
   doc_list = result["response"]["docs"]
 
   for i, entry in enumerate(doc_list):
@@ -572,7 +570,7 @@ def query(query_url, args, cache, dumping = False):
         entry["detailurl"] = \
           "http://maps.google.com/maps?q=" + str(latstr) + "," + str(longstr)
       else:
-        logging.debug('solr_search.query skipping SOLR record' +
+        logging.info('solr_search.query skipping SOLR record' +
                       ' %d: detailurl is missing...' % i)
         continue
 
@@ -605,12 +603,14 @@ def query(query_url, args, cache, dumping = False):
     if re.search(r'[^a-z]acorn[^a-z]', " "+org_name+" ", re.IGNORECASE):
       logging.debug('solr_search.query skipping: ACORN in org_name')
       continue
+
     latstr = entry["latitude"]
     longstr = entry["longitude"]
     virtual = entry.get('virtual')
     self_directed = entry.get("self_directed")
     micro = entry.get("micro")
     volunteers_needed = entry.get("volunteersneeded")
+
     res = searchresult.SearchResult(url, title, snippet, location, item_id,
                                     base_url, volunteers_needed, virtual,
                                     self_directed, micro, categories, org_name, 
@@ -628,39 +628,6 @@ def query(query_url, args, cache, dumping = False):
     res.latlong = ""
     if latstr and longstr and latstr != "" and longstr != "":
       res.latlong = str(latstr) + "," + str(longstr)
-
-    """
-    # this is really not needed as we rely on solr !spatial now
-    if latstr and longstr and latstr != "" and longstr != "":
-      if ( not dumping and
-           api.PARAM_VOL_DIST in args and args[api.PARAM_VOL_DIST] != "" and
-           api.PARAM_LAT in args and args[api.PARAM_LAT] != "" and
-           api.PARAM_LNG in args and args[api.PARAM_LNG] != ""
-         ):
-        # beyond distance from requested?
-        try:
-          max_vol_dist = float(args[api.PARAM_VOL_DIST])
-          vol_lat = float(args[api.PARAM_LAT])
-          vol_lng = float(args[api.PARAM_LNG])
-          result_lat = float(latstr)
-          result_lng = float(longstr)
-          miles_to_opp = float(entry["geo_distance"])
-          if miles_to_opp > max_vol_dist:
-            logging.info("skipping SOLR record %d: too far (%d > %d)" % 
-              (i, miles_to_opp, max_vol_dist))
-            continue
-        except:
-          logging.info("could not calc %s max distance [%s,%s] to [%s,%s]" %
-            (args[api.PARAM_VOL_DIST], args[api.PARAM_LAT], args[api.PARAM_LNG], 
-              latstr, longstr))
-
-      res.latlong = str(latstr) + "," + str(longstr)
-
-    # TODO: remove-- working around a DB bug where all latlongs are the same
-    if not dumping and "geocode_responses" in args:
-      res.latlong = geocode.geocode(location,
-            args["geocode_responses"]!="nocache" )
-    """
 
     # res.event_date_range follows one of these two formats:
     #     <start_date>T<start_time> <end_date>T<end_time>
@@ -686,15 +653,6 @@ def query(query_url, args, cache, dumping = False):
         if enddate < res.enddate:
           res.enddate = enddate
 
-    """openended = "openended" in entry and entry["openended"]
-    if openended and "ical_recurrence" in entry:
-      ical_recurrence = entry["ical_recurrence"]
-      query_startdate = args[api.PARAM_VOL_STARTDATE] if api.PARAM_VOL_STARTDATE in args else None
-      query_enddate = args[api.PARAM_VOL_ENDDATE] if api.PARAM_VOL_ENDDATE in args else None
-      if not ical_filter.match(ical_recurrence, query_startdate, query_enddate):
-        logging.warning("skipping SOLR record %d: failed the iCal filter" % i)
-        continue"""
-
     # posting.py currently has an authoritative list of fields in "argnames"
     # that are available to submitted events which may later appear in GBase
     # so with a few exceptions we want those same fields to become
@@ -718,175 +676,70 @@ def query(query_url, args, cache, dumping = False):
   result_set.parse_time = parse_end - parse_start
   return result_set
 
-def get_from_ids(ids):
-  """Return a result set containing multiple results for multiple ids.
-
-  Args:
-    ids: List of stable IDs of volunteer opportunities.
-
-  Returns:
-    searchresult.SearchResultSet with just the entries in ids.
-  """
-
-  result_set = searchresult.SearchResultSet('', '', [])
-
-  # First get all that we can from memcache
-  results = {}
-  try:
-    # get_multi returns a dictionary of the keys and values that were present
-    # in memcache. Even with the key_prefix specified, that key_prefix won't
-    # be on the keys in the returned dictionary.
-    hits = memcache.get_multi(ids, RESULT_CACHE_KEY)
-  except:
-    # TODO(mblain): Scope to only 'memcache down' exception.
-    logging.exception('get_from_ids: ignoring busted memcache. stack: %s',
-                      ''.join(traceback.format_stack()))
-
-  temp_results_dict = {}
-
-  for key in hits:
-    result = hits[key]
-    temp_results_dict[result.item_id] = result
-
-  # OK, we've collected what we can from memcache. Now look up the rest.
-  # Find the Google Base url from the datastore, then look that up in base.
-  missing_ids = []
-  for item_id in ids:
-    if not item_id in hits:
-      missing_ids.append(item_id)
-
-  datastore_results = modelutils.get_by_ids(models.VolunteerOpportunity,
-      missing_ids)
-
-  datastore_missing_ids = []
-  for item_id in ids:
-    if not item_id in datastore_results:
-      datastore_missing_ids.append(item_id)
-  if datastore_missing_ids:
-    logging.warning('solr_search.get_from_ids Could not find entry in' +
-                    ' datastore for ids: %s' % datastore_missing_ids)
-
-  # Bogus args for search. TODO: Remove these, why are they needed above?
-  args = {}
-  args[api.PARAM_VOL_STARTDATE] = (datetime.date.today() +
-                       datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-  datetm = time.strptime(args[api.PARAM_VOL_STARTDATE], "%Y-%m-%d")
-  args[api.PARAM_VOL_ENDDATE] = (datetime.date(datetm.tm_year, datetm.tm_mon,
-      datetm.tm_mday) + datetime.timedelta(days=60))
-
-  # TODO(mblain): Figure out how to pull in multiple base entries in one call.
-  for (item_id, volunteer_opportunity_entity) in datastore_results.iteritems():
-    if not volunteer_opportunity_entity.base_url:
-      logging.warning('solr_search.get_from_ids no base_url in datastore ' +
-                      'for id: %s' % item_id)
-      continue
-    logging.debug("Datastore Entry: " + volunteer_opportunity_entity.base_url) ##
-    try:
-      query_url = private_keys.DEFAULT_BACKEND_URL_SOLR + \
-          '?wt=json&q=id:' + volunteer_opportunity_entity.base_url
-    except:
-      raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- "+
-                      "please install correct private_keys.py file")
-    temp_results = query(query_url, args, True)
-    if not temp_results.results:
-      # The base URL may have changed from under us. Oh well.
-      # TODO: "info" is not defined so this logging line breaks.
-      # logging.warning('Did not get results from base. id: %s base_url: %s '
-      #                 'Last update: %s Previous failure: %s' %
-      #                 (id, info.base_url, info.last_base_url_update,
-      #                  info.last_base_url_update_failure))
-      volunteer_opportunity_entity.base_url_failure_count += 1
-      volunteer_opportunity_entity.last_base_url_update_failure = \
-          datetime.datetime.now()
-      volunteer_opportunity_entity.put()
-      continue
-    if temp_results.results[0].item_id != item_id:
-      logging.error('solr_search.get_from_ids First result not expected result.'
-                    ' Expected: %s Found: %s. len(results): %s' %
-                    (item_id, temp_results.results[0].item_id, len(results)))
-      # Not sure if we should touch the VolunteerOpportunity or not.
-      continue
-    temp_result = temp_results.results[0]
-    temp_results_dict[temp_result.item_id] = temp_result
-
-  # Our temp result set should now contain both stuff that was looked up from
-  # cache as well as stuff that got fetched directly from Base.  Now order
-  # the events according to the original list of id's.
-  
-  # First reverse the list of id's, so events come out in the right order
-  # after being prepended to the events list.
-  ids.reverse()
-  for id in ids:
-    result = temp_results_dict.get(id, None)
-    if result:
-      result_set.results.insert(0, result)
-
-  return result_set
 
 def get_facet_counts(api_key):
-    category_fields = dict()
-    provider_fields = []
-    query = []
-    for key, val in categories.CATEGORIES.iteritems():
-      query.append("facet.query=" + urllib.quote_plus(key))  
+  """ get the category/provider counts to be displayed in refine by section """
 
-    try:
-        query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL + 
-                     '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + 
-                     '&facet.mincount=1&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query))
-        query_url += apply_filter_query(api_key)
-        logging.info("facets: " + query_url)
-    except:
-        raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
-    try:
-        fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
-    except:
-        logging.info('error receiving solr facet counts')
-        return
+  category_fields = dict()
+  provider_fields = []
+  query = []
 
+  for key, val in categories.CATEGORIES.iteritems():
+    query.append("facet.query=" + urllib.quote_plus(key))  
 
-    result_content = fetch_result.content
-    result_content = re.sub(r';;', ',', result_content)
-    json = simplejson.loads(result_content)["facet_counts"]
-    queries = json["facet_queries"]
-    providers = json["facet_fields"]["provider_proper_name_str"]
-    
-    for k, v in queries.iteritems():
-        if v > 0:
-            category_fields[categories.CATEGORIES[k]] = v
-    
-    for k, v in enumerate(providers):
-        if int(k) % 2 == 1:
-            continue;
-        else:
-            provider_fields.append({str(v) : str(providers[k + 1])})
-    
-    return {'category_fields': sorted(category_fields.iteritems(), 
-             key=itemgetter(1), reverse=True), 'provider_fields': provider_fields}    
+  query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
+            + '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL 
+            + '&facet.mincount=1&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query))
 
-def get_geo_counts(args, api_key):
-  try:
-    if args['is_report']:
-      query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
-                + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
-                + '&facet=on&facet.mincount=1&facet.query='
-                + 'self_directed:false+AND+virtual:false+AND+micro:false'
-                + '&rows=0')
-    else:
-      query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
-                + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
-                + '&facet=on&facet.mincount=1&facet.query='
-                + 'self_directed:false+AND+virtual:false+AND+micro:false+AND+-statewide:[*+TO+*]+AND+-nationwide:[*+TO+*]'
-                + '&rows=0')
+  query_url += apply_filter_query(api_key)
+  logging.info("get_facet_counts: " + query_url)
 
-    query_url += apply_filter_query(api_key)
-    logging.info("all: " + query_url)
-  except:
-    raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
   try:
     fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
   except:
-      logging.info('error receiving solr facet counts')
+    logging.info('error receiving solr facet counts')
+    return
+
+  result_content = fetch_result.content
+  result_content = re.sub(r';;', ',', result_content)
+  json = simplejson.loads(result_content)["facet_counts"]
+
+  queries = json["facet_queries"]
+  providers = json["facet_fields"]["provider_proper_name_str"]
+    
+  for k, v in queries.iteritems():
+    if v > 0:
+      category_fields[categories.CATEGORIES[k]] = v
+    
+  for k, v in enumerate(providers):
+    if int(k) % 2 == 1:
+      continue;
+    else:
+      provider_fields.append({str(v) : str(providers[k + 1])})
+    
+  return {'category_fields': sorted(category_fields.iteritems(), 
+          key=itemgetter(1), reverse=True), 'provider_fields': provider_fields}    
+
+
+def get_geo_counts(args, api_key):
+  """ get counts to be displayed in the tabs across top """
+
+  query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
+               + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
+               + '&facet=on&facet.mincount=1&rows=0'
+               + '&facet.query=self_directed:false+AND+virtual:false+AND+micro:false'
+              )
+
+  if not args['is_report']:
+    query_url += '+AND+-statewide:[*+TO+*]+AND+-nationwide:[*+TO+*]'
+
+  query_url += apply_filter_query(api_key)
+  logging.info("get_geo_counts: " + query_url)
+
+  try:
+    fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
+  except:
+    logging.info('error receiving solr facet counts')
   
   try:
     result_content = fetch_result.content  
@@ -898,19 +751,23 @@ def get_geo_counts(args, api_key):
   return simplejson.loads(result_content)
 
 
-def get_type_counts():
-  try:
-    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
-              + '&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL + '&facet=on&facet.limit=100' 
-              + '&facet.field=statewide&facet.field=nationwide'
-              + '&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0')
-    logging.info("type: " + query_url)
-  except:
-    raise NameError("error reading private_keys.DEFAULT_BACKEND_URL_SOLR-- please install correct private_keys.py file")
+def get_type_counts(args, api_key):
+  """ tabs: my area, statewide, virtual, micro """
+
+  query_url = (BACKEND_GLOBAL + '?wt=json' 
+               + DATE_QUERY_GLOBAL + '&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
+               + '&facet=on&facet.limit=100' 
+               + '&facet.field=virtual&facet.field=self_directed&facet.field=micro&rows=0'
+               + '&facet.field=statewide&facet.field=nationwide'
+              )
+
+  query_url += apply_filter_query(api_key)
+  logging.info("get_type_counts: " + query_url)
+
   try:
     fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
   except:
-      logging.info('error receiving solr facet counts')
+    logging.info('error receiving solr facet counts')
   
   result_content = fetch_result.content  
   # undo comma encoding -- see datahub/footprint_lib.py
@@ -951,9 +808,10 @@ def get_type_counts():
     if 'statewide' in facet_counts and 'nationwide' in facet_counts:
       facet_counts['statewide'] += facet_counts['nationwide']
 
-    #hack to remove micro counts because they were incorrectly tagged as virtual
+    # remove micro counts because they were incorrectly tagged as virtual
     facet_counts["virtual"] -= facet_counts["micro"] 
-    #hack to remove self_directed counts because they were incorrectly tagged as virtual
+    # remove self_directed counts because they were incorrectly tagged as virtual
     facet_counts["virtual"] -= facet_counts["self_directed"] 
 
   return facet_counts
+

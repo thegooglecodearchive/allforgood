@@ -41,24 +41,15 @@ APPLICATION = webapp.WSGIApplication(
      (urls.URL_REDIRECT, views.redirect_view),
      (urls.URL_HOME4HOLIDAYS, views.home4holidays_redir_view), # this is a redirect
 
-     # TODO: replace with a generic way to redirect all unknown pages to /
      (urls.URL_CONSUMER_UI_SEARCH_REDIR, views.consumer_ui_search_redir_view),
      (urls.URL_CONSUMER_UI_SEARCH, views.consumer_ui_search_view),
      (urls.URL_CONSUMER_UI_REPORT, views.consumer_ui_search_view),
-     (urls.URL_UI_MY_SNIPPETS, views.ui_my_snippets_view),
-     (urls.URL_MY_EVENTS, views.my_events_view),
-     (urls.URL_POST, views.post_view),
-     (urls.URL_ACTION, views.action_view),
-     (urls.URL_ADMIN, views.admin_view),
-     (urls.URL_SHORT_NAMES, views.short_name_view),
-     (urls.URL_PSA, views.home_page_view),
-     (urls.URL_MODERATE, views.moderate_view),
-     (urls.URL_MODERATE_BLACKLIST, views.moderate_blacklist_view),
     ] 
     + [ (url, views.static_content) for url in
          urls.CONTENT_FILES.iterkeys() ] 
     + [ ('/.*', views.not_found_handler) ],
     debug=deploy.is_local_development())
+
 
 def main():
   """this comment to appease pylint."""
