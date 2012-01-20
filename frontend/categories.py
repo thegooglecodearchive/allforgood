@@ -17,8 +17,7 @@ A global list of categories for the SERP in the following format:
 "String used in Solr query" : "String displayed in SERP"
 """
 
-CATEGORIES = {  "military families":  "Military Families",
-                "(mlkday OR -2009 OR -2010 OR -2011 OR -feed_providername:girlscouts OR (-feed_providername:idealist AND eventrangestart:[0001-01-01T00:00:00Z TO 2012-01-22T23:59:59Z] AND eventrangeend:[2012-01-07T00:00:00Z TO *]))":        "MLK Day",        
+CATEGORIES = {  "military families":  "Military Families",     
                 "veterans":           "Veterans",        
                 "(education OR tutoring)":          "Education",
                 "hunger AND -animal": "Hunger",
