@@ -689,6 +689,8 @@ def solr_retransform(fname, start_time, feed_file_size):
     return
 
   shortname = footprint_lib.guess_shortname(fname)
+  if not shortname:
+    shortname = fname
 
   fnames = csv_reader.fieldnames[:]
   fnames.append("c:eventrangestart:dateTime")
