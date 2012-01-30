@@ -44,6 +44,12 @@ then
 		exit 1
 	fi
 
+	if [ $# -lt 1 ]
+	then
+		#nohup ./all_scan.sh > $DIR/scan.log 2>&1 &
+		./all_scan.sh > $DIR/scan.log 2>&1 &
+	fi
+
 	./notify_michael.sh pipeline processing
 	# process the online spreadsheet opps
 	if [ "$*" = "" ]
@@ -116,11 +122,6 @@ then
                 # but only if we haven't lapped
                 cp dashboard.ing/* $DASHBOARD_DIR
         fi
-
-	if [ $# -lt 1 ]
-	then
-		nohup ./all_scan.sh > $DATAHUB/scan.log 2>&1 &
-	fi
 
         # update pipeline_common.js
 	./common.py

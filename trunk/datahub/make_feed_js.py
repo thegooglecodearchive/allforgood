@@ -131,7 +131,7 @@ def make_js_and_csv(subdir = 'feeds'):
         hdr_js, hdr_csv = make_row('processed', 'elapsed', 'bytes', 'numorgs', 'numopps', 
                                    'expired', 'badlinks', 'noloc', 'dups', 'ein501c3')
 
-        rows = (hdr_csv) + '\n' + '\n'.join(csv))
+        rows = hdr_csv + '\n' + '\n'.join(csv)
         csv_file = feed_file.replace('.txt', '.csv.ing')
         fh = open(csv_file, 'w')
         if fh:

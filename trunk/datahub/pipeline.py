@@ -36,6 +36,10 @@ HOMEDIR = "/home/footprint/allforgood-read-only/datahub"
 LOGPATH = HOMEDIR + "/dashboard.ing/"
 FEEDSDIR = "feeds"
 
+#
+RECHECK_BAD_LINKS = True
+BAD_LINKS = {}
+
 # if you rename these remember that the dashboard has to be updated first...
 LOG_FN = "load_gbase.log"
 LOG_FN_BZ2 = "load_gbase.log.bz2"
@@ -672,8 +676,6 @@ rows
  'quantity': '15'}
 """
 
-BAD_LINKS = {}
-
 def solr_retransform(fname, start_time, feed_file_size):
   """Create Solr-compatible versions of a datafile"""
   numopps = 0
@@ -714,7 +716,7 @@ def solr_retransform(fname, start_time, feed_file_size):
   csv_writer.writerow(fnamesdict)
   now = parser.parse(commands.getoutput("date"))
   today = now.date()
-  expired_by_end_date = bad_links = 0
+  expired_by_end_date = num_bad_links = 0
   for rows in csv_reader:
     if rows["title"] and rows["title"].lower().find('anytown museum') >= 0:
       #bogus event
@@ -740,14 +742,13 @@ def solr_retransform(fname, start_time, feed_file_size):
       rows["c:detailURL:URL"] = 'http://' + rows["c:detailURL:URL"]
 
     link = str(rows["c:detailURL:URL"])
-    if check_links.is_bad_link(link):
-      bad_links += 1
+    if link in BAD_LINKS or check_links.is_bad_link(link, RECHECK_BAD_LINKS):
+      num_bad_links += 1
       footprint_lib.feed_report(rows['c:opportunityID:string'], 'badlinks', shortname, link)
-      if link:
-        if link not in BAD_LINKS:
-          BAD_LINKS[link] = 0
-          print_progress("bad link: " + link)
-        BAD_LINKS[link] += 1
+      if link and link not in BAD_LINKS:
+        BAD_LINKS[link] = 0
+        print_progress("bad link: " + link)
+      BAD_LINKS[link] += 1
       continue
 
     rows["c:org_missionStatement:string"] = footprint_lib.cleanse_snippet(
@@ -849,7 +850,7 @@ def solr_retransform(fname, start_time, feed_file_size):
     numopps += 1
 
   data_file.close()
-  print_progress("bad links: %d" % bad_links)
+  print_progress("bad links: %d" % num_bad_links)
   print_progress("  expired: %d" % expired_by_end_date)
 
 
@@ -888,7 +889,7 @@ def solr_retransform(fname, start_time, feed_file_size):
       fh.write('bytes\t' + str(feed_file_size) + '\n')
       fh.write('numopps\t' + str(numopps) + '\n')
       fh.write('expired\t' + str(expired_by_end_date) + '\n')
-      fh.write('badlinks\t' + str(bad_links) + '\n')
+      fh.write('badlinks\t' + str(num_bad_links) + '\n')
       if footprint_stats:
         fh.write(footprint_stats)
       fh.write('proper_name\t' + proper_name + '\n')
