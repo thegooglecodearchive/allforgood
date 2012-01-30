@@ -9,11 +9,12 @@ import urlparse
 import hashlib
 import httplib
 import urllib
+import random
 
 from datetime import datetime
 from time import sleep
 
-MAX_WAIT = 6
+MAX_WAIT = 3
 USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
 DIR_BAD = 'bad-links/'
 DIR_CHK = 'links/'
@@ -29,15 +30,20 @@ def get_link_file_name(url):
   return hashlib.md5(url).hexdigest() + '.url'
 
 
-def is_bad_link(url):
+def is_bad_link(url, recheck = False):
   """ """
 
   rtn = False
-  if not url or len(url) < 11 or os.path.isfile(DIR_BAD + get_link_file_name(url)):
+  if not url or len(url) < 11 or url.lower().find('localhost') >= 0:
     rtn = True
   else:
-    if url.lower().startswith('http://localhost'):
-      rtn = True
+    if os.path.isfile(DIR_BAD + get_link_file_name(url)):
+      if not recheck:
+        rtn = True
+      else:
+        rsp = check_link(url)
+        if rsp.startswith('bad'):
+          rtn = True
 
   return rtn
 
@@ -62,8 +68,6 @@ def check_link(url, recheck = False):
     if url.find('truist.com') >= 0:
       return 'unchecked currently unverifiable'
 
-  rtn = 'unchecked unknown error'
-
   file_name = get_link_file_name(url)
   if os.path.isfile(DIR_CHK + file_name):
     rtn = 'checked'
@@ -72,7 +76,8 @@ def check_link(url, recheck = False):
         os.remove(DIR_BAD + file_name)
       else:
         last_check = get_file_age(DIR_CHK + file_name)
-        if last_check < WEEK:
+        # a week to 10 days, random so we dont hit lots on the anniversary
+        if last_check < (WEEK + (DAY * random.choice([0, 1, 2, 3]))):
           # dont need to check again for at least a week
           if not recheck:
             # unless we insist
@@ -81,6 +86,7 @@ def check_link(url, recheck = False):
     # clear last results and recheck
     os.remove(DIR_CHK + file_name)
 
+  rtn = 'unchecked unknown error'
   if not os.path.isfile(DIR_CHK + file_name):
     fh = open(DIR_CHK + file_name, 'w')
     if fh:
