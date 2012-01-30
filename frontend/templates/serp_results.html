@@ -19,7 +19,8 @@
 	</script>
     {% endif %}
 
-<a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title }}</a></h4>
+<a target='_fp_target' onClick="recordOutboundLink(this, 'Outbound Links', '{{ result.url }}');return false;"
+  href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title }}</a></h4>
      {% if result.location or result.startdate %}
 <p class='meta'>
        {{ result.location|escape }}
@@ -44,7 +45,9 @@
      <p id="brief_{{ forloop.counter0 }}B" class="teaser">{{ result.purged_snippet|escape }}</p>
 <table width="100%"><tr>
 <td>
-<p class="links"><a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
+<p class="links"><a class='snippet_url' 
+ onClick="recordOutboundLink(this, 'Outbound Links', '{{ result.url }}');return false;"
+target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
 | 
 <a href="javascript:void(0);" id='share_{{ forloop.counter0 }}'>Share</a>
 <script type="text/javascript">

@@ -630,18 +630,24 @@ function fetchRecords(xmlContent, timerId) {
     } else {
       var searchText = prefs.getString('searchText');
       var location = prefs.getString('prefLocation');
+      var range = prefs.getString('prefRange');
+
       var html = ['<div class="afg-record-na">', prefs.getMsg('your_search')];
       if (searchText) {
         html.push(' <strong>\'', searchText, '\'</strong>');
-      } else if (location) {
-        html.push(' ', prefs.getMsg('near'),
-            ' <strong>\'', location, '\'</strong>');
-      }
+      } 
+      if (location) {
+        if (range) {
+          html.push(" within <strong>'", range, " miles'</strong>");
+        }
+        html.push(' ', prefs.getMsg('near'), ' <strong>\'', location, '\'</strong>');
+      } 
+
       html.push('&nbsp;', prefs.getMsg('not_match'), '<br/>');
       if (searchText) {
         html.push('<a href="#" onclick="showDialog(\'search\'); ',
             'return false;">', prefs.getMsg('search_again'), '</a></div>');
-      } else if (location) {
+      } else if (location || range) {
         html.push('<a href="#" onclick="showDialog(\'settings\'); ',
             'return false;">', prefs.getMsg('change_settings'), '</a></div>');
       }
@@ -733,7 +739,6 @@ function search(opt_searchTxt, opt_hidePopup, latlng) {
     latlng = '';
   }
   
-  var prefKeywords = prefs.getString('preferredKeywords');
   var category = prefs.getString('category');
   var searchText = opt_searchTxt || _gel('afg-search-text').value || '';
   updateTitle(_trim(prefs.getString('prefLocation')) || (geoplugin_city() + ', ' + geoplugin_region()), 
@@ -744,7 +749,10 @@ function search(opt_searchTxt, opt_hidePopup, latlng) {
   feedParams.start = 1;
   feedParams.merge = 1;
   feedParams.vol_loc = (!_gel('afg-virtual').checked ? latlng || location : '');
-  feedParams.vol_dist = '25';
+
+  var range = parseInt(prefs.getString('prefRange'));
+  feedParams.vol_dist = (range > 0 ? range : 25);
+
   feedParams.q = [category, prefKeywords, searchText].join(' ');
   if (!_trim(feedParams.q)) {
     feedParams.q = 'category:education';
@@ -906,9 +914,14 @@ function insertOption(selectBox, optionElement, index) {
 function setSettings() {
   _gel('afg-cancel-button1').style.display = '';
 
-  var location = _gel('afg-location-text').value;
   prefs.set('hideSettings', 1);
+
+  var location = _gel('afg-location-text').value;
   prefs.set('prefLocation', location);
+
+  var range = _gel('afg-range-text').value;
+  prefs.set('prefRange', range);
+
   prefs.set('storiesToRead', getSelectBoxValue('settings-stories'));
   prefs.set('category', getSelectBoxValue('settings-categories'));
   prefs.set('timePeriod', getSelectBoxValue('settings-time-period'));
@@ -916,7 +929,6 @@ function setSettings() {
   feedParams.num = prefs.getInt('storiesToRead') * PAGES_PER_QUERY + 1;
   hideMiniMessage();
   hideDialog();
-
   search();
 }
 
@@ -927,10 +939,14 @@ function setDefaultSettingsUI() {
   setSelectBoxValue('settings-stories', prefs.getString('storiesToRead'));
   setSelectBoxValue('settings-categories', prefs.getString('category'));
   setSelectBoxValue('settings-time-period', prefs.getString('timePeriod'));
+
+  _gel('afg-range-text').value = prefs.getString('prefRange');
+
   _gel('afg-location-text').value = prefs.getString('prefLocation');
   if (_gel('afg-location-text').value == 'virtual') {
     _gel('afg-virtual').checked = 1;
     _gel('afg-location-text').disabled = 1;
+    _gel('afg-range-text').disabled = 1;
   }
 }
 
@@ -1084,12 +1100,20 @@ if(!this.JSON){JSON=function(){function f(n){return n<10?'0'+n:n}Date.prototype.
               __MSG_example__ 
               <a href="javascript:setLocation('__MSG_default_location_value__')" class="afg-popup-link"
 >20002 or Washington, DC</a>
-<div>(within a 25 mile radius)</div>
+<!--<div>(within a 25 mile radius)</div>-->
             </div>
           </li>
+
+
+          <li style="width:33%;clear:both;">Range in miles</li>
+          <li>
+           <input name="rangeText" id="afg-range-text" tabIndex="2" type="text" onkeyup="isCancel(event);" autocomplete="off" class="afg-text"/> miles
+          </li>
+
+
           <li style="width:33%;clear:both;">Search for virtual listings</li>
           <li>
-            <input type="checkbox" id="afg-virtual" tabIndex="2" 
+            <input type="checkbox" id="afg-virtual" tabIndex="3" 
 onChange="toggleVirtual()"/>
           </li>
           <li style="text-align:center;clear:both;float:none;width:100%;padding:0;">
