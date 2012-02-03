@@ -13,8 +13,8 @@
     <Require feature="views" />
     <Require feature="minimessage" />
     <Locale lang="en"
-            messages="http://afg.echo3.net/gadget/theme-liveunited/afg_en_ALL.xml" />
-    <Locale messages="http://afg.echo3.net/gadget/theme-liveunited/afg_en_ALL.xml" />
+            messages="http://www.allforgood.org//gadget/theme-liveunited/afg_en_ALL.xml" />
+    <Locale messages="http://www.allforgood.org//gadget/theme-liveunited/afg_en_ALL.xml" />
   </ModulePrefs>
   <UserPref name="storiesToRead"
             display_name="__MSG_listings_per_page__"
@@ -425,8 +425,10 @@ function updateTitle(location, searchText, category) {
   if (_gel('afg-virtual').checked) {
     str = ['Virtual opportunities', ' '];
   } else if (location) {
-    str = ['Opportunities', ' '];
-    str.push(prefs.getMsg('near'), ' <strong>', location, '<\/strong> ');
+    var range = parseInt(prefs.getString('prefRange'));
+    range = (range > 0 ? range : 25);
+    str = ['Opportunities '];
+    str.push('within ', range, 'mi of <strong>', location, '<\/strong> ');
   }
   if (searchText) {
     str.push(prefs.getMsg('for'), ' <strong>\'', searchText, '\'<\/strong> ');
@@ -494,6 +496,20 @@ function hideDialog() {
 
 }
 
+
+function getCategory() {
+  var rtn = 'education';
+
+  var it = _gel('afg-category-selection');
+  if (it) {
+    if (it.selectedIndex >= 0) {
+      rtn = it.options[it.selectedIndex].value;
+    }
+  }
+  
+  return rtn;
+}
+
 /**
  * Show the Records and update pagination objects
  */
@@ -516,7 +532,7 @@ function showRecordsAndUpdatePagination() {
       '&vol_dist=', _esc(feedParams.vol_dist),
       '&timeperiod=', feedParams.timeperiod,
       '&key=liveunited',
-      '&q=category:education',
+      '&q=category:' + _esc(getCategory()), // education
       '" style="float:left;"  class="afg-pagination">',
       prefs.getMsg('see_more'),
       ' &gt;&gt;</a><span style="float:right;"> &nbsp;');
@@ -634,13 +650,13 @@ function fetchRecords(xmlContent, timerId) {
 
       var html = ['<div class="afg-record-na">', prefs.getMsg('your_search')];
       if (searchText) {
-        html.push(' <strong>\'', searchText, '\'</strong>');
+        html.push(" for <strong>'", searchText, "'</strong>");
       } 
       if (location) {
         if (range) {
           html.push(" within <strong>'", range, " miles'</strong>");
         }
-        html.push(' ', prefs.getMsg('near'), ' <strong>\'', location, '\'</strong>');
+        html.push(" of <strong>'", location, "'</strong>");
       } 
 
       html.push('&nbsp;', prefs.getMsg('not_match'), '<br/>');
@@ -753,7 +769,15 @@ function search(opt_searchTxt, opt_hidePopup, latlng) {
   var range = parseInt(prefs.getString('prefRange'));
   feedParams.vol_dist = (range > 0 ? range : 25);
 
-  feedParams.q = [category, prefKeywords, searchText].join(' ');
+  /*
+  var it = _gel('change-settings');
+  if (it) {
+    it.innerHTML = 'change settings: radius = ' + feedParams.vol_dist;
+  }
+  */
+
+  //feedParams.q = [category, prefKeywords, searchText].join(' ');
+  feedParams.q = [category, searchText].join(' ');
   if (!_trim(feedParams.q)) {
     feedParams.q = 'category:education';
   }
@@ -923,7 +947,8 @@ function setSettings() {
   prefs.set('prefRange', range);
 
   prefs.set('storiesToRead', getSelectBoxValue('settings-stories'));
-  prefs.set('category', getSelectBoxValue('settings-categories'));
+  //prefs.set('category', getSelectBoxValue('settings-categories'));
+  prefs.set('category', getSelectBoxValue('afg-category-selection'));
   prefs.set('timePeriod', getSelectBoxValue('settings-time-period'));
 
   feedParams.num = prefs.getInt('storiesToRead') * PAGES_PER_QUERY + 1;
@@ -954,7 +979,8 @@ function setDefaultSettingsUI() {
  * To set/change the category.
  */
 function setCategory(category) {
-  setSelectBoxValue('settings-categories', category);
+  //setSelectBoxValue('settings-categories', category);
+  setSelectBoxValue('afg-category-selection', category);
   setSettings();
 }
 
@@ -982,6 +1008,7 @@ function init() {
   handleTheme();
   promote();
   setDefaultSettingsUI();
+  //if (prefs.getInt('hideSettings') == 1) {
   if (container == 'open' || prefs.getInt('hideSettings') == 1) {
     search();
   } else {
@@ -1013,13 +1040,14 @@ if(!this.JSON){JSON=function(){function f(n){return n<10?'0'+n:n}Date.prototype.
       <div id="afg-branding-btn">
         <img id="afg-search-button" class="afg-search-button"
             alt="__MSG_search__" title="__MSG_search__"
-            src="http://afg.echo3.net/gadget/theme-liveunited/__MSG_search_btn__.gif"
-            onerror="this.src='http://afg.echo3.net/gadget/theme-liveunited/__MSG_search_btn__.gif'"
+            src="http://www.allforgood.org//gadget/theme-liveunited/__MSG_search_btn__.gif"
+            onerror="this.src='http://www.allforgood.org//gadget/theme-liveunited/__MSG_search_btn__.gif'"
             onclick="showDialog('search')">
       </div>
       <h2 id="afg-branding-title"></h2>
       <ul id="header-links">
-      <li id="afg-change-settings"><a href="javascript:showDialog('settings')">__MSG_change_settings__</a></li>
+      <li id="afg-change-settings"><a id="change-settings" 
+          href="javascript:showDialog('settings')">change settings</a></li>
       <li id="afg-clear-search"><a href="javascript:clearSearch()">__MSG_clear_search__</a></li>
       </ul>
       <div class="clear">&nbsp;</div>
@@ -1040,19 +1068,19 @@ if(!this.JSON){JSON=function(){function f(n){return n<10?'0'+n:n}Date.prototype.
         <form target="_blank" action="http://www.gmodules.com/ig/creator">
           <input type="hidden" name="synd" value="open" />
           <input type="hidden" name="url"
-              value="http://afg.echo3.net/gadget/theme-liveunited/gadget.xml"/>
+              value="http://www.allforgood.org//gadget/theme-liveunited/gadget.xml"/>
           <input type="hidden" name="nocache" value="1" />
           <input type="image" title="__MSG_embed__" class="afg-embed-button" id="afg-embed-button"
-              style="cursor:pointer;" src="http://afg.echo3.net/gadget/theme-liveunited/__MSG_embed_btn__.gif"
-              onerror="this.src='http://afg.echo3.net/gadget/theme-liveunited/__MSG_embed_btn__.gif'"/>
+              style="cursor:pointer;" src="http://www.allforgood.org//gadget/theme-liveunited/__MSG_embed_btn__.gif"
+              onerror="this.src='http://www.allforgood.org//gadget/theme-liveunited/__MSG_embed_btn__.gif'"/>
         </form>
 -->
       </div>
       <a id="branding-logo" target="_blank" href="http://www.allforgood.org">
         <div>
           <img id="logo-img" alt="__MSG_brand_title__" title="__MSG_brand_title__"
-              src="http://afg.echo3.net/gadget/theme-liveunited/powered-by-afg.gif"
-              onerror="this.src='http://afg.echo3.net/gadget/theme-liveunited/powered-by-afg.gif'"/>
+              src="http://www.allforgood.org//gadget/theme-liveunited/powered-by-afg.gif"
+              onerror="this.src='http://www.allforgood.org//gadget/theme-liveunited/powered-by-afg.gif'"/>
         </div>
       </a>
       <div class="clear">&nbsp;</div>
@@ -1082,17 +1110,18 @@ if(!this.JSON){JSON=function(){function f(n){return n<10?'0'+n:n}Date.prototype.
         <div>
           <input id="afg-go-button" class="afg-go-button" tabIndex="2"
               alt="__MSG_go__" title="__MSG_go__" type="image"
-              src="http://afg.echo3.net/gadget/theme-liveunited/__MSG_go_btn__.gif"
-              onerror="this.src='http://afg.echo3.net/gadget/theme-liveunited/__MSG_go_btn__.gif'"/>
+              src="http://www.allforgood.org//gadget/theme-liveunited/__MSG_go_btn__.gif"
+              onerror="this.src='http://www.allforgood.org//gadget/theme-liveunited/__MSG_go_btn__.gif'"/>
           <img id="afg-cancel-button" class="afg-cancel-button"
               alt="__MSG_cancel__" title="__MSG_cancel__" tabIndex="3"
               onclick="hideDialog();" onkeypress="hideDialog();"
-              src="http://afg.echo3.net/gadget/theme-liveunited/__MSG_cancel_btn__.gif"
-              onerror="this.src='http://afg.echo3.net/gadget/theme-liveunited/__MSG_cancel_btn__.gif'" />
+              src="http://www.allforgood.org//gadget/theme-liveunited/__MSG_cancel_btn__.gif"
+              onerror="this.src='http://www.allforgood.org//gadget/theme-liveunited/__MSG_cancel_btn__.gif'" />
         </div>
       </form>
       <form name="frmSettings" id="afg-settings-form" action="#" onsubmit="setSettings();return false;">
         <ul id="afg-settings" style="margin: auto;">
+
           <li style="width:33%;clear:both;">__MSG_location__</li>
           <li>
             <input name="locationText" id="afg-location-text" tabIndex="1" type="text" onkeyup="isCancel(event);" autocomplete="off" class="afg-text"/>
@@ -1105,28 +1134,41 @@ if(!this.JSON){JSON=function(){function f(n){return n<10?'0'+n:n}Date.prototype.
           </li>
 
 
-          <li style="width:33%;clear:both;">Range in miles</li>
+          <li style="width:33%;clear:both;">Range</li>
           <li>
-           <input name="rangeText" id="afg-range-text" tabIndex="2" type="text" onkeyup="isCancel(event);" autocomplete="off" class="afg-text"/> miles
+           <input name="rangeText" id="afg-range-text" tabIndex="2" type="text" onkeyup="isCancel(event);" autocomplete="off" class="afg-text"/>
+            <div style="text-align:left; color: #fff; margin:1px 0 2px">
+in miles, e.g. 25
+            </div>
+          </li>
+
+  
+          <li style="width:33%;clear:both;">Category</li>
+          <li>
+          <select name="selCategory" id="afg-category-selection" tabIndex="3" class="afg-text">
+              <option value="">__MSG_all__</option>
+              <option selected="selected" value="education">__MSG_education__</option>
+              <option value="Health">__MSG_health__</option>
+          </select>
           </li>
 
 
           <li style="width:33%;clear:both;">Search for virtual listings</li>
           <li>
-            <input type="checkbox" id="afg-virtual" tabIndex="3" 
+            <input type="checkbox" id="afg-virtual" tabIndex="4" 
 onChange="toggleVirtual()"/>
           </li>
           <li style="text-align:center;clear:both;float:none;width:100%;padding:0;">
 <div style="height:15px;">&nbsp;</div>
             <input id="afg-ok-button" class="afg-ok-button" tabIndex="6"
               alt="__MSG_ok__" title="__MSG_ok__" type="image"
-              src="http://afg.echo3.net/gadget/theme-liveunited/__MSG_ok_btn__.gif"
-              onerror="this.src='http://afg.echo3.net/gadget/theme-liveunited/__MSG_ok_btn__.gif'"/>
+              src="http://www.allforgood.org//gadget/theme-liveunited/__MSG_ok_btn__.gif"
+              onerror="this.src='http://www.allforgood.org//gadget/theme-liveunited/__MSG_ok_btn__.gif'"/>
             <img id="afg-cancel-button1" class="afg-cancel-button"
               alt="__MSG_cancel__" title="__MSG_cancel__" tabIndex="7"
               onclick="hideDialog();" onkeypress="hideDialog();"
-              src="http://afg.echo3.net/gadget/theme-liveunited/__MSG_cancel_btn__.gif"
-              onerror="this.src='http://afg.echo3.net/gadget/theme-liveunited/__MSG_cancel_btn__.gif'" />
+              src="http://www.allforgood.org//gadget/theme-liveunited/__MSG_cancel_btn__.gif"
+              onerror="this.src='http://www.allforgood.org//gadget/theme-liveunited/__MSG_cancel_btn__.gif'" />
           </li>
         </ul>
       </form>
