@@ -1138,14 +1138,10 @@ onChange="toggleVirtual()"/>
           <li class="separator" style="width:100%">&nbsp;</li>
           <li style="width:33%;">__MSG_category__</li>
           <li>
-            <select name="categories" id="settings-categories" style="width: 100%;" tabIndex="3">
+            <select name="categories" id="settings-categories" style="width: 100%;" tabIndex="2">
               <option value="">__MSG_all__</option>
-              <option value="Animals">__MSG_animals__</option>
               <option value="Education">__MSG_education__</option>
               <option value="Health">__MSG_health__</option>
-              <option value="Nature">__MSG_nature__</option>
-              <option value="Seniors">__MSG_seniors__</option>
-              <option value="Technology">__MSG_technology__</option>
             </select>
           </li>
           <li class="separator" style="width:100%">&nbsp;</li>
