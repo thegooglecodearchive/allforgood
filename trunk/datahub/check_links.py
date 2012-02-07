@@ -14,10 +14,10 @@ import random
 from datetime import datetime
 from time import sleep
 
-MAX_WAIT = 3
+MAX_WAIT = 7
 USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
-DIR_BAD = 'bad-links/'
-DIR_CHK = 'links/'
+DIR_BAD = '/home/footprint/allforgood-read-only/datahub/bad-links/'
+DIR_CHK = '/home/footprint/allforgood-read-only/datahub/links/'
 
 HOUR = (3600)
 DAY = (24 * HOUR)
@@ -30,24 +30,6 @@ def get_link_file_name(url):
   return hashlib.md5(url).hexdigest() + '.url'
 
 
-def is_bad_link(url, recheck = False):
-  """ """
-
-  rtn = False
-  if not url or len(url) < 11 or url.lower().find('localhost') >= 0:
-    rtn = True
-  else:
-    if os.path.isfile(DIR_BAD + get_link_file_name(url)):
-      if not recheck:
-        rtn = True
-      else:
-        rsp = check_link(url)
-        if rsp.startswith('bad'):
-          rtn = True
-
-  return rtn
-
-
 def get_file_age(file):
   """ """
 
@@ -57,84 +39,149 @@ def get_file_age(file):
   return delta.seconds
 
 
-def check_link(url, recheck = False):
+def is_checked(url, file_name = None):
+  """ """
+  rtn = False
+  if not file_name:
+    file_name = get_link_file_name(url)
+
+  if os.path.isfile(DIR_CHK + file_name):
+    rtn = True
+
+  return rtn
+
+
+def is_marked_bad(url, file_name = None):
+  """ """
+  rtn = False
+  if not file_name:
+    file_name = get_link_file_name(url)
+
+  if os.path.isfile(DIR_BAD + file_name):
+    rtn = True
+
+  return rtn
+
+
+def mark_bad(url, rtn, file_name = None):
   """ """
 
-  #http://getinvolved.volunteermatch.org/
-  if url:
-    if url.find('volunteermatch.org') >= 0:
-      return 'unchecked currently unverifiable'
+  if not file_name:
+    file_name = get_link_file_name(url)
 
-    if url.find('truist.com') >= 0:
-      return 'unchecked currently unverifiable'
+  fh = open(DIR_BAD + file_name, 'w')
+  if fh:
+    if rtn.find('\t' + url) >= 0:
+      fh.write(rtn + '\n')
+    else:
+      fh.write(rtn + '\t' + url + '\n')
+    fh.close()
 
-  file_name = get_link_file_name(url)
-  if os.path.isfile(DIR_CHK + file_name):
+
+def mark_checked(url, rtn, file_name = None):
+  """ """
+
+  if not file_name:
+    file_name = get_link_file_name(url)
+
+  fh = open(DIR_CHK + file_name, 'w')
+  if fh:
+    if rtn.find('\t' + url) >= 0:
+      fh.write(rtn + '\n')
+    else:
+      fh.write(rtn + '\t' + url + '\n')
+    fh.close()
+
+  return rtn
+
+  
+
+def is_bad_link(url, recheck = False):
+  """ """
+
+  rtn = False
+  if not url or len(url) < 11 or url.lower().find('localhost') >= 0:
+    rtn = True
+  else:
+    file_name = get_link_file_name(url)
+    if not is_checked(url, file_name) or recheck:
+      rsp = check_link(url, recheck, file_name)
+      if rsp.startswith('bad'):
+        rtn = True
+
+  return rtn
+
+
+def check_link(url, recheck = False, file_name = None):
+  """ """
+
+  rtn = 'unchecked '
+  if url.find('volunteermatch.org') >= 0:
+    # jsp shows head requests a 404
+    return rtn + url
+
+  if url.find('idealist.org') >= 0:
+    # login required, shows head requests a 401
+    return rtn + url
+
+  if not file_name:
+    file_name = get_link_file_name(url)
+
+  if is_checked(url, file_name):
     rtn = 'checked'
-    if is_bad_link(url):
-      if os.path.isfile(DIR_BAD + file_name):
-        os.remove(DIR_BAD + file_name)
-      else:
-        last_check = get_file_age(DIR_CHK + file_name)
-        # a week to 10 days, random so we dont hit lots on the anniversary
-        if last_check < (WEEK + (DAY * random.choice([0, 1, 2, 3]))):
-          # dont need to check again for at least a week
-          if not recheck:
-            # unless we insist
-            return rtn
-       
-    # clear last results and recheck
-    os.remove(DIR_CHK + file_name)
+    last_check = get_file_age(DIR_CHK + file_name)
+    if is_marked_bad(url, file_name) and (last_check > WEEK or (recheck and last_check > DAY)):
+      os.remove(DIR_BAD + file_name)
+    else:
+      # dont need to check again for at least a week to 10 days
+      # random so we dont hit every single link on the same day
+      if not recheck and last_check < (WEEK + (DAY * random.choice([0, 1, 2, 3]))):
+        return rtn
 
   rtn = 'unchecked unknown error'
-  if not os.path.isfile(DIR_CHK + file_name):
-    fh = open(DIR_CHK + file_name, 'w')
-    if fh:
-      fh.write(url + '\n')
-      fh.close()
 
-    url_d = urlparse.urlparse(url)
+  url_d = urlparse.urlparse(url)
+  params = cgi.parse_qs(urlparse.urlsplit(url).query)
+  headers = {'User-Agent':USER_AGENT}
+  default_timeout = socket.getdefaulttimeout()
+  socket.setdefaulttimeout(MAX_WAIT)
 
-    params = cgi.parse_qs(urlparse.urlsplit(url).query)
-    headers = {'User-Agent':USER_AGENT}
-    default_timeout = socket.getdefaulttimeout()
-    socket.setdefaulttimeout(MAX_WAIT)
+  rsp = None
+  connection = None
+  try:
+    connection = httplib.HTTPConnection(url_d.netloc)
+  except:
+    rtn = 'bad: could not connect\t' + url
 
-    rsp = None
-    connection = None
+  if connection:
     try:
-      connection = httplib.HTTPConnection(url_d.netloc)
+      connection.request('HEAD', url_d.path, urllib.urlencode(params), headers)
     except:
-      rtn = 'could not connect to %s' % (str(url_d.netloc))
+      socket.setdefaulttimeout(default_timeout)
+      rtn = 'bad: could not req response from\t' + url
 
-    if connection:
-      try:
-        connection.request('HEAD', url_d.path, urllib.urlencode(params), headers)
-      except:
-        socket.setdefaulttimeout(default_timeout)
-        rtn = 'could not req response from %s, %s, %s' % (str(url_d.netloc), str(url_d.path), str(params))
+  if connection:
+    try:
+      rsp = connection.getresponse()
+    except:
+      socket.setdefaulttimeout(default_timeout)
+      rtn = 'bad: could not get response from\t' + url
 
-    if connection:
-      try:
-        rsp = connection.getresponse()
-      except:
-        socket.setdefaulttimeout(default_timeout)
-        rtn = 'could not get response from ' + url
+  socket.setdefaulttimeout(default_timeout)
 
-    socket.setdefaulttimeout(default_timeout)
-
-    if rsp:
-      rtn = str(rsp.status)
-
-    if not rsp or not rsp.status in [200, 301, 302]:
-      if rsp and rsp.status == 404 and url.find('createthegood') >= 0:
-        rtn = 'maybe:' + rtn 
+  if not rsp:
+    mark_bad(url, rtn, file_name)
+  else:
+    rtn = str(rsp.status)
+    if not rsp.status in [200, 301, 302]:
+      # special case
+      if rsp.status == 404 and url.find('createthegood') >= 0:
+        rtn = 'maybe: ' + rtn 
       else:
         rtn = 'bad: ' + rtn
-        fh = open(DIR_BAD + file_name, 'w')
-        if fh:
-          fh.write(rtn + '\t' + url + '\n')
-          fh.close()
+        mark_bad(url, rtn, file_name)
+
+  mark_checked(url, rtn, file_name)
 
   return rtn
 

@@ -37,8 +37,8 @@ LOGPATH = HOMEDIR + "/dashboard.ing/"
 FEEDSDIR = "feeds"
 
 #
-RECHECK_BAD_LINKS = True
 BAD_LINKS = {}
+RECHECK_BAD_LINKS = False
 
 # if you rename these remember that the dashboard has to be updated first...
 LOG_FN = "load_gbase.log"
@@ -724,7 +724,10 @@ def solr_retransform(fname, start_time, feed_file_size):
 
     # Split the date range into separate fields
     # event_date_range can be either start_date or start_date/end_date
-    split_date_range = rows["event_date_range"].split('/')
+    split_date_range = []
+    if rows["event_date_range"]:
+      split_date_range = rows["event_date_range"].split('/')
+
     rows["c:eventrangestart:dateTime"] = split_date_range[0]
     if len(split_date_range) > 1:
       rows["c:eventrangeend:dateTime"] = split_date_range[1]
@@ -738,17 +741,18 @@ def solr_retransform(fname, start_time, feed_file_size):
     rows["title"] = footprint_lib.cleanse_snippet(rows["title"])
     rows["description"] = footprint_lib.cleanse_snippet(rows["description"])
     rows["c:detailURL:URL"] = rows["c:detailURL:URL"].replace("&amp;", '&'); 
-    if rows["c:detailURL:URL"].find('http') != 0:
+    if not rows["c:detailURL:URL"].lower().startswith('http'):
       rows["c:detailURL:URL"] = 'http://' + rows["c:detailURL:URL"]
 
     link = str(rows["c:detailURL:URL"])
     if link in BAD_LINKS or check_links.is_bad_link(link, RECHECK_BAD_LINKS):
       num_bad_links += 1
       footprint_lib.feed_report(rows['c:opportunityID:string'], 'badlinks', shortname, link)
-      if link and link not in BAD_LINKS:
-        BAD_LINKS[link] = 0
-        print_progress("bad link: " + link)
-      BAD_LINKS[link] += 1
+      dlink = "'" + str(link) + "'"
+      if dlink not in BAD_LINKS:
+        BAD_LINKS[dlink] = 0
+        print_progress("bad link: " + dlink)
+      BAD_LINKS[dlink] += 1
       continue
 
     rows["c:org_missionStatement:string"] = footprint_lib.cleanse_snippet(

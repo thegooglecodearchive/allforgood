@@ -167,7 +167,7 @@ def record_to_fpxml(record):
   fpxml += xmlh.output_val('contactEmail', recordval(record, 'ContactEmail'))
 
   url = recordval(record, 'URL')
-  if not url.startswith('http'):
+  if not url.lower().startswith('http'):
     url = 'http://' + url
   fpxml += xmlh.output_val('detailURL', url)
 

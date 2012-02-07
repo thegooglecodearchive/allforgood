@@ -47,7 +47,7 @@ then
 	if [ $# -lt 1 ]
 	then
 		#nohup ./all_scan.sh > $DIR/scan.log 2>&1 &
-		./all_scan.sh > $DIR/scan.log 2>&1 &
+		./all_scan.sh > $DIR/scan.log 2>&1
 	fi
 
 	./notify_michael.sh pipeline processing
