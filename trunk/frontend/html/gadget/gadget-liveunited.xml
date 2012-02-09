@@ -436,11 +436,6 @@ function updateTitle(location, searchText, category) {
   } else {
     _gel('afg-clear-search').style.display = 'none';
   }
-/*
-  if (category) {
-    str.push(prefs.getMsg('in_category'), ' <strong>', category, '<\/strong>');
-  }
-*/
   _gel('afg-branding-title').innerHTML = str.join('');
 }
 
@@ -532,7 +527,7 @@ function showRecordsAndUpdatePagination() {
       '&vol_dist=', _esc(feedParams.vol_dist),
       '&timeperiod=', feedParams.timeperiod,
       '&key=liveunited',
-      '&q=category:' + _esc(getCategory()), // education
+      '&q=' + (getCategory().length > 0 ? 'category:' + _esc(getCategory()) : ''),
       '" style="float:left;"  class="afg-pagination">',
       prefs.getMsg('see_more'),
       ' &gt;&gt;</a><span style="float:right;"> &nbsp;');
@@ -758,10 +753,7 @@ function search(opt_searchTxt, opt_hidePopup, latlng) {
   var category = prefs.getString('category');
   var searchText = opt_searchTxt || _gel('afg-search-text').value || '';
   updateTitle(_trim(prefs.getString('prefLocation')) || (geoplugin_city() + ', ' + geoplugin_region()), 
-              searchText, category);
-  if (category) {
-    category = 'category:' + category;
-  }
+              searchText, (category ? 'category: ' + category : ''));
   feedParams.start = 1;
   feedParams.merge = 1;
   feedParams.vol_loc = (!_gel('afg-virtual').checked ? latlng || location : '');
@@ -776,11 +768,14 @@ function search(opt_searchTxt, opt_hidePopup, latlng) {
   }
   */
 
-  //feedParams.q = [category, prefKeywords, searchText].join(' ');
-  feedParams.q = [category, searchText].join(' ');
-  if (!_trim(feedParams.q)) {
-    feedParams.q = 'category:education';
+  feedParams.q = '';
+  if (category) {
+    feedParams.q = 'category:' + category;
   }
+  if (searchText) {
+    feedParams.q += ' ' + searchText;
+  }
+
   feedParams.type = (_gel('afg-virtual').checked ? 'virtual' : '');
   feedParams.timeperiod = prefs.getString('timePeriod');
   // Reset FeedRecord and pagination related variables.
@@ -947,7 +942,6 @@ function setSettings() {
   prefs.set('prefRange', range);
 
   prefs.set('storiesToRead', getSelectBoxValue('settings-stories'));
-  //prefs.set('category', getSelectBoxValue('settings-categories'));
   prefs.set('category', getSelectBoxValue('afg-category-selection'));
   prefs.set('timePeriod', getSelectBoxValue('settings-time-period'));
 
