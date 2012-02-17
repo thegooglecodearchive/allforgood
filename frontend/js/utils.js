@@ -346,7 +346,8 @@ function setInputFieldValue(input, value) {
       }
     } else {
       input.style.color = 'black';
-      input.value = encodeURIComponent(valueToSet).replace(/%20/g, ' ').replace(/%3A/gi, ':').replace(/%2C/gi, ',').replace(/%22/g, '"');
+      //input.value = encodeURIComponent(valueToSet).replace(/%20/g, ' ').replace(/%3A/gi, ':').replace(/%2C/gi, ',').replace(/%22/g, '"');
+      input.value = valueToSet;
     }
   }
 

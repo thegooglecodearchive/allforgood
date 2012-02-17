@@ -255,6 +255,7 @@ a:hover {
   padding: 0;
 }
 </style>
+<script language="JavaScript" src="http://www.geoplugin.net/javascript.gp" type="text/javascript"></script>
 <script>
 /**
  * User prefs.
@@ -295,6 +296,7 @@ var PAGES_PER_QUERY = 3;
 var feedParams = {
   vol_loc: '',
   vol_dist: '',
+  type: '',
   q: '',
   key: 'gf-gadget',
   start: 1,
@@ -504,6 +506,7 @@ function showRecordsAndUpdatePagination() {
       '<div style="width:100%;overflow:hidden;"><a target="_blank" ' +
       'href="http://www.allforgood.org/search#cache=1&num=10' +
       '&start=', feedParams.start,
+      '&type=', (feedParams.type || 'all'),
       '&vol_loc=', _esc(feedParams.vol_loc),
       '&vol_dist=', _esc(feedParams.vol_dist),
       '&timeperiod=', feedParams.timeperiod,
@@ -712,9 +715,12 @@ function search(opt_searchTxt, opt_hidePopup, latlng) {
       var url = 'http://maps.google.com/maps/geo?q=' + encodeURIComponent(location);
       _IG_FetchContent(url, _IG_Callback(getLatLng, opt_searchTxt, opt_hidePopup));
       return;
+    } else {
+      latlng = geoplugin_latitude() + ',' + geoplugin_longitude();
     }
   }
-  if (latlng == 'err') {
+
+  if (latlng == 'err' || latlng == ',') {
     latlng = '';
   }
   
@@ -726,7 +732,13 @@ function search(opt_searchTxt, opt_hidePopup, latlng) {
     category = 'category:' + category;
   }
   feedParams.start = 1;
-  feedParams.vol_loc = (latlng || location);
+  if (_gel('afg-virtual').checked) {
+    feedParams.type = 'virtual';
+    feedParams.vol_loc = '';
+  } else {
+    feedParams.type = 'all';
+    feedParams.vol_loc = (latlng || location);
+  }
   feedParams.vol_dist = '100';
   feedParams.q = [category, prefKeywords, searchText].join(' ');
   feedParams.timeperiod = prefs.getString('timePeriod');

@@ -29,6 +29,10 @@ import urllib
 import logging
 import re
 import time
+import codecs
+
+import utf8
+codecs.register_error('asciify', utf8.asciify)
 
 import private_keys
 class CAMPAIGN_SPREADSHEET:
@@ -104,6 +108,7 @@ template.register_template_library('templatetags.dateutils_tags')
 # code search tools.
 PK = "6Le2dgUAAAAAABp1P_NF8wIUSlt8huUC97owQ883"
 
+
 def get_unique_args_from_request(request):
   """ Gets unique args from a request.arguments() list.
   If a URL search string contains a param more than once, only
@@ -121,7 +126,17 @@ def get_unique_args_from_request(request):
   unique_args = {}
   for arg in args:
     allvals = request.get_all(arg)
-    unique_args[arg] = allvals[len(allvals)-1]
+    value = allvals[len(allvals)-1]
+
+    value = urllib.unquote(value)
+    try:
+      value = value.encode('ascii', 'asciify')
+    except:
+      # encode as ascii and drop errors, same as pipeline 
+      value = value.encode('ascii', 'ignore')
+
+    unique_args[arg] = value
+
   return unique_args
 
 def require_moderator(handler_method):
@@ -509,9 +524,8 @@ class post_view(webapp.RequestHandler):
 
     # synthesize GET method url from either GET or POST submission
     geturl = self.request.path + "?"
-    for arg in self.request.arguments():
-      geturl += urllib.quote_plus(arg) + "=" + \
-          urllib.quote_plus(self.request.get(arg)) + "&"
+    for arg, argv in get_unique_args_from_request(self.request).items():
+      geturl += urllib.quote_plus(arg) + "=" + urllib.quote_plus(argv) + "&"
     template_values = {
       'current_page' : 'POST',
       'geturl' : geturl,
@@ -535,8 +549,8 @@ class post_view(webapp.RequestHandler):
     if (resp and resp.is_valid) or recaptcha_response == "test":
       vals["user_ipaddr"] = self.request.remote_addr
       load_userinfo_into_dict(user_info, vals)
-      for arg in self.request.arguments():
-        vals[arg] = self.request.get(arg)
+      for arg, argv in get_unique_args_from_request(self.request).items():
+        vals[arg] = argv
       respcode, item_id, content = posting.create_from_args(vals, computed_vals)
       # TODO: is there a way to reference a dict-value in appengine+django ?
       for key in computed_vals:
@@ -775,9 +789,7 @@ class moderate_view(webapp.RequestHandler):
       delta = now - dt
       if delta.seconds < 3600:
         logging.debug("processing changes...")
-        vals = {}
-        for arg in self.request.arguments():
-          vals[arg] = self.request.get(arg)
+        vals = get_unique_args_from_request(self.request)
         posting.process(vals)
 
     num = self.request.get('num', "20")
