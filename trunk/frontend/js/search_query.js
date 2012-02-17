@@ -23,9 +23,7 @@ function ensureSubmitForm() {
       }
 	  var sort = getInputFieldValue(el('sort'));
 	  vol_loc += "&sort=" + (sort || 'score');
-      window.location = '/search#q=' +
-          escape(getInputFieldValue(el('keywords'))) +
-          vol_loc;
+          window.location = '/search#q=' + escape(getInputFieldValue(el('keywords'))) + vol_loc;
     }
   }
 }

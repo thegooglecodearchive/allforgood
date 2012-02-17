@@ -39,7 +39,7 @@ $(document).ready(function() {
 		minDate: new Date()        		
 	});
 	$("#location_slider").slider({
-			value:getHashParam('distance', '') || 25,
+			value:(getHashParam('vol_dist') || getHashParam('distance', '') || 25),
 			min: 5,
 			max: 100,
 			step: 5,
@@ -326,7 +326,8 @@ Query.prototype.getUrlQuery = function() {
     if (urlQuery.length > 0) {
       urlQuery += '&';
     }
-    urlQuery += name + '=' + escape(value);
+    //urlQuery += name + '=' + escape(value);
+    urlQuery += name + '=' + encodeURIComponent(value);
   }
   
   // Keyword search
@@ -689,7 +690,6 @@ executeSearchFromHashParams = function(currentLocation) {
     if (it) {
       it.innerHTML = '<div id="snippets_pane"><span class="loading">Loading...</span></div>';
     }
-    //el('snippets_pane').innerHTML = 'Loading...';
     currentXhr = jQuery.ajax({
       url: url,
       async: true,
