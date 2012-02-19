@@ -326,7 +326,6 @@ Query.prototype.getUrlQuery = function() {
     if (urlQuery.length > 0) {
       urlQuery += '&';
     }
-    //urlQuery += name + '=' + escape(value);
     urlQuery += name + '=' + encodeURIComponent(value);
   }
   
