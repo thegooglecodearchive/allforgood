@@ -11,6 +11,9 @@ api_version: 1
 # super long expiration for images...
 default_expiration: "1000d"
 
+builtins:
+- appstats: on
+
 handlers:
 - url: /proxy
   script: proxy/main.py
