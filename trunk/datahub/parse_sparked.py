@@ -55,14 +55,12 @@ import xml_helpers as xmlh
 from datetime import datetime
 import dateutil.parser
 
+import utf8
+
 # pylint: disable-msg=R0915
 def parse(instr, maxrec, progress):
   """return FPXML given sparked feed data"""
-  from xml.dom import minidom
-  try:
-    feed = minidom.parseString(instr.encode('utf-8'))
-  except:
-    return None, 0, 0
+  feed = xmlh.parse_or_die(instr.encode('utf-8'))
 
   org_id = str(139)
   mission_statement = "Sparked makes it easy for people with busy lives to help nonprofits get valuable work done when it's convenient. We call it microvolunteering. Through the convenience of the Internet, and with the collaboration of others, micro-volunteers use their professional skills to help causes they care about."

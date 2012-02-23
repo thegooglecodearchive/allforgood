@@ -51,6 +51,8 @@ import parse_volunteermatch
 import providers
 import check_links
 
+import utf8
+
 from taggers import get_taggers, XMLRecord
 
 FIELDSEP = "\t"

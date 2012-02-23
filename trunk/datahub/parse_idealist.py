@@ -66,11 +66,37 @@ import xml_helpers as xmlh
 from datetime import datetime
 import dateutil.parser
 
+from xml.dom import minidom
+
 # pylint: disable-msg=R0915
 def parse(instr, maxrec, progress):
-  """return FPXML given sparked feed data"""
-  from xml.dom import minidom
-  feed = minidom.parseString(instr.encode('utf-8'))
+  """return FPXML given idealist feed data"""
+  #feed = xmlh.parse_or_die(instr.encode('utf-8'))
+  instr = instr.encode('utf-8')
+  try:
+    feed = minidom.parseString(instr)
+  except xml.parsers.expat.ExpatError, err:
+    feed = None
+    print datetime.now(), "XML parsing error on line ", err.lineno,
+    print ":", xml.parsers.expat.ErrorString(err.code),
+    print " (column ", err.offset, ")"
+    lines = instr.split("\n")
+    for i in range(err.lineno - 3, err.lineno + 3):
+      if i >= 0 and i < len(lines):
+        print "%6d %s" % (i+1, lines[i])
+
+  if not feed:
+    print "trying CDATA content..."
+    instr = instr.replace('<content type="html">', 
+                          '<content type="html"><![CDATA[').replace('</content>', 
+                                                                    ']]></content>')
+    try:
+      feed = minidom.parseString(instr)
+    except:
+      pass
+
+  if not feed:
+    return '', 0, 0
 
   org_id = str(103)
   mission_statement = "Idealist connects people, organizations, and resources to help build a world where all people can live free and dignified lives.  Idealist is independent of any government, political ideology, or religious creed. Our work is guided by the common desire of our members and supporters to find practical solutions to social and environmental problems, in a spirit of generosity and mutual respect."
@@ -114,7 +140,11 @@ def parse(instr, maxrec, progress):
   outstr += '</Organization></Organizations>'
 
   outstr += '\n<VolunteerOpportunities>\n'
-  nodes = feed.getElementsByTagName('entry')
+  try:
+    nodes = feed.getElementsByTagName('entry')
+  except:
+    nodes = []
+    
   for i, node in enumerate(nodes):
     if maxrec > 0 and i > maxrec:
        break

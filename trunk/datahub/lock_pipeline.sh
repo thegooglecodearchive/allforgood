@@ -25,6 +25,7 @@ then
 	then
 		./notify_michael.sh download started 
 		./download.sh
+		./asciify.sh
 		./notify_michael.sh download complete 
 		# clear previous processing
 		rm -f *.transformed
