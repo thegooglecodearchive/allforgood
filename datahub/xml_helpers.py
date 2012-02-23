@@ -25,6 +25,9 @@ import re
 import sys
 import time
 
+
+import utf8
+
 # asah: I give up, allowing UTF-8 is just too hard without incurring
 # crazy performance penalties
 SIMPLE_CHARS = ''.join(map(chr, range(32, 127)))
@@ -144,7 +147,6 @@ def get_tag_attr(entity, tag, attribute):
     return ""
   outstr = nodes[0].getAttribute(attribute)
   outstr = xml.sax.saxutils.escape(outstr).encode('UTF-8')
-  #outstr = re.sub(r'\n', r'\\n', outstr)
   outstr = re.sub(r'\n', ' ', outstr)
   outstr = "".join(i for i in outstr if ord(i)<128 and ord(i)>31)
   return outstr
@@ -184,12 +186,8 @@ def validate_xml(xmldoc, known_elnames):
       validate_xml(node, known_elnames)
 
 
-def simple_parser(instr, known_elnames_list, progress):
-  """a simple wrapper for parsing XML which attempts to handle errors."""
-
+def parse_or_die(instr):
   xmldoc = None
-  if progress:
-    print datetime.now(), "xml_helpers.simple_parser: parsing XML"
 
   try:
     xmldoc = minidom.parseString(instr)
@@ -227,6 +225,22 @@ def simple_parser(instr, known_elnames_list, progress):
       pass
 
   if not xmldoc:
+    print "trying CDATA city..."
+    instr = instr.replace('<city>', '<city><![CDATA[').replace('</city>', ']]></city>')
+    try:
+      xmldoc = minidom.parseString(instr)
+    except:
+      pass
+
+  if not xmldoc:
+    print "trying CDATA region..."
+    instr = instr.replace('<region>', '<region><![CDATA[').replace('</region>', ']]></region>')
+    try:
+      xmldoc = minidom.parseString(instr)
+    except:
+      pass
+
+  if not xmldoc:
     print "trying anyway ..."
     from BeautifulSoup import BeautifulStoneSoup
     try:
@@ -235,22 +249,34 @@ def simple_parser(instr, known_elnames_list, progress):
       pass
 
   if not xmldoc:
-    print "xml_helpers.simple_parser: this feed is unparseable -- contact provider"
+    print "xml_helpers.parse_or_die: this feed is unparseable -- contact provider"
     sys.exit(0)
-  else:
-    if progress:
-      print datetime.now(), "xml_helpers.simple_parser: validating XML..."
 
-    if known_elnames_list:
-      known_elnames_dict = {}
-      for item in known_elnames_list:
-        known_elnames_dict[item] = True
-      validate_xml(xmldoc, known_elnames_dict)
+  return xmldoc
 
-    if progress:
-      print datetime.now(), "xml_helpers.simple_parser: done parsing"
 
-    return xmldoc
+def simple_parser(instr, known_elnames_list, progress):
+  """a simple wrapper for parsing XML which attempts to handle errors."""
+
+  xmldoc = None
+  if progress:
+    print datetime.now(), "xml_helpers.simple_parser: parsing XML"
+
+  xmldoc = parse_or_die(instr)
+
+  if progress:
+    print datetime.now(), "xml_helpers.simple_parser: validating XML..."
+
+  if known_elnames_list:
+    known_elnames_dict = {}
+    for item in known_elnames_list:
+      known_elnames_dict[item] = True
+    validate_xml(xmldoc, known_elnames_dict)
+
+  if progress:
+    print datetime.now(), "xml_helpers.simple_parser: done parsing"
+
+  return xmldoc
 
 
 def prettyxml(doc, strip_header = False):

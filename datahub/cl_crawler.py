@@ -29,6 +29,8 @@ import string
 import geocoder
 import xml_helpers as xmlh
 
+import utf8
+
 NUMOPPS = 0
 DEFAULT_TIMEOUT = 10
 socket.setdefaulttimeout(DEFAULT_TIMEOUT)

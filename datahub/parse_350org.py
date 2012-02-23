@@ -42,17 +42,12 @@ import xml_helpers as xmlh
 from datetime import datetime
 import dateutil.parser
 
+import utf8
+
 # pylint: disable-msg=R0915
 def parse(instr, maxrec, progress):
   """return FPXML given 350.org data"""
-  from xml.dom import minidom
-  feed = minidom.parseString(instr.encode('utf-8'))
-  """
-  try:
-    feed = minidom.parseString(instr.encode('utf-8'))
-  except:
-    return None, 0, 0
-  """
+  feed = xmlh.parse_or_die(instr.encode('utf-8'))
 
   org_id = str(139)
   mission_statement = "350.org is an international campaign that's building a movement to unite the world around solutions to the climate crisis--the solutions that science and justice demand."
