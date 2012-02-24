@@ -408,7 +408,7 @@ def parse(instr):
                      recordval(record, 'Frequency')+"'")
     CURRENT_ROW += 1
   if len(MESSAGES) == 0:
-    MESSAGES.append("Spreadsheet parsed correctly!" + 
-      " Feel free to submit if the locations and URLs check out.")
+    MESSAGES.append("Spreadsheet check passed!" + 
+      " Any changes you make to your spreadsheet will automatically go live within 12 hours. If you need to make any edits, additions or deletions to your opportunities, you can make them directly in your original spreadsheet; there is no need to submit a new one. If you wish to remove any of your opportunities from our system, all you need to do is delete them from your spreadsheet.")
   return DATA, MESSAGES, addr_ar, urls_ar
 
