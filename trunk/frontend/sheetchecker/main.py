@@ -104,6 +104,9 @@ class ValidateURL(webapp.RequestHandler):
     """HTTP get method."""
     url = unquote(self.request.get('url'))
 
+    if not url.startswith('http'):
+      url = 'http://' + url
+
     if url == "":
       success = False
     else:
