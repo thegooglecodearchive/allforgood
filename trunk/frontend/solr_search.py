@@ -15,6 +15,7 @@ low-level routines for querying SOLR and processing the results.
 Please don't call this directly-- instead call search.py
 """
 
+import sys
 import datetime
 import logging
 import re
@@ -697,8 +698,8 @@ def get_facet_counts(api_key):
   try:
     fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
   except:
-    logging.info('error receiving solr facet counts')
-    return
+    logging.error('get_facet_counts: error receiving solr facet counts')
+    sys.exit(0)
 
   result_content = fetch_result.content
   result_content = re.sub(r';;', ',', result_content)
@@ -739,7 +740,8 @@ def get_geo_counts(args, api_key):
   try:
     fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
   except:
-    logging.info('error receiving solr facet counts')
+    logging.error('get_geo_counts: error receiving solr facet counts')
+    sys.exit(0)
   
   try:
     result_content = fetch_result.content  
@@ -767,7 +769,8 @@ def get_type_counts(args, api_key):
   try:
     fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
   except:
-    logging.info('error receiving solr facet counts')
+    logging.error('get_type_counts: error receiving solr facet counts')
+    sys.exit(0)
   
   result_content = fetch_result.content  
   # undo comma encoding -- see datahub/footprint_lib.py
