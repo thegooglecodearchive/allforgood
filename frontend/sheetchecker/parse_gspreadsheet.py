@@ -268,14 +268,18 @@ def parse(instr):
   if len(header_names) < 10:
     parser_error("too few fields found: "+str(len(header_names)))
 
+  data_startrow = 0
+
   # check to see if there's a header-description row
   header_desc = cellval(HEADER_ROW+1, HEADER_STARTCOL)
   if not header_desc:
     parser_error("blank row not allowed below header row")
-  header_desc = header_desc.lower()
-  data_startrow = HEADER_ROW + 1
-  if header_desc.find("up to") >= 0:
-    data_startrow += 1
+  else:
+    header_desc = header_desc.lower()
+    data_startrow = HEADER_ROW + 1
+    if header_desc.find("Opportunity Title") >= 0:
+      data_startrow += 1
+
 
   # find the data
   CURRENT_ROW = data_startrow
@@ -283,6 +287,12 @@ def parse(instr):
   numopps = 0
   addr_ar = []
   urls_ar = []
+
+  if data_startrow == 0:
+    MESSAGES = []
+    MESSAGES.append('Spreadsheet appears to be empty')
+    return len(MESSAGES), DATA, MESSAGES, [], []
+
   while True:
     blankrow = True
     #rowstr = "row="+str(row)+"\n"
@@ -312,11 +322,7 @@ def parse(instr):
       get_minmaxlen(record, 'OpportunityTitle', 4, 100)
       get_minmaxlen(record, 'SpecialSkills', -1, 1000)
       location_name = get_minmaxlen(record, 'LocationName', 4)
-      if location_name == "virtual":
-        is_virtual = True
-      elif location_name.lower() == "virtaul" or location_name.lower() == "virtual":
-        parser_error("misspelled location name: "+location_name+
-                     " -- perhaps you meant 'virtual'?  (note spelling)")
+      if location_name.lower() == "virtual":
         is_virtual = True
       else:
         is_virtual = False
@@ -338,18 +344,15 @@ def parse(instr):
         addr += " "+recordval(record, "LocationCountry")
         addr_ar.append(addr)
         
-      start_date = recordval(record, "StartDate")
+      start_date = recordval(record, "StartDate").lower()
       if start_date == "ongoing":
-        ongoing = True
-      elif start_date.lower().find("ong") == 0:
-        parser_error("misspelled Start Date: "+start_date+
-                     " -- perhaps you meant 'ongoing'?  (note spelling)")
         ongoing = True
       elif start_date == "":
         parser_error("Start Date may not be blank.")
         ongoing = True
       else:
         ongoing = False
+
       if ongoing:
         start_time = recordval(record, "StartTime")
         if start_time != "" and start_time != "ongoing":
@@ -365,9 +368,11 @@ def parse(instr):
         get_tmval(record, "StartTime")
         get_dtval(record, "EndDate")
         get_tmval(record, "EndTime")
+
       email = recordval(record, "ContactEmail")
       if email != "" and email.find("@") == -1:
         parser_error("malformed email address: "+email)
+
       url = recordval(record, "URL")
       if url == "":
         parser_error("Website - this field is required.")
@@ -407,8 +412,6 @@ def parse(instr):
         parser_error("unsupported frequency: '"+
                      recordval(record, 'Frequency')+"'")
     CURRENT_ROW += 1
-  if len(MESSAGES) == 0:
-    MESSAGES.append("Spreadsheet check passed!" + 
-      " Any changes you make to your spreadsheet will automatically go live within 12 hours. If you need to make any edits, additions or deletions to your opportunities, you can make them directly in your original spreadsheet; there is no need to submit a new one. If you wish to remove any of your opportunities from our system, all you need to do is delete them from your spreadsheet.")
-  return DATA, MESSAGES, addr_ar, urls_ar
+
+  return len(MESSAGES), DATA, MESSAGES, addr_ar, urls_ar
 
