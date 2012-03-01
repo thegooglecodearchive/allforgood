@@ -55,28 +55,45 @@ class Check(webapp.RequestHandler):
       "msgs" : None,
       "data" : None
       }
+
+    if sheeturl:
+      ar = sheeturl.split('#')
+      sheeturl = ar[0]
+
+    msgs = []
     match = re.search(r'key=([^& ]+)', sheeturl)
-    if match:
+    if not match:
+      msgs.append('The url given does not appear to be a valid Google Docs spreadsheet')
+      template_values["msgs"] = msgs
+    else:
       url = "http://spreadsheets.google.com/feeds/cells/"
       url += match.group(1).strip() + "/1/public/basic"
+
       fetch_result = urlfetch.fetch(url)
       if fetch_result.status_code != 200:
-        self.response.out.write("<html><body>error fetching URL " +
-                                url + "</body></html>")
-        return
-      contents = fetch_result.content
-      logging.info("fetched %d bytes: %s..." % (len(contents), contents[:80]))
-      data, msgs, addr_ar, urls_ar = parse_gspreadsheet.parse(contents)
-      logging.info("%d msgs in %s" % (len(msgs), sheeturl))
-      template_values["sheetfeedurl"] = url
-      template_values["msgs"] = msgs
-      template_values["data"] = data
-      template_values["addresses"] = addr_ar
-      template_values["urls"] = urls_ar
-    elif sheeturl != "":
-      self.response.out.write("<html><body>malformed sheet URL " +
-                              " - missing &key=</body></html>")
-      return
+        msgs.append('We cannot read the spreadsheet. Did you grant us access to it?')
+        template_values["msgs"] = msgs
+      else:
+        contents = fetch_result.content
+        logging.info("fetched %d bytes: %s..." % (len(contents), contents[:80]))
+        errs, data, msgs, addr_ar, urls_ar = parse_gspreadsheet.parse(contents)
+        template_values["sheetfeedurl"] = url
+        template_values["msgs"] = msgs
+        template_values["data"] = data
+        template_values["addresses"] = []
+        for address in addr_ar:
+          address = address.strip()
+          if address:
+            template_values["addresses"].append(address)
+
+        template_values["urls"] = []
+        for url in urls_ar:
+          url = url.strip()
+          if url:
+            if not url.lower().startswith('http'):
+              url = 'http://' + url
+            template_values["urls"].append(url)
+
     self.response.out.write(template.render(CHECK_SHEET_TEMPLATE,
                                             template_values))
     

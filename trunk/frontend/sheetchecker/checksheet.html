@@ -1,67 +1,88 @@
 <html>
+<head>
+<link type="text/css" rel="stylesheet" href="/css/style.css" />
 <style>
-TD {font-size:13px;}
-IFRAME {padding:0;margin:0;width:30px;height:12px;display:inline;border:solid 1px #cccccc;}
+IFRAME {margin:0;padding:0;display:inline;height:18px;width:48px;}
+BODY {margin:24px;}
+.title {margin-left:20px;
+  color:#F6F6F6;
+  font-family: Rockwell,'RockwellStdRegular',Georgia,Times,"Times New Roman",serif;
+  font-size: 24px;
+  font-weight: normal;
+  position:relative;top:6px;
+}
+LABEL {color:#F6F6F6;font-size:18px;font-weight: normal;}
+#checking {font-size:13px;text-align:left;color:#000000;background-color:#ffffff;padding:6px;}
+#results {font-size:13px;text-align:left;color:#000000;background-color:#ffffff;padding:6px;}
+#fail {font-size:18px;color:#993333;}
+#success {font-size:18px;color:#339933;}
+.hint {font-size:15px;color:#111111;}
 </style>
+</head>
 <body>
-<div style="font-family:courier;font-size:10pt">
-All for Good Google Docs Spreadsheet Volunteer Opportunity Template Checker
-<p/>
-<form>
-spreadsheet URL:<br/>
-<input name='url' size='80' value='{{ sheeturl|escape }}'>
-<input type='submit' value='run checker'>
-</form>
+<div id="wrapper">
+  <div id="header">
+  <img align="left" src="/css/images/all-for-good.png" />
+  <span class="title">&mdash;&nbsp;&nbsp;Spreadsheet Checker</span>
+  </div>
 
-<p>
-If you experience any problems using the spreadsheet checker or posting your opportunities to All for Good, please contact us at <a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a>.
-</p>
+  <form>
+<label>Spreadsheet URL:<label/>
+<input name='url' onfocus="this.select();" size='80' value='{{ sheeturl|escape }}'>
+<input type='submit' value='check spreadsheet'>
+  </form>
+<br />
+<br />
 
+{% if sheeturl %}
+<div id="results">
+  <div id="checking">
+original sheet: <a href='{{ sheeturl|escape }}'>{{ sheeturl|escape }}</a><br/>
+  {% if sheetfeedurl %}
+sheet feed: <a href='{{ sheetfeedurl|escape }}'>{{ sheetfeedurl|escape }}</a><br/>
+  {% endif %}
 
-{% ifnotequal sheeturl "" %}
-  <p/>
-  original sheet: <a href='{{ sheeturl|escape }}'>{{ sheeturl|escape }}</a><br/>
-  sheet feed: <a href='{{ sheetfeedurl|escape }}'>{{ sheetfeedurl|escape }}</a><br/>
-  <p/>
+{% if msgs %}
+<br />
+<div id="fail">This Google Docs spreadsheet has errors!</div>
+<hr noshade />
   {% for msg in msgs %}
-  {{ msg }}<p/>
+    <li class="hint">{{ msg|escape }}</li>
   {% endfor %}
-<!-- 
-  the iframes are needed because each check results in a gmaps call, 
-  and we'd hit the appengine 30sec timeout.
--->
-  <p/>
-  Checking locations...
-  <p/>
-  <table><tr><td valign="top">
-  {% for addr in addresses %}
-  <iframe frameborder="no" scrolling="no" align="absmiddle"
-     src="/sheetchecker/validate_address?address={{ addr|urlencode|escape }}"></iframe>
-  <p/>
-  {% endfor %}
-  </td><td valign="top">
-  {% for addr in addresses %}
-     &nbsp;{{ addr|escape }}
-  <p/>
-  {% endfor %}
-  </td></tr></table>
-  <p/>
-  Checking URL's...
-  <p/>
-  <table><tr><td valign="top">
-  {% for url in urls %}
-  <iframe frameborder="no" scrolling="no" align="absmiddle"
-     src="/sheetchecker/validate_url?url={{ url|urlencode|escape }}"></iframe>
-  <p/>
-  {% endfor %}
-  </td><td valign="top">
-  {% for url in urls %}
-     &nbsp;{{ url|escape }}
-  <p/>
-  {% endfor %}
-  </td></tr></table>
-  
-{% endifnotequal %}
+{% else %}
+<br />
+<div id="success">This Google Docs spreadsheet parsed correctly!</div>
+Any changes you make to your spreadsheet will automatically go live within 12 hours. If you need to make any edits, additions or deletions to your opportunities, you can make them directly in your original spreadsheet; there is no need to submit a new one. If you wish to remove any of your opportunities from our system, all you need to do is delete them from your spreadsheet.
+<br/>
+If the addresses and links are correct then you can submit your spreadsheet <a href="https://spreadsheets.google.com/viewform?formkey=ck9ZQ2lodDhxMUdRZ0RfVHVFSjJfX0E6MA..&ndplr=1">here</a>
+{% endif %}
 </div>
+
+  {% if addresses %}
+<hr noshade />
+    Checking addresses...
+<table>
+    {% for addr in addresses %}
+<tr><td valign="top"><iframe frameborder="no" scrolling="no" align="absmiddle"
+ src="/sheetchecker/validate_address?address={{ addr|urlencode|escape }}&r={{ time }}"></iframe>
+</td><td valign="top">&nbsp; {{ addr|escape }}</td></tr>
+    {% endfor %}
+</table>
+  {% endif %}
+
+  {% if urls %}
+<hr noshade />
+    Checking URL's...
+  <table>
+    {% for url in urls %}
+<tr><td valign="center"><iframe frameborder="no" scrolling="no" align="absmiddle"
+ src="/sheetchecker/validate_url?url={{ url|urlencode|escape }}&r={{ time }}"></iframe>
+</td><td valign="top">&nbsp; {{ url|escape }}</td></tr>
+    {% endfor %}
+</table>
+  {% endif %}
+  
+</div>
+{% endif %}
 </body>
 </html>
