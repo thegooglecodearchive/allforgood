@@ -84,7 +84,8 @@ class Check(webapp.RequestHandler):
         for address in addr_ar:
           address = address.strip()
           if address:
-            template_values["addresses"].append(address)
+            if not address in template_values["addresses"]:
+              template_values["addresses"].append(address)
 
         template_values["urls"] = []
         for url in urls_ar:
@@ -92,7 +93,8 @@ class Check(webapp.RequestHandler):
           if url:
             if not url.lower().startswith('http'):
               url = 'http://' + url
-            template_values["urls"].append(url)
+            if not url in template_values["urls"]:
+              template_values["urls"].append(url)
 
     self.response.out.write(template.render(CHECK_SHEET_TEMPLATE,
                                             template_values))
@@ -104,7 +106,7 @@ class ValidateAddress(webapp.RequestHandler):
     addr = unquote(self.request.get('address'))
 
     rsp = """
-<html><body style="padding-top:1px;margin:0;font-size:10px;
+<html><body style="padding-top:4px;margin:0;font-size:10px;
 font-weight:bold;text-align:center;background-color:%s;">%s
 """
     if geocode.geocode(addr) == "":
@@ -137,7 +139,7 @@ class ValidateURL(webapp.RequestHandler):
         success = False
 
     rsp = """
-<html><body style="padding-top:1px;margin:0;font-size:10px;
+<html><body style="padding-top:4px;margin:0;font-size:10px;
 font-weight:bold;text-align:center;background-color:%s;">%s
 """
     if success:
