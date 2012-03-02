@@ -4,6 +4,7 @@
 <style>
 IFRAME {margin:0;padding:0;display:inline;height:18px;width:48px;}
 BODY {margin:24px;}
+P {margin:0;padding:0;margin-top:10px;}
 .title {margin-left:20px;
   color:#F6F6F6;
   font-family: Rockwell,'RockwellStdRegular',Georgia,Times,"Times New Roman",serif;
@@ -16,73 +17,84 @@ LABEL {color:#F6F6F6;font-size:18px;font-weight: normal;}
 #results {font-size:13px;text-align:left;color:#000000;background-color:#ffffff;padding:6px;}
 #fail {font-size:18px;color:#993333;}
 #success {font-size:18px;color:#339933;}
+#footer {text-align:right;}
 .hint {font-size:15px;color:#111111;}
 </style>
 </head>
 <body>
 <div id="wrapper">
-  <div id="header">
+  <div id="header" style="height:60px;">
   <img align="left" src="/css/images/all-for-good.png" />
   <span class="title">&mdash;&nbsp;&nbsp;Spreadsheet Checker</span>
   </div>
 
   <form>
-<label>Spreadsheet URL:<label/>
-<input name='url' onfocus="this.select();" size='80' value='{{ sheeturl|escape }}'>
+<label>Spreadsheet Link:<label/>
+<input name='url' onfocus="this.select();" size='90' value='{{ sheeturl|escape }}'>
 <input type='submit' value='check spreadsheet'>
   </form>
-<br />
-<br />
-
+<p/>
 {% if sheeturl %}
 <div id="results">
   <div id="checking">
-original sheet: <a href='{{ sheeturl|escape }}'>{{ sheeturl|escape }}</a><br/>
+<!--
+original sheet: <a href='{{ sheeturl|escape }}'>{{ sheeturl|escape }}</a><br/><br />
   {% if sheetfeedurl %}
-sheet feed: <a href='{{ sheetfeedurl|escape }}'>{{ sheetfeedurl|escape }}</a><br/>
+sheet feed: <a href='{{ sheetfeedurl|escape }}'>{{ sheetfeedurl|escape }}</a><br/><br />
   {% endif %}
+-->
 
 {% if msgs %}
-<br />
 <div id="fail">This Google Docs spreadsheet has errors!</div>
 <hr noshade />
   {% for msg in msgs %}
     <li class="hint">{{ msg|escape }}</li>
   {% endfor %}
 {% else %}
-<br />
 <div id="success">This Google Docs spreadsheet parsed correctly!</div>
-Any changes you make to your spreadsheet will automatically go live within 12 hours. If you need to make any edits, additions or deletions to your opportunities, you can make them directly in your original spreadsheet; there is no need to submit a new one. If you wish to remove any of your opportunities from our system, all you need to do is delete them from your spreadsheet.
-<br/>
-If the addresses and links are correct then you can submit your spreadsheet <a href="https://spreadsheets.google.com/viewform?formkey=ck9ZQ2lodDhxMUdRZ0RfVHVFSjJfX0E6MA..&ndplr=1">here</a>
+<p/>
+Any changes you make to your spreadsheet will automatically go live within 12 hours. 
+<p/>
+If you need to make any edits, additions or deletions to your opportunities, 
+you can make them directly in your original spreadsheet; there is no need to submit a new one. 
+<p/>
+If you wish to remove any of your opportunities from our system, 
+all you need to do is delete them from your spreadsheet.
+<p/>
+If the addresses and links are correct then you may submit your spreadsheet <a href="https://spreadsheets.google.com/viewform?formkey=ck9ZQ2lodDhxMUdRZ0RfVHVFSjJfX0E6MA..&ndplr=1">here</a>
 {% endif %}
 </div>
 
   {% if addresses %}
 <hr noshade />
-    Checking addresses...
+<b>Checking unique addresses...</b>
+<p/>
 <table>
     {% for addr in addresses %}
-<tr><td valign="top"><iframe frameborder="no" scrolling="no" align="absmiddle"
+<tr><td><iframe frameborder="no" scrolling="no" align="absmiddle"
  src="/sheetchecker/validate_address?address={{ addr|urlencode|escape }}&r={{ time }}"></iframe>
-</td><td valign="top">&nbsp; {{ addr|escape }}</td></tr>
+</td><td>&nbsp; {{ addr|escape }}</td></tr>
     {% endfor %}
 </table>
   {% endif %}
 
   {% if urls %}
 <hr noshade />
-    Checking URL's...
+<b>Checking unique links...</b>
+<p/>
   <table>
     {% for url in urls %}
-<tr><td valign="center"><iframe frameborder="no" scrolling="no" align="absmiddle"
+<tr><td><iframe frameborder="no" scrolling="no" align="absmiddle"
  src="/sheetchecker/validate_url?url={{ url|urlencode|escape }}&r={{ time }}"></iframe>
-</td><td valign="top">&nbsp; {{ url|escape }}</td></tr>
+</td><td>&nbsp; {{ url|escape }}</td></tr>
     {% endfor %}
 </table>
   {% endif %}
   
 </div>
 {% endif %}
+<div id="footer">
+<a href="http://www.pointsoflight.org"><img border="0" src="/images/poli-logo-rc.gif" /></a>
+</div>
 </body>
 </html>
