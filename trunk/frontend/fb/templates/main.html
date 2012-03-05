@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Facebook - All for Good{% endblock %}
+{% block body %}
+
+<div id="wrapper">
+All for Good -- Facebook (Layout Sketch)
+
+<div id="search" style="text-align:right;white-space:nowrap;font-size:13px;margin-top:8px;margin-bottom:8px;">
+  <label>Location</label><input name="location" size="8" />
+  <label>Range</label>
+  <select>
+    <option>Within 5 miles</option>
+    <option>Within 10 miles</option>
+    <option>Within 25 miles</option>
+  </select>
+  <input name="q" size="16" /><input type="button" value="Search" />
+</div>
+
+<table><tr>
+<td valign="top">
+<div id="listview-tab" class="tab selected-tab" onclick="tab(this.id)">List View</div>
+</td>
+<td valign="top">
+<div id="mapview-tab" class="tab" onclick="tab(this.id)">Map View</div>
+</td>
+<td valign="top">
+<div id="settings-tab" class="tab" onclick="tab(this.id)">Settings</div>
+</td>
+</tr></table>
+
+<div id="listview" class="content" style="display:block;">
+  <div class="opp"><b>Opp 1</b><br/>Opp Description....</div>
+  <p/>
+  <div class="opp"><b>Opp 2</b><br/>Opp Description....</div>
+  <p/>
+  <div class="opp"><b>Opp ...</b><br/>Opp Description....</div>
+  <p/>
+  <div class="opp"><b>Opp N</b><br />Opp Description....</div>
+
+  <div style="position:absolute;bottom:10px;right:10px;">Next &raquo;</div>
+  <div style="position:absolute;width:100%;bottom:10px;"><center>branding</center></div>
+  <div style="position:absolute;bottom:10px;left:10px;">&laquo; Prev</div>
+</div> <!-- end of list tab -->
+
+<div id="mapview" class="content" style="height:350px;display:none;">
+<img align="left" style="margin-right:25px;" 
+  src="http://maps.google.com/maps/api/staticmap?center=37.7749295,-122.4194155&zoom=12&size=300x250&sensor=false" />
+<li>this would show markers on map corresponding to list view</li>
+<li>hovering over marker would show title/description of opp here</li>
+<li>clicking on marker or link in description goes to opp page</li>
+</div> <!-- end of map tab -->
+
+
+<div id="settings" class="content" style="display:none;">
+<p/>
+<form>
+<label class="settings">Location: </label><input size=40 id="location" />
+<p/>
+<label class="settings">Range: </label><select>
+    <option>Within 5 miles</option>
+    <option>Within 10 miles</option>
+    <option>Within 25 miles</option>
+  </select>
+<p/>
+<label class="settings">Category: </label><select id="category">
+<option>Category 1</option>
+<option>Category 2</option>
+<option>Category ...</option>
+<option>Category N</option>
+</select>
+<center>
+<input type="button" value="Save" />
+</center>
+  <div style="position:absolute;width:100%;bottom:10px;"><center>branding</center></div>
+</form>
+</div> <!-- end of settings tab -->
+
+
+</div>
+
+<script>
+function _gel(id) {
+  return document.getElementById(id);
+}
+
+function tab(tab_id) {
+  var id = tab_id.replace('-tab', '');
+  var ar = document.getElementsByTagName('div');
+  for (var i in ar) {
+    if (ar[i] && ar[i].id && ar[i].className && ar[i].className.indexOf('tab') == 0) {
+      ar[i].className = 'tab' + (ar[i].id.indexOf(id) >= 0 ? ' selected-tab' : '');
+      var it = _gel(ar[i].id.replace('-tab', ''));
+      if (it) {
+        it.style.display = (it.id == id ? 'block' : 'none');
+      }
+    }
+  }
+}
+
+</script>
+
+
+{% endblock %}

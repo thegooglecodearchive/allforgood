@@ -1,0 +1,96 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+    <meta charset="utf-8">
+    <title>
+      {% block title %}Welcome{% endblock %} &mdash; All for Good
+    </title>
+    <meta name="description" content="ask a question">
+<!--
+    <link type="text/css" rel="stylesheet" href="/fb/style.css?v">
+-->
+<style>
+BODY {margin:0;padding:0;font-family:Arial,sans-serif;
+  background-color:#0281d1;
+  background-repeat:repeat-x;
+  background-image:url(/images/body-bg.png);
+}
+FORM {margin:0;padding:0;}
+TABLE {margin:0;padding:0;}
+LABEL.settings {display:inline-block;width:80px;text-align:right;}
+
+.tab {padding:4px;height:24px;background-color:#ddddff;border:solid 1px #cccccc;cursor:pointer;}
+.selected-tab {background-color:#ffffff;}
+
+.content {background-color:#ffffff;border:solid 1px #dddddd;}
+
+.opp {margin-left:6px;font-size:13px;}
+
+
+
+#wrapper {position:relative;
+  overflow:hidden;
+  padding:10px;
+  width:600px;
+  height:450px;
+  background-color:#ffffff;
+  border-bottom:solid 1px #eeeeee;
+}
+</style>
+
+
+  </head>
+  <body>
+    <div id="doc">
+<center>
+
+      {% if message %}
+        <div class="message {{ message.type }}">{{ message.content|safe }}</div>
+      {% endif %}
+
+<table cellpadding="0" cellspacing="0" border="0"><tr><td>
+        {% block body %}{% endblock %}
+</td></tr></table>
+
+      <div id="footer">
+      {% if logged_in_user %}
+<a target="_blank" title="add this app"
+ href="http://facebook.com/add.php?api_key=182016385235289&pages=1">add this app</a>
+      {% endif %}
+      </div>
+
+</center>
+    </div>
+
+    <script src="/fb/main.js"></script>
+    <div id="fb-root"></div>
+    <script>
+      if (window != window.top) {
+        {# we are in an iframe #}
+        {# async loading of facebook js sdk #}
+        window.fbAsyncInit = function() { facebookInit({{ js_conf|safe }}) };
+        (function() {
+          var e = document.createElement('script');
+          e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+          document.getElementById('fb-root').appendChild(e);
+        }());
+      } 
+
+      {# async loading of google analytics #}
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-8689219-7']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script');
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+<!--
+<span style="cursor:pointer;" onclick="FB.api({ method: 'auth.revokeAuthorization' })">.</span>
+-->
+<!-- canvas_name {{ canvas_name }} -->
+  </body>
+</html>
