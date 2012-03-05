@@ -98,10 +98,6 @@ handlers:
   static_files: robots.txt
   upload: robots.txt
 
-# For Facebook app
-- url: /fb/.*
-  script: facebookapp/main.py
-
 # For favicon
 - url: /favicon.ico
   static_files: images/favicon.ico
@@ -131,6 +127,14 @@ handlers:
 - url: /[H,h]ands[O,o]n
   static_files: html/gadget/cs3/handson.html
   upload: html/gadget/cs3/handson.html
+
+# For Facebook app
+- url: /fb/(.*\.(html|css|js|gif|jpg|png|ico))
+  static_files: fb/static/\1
+  upload: fb/static/.*
+
+- url: /fb.*
+  script: fb/main.py
 
 # Keep this last
 - url: /.*
