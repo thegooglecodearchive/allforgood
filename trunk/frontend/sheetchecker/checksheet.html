@@ -20,6 +20,7 @@ LABEL {color:#F6F6F6;font-size:18px;font-weight: normal;}
 #footer {text-align:right;}
 #notes {background-color:#ffffff;font-size:12px;color:#666666;}
 .hint {font-size:15px;color:#111111;}
+.err-msg {font-weight:bold;margin:5px;font-size:14px;}
 </style>
 <script>
 function _gel(id) {
@@ -49,13 +50,11 @@ function _gel(id) {
 <div id="fail">This Google Docs spreadsheet has errors!</div>
 <hr noshade />
   {% for msg in msgs %}
-    <li class="hint">{{ msg|escape }}</li>
+    <li class="hint">{{ msg|safe }}</li>
   {% endfor %}
 {% else %}
 <div id="success">This Google Docs spreadsheet parsed correctly!</div>
 <div id="passed" style="display:none;">
-<div id="url_err_msg"></div>
-<div id="addr_err_msg"></div>
 <p/>
 Any changes you make to your spreadsheet will automatically go live within 12 hours. 
 <p/>
@@ -65,7 +64,11 @@ you can make them directly in your original spreadsheet; there is no need to sub
 If you wish to remove any of your opportunities from our system, 
 all you need to do is delete them from your spreadsheet.
 <p/>
-You may submit your spreadsheet <a href="https://spreadsheets.google.com/viewform?formkey=ck9ZQ2lodDhxMUdRZ0RfVHVFSjJfX0E6MA..&ndplr=1">here</a>
+You may submit your spreadsheet <a 
+ href="https://spreadsheets.google.com/viewform?formkey=ck9ZQ2lodDhxMUdRZ0RfVHVFSjJfX0E6MA..&ndplr=1">here</a>
+ <span id="has_errs" style="display:none;"> after correcting these errors;</span>
+<div id="url_err_msg" class="err-msg"></div>
+<div id="addr_err_msg" class="err-msg"></div>
 </div>
 {% endif %}
 </div>
@@ -154,15 +157,16 @@ function finished() {
   if (urls_to_check <= 0 && addr_to_check <= 0) {
     if (total_urls > 0 && url_errs > 0) {
       var html = new Array();
-      html.push(url_errs, ' out of ', total_urls, ' URL(s) had errors');
-       _gel('url_err_msg').innerHTML = html.join('');
+      html.push(url_errs, ' out of ', total_urls, ' URL', (total_urls != 1 ? 's': ''), ' invalid');
+      _gel('url_err_msg').innerHTML = html.join('');
+      _gel('has_errs').style.display = 'inline';
     }
     if (total_addr > 0 && addr_errs > 0) {
       var html = new Array();
-      html.push(addr_errs, ' out of ', total_addr, ' address(es) had errors');
-       _gel('addr_err_msg').innerHTML = html.join('');
+      html.push(addr_errs, ' out of ', total_addr, ' address', (total_addr != 1 ? 'es': ''), ' invalid');
+      _gel('addr_err_msg').innerHTML = html.join('');
+      _gel('has_errs').style.display = 'inline';
     }
-
     _gel('passed').style.display = 'block';
   }
 }
