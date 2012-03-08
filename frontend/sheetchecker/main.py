@@ -86,6 +86,7 @@ class Check(webapp.RequestHandler):
           if address:
             if not address in template_values["addresses"]:
               template_values["addresses"].append(address)
+        template_values["number_of_addresses"] = len(template_values["addresses"])
 
         template_values["urls"] = []
         for url in urls_ar:
@@ -95,6 +96,7 @@ class Check(webapp.RequestHandler):
               url = 'http://' + url
             if not url in template_values["urls"]:
               template_values["urls"].append(url)
+        template_values["number_of_urls"] = len(template_values["urls"])
 
     self.response.out.write(template.render(CHECK_SHEET_TEMPLATE,
                                             template_values))
@@ -107,7 +109,7 @@ class ValidateAddress(webapp.RequestHandler):
 
     rsp = """
 <html><body style="padding-top:4px;margin:0;font-size:10px;
-font-weight:bold;text-align:center;background-color:%s;">%s
+font-weight:bold;text-align:center;background-color:%s;"><div id="result">%s</div>
 """
     if geocode.geocode(addr) == "":
       rsp = rsp % ("#ff3333", "BAD")
@@ -140,7 +142,7 @@ class ValidateURL(webapp.RequestHandler):
 
     rsp = """
 <html><body style="padding-top:4px;margin:0;font-size:10px;
-font-weight:bold;text-align:center;background-color:%s;">%s
+font-weight:bold;text-align:center;background-color:%s;"><div id="result">%s</div>
 """
     if success:
       rsp = rsp % ("#33ff33", "OK")
