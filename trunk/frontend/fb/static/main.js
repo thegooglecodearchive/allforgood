@@ -48,31 +48,13 @@ function setDateFields(date) {
   document.getElementById('date_month').value = date.getMonth() + 1;
   document.getElementById('date_day').value = date.getDate();
 }
+
 function dateToday() {
   setDateFields(new Date());
 }
+
 function dateYesterday() {
   var date = new Date();
   date.setDate(date.getDate() - 1);
   setDateFields(date);
-}
-
-function publishRun(title) {
-  FB.ui({
-    method: 'stream.publish',
-    attachment: {
-      name: title,
-      caption: "I'm running!",
-      media: [{
-        type: 'image',
-        href: 'http://runwithfriends.appspot.com/',
-        src: 'http://runwithfriends.appspot.com/splash.jpg'
-      }]
-    },
-    action_links: [{
-      text: 'Join the Run',
-      href: 'http://runwithfriends.appspot.com/'
-    }],
-    user_message_prompt: 'Tell your friends about the run:'
-  });
 }
