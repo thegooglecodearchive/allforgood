@@ -49,7 +49,7 @@ def get_picture(dic, index):
 
 
 _USER_FIELDS = 'name,picture,gender,locale,link,username'
-class User(db.Model):
+class FBUser(db.Model):
     user_id = db.StringProperty()
     access_token = db.StringProperty()
     name = db.StringProperty()
@@ -57,19 +57,11 @@ class User(db.Model):
     gender = db.StringProperty()
     locale = db.StringProperty()
     link = db.StringProperty()
-    dirty = db.BooleanProperty()
 
-    def refresh_data(self):
-        """Refresh this user's data using the Facebook Graph API"""
-        me = Facebook().api('/me',
-            {'fields': _USER_FIELDS, 'access_token': self.access_token})
-        self.dirty = False
-        self.name = me['name']
-        self.picture = me['picture']
-        self.gender = me['gender']
-        self.locale = me['locale']
-        self.link = me['link']
-        return self.put()
+    # prefs from application
+    vol_loc = db.StringProperty()
+    vol_dist = db.StringProperty()
+    category = db.StringProperty()
 
 
 class Exception(Exception):
@@ -221,16 +213,25 @@ class BaseHandler(webapp.RequestHandler):
             'userIdOnServer': self.user.user_id if self.user else None,
         })
         data['logged_in_user'] = self.user
+
         data['message'] = self.get_message()
         data['csrf_token'] = self.csrf_token
         data['canvas_name'] = conf.FACEBOOK_CANVAS_NAME
+        
+        if self.user:
+          data['user_id'] = self.facebook.user_id
+          data['vol_loc'] = self.user.vol_loc
+          data['vol_dist'] = self.user.vol_dist
+          data['category'] = self.user.category
+          data['api_key'] = conf.FACEBOOK_APP_ID
+
         self.response.out.write(template.render(
             os.path.join(
                 os.path.dirname(__file__), 'templates', name + '.html'),
             data))
 
     def init_facebook(self):
-        """Sets up the request specific Facebook and User instance"""
+        """Sets up the request specific Facebook and FBUser instance"""
         facebook = Facebook()
         user = None
         me = None
@@ -249,16 +250,13 @@ class BaseHandler(webapp.RequestHandler):
 
         # try to load or create a user object
         if facebook.user_id:
-            user = User.get_by_key_name(facebook.user_id)
+            user = FBUser.get_by_key_name(facebook.user_id)
             if user:
                 # update stored access_token
                 if facebook.access_token and \
                         facebook.access_token != user.access_token:
                     user.access_token = facebook.access_token
                     user.put()
-                # refresh data if we failed in doing so after a realtime ping
-                if user.dirty:
-                    user.refresh_data()
                 # restore stored access_token if necessary
                 if not facebook.access_token:
                     facebook.access_token = user.access_token
@@ -267,8 +265,13 @@ class BaseHandler(webapp.RequestHandler):
 
             if not user and facebook.access_token:
                 me = facebook.api('/me', {'fields': _USER_FIELDS})
+
+                # prefs
+                me['vol_loc'] = ''
+                me['vol_dist'] = '25'
+                me['category'] = ''
                 try:
-                    user = User(key_name=facebook.user_id,
+                    user = FBUser(key_name=facebook.user_id,
                         user_id=facebook.user_id, 
                         access_token=facebook.access_token, 
                         name=me['name'],
@@ -277,7 +280,12 @@ class BaseHandler(webapp.RequestHandler):
                         locale=me['locale'],
                         link=me['link'],
                         username=me['username'],
+
+                        vol_loc=me['vol_loc'],
+                        vol_dist=me['vol_dist'],
+                        category=me['category'],
                        )
+
                     user.put()
                 except KeyError, ex:
                     pass # ignore if can't get the minimum fields
@@ -306,8 +314,8 @@ class BaseHandler(webapp.RequestHandler):
         """Get and clear the current message"""
         message = self.request.cookies.get('m')
         if message:
-            self.set_message()  # clear the current cookie
-            return json.loads(base64.b64decode(message))
+          self.set_message()  # clear the current cookie
+          return json.loads(base64.b64decode(message))
 
 
 def user_required(fn):
@@ -316,7 +324,7 @@ def user_required(fn):
     def wrapper(*args, **kwargs):
         handler = args[0]
         if handler.user:
-            return fn(*args, **kwargs)
+          return fn(*args, **kwargs)
         handler.redirect('/')
     return wrapper
 
@@ -327,17 +335,42 @@ class RequestHandler(BaseHandler):
       get(self)
 
     def get(self):
-      if not self.user:
-        # only do this if we have to ask for privs
-        #self.render('welcome')
+      if self.user:
         self.render('main')
       else:
-        self.render('main')
+        args = {}
+        for arg in self.request.arguments():
+          val = self.request.get(arg)
+          args[arg] = val
 
+        uid = args.get('user_id', '')
+        if uid:
+          vol_loc = args.get('vol_loc', '')
+          vol_dist = args.get('vol_dist', '')
+          category = args.get('category', '')
+          user = FBUser.get_by_key_name(uid)
+          if user:
+            if vol_loc:
+              user.vol_loc = vol_loc
+  
+            if vol_dist:
+              user.vol_dist = vol_dist
+  
+            if category:
+              user.category = category
+            else:
+              user.category = ''
+
+            try:
+              user.put()
+            except:
+              pass
+        else:
+          self.render('welcome')
 
 def main():
     routes = [
-        (r'/fb.*', RequestHandler),
+      (r'/fb.*', RequestHandler),
     ]
     is_local = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
     application = webapp.WSGIApplication(routes, debug=is_local)
