@@ -21,16 +21,17 @@ Switch to <a id="view" href="javascript:toggle_view();">Map</a> view
 
 <label>Location: </label><input id="location" name="location" size="6" style="color:#9999cc;"
    onfocus="in_loc(this, true);" onblur="in_loc(this, false);" 
-   onchange="search();" />
+   onchange="go_page(0);search();" />
 &nbsp<label>Range: </label>
-  <select id="range" name="range" onchange="search();">
+  <select id="range" name="range" onchange="go_page(0);search();">
+    <option value="statewide">Statewide</option>
+    <option value="50">50mi</option>
     <option value="25">25mi</option>
     <option value="10">10mi</option>
     <option value="5">5mi</option>
-    <option value="statewide">Statewide</option>
   </select>
 &nbsp<label>Category:</label/>
-  <select id="category" name="category" onchange="search();">
+  <select id="category" name="category" onchange="go_page(0);search();">
     <option value="">All</option>
     <option value="category:education">Education</option>
     <option value="category:health">Health</option>
@@ -41,7 +42,7 @@ Switch to <a id="view" href="javascript:toggle_view();">Map</a> view
   </select>
 
 &nbsp;&nbsp;<input id="q" name="q" size="8" style="color:#9999cc;"
-  onchange="search();"
+  onchange="go_page(0);search();"
   onfocus="in_search(this, true)" onblur="in_search(this, false);" /> <input 
     type="image" src="/fb/search.png" value="Search" onclick="search()";/>
 </div> <!-- end of controls -->
@@ -72,7 +73,7 @@ Switch to <a id="view" href="javascript:toggle_view();">Map</a> view
 </div> <!-- end of wrapper -->
 
 <div id="noresults" style="display:none;">
-No results
+No results given current settings.
 </div>
 
 <script>
@@ -169,7 +170,7 @@ function toggle_view() {
 
 function format_date(d) {
   var rtn = '';
-  if (d) {
+  if (d && !isNaN(d.getDate())) {
     var day = d.getDate();
     var month = d.getMonth() + 1;
     if (day < 10) {
@@ -178,7 +179,10 @@ function format_date(d) {
     if (month < 10) {
       month = '0' + month;
     }
-    rtn = [month, day, d.getFullYear()].join('/');
+    var today = new Date();
+    if (d.getFullYear() >= today.getFullYear()) {
+      rtn = [month, day, d.getFullYear()].join('/');
+    }
   }
   return rtn;
 }
@@ -344,22 +348,27 @@ function search() {
     vol_dist = (getValue('range') || 25);
   }
 
-  set_prefs(loc, vol_dist, cat);
+  set_prefs(loc, rmi, cat);
 
   var url = '/api/volopps?output=json';
   url += '&vol_loc=' + encodeURIComponent(vol_loc);
   url += '&vol_dist=' + encodeURIComponent(vol_dist);
   url += stype;
   url += '&q=' + encodeURIComponent(q);
+  url += '&sort=eventrangeend';
   url += '&start=' + encodeURIComponent((page - 1) * items_per_page);
   url += '&key=facebook&num=' + items_per_page;
   makeRequest(url, handle_list);
 }
 
 function go_page(v) {
-  page += v;
-  if (page < 1) {
+  if (v == 0) {
     page = 1;
+  } else {
+    page += v;
+    if (page < 1) {
+      page = 1;
+    }
   }
   setDisplay('prev-nav', (page > 1 ? 'block' : 'none'));
   search();
