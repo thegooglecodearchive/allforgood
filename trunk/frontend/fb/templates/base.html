@@ -9,57 +9,7 @@
 <script languate="JavaScript" src="/fb/json.js" type="text/javascript"></script>
 <script languate="JavaScript" src="/fb/ajax.js" type="text/javascript"></script>
 <title>{% block title %}Welcome{% endblock %} &mdash; All for Good</title>
-<!--
-    <link type="text/css" rel="stylesheet" href="/fb/style.css?v">
--->
-<style>
-BODY {margin:0;padding:0;font-family:Arial,sans-serif;
-  background-color:#0281d1;
-  background-repeat:repeat-x;
-  background-image:url(/images/body-bg.png);
-}
-H2 {font-weight:normal;color:#ffffff;
-    font-family:Rockwell,'RockwellStdRegular',Georgia,Times,"Times New Roman",serif;}
-FORM {margin:0;padding:0;}
-SELECT {width:64px;}
-TABLE {margin:0;padding:0;}
-LABEL.settings {display:inline-block;width:80px;text-align:right;}
-
-.content {color:#000000;background-color:#ffffff;}
-
-.opp {margin-left:6px;margin-top:6px;font-size:13px;}
-
-.opp-title {}
-.opp-title-link {font-weight:bold;}
-.opp-detail {margin-left:6px;}
-.opp-location {margin-top:2px;color:#666666;}
-.opp-dates {margin-top:2px;color:#666666;}
-.opp-desc {margin-top:2px;color:#333333;}
-.opp-url {margin-top:2px;color:#339933;}
-
-#logo {text-align:right;padding-bottom:16px;}
-#tagline {display:inline-block;margin-top:10px;color:#F6F6F6;
-  font-family:Rockwell,'RockwellStdRegular',Georgia,Times,"Times New Roman",serif;
-  font-size:15px;font-weight:normal;
-}
-#addapp {font-family:Arial;font-size:12px;}
-
-#wrapper {height:580px;width:700px;position:relative;margin-top:13px;overflow:hidden;padding:6px;}
-#contentwrapper {height:480px;position:relative;color:#000000;background-color:#ffffff;border:solid 1px;}
-
-#controls {font-size:12px;text-align:right;padding:10px;white-space:nowrap;
-  background-color:#dddddd;border-bottom:ridge 3px;
-}
-
-#footer {position:absolute;bottom:0px;width:97%;text-align:center;
-  padding-left:10px;padding-right:10px;padding-top:3px;padding-bottom:3px;
-  background-color:#f6f6f6;border-top:solid 2px;
-}
-
-#prev-nav {font-size:13px;white-space:nowrap;text-decoration:none;}
-#next-nav {font-size:13px;white-space:nobreak;text-decoration:none;}
-
-</style>
+<link type="text/css" rel="stylesheet" href="/fb/style.css?v">
 </head>
   <body>
     <div id="doc">
@@ -78,7 +28,9 @@ LABEL.settings {display:inline-block;width:80px;text-align:right;}
     <script src="/fb/main.js"></script>
     <div id="fb-root"></div>
     <script>
-      if (window != window.top) {
+      if (window == window.top) {
+        location.href = 'https://apps.facebook.com/316930785030161/';
+      } else {
         {# we are in an iframe #}
         {# async loading of facebook js sdk #}
         window.fbAsyncInit = function() { facebookInit({{ js_conf|safe }}) };
@@ -101,9 +53,6 @@ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www')
         s.parentNode.insertBefore(ga, s);
       })();
     </script>
-<!--
-<span style="cursor:pointer;" onclick="FB.api({ method: 'auth.revokeAuthorization' })">.</span>
--->
-<!-- canvas_name {{ canvas_name }} -->
+<script languate="JavaScript" src="/fb/main.js" type="text/javascript"></script>
   </body>
 </html>
