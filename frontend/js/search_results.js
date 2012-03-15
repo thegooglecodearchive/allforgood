@@ -96,17 +96,18 @@ $(document).ready(function() {
 		  load = true;  
 	  }
 	  if (value && value != "") {
-          toggleFacetDisplay("category_list", value);          
-          $.cookie($(".search-refine .header").prev().attr("id"), 'hide');
-          populateActiveFacets();          
-		  $("#category_item").html("<li>" + value + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>");
+		toggleFacetDisplay("category_list", value);          
+		$.cookie($(".search-refine .header").prev().attr("id"), 'hide');
+		populateActiveFacets();          
+		$("#category_item").html("<li>" + value 
+					+ " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>");
 	  } else {		  
-		  toggleFacetDisplay("category_list");
-          $.cookie($(".search-refine .header").prev().attr("id"), 'show');
-          $("#category_item").html("");		  
-		  $("#category_input").val("");
-		  populateActiveFacets();
-		  if (load) submitForm("facet");
+		toggleFacetDisplay("category_list");
+          	$.cookie($(".search-refine .header").prev().attr("id"), 'show');
+		$("#category_item").html("");		  
+		$("#category_input").val("");
+		populateActiveFacets();
+		if (load) submitForm("facet");
 	  }
   } 
   
@@ -556,10 +557,8 @@ function onLoadSearch() {
   }
 }
 
-function populateSearchHistory()
-{
-	if (el('filter_results'))
-	{
+function populateSearchHistory() {
+	if (el('filter_results')) {
 		var me = el('filter_results');
 		var titleDiv = document.createElement('div');
 		var catLink = document.createElement('a');
@@ -569,11 +568,9 @@ function populateSearchHistory()
 		titleDiv.appendChild(catLink);
 		me.innerHTML = '';
 		me.appendChild(titleDiv);
-		for (var i = 0; i < filters.length; i++)
-		{
+		for (var i = 0; i < filters.length; i++) {
 			var filt = filters[i];
-			if (!filt.isDefault())
-			{
+			if (!filt.isDefault()) {
 				var entryDiv = document.createElement('div');
 				entryDiv.className = 'filterwidget_entry';
 				me.appendChild(entryDiv);
@@ -784,23 +781,21 @@ function submitForm(invoker, value) {
   if (invoker == "oppType") {
   	query.setType(value);
 	var type = query.getType();
-	//$(".facets").show();
 	$(".top_search").show();
 	$("#location_distance_date").show();
 	
-	if (type == "all" || type == "statewide") {		
+	if (type == "all" || type == "statewide") {
 		$("#location_box").show();
-        $("#map").show();
-        $("#location_distance_date").show();
-    }
-    else {        
+        	$("#map").show();
+	        $("#location_distance_date").show();
+        } else {        
 		$("#location_box").hide();
-        $("#map").hide();		
+	        $("#map").hide();		
 		if (type == "self_directed") {			
 			$(".top_search").hide();
 			$("#location_distance_date").hide();
 		}
-    }
+    	}
   }
   query.setPageNum(0);
   query.setSort(sort);

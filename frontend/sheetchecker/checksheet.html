@@ -75,7 +75,7 @@ You may submit your spreadsheet <a
 
   {% if addresses %}
 <hr noshade />
-<div id="checking_addr" style="display:block;"><b>Checking unique addresses...</b></div>
+<div id="checking_addr"><b>Checking unique addresses...</b></div>
 <p/>
 <table>
     {% for addr in addresses %}
@@ -101,7 +101,7 @@ function checked_address(ifr) {
     }
   }
   if (addr_to_check <= 0) {
-    _gel('checking_addr').style.display = 'none';
+    _gel('checking_addr').innerHTML = 'Unique Addresses';
     finished();
   }
 }
@@ -109,7 +109,7 @@ function checked_address(ifr) {
 
   {% if urls %}
 <hr noshade />
-<div id="checking_urls" style="display:block;"><b>Checking unique links...</b></div>
+<div id="checking_urls"><b>Checking unique links...</b></div>
 <p/>
   <table>
     {% for url in urls %}
@@ -135,7 +135,7 @@ function checked_url(ifr) {
     }
   }
   if (urls_to_check <= 0) {
-    _gel('checking_urls').style.display = 'none';
+    _gel('checking_urls').innerHTML = 'Unique URLs';
     finished();
   }
 }

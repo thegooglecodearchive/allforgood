@@ -525,12 +525,17 @@ def query(query_url, args, cache, dumping = False):
   result_content = re.sub(r';;', ',', result_content)
   result = simplejson.loads(result_content)
   
-  api_key = None
-  if api.PARAM_KEY in args:
-    api_key = args[api.PARAM_KEY]
-  all_facets = get_geo_counts(args, api_key)
+  api_key = args.get(api.PARAM_KEY, 'UI')
+  if api_key == 'UI':
+    need_facet_counts = True
+  else:
+    need_facet_counts = False
 
-  if not "facet_counts" in all_facets:    
+  all_facets = None
+  if need_facet_counts:
+    all_facets = get_geo_counts(args, api_key)
+
+  if not all_facets or not "facet_counts" in all_facets:    
       result_set.facet_counts = None
   else:
     facet_counts = dict()    

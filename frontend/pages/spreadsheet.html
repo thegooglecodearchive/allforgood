@@ -1,3 +1,16 @@
+<script>
+function _gel(id) {  
+  return document.getElementById(id);
+}
+function more(div_id) {
+  _gel(div_id).style.display = 'block';  
+  _gel(div_id.replace('details', 'more')).style.display = 'none';
+}
+function less(div_id) {  
+  _gel(div_id).style.display = 'none';
+  _gel(div_id.replace('details', 'more')).style.display = 'inline';}
+</script>
+
     <!--#main-->
     <div id="main" class="clearfix">
         <!--.content-->
@@ -14,7 +27,10 @@ There are three different ways to add your volunteer listings to the All for Goo
 
 <h3>Posting 10 or More Opportunities Using Our Spreadsheet Template</h3>
 <p>
-The easiest way for organizations that want to list opportunities with All for Good is to use our online spreadsheet template.  This template lets you easily share data across multiple staff members and offices in order to better coordinate your organization's opportunities and listings.  You can control who in your organization has access to the spreadsheet and can update your opportunities as needed.</p>
+The easiest way for organizations that want to list opportunities with All for Good is to use our online spreadsheet template.  This template lets you easily share data across multiple staff members and offices in order to better coordinate your organization's opportunities and listings.  You can control who in your organization has access to the spreadsheet and can update your opportunities as needed.
+<a id="more1" href="javascript:more('details1');" style="display:inline;">More details ...</a>
+</p>
+<div id="details1" style="display:none;">
 <p>Click <a href="http://tinyurl.com/allforgood-submit">here to access the spreadsheet template</a>.  Please follow the instructions there to create your own opportunity spreadsheet and submit it for processing.  Please note that:</p>
 
 <p>
@@ -25,10 +41,15 @@ The easiest way for organizations that want to list opportunities with All for G
    <li>Google Spreadsheets makes it easy to import from Excel documents, but we do not recommend doing so.  The template format that the Google Spreadsheet scripts read is fairly exact, and Excel often has a hard time matching to it. Instead of importing, use cut and paste (from Excel to your browser) to move data into the spreadsheet.</li>
    <li>For more information, contact us by email at <a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a></li>
 </ul>
+<p/>
+<a href="javascript:less('details1');" style="display:inline-block;margin-left:50px;">Less detail ...</a>
+</div>
 
 <h3>Posting 10 or More Opportunities by Creating Your Own XML Data Feed To Us</h3>
-<p>The best way to submit a large number of opportunities and keep them automatically updated in our system is to create your own XML data feed file for processing by us.  Our system can process data feeds with any mix of the following opportunity types: those that occur in specific geographic locations, are state wide or nationwide or are virtual.  If you have microvirtual or  self-directed/how-to guides these should be setup in seperate feed files from the other types of opportunities however.  If you have any questions or your IT department requires any technical support to get your initial feed file to us set up, feel free to contact us at <a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a> with any questions. Here are the steps to get started:</p>
-
+<p>The best way to submit a large number of opportunities and keep them automatically updated in our system is to create your own XML data feed file for processing by us.  Our system can process data feeds with any mix of the following opportunity types: those that occur in specific geographic locations, are state wide or nationwide or are virtual.  If you have microvirtual or  self-directed/how-to guides these should be setup in seperate feed files from the other types of opportunities however.  If you have any questions or your IT department requires any technical support to get your initial feed file to us set up, feel free to contact us at <a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a> with any questions. Here are the steps to get started:
+<a id="more2" href="javascript:more('details2');" style="display:inline;">More details ...</a>
+</p>
+<div id="details2" style="display:none;">
 <ul style="margin-left:48px;">
    <li>You can find the specification here, <a href="http://www.allforgood.org/spec">http://www.allforgood.org/spec</a> for how to set up your XML feed file and how to appropriately tag the various types of opportunities via their "location" element.</li>
    <li>Once you have setup your feed file creation process, then please provide us with a production URL we can crawl a few times per day to download your updated data.  Contact us to submit your feed by emailing <nowrap><a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a></nowrap>.  Note that:</li>
@@ -44,6 +65,9 @@ The easiest way for organizations that want to list opportunities with All for G
 	 </ul>
    <li>Please note that all data feed submissions to All for Good are subject to our <a href="/cla">Content License Agreement</a>. Before we can process your feed, you must indicate your acceptance of the agreement by <a href="http://spreadsheets.google.com/viewform?hl=en&amp;formkey=dHVnbll2RzdESGRRU2NqMDM4V0F0YXc6MA..">completing this form</a> and by providing us with an operational contact in case there are technical or quality problems with the feed.</li>
  </ul>
+<p/>
+<a href="javascript:less('details2');" style="display:inline-block;margin-left:50px;">Less detail ...</a>
+</div>
 
 <h3>Posting Less Than 10 Opportunities via Our Partner Sites</h3>
 <p>The best method for organizations to list a small number of  opportunities with All for Good is to submit them via one of our partner sites such as <a href="http://www.idealist.org/create-content">Idealist.org</a> or <a href="http://createthegood.org/sso/required/post-opportunity">Createthegood.org</a>.  Once you post your opportunities to one of our partner sites, they will automatically be added to the All for Good database within 48 hours.  There is no need to cross-post listings to All for Good that have already been listed at one of these sites.</p>
