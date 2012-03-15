@@ -10,7 +10,7 @@ SELECT {width:64px;}
 TABLE {margin:0;padding:0;}
 LABEL.settings {display:inline-block;width:80px;text-align:right;}
 
-.content {color:#000000;background-color:#ffffff;}
+.content {text-align:left;color:#000000;background-color:#ffffff;}
 
 .opp {margin-left:6px;margin-top:6px;font-size:13px;}
 

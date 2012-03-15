@@ -78,6 +78,7 @@ target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_si
 		$(".top_search").hide();
 	}
 	setFacetCounts = function() {		
+		{% if result_set.facet_counts %} 
 		if (loadNumber == 0 || getSelectedTab() == 0) {
 			$('#in_your_area').html("(" + {{ result_set.facet_counts.all }} + ")");
 		}
@@ -93,6 +94,7 @@ target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_si
 		if (loadNumber == 0 || getSelectedTab() == 4) {
 			$('#self_directed').html("(" + {{result_set.facet_counts.self_directed}} + ")");
 		}		
+                {% endif %}
 	}();
 	loadNumber = 1;
 	setProviders = function() {
