@@ -20,6 +20,7 @@ views in the app, in the MVC sense.
 # pylint: disable-msg=W0232
 # pylint: disable-msg=E1101
 # pylint: disable-msg=R0903
+
 from datetime import datetime
 import cgi
 import email.Utils
@@ -139,6 +140,7 @@ def get_unique_args_from_request(request):
 
   return unique_args
 
+
 def require_moderator(handler_method):
   """Decorator ensuring the current FP user is a logged in moderator.
 
@@ -160,6 +162,7 @@ def require_moderator(handler_method):
     return handler_method(self)
   return decorate
 
+
 def require_usig(handler_method):
   """Deceratore ensuring the current FP user has a valid usig XSRF token.
 
@@ -175,6 +178,7 @@ def require_usig(handler_method):
       return
     return handler_method(self)
   return decorate
+
 
 def require_admin(handler_method):
   """Decorator ensuring the current App Engine user is an administrator."""
@@ -357,6 +361,11 @@ class consumer_ui_search_view(webapp.RequestHandler):
 class search_view(webapp.RequestHandler):
   """run a search from the API.  note various output formats."""
   @expires(1800)  # Search results change slowly; cache for half an hour.
+
+  def post(self):
+    """HTTP post method."""
+    return self.get()
+
   def get(self):
     """HTTP get method."""
     try:

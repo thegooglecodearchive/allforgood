@@ -66,8 +66,8 @@ class Check(webapp.RequestHandler):
       msgs.append('The url given does not appear to be a valid Google Docs spreadsheet')
       template_values["msgs"] = msgs
     else:
-      url = "http://spreadsheets.google.com/feeds/cells/"
-      url += match.group(1).strip() + "/1/public/basic"
+      doc_key = match.group(1).strip()
+      url = "http://spreadsheets.google.com/feeds/cells/" + doc_key + "/1/public/basic"
 
       fetch_result = urlfetch.fetch(url)
       if fetch_result.status_code != 200:
@@ -80,6 +80,8 @@ class Check(webapp.RequestHandler):
         template_values["sheetfeedurl"] = url
         template_values["msgs"] = msgs
         template_values["data"] = data
+        template_values["doc_key"] = doc_key
+
         template_values["addresses"] = []
         for address in addr_ar:
           address = address.strip()
