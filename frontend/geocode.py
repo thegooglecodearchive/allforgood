@@ -133,6 +133,13 @@ def rev_geocode_json(lat, lng):
   jo = None
   json_str = ''
 
+  try:
+    lat = float(lat)
+    lng = float(lng)
+  except:
+    logging.warning('geocode: rev_geocode_json given ' + str(lat) + ',' + str(lng))
+    return jo
+    
   # see if we have a record of this
   db_key = str(round(float(lat) * 1000.0)/1000.0) + ',' + str(round(float(lng) + 1000.0)/1000.0)
   rec = RevGeo.get_by_key_name(db_key)

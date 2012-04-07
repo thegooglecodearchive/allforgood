@@ -18,6 +18,9 @@ handlers:
 - url: /proxy
   script: proxy/main.py
 
+- url: /oppsform
+  script: gdocs/main.py
+
 - url: /css
   static_dir: css
 
@@ -26,6 +29,11 @@ handlers:
 
 - url: /js
   static_dir: js
+
+- url: /api/test-post-request.html
+  expiration: "3m"
+  static_files: html/test-post-request.html
+  upload: html/test-post-request.html
 
 # this is for the opp spreadsheet
 - url: /online/(get|put|clear|list|xml|geo)
