@@ -10,11 +10,14 @@ import sys
 import logging
 import urllib
 import urllib2
+from datetime import datetime
 
 from google.appengine.api import urlfetch
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext.webapp import template
+
+import BeautifulSoup
 
 import gdata.docs
 import gdata.docs.service
@@ -48,6 +51,24 @@ ACL_XML = """<?xml version='1.0' encoding='UTF-8'?>
   <gAcl:scope type='user' value='%s'/>
 </entry>"""
 
+
+def getXMLValue(app, xml_str, tag):
+
+  rtn = ''
+  try:
+    soup = BeautifulSoup.BeautifulStoneSoup(xml_str)
+  except:
+    app.response.out.write('could not parse ' + xml_str)
+    return rtn
+
+  node = soup.find(tag)
+  if not node:
+    app.response.out.write('could not find ' + tag)
+  else:
+    rtn = soup.find(tag).string
+
+  return rtn
+   
 
 def login_to_SpreadsheetService(app):
 
@@ -88,6 +109,7 @@ def login_to_DocsService(app):
 
 
 def makePostRequest(gd_client, url, body):
+
   rtn = False
   rsp = ''
 
@@ -108,35 +130,32 @@ def makePostRequest(gd_client, url, body):
 
 def copySpreadsheet(app, from_id, to_name):
 
-  rtn = 'ok'
   gd_client = login_to_DocsService(app)
 
   body = COPY_XML % (from_id, to_name)
-  ok, rsp = makePostRequest(gd_client, COPY_URL, body)
-  if not ok:
-    rtn = rsp
+  rtn, rsp = makePostRequest(gd_client, COPY_URL, body)
 
-  return rtn
+  return rtn, rsp
 
 
-def shareSpreadsheet(app, spreadsheet_name, submitter_email):
+def shareSpreadsheet(app, id, submitter_email):
 
-  rtn = 'ok'
+  rtn = True 
+  rsp = 'unknown error'
   gd_client = login_to_DocsService(app)
 
-  #TODO - get resource id
- 
-  return 'not ready yet'
+  resource_id = 'spreadsheet:' + id
 
   for email in ['dan@allforgood.org', 'mt1955@allforgood.org', submitter_email]:
     body = ACL_XML % email
     url = ACL_URL % resource_id
     ok, rsp = makePostRequest(gd_client, url, body)
     if not ok:
-      rtn = rsp
+      rtn = False
+      app.response.out.write(str(rsp))
       break
    
-  return rtn
+  return rtn, rsp
 
 
 class OppsForm(webapp.RequestHandler):
@@ -179,10 +198,26 @@ class OppsForm(webapp.RequestHandler):
       if org and email and (not url or not url.startswith('http')):
         # there is no spreadsheet
         sheetname = org + ' ' + SPREADSHEET_TEMPLATE.NAME
-        rsp = copySpreadsheet(self, SPREADSHEET_TEMPLATE.KEY, sheetname)
-        self.response.out.write('copy: ' + rsp)
+        ok, rsp = copySpreadsheet(self, SPREADSHEET_TEMPLATE.KEY, sheetname)
+        if not ok:
+          self.response.out.write('could not copy spreadsheet')
+        else:
+          # <id>spreadsheet%3A0Apv-JoDtQ9x7dHBVQXZveXN3MHh4MWxyRXZxRGl1amc</gd:resourceId>
+          id = getXMLValue(self, rsp, 'id').replace('https://docs.google.com/feeds/id/spreadsheet%3A', '')
+          ok, rsp = shareSpreadsheet(self, id, email)
+          if not ok:
+            self.response.out.write('could not share ' + id + '\n' + str(rsp))
+          else:
+            row.custom['spreadsheeturl'] = 'https://docs.google.com/a/allforgood.org/spreadsheet/ccc?key=' + id
+            row.custom['notified'] = str(datetime.now())
+            for k, v in row.custom.iteritems():
+              print k, v
 
-        rsp = shareSpreadsheet(self, sheetname, email)
+
+            row.UpdateRow(row.custom, row)
+            #self.response.out.write('could not update row ' + id)
+
+            self.response.out.write('add sheetchecker link to ' + id)
 
 
 APP = webapp.WSGIApplication(
