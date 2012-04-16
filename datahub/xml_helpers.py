@@ -199,6 +199,9 @@ def parse_or_die(instr):
     for i in range(err.lineno - 3, err.lineno + 3):
       if i >= 0 and i < len(lines):
         print "%6d %s" % (i+1, lines[i])
+        if len(lines) > 1:
+          print "and " + str(len(lines)) + ' more...'
+        break
 
   if not xmldoc:
     print "trying CDATA detailURL..."

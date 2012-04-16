@@ -183,12 +183,21 @@ def rev_geocode_json(lat, lng, key = None, retries = 0):
   jo = None
   if not key:
     try:
-      lat_str = str(round(float(lat) * 10000.0)/10000.0).replace('.', '_').rstrip('0')
-      lng_str = str(round(float(lng) + 10000.0)/10000.0).replace('.', '_').rstrip('0')
+      if float(lat) < 0:
+        ns = 'S'
+      else:
+        ns = 'N'
+      if float(lng) < 0:
+        ew ='E'
+      else:
+        ew = 'W'
+
+      lat_str = ns + str(round(abs(float(lat)) * 10000.0)/10000.0).replace('.', '_').rstrip('0')
+      lng_str = ew + str(round(abs(float(lng)) * 10000.0)/10000.0).replace('.', '_').rstrip('0')
     except:
       # most likely given junk lat/lng
       return jo
-    key = 'revgeo/' + 'lat' + lat_str + 'lng' + lng_str + '.json'
+    key = 'revgeo/G' + 'lat' + lat_str + 'lng' + lng_str + '.json'
 
   if key:
     try:

@@ -37,6 +37,8 @@ import re
 import urllib2
 from datetime import datetime
 
+from BeautifulSoup import BeautifulStoneSoup
+
 MAX_BLANKROWS = 2
 CURRENT_ROW = None
 DEBUG = False
@@ -185,7 +187,7 @@ def cellval(data, row, col):
     return None
   return data[key]
 
-def parse_gspreadsheet(instr, data, updated, progress):
+def regex_parse_gspreadsheet(instr, data, updated, progress):
   """parser func for google spreadsheets."""
   # look ma, watch me parse XML a zillion times faster!
   #<entry><id>http://spreadsheets.google.com/feeds/cells/pMY64RHUNSVfKYZKPoVXPBg
@@ -218,6 +220,30 @@ def parse_gspreadsheet(instr, data, updated, progress):
   if DEBUG and progress:
     print str(datetime.now())+": found ", maxrow, "rows and", maxcol, "columns."
   return maxrow, maxcol
+
+def parse_gspreadsheet(instr, data, updated, progress):
+  """ """
+
+  maxrow = maxcol = 0
+  soup = BeautifulStoneSoup(instr)
+  if soup:
+    # all tags now have lowercase names
+    cells = soup.findAll('ns1:cell')
+    for cell in cells:
+      col = int(cell['col'])
+      row = int(cell['row'])
+      if row > maxrow: 
+        maxrow = row
+      if col > maxcol: 
+        maxcol = col
+      key = 'R' + cell['row'] + 'C' + cell['col']
+      DATA[key] = cell.text.encode('utf-8', 'ignore')
+
+  if DEBUG and progress:
+    print str(datetime.now())+": found ", maxrow, "rows and", maxcol, "columns."
+
+  return maxrow, maxcol
+
 
 def read_gspreadsheet(url, data, updated, progress):
   """read the spreadsheet into a big string."""
