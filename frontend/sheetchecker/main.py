@@ -67,7 +67,9 @@ class Check(webapp.RequestHandler):
       template_values["msgs"] = msgs
     else:
       doc_key = match.group(1).strip()
-      url = "http://spreadsheets.google.com/feeds/cells/" + doc_key + "/1/public/basic"
+     
+      #url = "http://spreadsheets.google.com/feeds/cells/" + doc_key + "/1/public/basic"
+      url = "http://staging.servicefootprint.appspot.com/oppsfeed?id=" + doc_key
 
       fetch_result = urlfetch.fetch(url)
       if fetch_result.status_code != 200:
