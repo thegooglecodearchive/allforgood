@@ -18,7 +18,7 @@ handlers:
 - url: /proxy
   script: proxy/main.py
 
-- url: /oppsform
+- url: /opps(feed|form)
   script: gdocs/main.py
 
 - url: /css

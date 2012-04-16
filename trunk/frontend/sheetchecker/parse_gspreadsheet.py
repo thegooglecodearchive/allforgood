@@ -21,6 +21,11 @@ expects the caller to pass in the providerID and providerName)
 # TODO: share this code between frontend and datahub
 # see http://code.google.com/p/footprint2009dev/issues/detail?id=150
 
+import sys
+import re
+import logging
+from BeautifulSoup import BeautifulStoneSoup
+
 
 # typical cell
 #<entry>
@@ -34,9 +39,6 @@ expects the caller to pass in the providerID and providerName)
 #<link rel='self' type='application/atom+xml' href='http://spreadsheets.
 #google.com/feeds/cells/pMY64RHUNSVfKYZKPoVXPBg/1/public/basic/R14C13'/>
 #</entry>
-
-import re
-import logging
 
 MAX_BLANKROWS = 2
 
@@ -130,7 +132,7 @@ def cellval(row, col):
     return None
   return DATA[key]
 
-def parse_gspreadsheet(instr, updated):
+def regex_parse_gspreadsheet(instr, updated):
   """load a spreadsheet into a two dimensional array."""
   # look ma, watch me parse XML a zillion times faster!
   #<entry>
@@ -141,13 +143,28 @@ def parse_gspreadsheet(instr, updated):
   #  <content type='text'>http://www.fake.org/vol.php?id=4</content>
   #  <link rel='self' type='application/atom+xml' href='http://spreadsheets.google.com/feeds/cells/pMY64RHUNSVfKYZKPoVXPBg/1/public/basic/R14C15'/>
   #</entry>
-  regexp = re.compile('<entry>.+?(R(\d+)C(\d+))</id>'+
-                      '<updated.*?>(.+?)</updated>.*?'+
+
+  """
+<entry>
+<category scheme="http://schemas.google.com/spreadsheets/2006" term="http://schemas.google.com/spreadsheets/2006#cell"/>
+<id>https://spreadsheets.google.com/feeds/cells/0AmycArp3FEu7dFlWY3ZvNW15aHNlR3Z6OHRtV29qZHc/default/private/full/R1C1</id>
+<content type="text">All for Good Spreadsheet Posting Instructions</content>
+<title type="text">A1</title>
+<cell col="1" inputValue="All for Good Spreadsheet Posting Instructions" row="1">All for Good Spreadsheet Posting Instructions</cell>
+<link href="http://spreadsheets.google.com/feeds/cells/0AmycArp3FEu7dFlWY3ZvNW15aHNlR3Z6OHRtV29qZHc/default/private/full/R1C1" rel="self" type="application/atom+xml"/>
+<link href="http://spreadsheets.google.com/feeds/cells/0AmycArp3FEu7dFlWY3ZvNW15aHNlR3Z6OHRtV29qZHc/default/private/full/R1C1/tgv84k" rel="edit" type="application/atom+xml"/>
+<updated>2012-02-14T02:47:42.853Z</updated>
+</entry>
+"""
+
+  
+  regexp = re.compile('<entry>.+?(R(\d+)C(\d+))</id>' +
+                      '<updated.*?>(.+?)</updated>.*?' +
                       '<content.*?>(.+?)</content>.+?</entry>', re.DOTALL)
+
   maxrow = maxcol = 0
   for match in re.finditer(regexp, instr):
     lastupd = re.sub(r'([.][0-9]+)?Z?$', '', match.group(4)).strip()
-    #print "lastupd='"+lastupd+"'"
     updated[match.group(1)] = lastupd.strip("\r\n\t ")
     val = match.group(5).strip("\r\n\t ")
     DATA[match.group(1)] = val
@@ -159,6 +176,28 @@ def parse_gspreadsheet(instr, updated):
       maxcol = col
     #print row, col, val
   return maxrow, maxcol
+
+
+def parse_gspreadsheet(instr, updated):
+  """ """
+
+  maxrow = maxcol = 0
+  soup = BeautifulStoneSoup(instr)
+  if soup:
+    # all tags now have lowercase names
+    cells = soup.findAll('ns1:cell')
+    for cell in cells:
+      col = int(cell['col'])
+      row = int(cell['row'])
+      if row > maxrow:  
+        maxrow = row
+      if col > maxcol:  
+        maxcol = col
+      key = 'R' + cell['row'] + 'C' + cell['col']
+      DATA[key] = cell.text.encode('utf-8', 'ignore')
+
+  return maxrow, maxcol
+
 
 def find_header_row(regexp_str):
   """location the header row in a footprint spreadsheet."""
@@ -191,7 +230,7 @@ def parse(instr):
   # find header row: look for "opportunity title" (case insensitive)
   find_header_row('opportunity\s*title')
   if not HEADER_ROW or not HEADER_STARTCOL:
-    return DATA, MESSAGES
+    return len(MESSAGES), DATA, MESSAGES, [], []
 
   header_colidx = {}
   header_names = {}
