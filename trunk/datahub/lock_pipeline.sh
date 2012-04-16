@@ -26,6 +26,7 @@ then
 		./notify_michael.sh download started 
 		./download.sh
 		./asciify.sh
+		./spreadsheets/run.php
 		./notify_michael.sh download complete 
 		# clear previous processing
 		rm -f *.transformed
@@ -78,9 +79,9 @@ then
 			OFILE=`echo $FILE | sed s!current/!!`
 			if [ ! -s $OFILE ]
 			then
-                                ./notify_team.sh manually check $FILE
-                                echo manually check $FILE
-				rm -f $FILE
+                                ./notify_team.sh "no opps found in $FILE"
+                                echo "no opps found in $FILE"
+				#rm -f $FILE
 			fi
 		done
 
@@ -95,11 +96,18 @@ then
                         else
                                 NEWSZ=`stat -c %s $FILE`
                                 OLDSZ=`stat -c %s $CFILE`
+				if [ "$OLDSZ" = "" ]
+				then
+					OLDSZ=$NEWSZ
+				fi
                                 RATIO=`echo "100 * $NEWSZ / $OLDSZ" | bc`
                                 if [ $RATIO -lt 70 ]
                                 then
-                                        ./notify_team.sh manually check $FILE
-                                	echo manually check $FILE
+					if [ $OLDZ -gt 16384 ]
+					then
+                                        	./notify_team.sh "manually check $FILE, using last results"
+	                                        echo "manually check $FILE, using last results"
+					fi
 				else
                                 	cp $FILE $CFILE
                                 fi

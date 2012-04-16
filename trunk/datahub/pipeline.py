@@ -839,10 +839,10 @@ def solr_retransform(fname, start_time, feed_file_size):
     except:
       pass
 
-    # Fix to the +1000 to lat/long hack   
-    if not rows['c:latitude:float'] is None:
+    # GBASE LEGACY: Fix to the +1000 to lat/long hack   
+    if not rows['c:latitude:float'] is None and float(rows['c:latitude:float']) > 500:
       rows['c:latitude:float'] = float(rows['c:latitude:float']) - 1000.0
-    if not rows['c:longitude:float'] is None:
+    if not rows['c:longitude:float'] is None and float(rows['c:longitude:float']) > 500:
       rows['c:longitude:float'] = float(rows['c:longitude:float']) - 1000.0
 
     # The random salt is added to the result score during ranking to prevent

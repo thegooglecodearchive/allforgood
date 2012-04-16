@@ -39,7 +39,7 @@ import dateutil.tz
 import dateutil.parser
 
 import parse_footprint
-import parse_gspreadsheet as pgs
+import parse_gspreadsheet as gsp
 import parse_usaservice
 import parse_networkforgood
 import parse_idealist
@@ -358,6 +358,7 @@ def get_street_addr_str(node):
   loc += get_addr_field(node, "streetAddress3")
   return loc
 
+
 def get_full_addr_str(node):
   """concatenate street address and city/region/postal/country fields"""
   loc = get_street_addr_str(node)
@@ -365,6 +366,7 @@ def get_full_addr_str(node):
   return loc
 
 
+JO_SAID = {}
 def get_revgeo_fields(lat, lng, given_city, given_county, given_state, given_zip, given_country):
   
   city = given_city
@@ -377,8 +379,11 @@ def get_revgeo_fields(lat, lng, given_city, given_county, given_state, given_zip
 
   jo = geocoder.rev_geocode_json(lat, lng)
   if jo and 'status' in jo:
-    #print "rev_geocode_json: says " + jo['status']
-    if jo['status'] == "OK":
+    if jo['status'] != "OK":
+      if not jo['status'] in JO_SAID:
+        JO_SAID[jo['status']] = 1
+        print "rev_geocode_json: says " + jo['status']
+    else:
       for d in jo['results'][0]['address_components']:
         if 'locality' in d['types']:
           city = d['long_name']
@@ -397,7 +402,7 @@ def get_revgeo_fields(lat, lng, given_city, given_county, given_state, given_zip
   if state and country and country != 'US':
      state += '-' + country
 
-  return city, county, state, zip, country
+  return city.strip(), county.strip(), state.strip(), zip.strip(), country.strip()
   
 
 def find_geocoded_location(node):
@@ -848,8 +853,8 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
             return totrecs, ""
 
         loc_fields = get_loc_fields(virtual=virtual,
-                                    latitude=str(float(lat) + 1000.0),
-                                    longitude=str(float(lng) + 1000.0),
+                                    latitude=str(float(lat)),
+                                    longitude=str(float(lng)),
                                     location_string=addr,
                                     venue_name=xmlh.get_tag_val(opploc, "name"),
                                     city = city, county = county, state = state, 
@@ -1490,7 +1495,7 @@ def guess_parse_func(inputfmt, filename, feed_providername):
 
   # custom formats
   if shortname == "gspreadsheet":
-    return "gspreadsheet", pgs.parse
+    return "gspreadsheet", gsp.parse
 
   if shortname == "usaservice" or shortname == "usasvc":
     return "usaservice", parse_usaservice.parse
@@ -1758,24 +1763,24 @@ def main():
   filename = args[0]
   if re.search("spreadsheets[.]google[.]com", filename):
     if OUTPUTFMT == "fpxml":
-      pgs.parser_error("FPXML format not supported for "+
+      gsp.parser_error("FPXML format not supported for "+
                        "spreadsheet-of-spreadsheets")
       sys.exit(1)
     match = re.search(r'key=([^& ]+)', filename)
     url = "http://spreadsheets.google.com/feeds/cells/" + match.group(1)
     url += "/1/public/basic"
-    # to avoid hitting 80 columns
+
     data = {}
     updated = {}
     if PROGRESS:
       print "processing master spreadsheet", url
-    maxrow, maxcol = pgs.read_gspreadsheet(url, data, updated, PROGRESS)
-    header_row, header_startcol = pgs.find_header_row(data, 'provider name')
+    maxrow, maxcol = gsp.read_gspreadsheet(url, data, updated, PROGRESS)
+    header_row, header_startcol = gsp.find_header_row(data, 'provider name')
 
     # check to see if there's a header-description row
-    header_desc = pgs.cellval(data, header_row+1, header_startcol)
+    header_desc = gsp.cellval(data, header_row+1, header_startcol)
     if not header_desc:
-      pgs.parser_error("blank row not allowed below header row")
+      gsp.parser_error("blank row not allowed below header row")
       sys.exit(1)
     header_desc = header_desc.lower()
     data_startrow = header_row + 1
@@ -1785,25 +1790,27 @@ def main():
     bytes = numorgs = numopps = 0
     outstr = ""
     for row in range(data_startrow, int(maxrow)+1):
-      providerName = pgs.cellval(data, row, header_startcol)
+      providerName = gsp.cellval(data, row, header_startcol)
       if providerName is None or providerName == "":
         if PROGRESS:
           print "missing provider name from row "+str(row)
         break
-      providerID = pgs.cellval(data, row, header_startcol+1)
+      providerID = gsp.cellval(data, row, header_startcol+1)
       if providerID is None or providerID == "":
         if PROGRESS:
           print "missing provider ID from row "+str(row)
         break
-      providerURL = pgs.cellval(data, row, header_startcol+2)
+      providerURL = gsp.cellval(data, row, header_startcol+2)
       if providerURL is None or providerURL == "":
         if PROGRESS:
           print "missing provider URL from row "+str(row)
         break
+
       match = re.search(r'key=([^& ]+)', providerURL)
       providerURL = "http://spreadsheets.google.com/feeds/cells/"
       providerURL += match.group(1)
       providerURL += "/1/public/basic"
+
       feedID = re.sub(r'[^a-z]', '', providerName.lower())[0:24]
       if len(feedID) < 1:
         feedID = providerName
@@ -1811,16 +1818,33 @@ def main():
       if PROGRESS:
         print "processing spreadsheet", providerURL, "named", providerName,\
             " - feedID", feedID
+
       providerBytes, providerNumorgs, providerNumopps, tmpstr = process_file(
         providerURL, options, providerName, providerID, feedID, providerURL)
+
       if PROGRESS:
         print "done processing spreadsheet: name="+providerName, \
             "feedID="+feedID, "records="+str(providerNumopps), \
             "url="+providerURL
+
       bytes += providerBytes
       numorgs += providerNumorgs
       numopps += providerNumopps
       outstr += tmpstr
+
+    # now get the new ones
+    from spreadsheets.process import sheet_list
+    for sheet in sheet_list:
+      providerURL = 'http://staging.servicefootprint.com/oppsfeed?id=' + sheet['id']
+
+      providerBytes, providerNumorgs, providerNumopps, tmpstr = process_file(
+        providerURL, options, sheet['org'], sheet['pid'], sheet['pid'], providerURL)
+
+      bytes += providerBytes
+      numorgs += providerNumorgs
+      numopps += providerNumopps
+      outstr += tmpstr
+
   else:
     bytes, numorgs, numopps, outstr = process_file(filename, options)
 
