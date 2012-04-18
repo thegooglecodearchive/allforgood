@@ -74,12 +74,14 @@ API_KEY_BOOSTS = {
   
   'daytabank' : ' feed_providername:handsonnetwork1800^1000 feed_providername:handsonnetworkconnect^1000 feed_providername:handsonnetworktechnologies^1000 feed_providername:daytabank^2000 (eventrangestart:[2011-10-22T00:00:00Z TO 2011-10-22T23:59:59Z])^1000',
     
-  'joiningforces' : ' title:military^1 description:military^5 (*:* -description:veteran)^5 (*:* -org_name:spouse)^10',
+  'joiningforces' : ' title:military^1 description:military^5 (*:* -description:veteran)^5 (*:* -org_name:spouse)^10 (*:* -title:invasive)^2000',
   
 }
 
 API_KEY_FILTER_QUERIES = {
   'starbucks' : '-provider_proper_name_str:[* TO F*] AND  -provider_proper_name_str:[Gir* TO H*] AND  -provider_proper_name_str:[I* TO *]',
+
+  '243234' : '-feed_providername:aarp AND -feed_providername:meetup AND -feed_providername:mybarackobama',
 }
 
 API_KEY_NEGATED_FILTER_QUERIES = {
