@@ -186,22 +186,30 @@ def validate_xml(xmldoc, known_elnames):
       validate_xml(node, known_elnames)
 
 
+POD_SAID = {}
 def parse_or_die(instr):
   xmldoc = None
 
   try:
     xmldoc = minidom.parseString(instr)
   except xml.parsers.expat.ExpatError, err:
-    print datetime.now(), "XML parsing error on line ", err.lineno,
-    print ":", xml.parsers.expat.ErrorString(err.code),
-    print " (column ", err.offset, ")"
-    lines = instr.split("\n")
-    for i in range(err.lineno - 3, err.lineno + 3):
-      if i >= 0 and i < len(lines):
-        print "%6d %s" % (i+1, lines[i])
-        if len(lines) > 1:
-          print "and " + str(len(lines)) + ' more...'
-        break
+    say = str(datetime.now()) + "XML parsing error on line " + str(err.lineno)
+    say += ":" + str(xml.parsers.expat.ErrorString(err.code))
+    say += " (column " + str(err.offset) + ")"
+    if say not in POD_SAID:
+      POD_SAID[say] = 1
+      print say
+
+      lines = instr.split("\n")
+      for i in range(err.lineno - 3, err.lineno + 3):
+        if i >= 0 and i < len(lines):
+          say = "%6d %s" % (i+1, lines[i])
+          if len(lines) > 1:
+            say += "and " + str(len(lines)) + ' more...'
+          if say not in POD_SAID:
+            POD_SAID[say] = 1
+            print say
+          break
 
   if not xmldoc:
     print "trying CDATA detailURL..."

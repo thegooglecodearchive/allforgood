@@ -16,6 +16,7 @@
 """
 Geocoder and address functions for backend, using Google Maps API.
 """
+import os
 import re
 import time
 import json
@@ -177,7 +178,7 @@ def geocode_call(query, retries=4):
   return (addr, lat, lng, accuracy)
 
 
-def rev_geocode_json(lat, lng, key = None, retries = 0):
+def rev_geocode_json(lat, lng, key = None, retries = 0, msgd = {}):
   """ """
 
   jo = None
@@ -197,7 +198,12 @@ def rev_geocode_json(lat, lng, key = None, retries = 0):
     except:
       # most likely given junk lat/lng
       return jo
+
     key = 'revgeo/G' + 'lat' + lat_str + 'lng' + lng_str + '.json'
+    if 'OVER_QUERY_LIMIT' in msgd and not os.path.isfile(key):
+      lat_str = str(round(float(lat) * 10000.0)/10000.0).replace('.', '_').rstrip('0')
+      lng_str = str(round(float(lng) + 10000.0)/10000.0).replace('.', '_').rstrip('0')
+      key = 'revgeo/' + 'lat' + lat_str + 'lng' + lng_str + '.json'
 
   if key:
     try:
@@ -247,12 +253,6 @@ def rev_geocode_json(lat, lng, key = None, retries = 0):
 
       elif jo['status'] == 'OVER_QUERY_LIMIT':
         print_debug("rev_geocode_json: OVER_QUERY_LIMIT " + key)
-        #if retries >= 3:
-        #  print_debug("rev_geocode_json: OVER_QUERY_LIMIT " + key)
-        #else:
-        #  retries += 1
-        #  time.sleep(1)
-        #  return rev_geocode_json(lat, lng, key, retries)
 
   return jo
 

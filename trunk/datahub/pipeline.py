@@ -359,8 +359,7 @@ def solr_update_query (query_str, url):
   subprocess.call(cmd, shell=True)
 
 
-def run_shell_with_retcode(command, print_output=False,
-                           universal_newlines=True):
+def run_shell_with_retcode(command, print_output=False, universal_newlines=True):
   """Executes a command and returns the output from stdout and the return code.
 
   Args:
@@ -434,18 +433,23 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
 
   if do_processing:
     cmd_list = ["./footprint_lib.py"]
+
     if OPTIONS.feed_providername:
       for it in ["--feed_providername", OPTIONS.feed_providername]:
         cmd_list.append(it)
+
     for it in ["--progress", "--output", tsv_filename, url, "--compress_output"]:
       cmd_list.append(it)
+
     if name == "diy":
       cmd_list.append("--noclean")
 
     stdout, stderr, retcode = run_shell(cmd_list, silent_ok=True, print_output=False)
     print stdout,
+
     if stderr and stderr != "":
       print name+":STDERR: ", re.sub(r'\n', '\n'+name+':STDERR: ', stderr)
+
     if retcode and retcode != 0:
       print name+":RETCODE: "+str(retcode)
 
