@@ -219,7 +219,9 @@ def regex_parse_gspreadsheet(instr, data, updated, progress):
     #print row, col, val
   if DEBUG and progress:
     print str(datetime.now())+": found ", maxrow, "rows and", maxcol, "columns."
+
   return maxrow, maxcol
+
 
 def parse_gspreadsheet(instr, data, updated, progress):
   """ """
@@ -237,8 +239,13 @@ def parse_gspreadsheet(instr, data, updated, progress):
       if col > maxcol: 
         maxcol = col
       key = 'R' + cell['row'] + 'C' + cell['col']
-      DATA[key] = cell.text.encode('utf-8', 'ignore')
+      data[key] = cell.text.encode('utf-8', 'ignore')
 
+
+  if maxrow < 1 or maxcol < 1:
+    # old style
+    return regex_parse_gspreadsheet(instr, data, updated, progress)
+  
   if DEBUG and progress:
     print str(datetime.now())+": found ", maxrow, "rows and", maxcol, "columns."
 
@@ -251,6 +258,7 @@ def read_gspreadsheet(url, data, updated, progress):
   instr = infh.read()
   infh.close()
   return parse_gspreadsheet(instr, data, updated, progress)
+
 
 def find_header_row(data, regexp_str):
   """locate the header row and start column."""
@@ -273,13 +281,12 @@ def find_header_row(data, regexp_str):
 
 def parse(instr, maxrecs, progress):
   """parser main."""
-  # TODO: a spreadsheet should really be an object and cellval a method
-  # TODO: use maxrecs
   data = {}
   updated = {}
   maxrow, maxcol = parse_gspreadsheet(instr, data, updated, progress)
   if DEBUG and progress:
     print str(datetime.now())+": maxrow="+str(maxrow)+" maxcol="+str(maxcol)
+
   # find header row: look for "opportunity title" (case insensitive)
   header_row, header_startcol = find_header_row(data, 'opportunity\s*title')
 
@@ -367,8 +374,9 @@ def parse(instr, maxrecs, progress):
   # check to see if there's a header-description row
   header_desc = cellval(data, header_row+1, header_startcol)
   if not header_desc:
-    parser_error("blank row not allowed below header row")
-    data_startrow = 3
+    parser_error("empty spreadsheet? blank row not allowed below header row")
+    return '', 0, 0
+    #data_startrow = 3
   else:
     header_desc = header_desc.lower()
     data_startrow = header_row + 1
@@ -410,6 +418,7 @@ def parse(instr, maxrecs, progress):
       volopps += record_to_fpxml(record)
     row += 1
     CURRENT_ROW = row
+
   CURRENT_ROW = None
   if DEBUG and progress:
     print str(datetime.now())+": ", numopps, "opportunities found."

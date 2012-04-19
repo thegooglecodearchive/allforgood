@@ -103,7 +103,7 @@ then
                                 RATIO=`echo "100 * $NEWSZ / $OLDSZ" | bc`
                                 if [ $RATIO -lt 70 ]
                                 then
-					if [ $OLDZ -gt 16384 ]
+					if [ $OLDSZ -gt 16384 ]
 					then
                                         	./notify_team.sh "manually check $FILE, using last results"
 	                                        echo "manually check $FILE, using last results"

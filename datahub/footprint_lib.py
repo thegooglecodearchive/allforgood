@@ -377,10 +377,15 @@ def get_revgeo_fields(lat, lng, given_city, given_county, given_state, given_zip
   if not country:
     country = 'US'
 
-  jo = geocoder.rev_geocode_json(lat, lng)
+  jo = geocoder.rev_geocode_json(lat, lng, None, 0, JO_SAID)
   if jo and 'status' in jo:
     if jo['status'] != "OK":
-      if not jo['status'] in JO_SAID:
+      if jo['status'] == 'ZERO_RESULTS':
+        say = "rev_geocode_json: says " + jo['status'] + ' for ' + str(lat) + ',' + str(lng)
+        if say not in JO_SAID:
+          JO_SAID[say] = 1
+          print say
+      elif not jo['status'] in JO_SAID:
         JO_SAID[jo['status']] = 1
         print "rev_geocode_json: says " + jo['status']
     else:
@@ -1191,8 +1196,13 @@ def guess_shortname(filename):
   if re.search("daytabank", filename):
     return "daytabank"
 	
+  if re.search("spreadsheets[.]google[.]com", filename):
+    return "gspreadsheet"
+  if filename.find('oppsfeed') >= 0:
+    return "gspreadsheet"
   if re.search(r'onlinespreadsheet', filename):
     return "onlinespreadsheet"
+
   if re.search(r'rockthevote', filename):
     return "rockthevote"
   if re.search(r'sparked', filename):
@@ -1245,8 +1255,6 @@ def guess_shortname(filename):
     return "habitat"
   if re.search("americansolutions", filename):
     return "americansolutions"
-  if re.search("spreadsheets[.]google[.]com", filename):
-    return "gspreadsheet"
   if re.search("(volunteer[.]?gov)", filename):
     return "volunteergov"
   if re.search("(whichoneis.com|beextra|extraordinari)", filename):
@@ -1436,9 +1444,11 @@ def guess_parse_func(inputfmt, filename, feed_providername):
     return "fpxml", fp.parser(
       '142', 'getinvolved', 'getinvolved', 'http://www.getinvolved.ca/',
       'getinvolved')
+
   if shortname == "onlinespreadsheet":
     if not feed_providername:
       feed_providername = "6000"
+
     return "fpxml", fp.parser(
       '6000', feed_providername, feed_providername, 'http://www.allforgood.org/',
       'AfG')
@@ -1666,8 +1676,7 @@ def test_parse(footprint_xmlstr, maxrecs):
     #print line
 
 
-def process_file(filename, options, providerName="", providerID="",
-                 feedID="", providerURL=""):
+def process_file(filename, options, providerName="", providerID="", feedID="", providerURL=""):
   global FEED
 
   shortname = guess_shortname(filename)
@@ -1772,8 +1781,8 @@ def main():
 
     data = {}
     updated = {}
-    if PROGRESS:
-      print "processing master spreadsheet", url
+    print "================================================== PUBLIC SPREADSHEETS"
+    print "processing master spreadsheet", url
     maxrow, maxcol = gsp.read_gspreadsheet(url, data, updated, PROGRESS)
     header_row, header_startcol = gsp.find_header_row(data, 'provider name')
 
@@ -1781,64 +1790,59 @@ def main():
     header_desc = gsp.cellval(data, header_row+1, header_startcol)
     if not header_desc:
       gsp.parser_error("blank row not allowed below header row")
-      sys.exit(1)
-    header_desc = header_desc.lower()
-    data_startrow = header_row + 1
-    if header_desc.find("example") >= 0:
-      data_startrow += 1
+    else:
 
-    bytes = numorgs = numopps = 0
-    outstr = ""
-    for row in range(data_startrow, int(maxrow)+1):
-      providerName = gsp.cellval(data, row, header_startcol)
-      if providerName is None or providerName == "":
-        if PROGRESS:
+      header_desc = header_desc.lower()
+      data_startrow = header_row + 1
+      if header_desc.find("example") >= 0:
+        data_startrow += 1
+
+      bytes = numorgs = numopps = 0
+      outstr = ""
+      for row in range(data_startrow, int(maxrow)+1):
+        providerName = gsp.cellval(data, row, header_startcol)
+        if providerName is None or providerName == "":
           print "missing provider name from row "+str(row)
-        break
-      providerID = gsp.cellval(data, row, header_startcol+1)
-      if providerID is None or providerID == "":
-        if PROGRESS:
+          continue
+        providerID = gsp.cellval(data, row, header_startcol+1)
+        if providerID is None or providerID == "":
           print "missing provider ID from row "+str(row)
-        break
-      providerURL = gsp.cellval(data, row, header_startcol+2)
-      if providerURL is None or providerURL == "":
-        if PROGRESS:
+          continue
+        providerURL = gsp.cellval(data, row, header_startcol+2)
+        if providerURL is None or providerURL == "":
           print "missing provider URL from row "+str(row)
-        break
+          continue
 
-      match = re.search(r'key=([^& ]+)', providerURL)
-      providerURL = "http://spreadsheets.google.com/feeds/cells/"
-      providerURL += match.group(1)
-      providerURL += "/1/public/basic"
+        match = re.search(r'key=([^& ]+)', providerURL)
+        providerURL = "http://spreadsheets.google.com/feeds/cells/"
+        providerURL += match.group(1)
+        providerURL += "/1/public/basic"
+  
+        feedID = re.sub(r'[^a-z]', '', providerName.lower())[0:24]
+        if len(feedID) < 1:
+          feedID = providerName
 
-      feedID = re.sub(r'[^a-z]', '', providerName.lower())[0:24]
-      if len(feedID) < 1:
-        feedID = providerName
+        print "processing spreadsheet", providerURL, "named", providerName, " - feedID", feedID
 
-      if PROGRESS:
-        print "processing spreadsheet", providerURL, "named", providerName,\
-            " - feedID", feedID
+        providerBytes, providerNumorgs, providerNumopps, tmpstr = process_file(
+          providerURL, options, providerName, providerID, feedID, providerURL)
 
-      providerBytes, providerNumorgs, providerNumopps, tmpstr = process_file(
-        providerURL, options, providerName, providerID, feedID, providerURL)
-
-      if PROGRESS:
         print "done processing spreadsheet: name="+providerName, \
-            "feedID="+feedID, "records="+str(providerNumopps), \
-            "url="+providerURL
+              "feedID="+feedID, "records="+str(providerNumopps), \
+              "url="+providerURL
 
-      bytes += providerBytes
-      numorgs += providerNumorgs
-      numopps += providerNumopps
-      outstr += tmpstr
+        bytes += providerBytes
+        numorgs += providerNumorgs
+        numopps += providerNumopps
+        outstr += tmpstr
 
-    # now get the new ones
+    # added week of April 16th, 2012 
+    print "================================================== PRIVATE SPREADSHEETS"
     from spreadsheets.process import sheet_list
     for sheet in sheet_list:
-      providerURL = 'http://staging.servicefootprint.com/oppsfeed?id=' + sheet['id']
-
+      providerURL = 'http://staging.servicefootprint.appspot.com/oppsfeed?id=' + sheet['id']
       providerBytes, providerNumorgs, providerNumopps, tmpstr = process_file(
-        providerURL, options, sheet['org'], sheet['pid'], sheet['pid'], providerURL)
+        providerURL, options, sheet['pid'], sheet['pid'], sheet['pid'], providerURL)
 
       bytes += providerBytes
       numorgs += providerNumorgs
