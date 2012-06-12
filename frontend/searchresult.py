@@ -82,12 +82,14 @@ class SearchResult(object):
     self.url_sig = None
     self.title = title
     self.snippet = snippet
+    self.duration = ''
     self.location = location
+    self.distance = ''
+    self.virtual = virtual
     self.vetted = vetted
     self.is_501c3 = is_501c3
     self.item_id = item_id
     self.base_url = base_url
-    self.virtual = virtual
     self.self_directed = self_directed
     self.micro = micro
     self.volunteers_needed = volunteers_needed

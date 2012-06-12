@@ -43,6 +43,7 @@ PARAM_FACET_LIMIT = 'facet.limit'
 PARAM_FACET_FIELD = 'facet.field'
 PARAM_FACET_MINCNT = 'facet.mincount'
 
+########### deprecating from here down ###############
 # If PARAM_OUTPUT matches one of these entries, only certain fields will be
 # returned. Otherwise, all fields are returned.
 FIELDS_BY_OUTPUT_TYPE = {'html' :
@@ -63,6 +64,7 @@ FIELDS_BY_OUTPUT_TYPE = {'html' :
 # Fields to be returned when PARAM_OUTPUT is not set.
 # TODO: remove this once all output types have been specified.
 DEFAULT_OUTPUT_FIELDS = FIELDS_BY_OUTPUT_TYPE['html']
+########### deprecating from here up ###############
 
 # E.g., 'today'. The presence of this param implies that 'vol_startdate'
 # and 'vol_enddate' will be automatically calculated, overriding

@@ -22,14 +22,17 @@ import re
 import time
 import traceback
 import urllib
+import random
 
 from django.utils import simplejson
-from versioned_memcache import memcache
+#from versioned_memcache import memcache
+from google.appengine.api import memcache
 from google.appengine.api import urlfetch
 from copy import deepcopy
 from operator import itemgetter
 
 import api
+import apiwriter
 import geocode
 import ical_filter
 import models
@@ -311,6 +314,10 @@ def form_solr_query(args):
       # node 2 serves at 6, 18
       args[api.PARAM_BACKEND_URL] = private_keys.NODE2_DEFAULT_BACKEND_URL
 
+    # TODO
+    args[api.PARAM_BACKEND_URL] = private_keys.NODE3_DEFAULT_BACKEND_URL
+
+
     global BACKEND_GLOBAL
     BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
   
@@ -318,14 +325,19 @@ def form_solr_query(args):
   solr_query += apply_filter_query(api_key)
 
   # field list
-  solr_query += '&fl='
-  if api.PARAM_OUTPUT not in args:
-    solr_query += api.DEFAULT_OUTPUT_FIELDS
-  else:
-    if args[api.PARAM_OUTPUT] in api.FIELDS_BY_OUTPUT_TYPE:
-      solr_query += api.FIELDS_BY_OUTPUT_TYPE[args[api.PARAM_OUTPUT]]
-    else:
-      solr_query += '*' 
+  solr_query += '&fl=*'
+  
+  # TODO: this needs some serious rethinking....
+  # the idea might have been to save cycles by not fetching
+  # any field from solr that we dont actually need but right
+  # now as we are adding fields it is more of hinderance
+  #if api.PARAM_OUTPUT not in args:
+  #  solr_query += api.DEFAULT_OUTPUT_FIELDS
+  #else:
+  #  if args[api.PARAM_OUTPUT] in api.FIELDS_BY_OUTPUT_TYPE:
+  #    solr_query += api.FIELDS_BY_OUTPUT_TYPE[args[api.PARAM_OUTPUT]]
+  #  else:
+  #    solr_query += '*' 
 
   return solr_query
 
@@ -473,7 +485,6 @@ def search(args, dumping = False):
     result_set.parse_time = 0
     return result_set
 
-  logging.info("calling SOLR: "+query_url)
   results = query(query_url, args, False, dumping)
   logging.info("SOLR call done: "+str(len(results.results))+
                 " results, fetched in "+str(results.fetch_time)+" secs,"+
@@ -491,6 +502,11 @@ def search(args, dumping = False):
   return results
 
 
+def calculate_distance(x1, y1, x2, y2):
+  """ distance formula applied to lat, long converted to miles """
+  return ((((x1 - x2) ** 2) + ((y1 - y2) ** 2)) ** 0.5) * MILES_PER_DEG
+
+
 def query(query_url, args, cache, dumping = False):
   """run the actual SOLR query (no filtering or sorting)."""
   logging.debug("Query URL: " + query_url + '&debugQuery=on')
@@ -505,6 +521,8 @@ def query(query_url, args, cache, dumping = False):
   fetch_start = time.time()
   status_code = 999
   try:
+    logging.info("calling SOLR: " + query_url)
+    query_url += '&r=' + str(random.random())
     fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
     status_code = fetch_result.status_code
   except:
@@ -573,8 +591,7 @@ def query(query_url, args, cache, dumping = False):
       latstr = entry["latitude"]
       longstr = entry["longitude"]
       if latstr and longstr and latstr != "" and longstr != "":
-        entry["detailurl"] = \
-          "http://maps.google.com/maps?q=" + str(latstr) + "," + str(longstr)
+        entry["detailurl"] = "http://maps.google.com/maps?q=" + str(latstr) + "," + str(longstr)
       else:
         logging.info('solr_search.query skipping SOLR record' +
                       ' %d: detailurl is missing...' % i)
@@ -631,9 +648,18 @@ def query(query_url, args, cache, dumping = False):
       continue
 
     res.orig_idx = i+1
+
     res.latlong = ""
-    if latstr and longstr and latstr != "" and longstr != "":
+    res.distance = ''
+    res.duration = ''
+    if latstr and longstr:
       res.latlong = str(latstr) + "," + str(longstr)
+      try:
+        res.distance = str(calculate_distance(float(args[api.PARAM_LAT]), 
+                                          float(args[api.PARAM_LNG]), 
+                                          float(latstr), float(longstr)))
+      except:
+        pass
 
     # res.event_date_range follows one of these two formats:
     #     <start_date>T<start_time> <end_date>T<end_time>
@@ -659,6 +685,19 @@ def query(query_url, args, cache, dumping = False):
         if enddate < res.enddate:
           res.enddate = enddate
 
+        if res.startdate and res.enddate:
+          delta = res.enddate - res.startdate
+          res.duration = str(delta.days)
+
+    for name in apiwriter.HON_FIELDS:
+      name = name.lower()
+      if name in entry:
+        value = entry.get(name, '')
+        if not isinstance(value, list):
+          setattr(res, name, str(value))
+        else:
+          setattr(res, name, '\t'.join(value))
+    
     # posting.py currently has an authoritative list of fields in "argnames"
     # that are available to submitted events which may later appear in GBase
     # so with a few exceptions we want those same fields to become
@@ -680,6 +719,7 @@ def query(query_url, args, cache, dumping = False):
   result_set.estimated_results = int(result["response"]["numFound"])
   parse_end = time.time()
   result_set.parse_time = parse_end - parse_start
+
   return result_set
 
 

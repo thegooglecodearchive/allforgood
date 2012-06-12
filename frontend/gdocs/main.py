@@ -1,8 +1,3 @@
-"""
-WORK IN PROGRESS - NOT COMPLETE
-
-"""
-
 import private_keys
 
 import sys
@@ -28,6 +23,8 @@ import gdata.spreadsheet.service
 import gdata.alt
 import gdata.alt.appengine
 
+ANYONE = True
+
 COPY_URL = 'https://docs.google.com/feeds/default/private/full'
 COPY_XML = """<?xml version='1.0' encoding='UTF-8'?>
 <entry xmlns="http://www.w3.org/2005/Atom">
@@ -35,6 +32,7 @@ COPY_XML = """<?xml version='1.0' encoding='UTF-8'?>
   <title>%s</title>
 </entry>"""
 
+#ACL_URL = 'https://docs.google.com/feeds/default/private/full/%s/acl?send-notification-emails=false'
 ACL_URL = 'https://docs.google.com/feeds/default/private/full/%s/acl'
 ACL_XML = """<?xml version='1.0' encoding='UTF-8'?>
 <entry xmlns="http://www.w3.org/2005/Atom" xmlns:gAcl='http://schemas.google.com/acl/2007'>
@@ -43,14 +41,19 @@ ACL_XML = """<?xml version='1.0' encoding='UTF-8'?>
 %s
 </entry>"""
 
-ACL_READER_XML="""
-<gAcl:withKey key='[ACL KEY]'><gAcl:role value='reader' /></gAcl:withKey>
+ACL_PRIVATE_WRITER_XML = """
+<gAcl:role value='writer'/>
+<gAcl:scope type='user' value='%s'/>
+"""
+
+ACL_PUBLIC_WRITER_XML = """
+<gAcl:withKey key='[ACL KEY]'><gAcl:role value='writer' /></gAcl:withKey>
 <gAcl:scope type='default' />
 """
 
-ACL_WRITER_XML = """
-<gAcl:role value='writer'/>
-<gAcl:scope type='user' value='%s'/>
+ACL_PUBLIC_READER_XML="""
+<gAcl:withKey key='[ACL KEY]'><gAcl:role value='reader' /></gAcl:withKey>
+<gAcl:scope type='default' />
 """
 
 def getXMLValue(app, xml_str, tag):
@@ -155,16 +158,21 @@ def shareSpreadsheet(app, id, submitter_email_list):
 
   resource_id = 'spreadsheet:' + id
 
-  body = ACL_XML % ACL_READER_XML
+  if ANYONE:
+    body = ACL_XML % ACL_PUBLIC_WRITER_XML
+  else:
+    body = ACL_XML % ACL_PUBLIC_READER_XML
+
   url = ACL_URL % resource_id
   ok, rsp = makePostRequest(gd_client, url, body)
   if not ok:
     rtn = False
-  else:
+  
+  if not ANYONE and ok:
     email_list = private_keys.GDOCS_ADMIN_LIST
     email_list.extend(submitter_email_list)
     for email in email_list:
-      body = ACL_XML % (ACL_WRITER_XML % email)
+      body = ACL_XML % (ACL_PRIVATE_WRITER_XML % email)
       url = ACL_URL % resource_id
       ok, rsp = makePostRequest(gd_client, url, body)
       if not ok:
@@ -234,7 +242,7 @@ class OppsForm(webapp.RequestHandler):
         return
 
       # there is no spreadsheet
-      sheetname = org + ' ' + private_keys.SPREADSHEET_TEMPLATE.NAME
+      sheetname = 'for AFG ' + org + ' ' + private_keys.SPREADSHEET_TEMPLATE.NAME
       ok, rsp = copySpreadsheet(self, private_keys.SPREADSHEET_TEMPLATE.KEY, sheetname)
       if not ok:
         self.response.out.write('err: could not copy spreadsheet\n' + rsp + '\n')
