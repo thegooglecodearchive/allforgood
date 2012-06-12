@@ -22,7 +22,8 @@ import hashlib
 import logging
 import copy
 
-from versioned_memcache import memcache
+#from versioned_memcache import memcache
+from google.appengine.api import memcache
 from utils import safe_str, safe_int
 
 import api
@@ -30,9 +31,35 @@ import geocode
 import solr_search
 import re
 
+from google.appengine.ext import db
+
 from query_rewriter import get_rewriters
 
 CACHE_TIME = 24*60*60  # seconds
+
+class CacheUpdate(db.Model):
+  updated = db.DateTimeProperty(auto_now = True)
+
+
+def update_cache_key():
+  """ """
+  try:
+    rec = CacheUpdate.get_or_insert('search')
+    rec.put()
+  except:
+    logging.warning("update_cache_key failed")
+
+
+def get_cache_key(normalized_query_string):
+  """ """
+
+  rtn = 'search:' + normalized_query_string
+  rec = CacheUpdate.get_by_key_name('search')
+  if rec:
+    rtn += str(rec.updated)
+
+  return hashlib.md5(rtn).hexdigest()
+
 
 def run_query_rewriters(query):
   rewriters = get_rewriters()
@@ -76,7 +103,7 @@ def search(args, dumping = False):
     logging.debug('Not using search cache')
 
   # note: key cannot exceed 250 bytes
-  memcache_key = hashlib.md5('search:' + normalized_query_string).hexdigest()
+  memcache_key = get_cache_key(normalized_query_string)
   start = safe_int(args[api.PARAM_START], api.CONST_MIN_START)
   num = safe_int(args[api.PARAM_NUM], api.CONST_DFLT_NUM)
 
@@ -169,7 +196,7 @@ def normalize_query_values(args, dumping = False):
     use_cache = False
     logging.debug('Not using search cache')
 
-#  # PARAM_TIMEPERIOD overrides VOL_STARTDATE/VOL_ENDDATE
+  # PARAM_TIMEPERIOD overrides VOL_STARTDATE/VOL_ENDDATE
   if api.PARAM_TIMEPERIOD in args:    
     period = args[api.PARAM_TIMEPERIOD]
     # No need to pass thru, just convert period to discrete date args.
@@ -235,9 +262,6 @@ def normalize_query_values(args, dumping = False):
     # args[api.PARAM_VOL_LOC] = args[api.PARAM_Q] + " USA"
     # MT: 8/26/2010 - in practice that causes a lot of 602 results in geocode, eg "Laywers, USA"
     args[api.PARAM_VOL_LOC] = "USA"
-
-  # Commenting this out now that we Solr synonyms
-  #args[api.PARAM_Q] = run_query_rewriters(args[api.PARAM_Q])
 
   args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
   if api.PARAM_VIRTUAL in args:

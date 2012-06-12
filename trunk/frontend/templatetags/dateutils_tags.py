@@ -29,12 +29,17 @@ def custom_date_format(value, opt_past_dates = False):
   the current one."""
   if not value:
     return ''
-  elif value.year < date.today().year and not opt_past_dates:
+
+  if type(value) != datetime and type(value) != date:
+    return str(value)
+  
+  if value.year < date.today().year and not opt_past_dates:
     return 'Present'
-  elif value.year == date.today().year:
+
+  if value.year == date.today().year:
     return dateformat.format(value, 'F j, Y')
-  else:
-    return dateformat.format(value, 'F j, Y')  
+
+  return dateformat.format(value, 'F j, Y')  
 
 def custom_date_range_format(result):
   """Returns a formatted string with the date range of the SearchResult.

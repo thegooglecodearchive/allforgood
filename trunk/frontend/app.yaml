@@ -18,6 +18,12 @@ handlers:
 - url: /proxy
   script: proxy/main.py
 
+- url: /cache-update
+  script: cache-update/main.py
+
+- url: /hon-(update|add|delete)
+  script: hon-update/main.py
+
 - url: /opps(feed|form)
   script: gdocs/main.py
 

@@ -25,6 +25,148 @@ from templatetags.dateutils_tags import custom_date_format
 
 SEARCH_RESULTS_DEBUG_TEMPLATE = 'search_results_debug.html'
 
+FIELD_TUPLES = [
+  ('id', 'item_id'),
+  ('title',),
+  ('description', 'snippet'),
+  ('pubDate','pubdate'),
+  ('groupid', 'merge_key'),
+  ('provider',),
+  ('startDate', 'startdate'),
+  ('endDate', 'enddate'),
+  ('base_url',),
+  ('xml_url',),
+  ('url_short',),
+  ('latlong',),
+  ('location_name', 'location'),
+  ('interest_count',),
+  ('impressions',),
+  ('quality_score',),
+  ('categories','categories_api_str'),
+  ('skills',),
+  ('distance',),
+  ('duration',),
+  ('virtual',),
+  ('self_directed'),
+  ('micro'),
+  ('volunteers_needed'),
+  ('addr1',),
+  ('addrname1',),
+  ('org_name',),
+  ('org_organizationurl',),
+  ('openEnded',),
+  ('startTime',),
+  ('endTime',),
+  ('contactNoneNeeded',),
+  ('contactEmail',),
+  ('contactPhone',),
+  ('contactName',),
+  ('detailUrl', 'url'),
+  ('audienceAll',),
+  ('audienceAge',),
+  ('minimumage',),
+  ('audienceSexRestricted',),
+  ('street1',),
+  ('street2',),
+  ('city',),
+  ('region',),
+  ('postalCode',),
+  ('country',),
+  ('huborganizationurl',),
+  ('huborganizationname',),
+  ('affiliateorganizationname',),
+  ('affiliateorganizationurl',),
+  ('opportunityid',), 
+  ('opportunitytype',), 
+  ('registertype',), 
+  ('occurrenceid',),
+  ('occurrenceduration',),
+  ('eventid',),
+  ('eventname',),
+  ('frequencyurl',), 
+  ('frequency',), 
+  ('availabilitydays', 'dayWeek',), 
+  ('appropriatefors', 'appropriateFor'), 
+]
+
+HON_FIELDS = [
+  'org_name',
+  'org_organizationurl',
+  'huborganizationurl',
+  'huborganizationname',
+  'affiliateorganizationurl',
+  'affiliaterganizationname',
+
+  'managedby',
+  'minimumage',
+
+  'opportunityid',
+  'opportunitytype',
+  'registertype',
+  'occurrenceid',
+  'occurrenceduration',
+  'eventid',
+  'eventname',
+  'frequencyurl',
+  'frequency',
+  'availabilitydays',
+  'appropriatefors',
+
+  'contactemail',
+  'contactphone',
+  'audienceall',
+  'audienceage',
+  'audiencesexrestricted',
+  'street1',
+  'street2',
+  'region',
+  'postalcode',
+]
+
+API_FIELD_NAMES_MAP = {
+  # solr/result : json/rss output
+  'org_name' : 'sponsoringOrganizationName',
+  'org_organizationurl' : 'sponsoringOrganizationURL',
+  'enddate' : 'endDate',
+  'startdate' : 'startDate',
+  'scheduletype' : 'scheduleType',
+  'activitytype' : 'activityType',
+  'invitationcode' : 'invitationCode',
+  'managedby' : 'managedBy',
+  'registertype' : 'registerType',
+  'affiliateid' : 'affiliateId',
+  'occurrenceduration' : 'occurrenceDuration',
+  'occurrenceid' : 'occurrrenceId',
+  'isdisaster' : 'isDisaster',
+  'opportunitytype' : 'opportunityType',
+  'registertype' : 'registerType',
+  'opportunityid' : 'opportunityId',
+
+  'snippet' : 'description',
+  'url' : 'detailUrl',
+
+  'availabilitydays' : 'availabilityDays', 
+  'appropriatefors' : 'appropiateFors', 
+
+  'dayweek' : 'dayWeek',
+  'frequencylink' : 'frequencyLink',
+  'distance' : 'Distance', 
+
+  'managedby' : 'managedBy',
+  'minimumage' : 'minAge',
+
+  'org_organizationurl' : 'sponsoringOrganizationUrl',
+  'huborganizationurl' : 'hubOrganizationUrl',
+  'huborganizationname' : 'hubOrganizationName',
+  'affiliateorganizationurl' : 'affiliateOrganizationUrl',
+  'affiliateorganizationname' : 'affiliateOrganizationName',
+
+  'occurrenceid' : 'occurrenceId',
+  'occurrenceduration' : 'occurrenceduration',
+  'eventname' : 'eventName',
+  'eventid' : 'eventId',
+}
+
 def get_writer(output):
   """Returns the appropriate ApiWriter class for the requested output type."""
   if output == 'rss':
@@ -45,7 +187,7 @@ class ApiWriter:
     """Do any setup based on the result set here."""
     pass
   
-  def add_result(self, result):
+  def add_result(self, result, result_set = {}):
     """Process one result item at a time."""
     pass
   
@@ -69,7 +211,6 @@ class DjangoTemplateApiWriter(ApiWriter):
       request, 'SEARCH')
     self.template_values.update({
         'result_set': result_set,
-        # TODO: remove this stuff...
         'latlong': result_set.args["latlong"],
         'keywords': result_set.args[api.PARAM_Q],
         'location': result_set.args[api.PARAM_VOL_LOC],
@@ -88,67 +229,14 @@ class DebugHtmlApiWriter(DjangoTemplateApiWriter):
     DjangoTemplateApiWriter.__init__(self, content_type)
     self.template = SEARCH_RESULTS_DEBUG_TEMPLATE
           
-  def add_result(self, result):
+  def add_result(self, result, result_set = {}):
     pass
       
 class JsonApiWriter(ApiWriter):
   """Outputs the search results as JSON."""
   
-  #Fields we output per item
-  item_fields = [
-    ('id', 'item_id'),
-    ('title',),
-    ('description', 'snippet'),
-    ('pubDate',),
-    # groupid is a stable ID for the dedup'd set of results, 
-    #   including same listing but different time/location 
-    ('groupid', 'merge_key'),
-    ('provider',),
-    ('startDate', 'startdate'),
-    ('endDate', 'enddate'),
-    ('base_url',),
-    ('xml_url',),
-    ('url_short',),
-    ('latlong',),
-    ('location_name', 'location'),
-    ('interest_count',),
-    ('impressions',),
-    ('quality_score',),
-    ('categories',),
-    ('skills',),
-    ('virtual',),
-    ('self_directed'),
-    ('micro'),
-    ('volunteers_needed'),
-    ('addr1', 'addr1',
-     "addr1 may change; contact core eng team before using"),
-    ('addrname1', 'addrname1',
-     "addrname1 may change; contact core eng team before using"),
-    ('sponsoringOrganizationName', 'orgName'),
-    ('openEnded',),
-    ('startTime',),
-    ('endTime',),
-    ('contactNoneNeeded',),
-    ('contactEmail',),
-    ('contactPhone',),
-    ('contactName',),
-    ('detailUrl',),
-    # TODO: make something better than weekly #
-    # TODO: make something better than biweekly #
-    # TODO: make something better than recurrence #
-    ('audienceAll',),
-    ('audienceAge',),
-    ('minAge',),
-    ('audienceSexRestricted',),
-    # TODO: sexRestrictedTo - ref policy team #
-    # TODO: make something better than commitmentHoursPerWeek #
-    ('street1',),
-    ('street2',),
-    ('city',),
-    ('region',),
-    ('postalCode',),
-    ('country',)
-  ]
+  # Fields we output per item
+  item_fields = FIELD_TUPLES
   
   def __init__(self, content_type):
     """No special initialization."""
@@ -168,27 +256,38 @@ class JsonApiWriter(ApiWriter):
     }
     self.items = self.json['items']
         
-  def add_result(self, result):
+  def add_result(self, result, result_set = {}):
     """Add an item dict to the items array."""
+    #result is instance of SearchResult
+
     item = {}
     for field_info in self.item_fields:
-      if len(field_info) == 1:
-        name = field_info[0]
-        content = getattr(result, name, '')
-        item[name] = content
-      else:
-        name = field_info[0]
-        attr = field_info[1]
-        if (name == "endDate" and 
-            custom_date_format(getattr(result, attr)) == 'Present'):
+      name = field_info[0]
+      if len(name) < 2:
+        continue
+
+      if not hasattr(result, name):
+        name = name.lower()
+        if not hasattr(result, name) and len(field_info) > 1:
+          name = field_info[1]
+          if not hasattr(result, name):
+            name = name.lower()
+
+      content = getattr(result, name, '')
+        
+      if name.lower() == "enddate":
+        if custom_date_format(content) == 'Present':
           content = ''
-        else:
-          content = getattr(result, attr, '')
-        if name == "description":
+      elif name == "description":
+        if result_set.args.get('fulldesc', '') != '1':
           content = content[:300]
 
-        item[name] = content
-        #TODO: figure out a way to add comments to JSON
+      # handle lists
+      if isinstance(content, basestring) and content.find('\t') > 0:
+        item[API_FIELD_NAMES_MAP.get(name, name)] = content.split('\t')
+      else:
+        item[API_FIELD_NAMES_MAP.get(name, name)] = content
+
     self.items.append(item)
     
   def finalize(self):
@@ -204,6 +303,7 @@ class JsonApiWriter(ApiWriter):
         return simplejson.JSONEncoder.default(self, obj)
     encoder = MyEncoder(indent=1)
     return encoder.encode(self.json)
+
   
 class RssApiWriter(ApiWriter):
   """Output the search results as an RSS data feed."""
@@ -259,53 +359,32 @@ class RssApiWriter(ApiWriter):
                         content=result_set.last_build_date)
     self.channel = channel
     
-  def add_result(self, result):
+  def add_result(self, result, result_set = {}):
     """
     Add an <item/> stanza to the results.  The stanza will include the required
     RSS elements, plus our own namespaced elements.
     """
     def build_result_element(field_info, result):
-      """
-      sub function to map RSS elements to result attributes.
-      fieldInfo is a tuple.  
-      If len(tuple) == 1, then use the value as both the name of the XML element
-      and the attribute to query the result object on.
-      If len(tuple) >= 2, then use tuple[0] as the XML element name and
-      tuple[1] as the attribute to query.
-      And finally, if tuple[2] exists, it's a comment that should be
-      inserted into the XML before the element.
-      """
-      comment = None
-      if len(field_info) == 1:
-        name = field_info[0]
-        if hasattr(result, name):
-          try:
-            content = str(getattr(result, name))
-          except UnicodeEncodeError:
-            content = getattr(result, name).encode('ascii','ignore')
-        else:
-          content = ''
-      else:
-        name = field_info[0]
-        attr = field_info[1]
-        if hasattr(result, attr):
-          try:
-            if (name == "endDate" and
-                custom_date_format(getattr(result, attr)) == 'Present'):
-              content = ''
-            else:
-              content = str(getattr(result, attr))
-          except UnicodeEncodeError:
-            content = getattr(result, attr).encode('ascii','ignore')
-        else:
-          content = ''
-        if len(field_info) == 3:
-          #has a comment
-          comment = field_info[2]
 
-      if field_info[0] == "description":
-        content = content[:300]
-      return (name, content, comment)
+      content = ''
+      name = field_info[0]
+      if not hasattr(result, name) and len(field_info) > 1:
+        name = field_info[1]
+
+      if hasattr(result, name):
+        try:
+          content = str(getattr(result, name, ''))
+        except UnicodeEncodeError:
+          content = getattr(result, name, '').encode('ascii', 'ignore')
+
+      if name == "enddate": 
+        if custom_date_format(content) == 'Present':
+          content = ''
+        elif name == "description":
+          if result_set.args.get('fulldesc', '') != '1':
+            content = content[:300]
+
+      return (name, content, None)
     
     item = self.doc.createElement('item')
     self.channel.appendChild(item)
@@ -329,66 +408,26 @@ class RssApiWriter(ApiWriter):
       item.appendChild(subitem)
 
     #and now our namespaced fields
-    namespaced_fields = [
-      ('id', 'item_id'),
-      # groupid is a stable ID for the dedup'd set of results, 
-      #   including same listing but different time/location 
-      ('groupid', 'merge_key'),
-      ('provider',),
-      ('startDate', 'startdate'),
-      ('endDate', 'enddate'),
-      ('base_url',),
-      ('xml_url',),
-      ('url_short',),
-      ('latlong',),
-      ('location_name', 'location'),
-      ('interest_count',),
-      ('impressions',),
-      ('quality_score',),
-      ('categories', 'categories_api_str'),
-      ('skills',),
-      ('virtual',),
-      ('self_directed'),
-      ('micro'),
-      ('volunteers_needed'),
-      ('addr1', 'addr1',
-       "addr1 may change; contact core eng team before using"),
-      ('addrname1', 'addrname1',
-       "addrname1 may change; contact core eng team before using"),
-      ('sponsoringOrganizationName', 'orgName'),
-      ('openEnded',),
-      ('startTime',),
-      ('endTime',),
-      ('contactNoneNeeded',),
-      ('contactEmail',),
-      ('contactPhone',),
-      ('contactName',),
-      ('detailUrl',),
-      # TODO: make something better than weekly #
-      # TODO: make something better than biweekly #
-      # TODO: make something better than recurrence #
-      ('audienceAll',),
-      ('audienceAge',),
-      ('minAge',),
-      ('audienceSexRestricted',),
-      # TODO: sexRestrictedTo - ref policy team #
-      # TODO: make something better than commitmentHoursPerWeek #
-      ('street1',),
-      ('street2',),
-      ('city',),
-      ('region',),
-      ('postalCode',),
-      ('country',)
-    ]
-    for field in namespaced_fields:
-      (name, content, comment) = build_result_element(field, result)
-      name = self.OurNamespace + ':' + name 
+    namespaced_fields = FIELD_TUPLES
+
+    for field_info in namespaced_fields:
+      (name, content, comment) = build_result_element(field_info, result)
+      name = self.OurNamespace + ':' + API_FIELD_NAMES_MAP.get(name, name)
       if comment:
         item.appendChild(self.doc.createComment(comment))
+
       subitem = self.doc.createElement(name)
       if content:
-        text = self.doc.createTextNode(content)
-        subitem.appendChild(text)
+        if len(field_info) > 1 and isinstance(content, basestring) and content.find('\t') > 0:
+          for value in content.split('\t'):
+            subsubitem = self.doc.createElement(self.OurNamespace + ':' + field_info[1])
+            text = self.doc.createTextNode(value)
+            subsubitem.appendChild(text)
+            subitem.appendChild(subsubitem)
+        else:
+          text = self.doc.createTextNode(content)
+          subitem.appendChild(text)
+          
       item.appendChild(subitem)
       
   def finalize(self):

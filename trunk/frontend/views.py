@@ -44,7 +44,8 @@ class SHORT_NAME_SPREADSHEET:
   KEY = '0Ak1XDmmFyJT2dHRsMFVTd044Nkp5aVZJdVZzT2hrbkE'
   NAME = 'AFG.org Short to Long Names'
 
-from versioned_memcache import memcache
+#from versioned_memcache import memcache
+from google.appengine.api import memcache
 from google.appengine.api import urlfetch
 from google.appengine.api import users
 from google.appengine.ext import db
@@ -389,6 +390,7 @@ class search_view(webapp.RequestHandler):
         logging.info("dumping request");
 
       result_set = search.search(unique_args, dumping)
+
   
       # insert the interest data-- API searches are anonymous, so set the user
       # interests to 'None'.  Note: left here to avoid polluting searchresults.py
@@ -434,7 +436,8 @@ class search_view(webapp.RequestHandler):
                   len(result_set.clipped_results))
 
       for result in result_set.clipped_results:
-        writer.add_result(result)
+        writer.add_result(result, result_set)
+
       logging.info('views.search_view completed apiwriter')
 
       self.response.headers["Content-Type"] = writer.content_type
