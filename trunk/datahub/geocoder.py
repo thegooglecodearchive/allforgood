@@ -37,12 +37,17 @@ def print_debug(msg):
   if GEOCODE_DEBUG:
     print datetime.now(), msg
 
+
 def normalize_cache_key(query):
   """Simplifies the query for better matching in the cache."""
+  # tnrfv: tab, newline, carriage return, form feed, vertical tab
   query = re.sub(r'\\[tnrfv]', r' ', query)
+  # multiple spaces to single space
   query = re.sub(r'\s\s+', r' ', query)
+  # lower case, strip spaces from beginning and end
   query = query.lower().strip()
   return query
+
 
 def filter_cache_delimiters(s):
   for delim in (r'\n', r'\|', r';'):
@@ -127,9 +132,12 @@ def geocode_call(query, retries=4):
     print_debug("geocoder retry limit exceeded")
     return False
 
-  #print_debug("geocoding '" + query + "'...")
-
-  params = urllib.urlencode({'q':query, 'output':'xml','oe':'utf8', 'sensor':'false', 'clientID':CLIENT_ID})
+  params = urllib.urlencode({'q' : query, 
+                             'output' : 'xml',
+                             'oe' : 'utf8', 
+                             'gl' : 'us', 
+                             'sensor' : 'false', 
+                             'clientID' : CLIENT_ID})
   try:
     maps_fh = urllib2.urlopen("http://maps.google.com/maps/geo?%s" % params)
     res = maps_fh.read()
@@ -148,21 +156,25 @@ def geocode_call(query, retries=4):
     if respcode == "":
       #print_debug("unparseable response: "+res)
       return False
+
   respcode = int(respcode)
   if respcode in (400, 601, 602, 603):  # problem with the query
     return None
+
   if respcode in (403, 500, 620):  # problem with the server
     print_debug("geocode_call: Connection problem or quota exceeded.  Sleeping...")
     if retries == 4:
       xmlh.print_progress("geocoder: %d" % respcode, "", SHOW_PROGRESS)
     time.sleep(5)
     return geocode_call(query, retries - 1)
+
   if respcode != 200:
     return False
 
   # TODO(danyq): if the query is a lat/lng, find the city-level
   # address, not just the first one.
   addr = xmlh.get_tag_val(node, "address")
+
   # TODO(danyq): Return street/city/country fields separately so that
   # the frontend can decide what to display.  For now, this hack just
   # removes "USA" from all addresses.
@@ -170,11 +182,13 @@ def geocode_call(query, retries=4):
   coords = xmlh.get_tag_val(node, "coordinates")
   if coords == "":
     coords = "0.0,0.0,0"
+
   # Note the order: maps API returns "longitude,latitude,altitude"
   lng, lat = coords.split(",")[:2]
   accuracy = xmlh.get_tag_attr(node, "AddressDetails", "Accuracy")
   if accuracy == "":
     accuracy = "0"
+
   return (addr, lat, lng, accuracy)
 
 

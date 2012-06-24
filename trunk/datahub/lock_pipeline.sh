@@ -1,6 +1,13 @@
 #!/bin/sh
 :
 #set -x
+NODE=`uname -n`
+if [ $NODE = "li169-139" ]
+then
+	OTHER="li67-22"
+else
+	OTHER="li169-139"
+fi
 
 DIR=/home/footprint/allforgood-read-only/datahub
 DASHBOARD_DIR=/home/footprint/public_html/dashboard
@@ -27,6 +34,7 @@ then
 		./download.sh
 		./asciify.sh
 		./spreadsheets/run.php
+		scp -qr spreadsheets/sent footprint@$OTHER.members.linode.com:`pwd`/spreadsheets
 		./notify_michael.sh download complete 
 		# clear previous processing
 		rm -f *.transformed
@@ -90,7 +98,8 @@ then
                 do
                         NAME=`basename $FILE`
                         CFILE="current/$NAME"
-                        if [ ! -s $CFILE ]  
+			IS1800=`echo $FILE | grep handsonnetwork1800 | wc -l`
+                        if [ ! -s $CFILE -o $IS1800 -gt 0 ]  
                         then
                                 cp $FILE $CFILE
                         else
@@ -101,13 +110,13 @@ then
 					OLDSZ=$NEWSZ
 				fi
                                 RATIO=`echo "100 * $NEWSZ / $OLDSZ" | bc`
-                                if [ $RATIO -lt 70 ]
+				NOW=`date +'%s'`
+				MDT=`stat --printf='%Y' $CFILE`
+				DAYS=`echo "($NOW - $MDT) / 86400" | bc`
+                                if [ $DAYS -lt 3 -a $RATIO -lt 70 -a $OLDSZ -gt 16384 ]
                                 then
-					if [ $OLDSZ -gt 16384 ]
-					then
-                                        	./notify_team.sh "manually check $FILE, using last results"
-	                                        echo "manually check $FILE, using last results"
-					fi
+                                       	./notify_team.sh "manually check $FILE, using last results"
+                                        echo "manually check $FILE, using last results"
 				else
                                 	cp $FILE $CFILE
                                 fi

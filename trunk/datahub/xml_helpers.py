@@ -27,6 +27,8 @@ import time
 
 
 import utf8
+RECORD_DELIMITER = '\n'
+FIELD_LIST_DELIMITER = '|'
 
 # asah: I give up, allowing UTF-8 is just too hard without incurring
 # crazy performance penalties
@@ -104,36 +106,44 @@ def get_tag_val(entity, tag):
   #print "----------------------------------------"
   if not entity:
     return ""
+
   try:
     nodes = entity.getElementsByTagName(tag)
   except:
     return ""
   
-  if (nodes.length == 0):
+  if not nodes or nodes.length < 1:
     return ""
   
-  if (nodes[0] == None):
+  if not nodes[0]:
     return ""
 
-  if (nodes[0].firstChild == None):
+  if not nodes[0].firstChild:
     return ""
 
   try:
-    if (nodes[0].firstChild.data == None):
+    if not nodes[0].firstChild.data:
       return ""
   except:
     return ""
 
   outstr = ""
-  for node in nodes[0].childNodes:
-    if node.nodeType == node.TEXT_NODE:
-      outstr += xml.sax.saxutils.unescape(node.data.strip()).encode('UTF-8')
-    elif node.nodeType == node.CDATA_SECTION_NODE:
-      outstr += node.data.strip().encode('UTF-8')
-  #outstr = re.sub(r'\n', r'\\n', outstr)
-  outstr = re.sub(r'\n', ' ', outstr)
+  for node in nodes:
+    for child_node in node.childNodes:
+      value = ''
+      if child_node.nodeType == child_node.TEXT_NODE:
+        value = xml.sax.saxutils.unescape(child_node.data.strip()).encode('UTF-8')
+      elif child_node.nodeType == child_node.CDATA_SECTION_NODE:
+        value = child_node.data.strip().encode('UTF-8')
+      if value:
+        value = value.replace(RECORD_DELIMITER, ' ')
+        outstr += FIELD_LIST_DELIMITER if len(outstr) > 0 else ''
+        outstr += value
+  
   outstr = "".join(i for i in outstr if ord(i)<128 and ord(i)>31)
+
   return outstr
+
 
 def get_tag_attr(entity, tag, attribute):
   """Finds the first element named (tag) and returns the named
@@ -189,30 +199,34 @@ def validate_xml(xmldoc, known_elnames):
 POD_SAID = {}
 def parse_or_die(instr):
   xmldoc = None
+  global POD_SAID
 
   try:
     xmldoc = minidom.parseString(instr)
   except xml.parsers.expat.ExpatError, err:
-    say = str(datetime.now()) + "XML parsing error on line " + str(err.lineno)
+    say = "XML parsing error on line " + str(err.lineno)
     say += ":" + str(xml.parsers.expat.ErrorString(err.code))
     say += " (column " + str(err.offset) + ")"
     if say not in POD_SAID:
       POD_SAID[say] = 1
-      print say
+      print str(datetime.now()) + say
 
       lines = instr.split("\n")
       for i in range(err.lineno - 3, err.lineno + 3):
         if i >= 0 and i < len(lines):
-          say = "%6d %s" % (i+1, lines[i])
+          say = "%6d %s" % (i + 1, lines[i + 1])
           if len(lines) > 1:
             say += "and " + str(len(lines)) + ' more...'
           if say not in POD_SAID:
             POD_SAID[say] = 1
-            print say
+            print str(datetime.now()) + say
           break
 
   if not xmldoc:
-    print "trying CDATA detailURL..."
+    say = "trying CDATA detailURL..."
+    if say not in POD_SAID:
+      POD_SAID[say] = 1
+      print say
     instr = instr.replace('<detailURL>', '<detailURL><![CDATA[').replace('</detailURL>', ']]></detailURL>')
     try:
       xmldoc = minidom.parseString(instr)
@@ -220,7 +234,10 @@ def parse_or_die(instr):
       pass
 
   if not xmldoc:
-    print "trying CDATA description..."
+    say = "trying CDATA description..."
+    if say not in POD_SAID:
+      POD_SAID[say] = 1
+      print say
     instr = instr.replace('<description>', '<description><![CDATA[').replace('</description>', ']]></description>')
     try:
       xmldoc = minidom.parseString(instr)
@@ -228,7 +245,10 @@ def parse_or_die(instr):
       pass
 
   if not xmldoc:
-    print "trying CDATA title..."
+    say = "trying CDATA title..."
+    if say not in POD_SAID:
+      POD_SAID[say] = 1
+      print say
     instr = instr.replace('<title>', '<title><![CDATA[').replace('</title>', ']]></title>')
     try:
       xmldoc = minidom.parseString(instr)
@@ -236,7 +256,10 @@ def parse_or_die(instr):
       pass
 
   if not xmldoc:
-    print "trying CDATA city..."
+    say = "trying CDATA city..."
+    if say not in POD_SAID:
+      POD_SAID[say] = 1
+      print say
     instr = instr.replace('<city>', '<city><![CDATA[').replace('</city>', ']]></city>')
     try:
       xmldoc = minidom.parseString(instr)
@@ -244,7 +267,10 @@ def parse_or_die(instr):
       pass
 
   if not xmldoc:
-    print "trying CDATA region..."
+    say = "trying CDATA region..."
+    if say not in POD_SAID:
+      POD_SAID[say] = 1
+      print say
     instr = instr.replace('<region>', '<region><![CDATA[').replace('</region>', ']]></region>')
     try:
       xmldoc = minidom.parseString(instr)
@@ -252,7 +278,10 @@ def parse_or_die(instr):
       pass
 
   if not xmldoc:
-    print "trying anyway ..."
+    say = "trying anyway..."
+    if say not in POD_SAID:
+      POD_SAID[say] = 1
+      print say
     from BeautifulSoup import BeautifulStoneSoup
     try:
       xmldoc = BeautifulStoneSoup(instr)

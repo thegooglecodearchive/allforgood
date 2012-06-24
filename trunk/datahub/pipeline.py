@@ -467,15 +467,10 @@ def run_pipeline(name, url, do_processing=True, do_ftp=True):
     print_progress("Warning: TSV file is empty.")
     return
 
-  #print "processing field stats..."
-  #process_field_stats(tsv_data)
-
-  #print "processing popular words..."
-  #process_popular_words(tsv_data)
-
-  if OPTIONS.use_solr:
-    #print_progress('creating Solr tsv file')
-    create_solr_TSV(name+'1', start_time, feed_file_size)
+  #if OPTIONS.use_solr:
+  #  #print_progress('creating Solr tsv file')
+  #  create_solr_TSV(name+'1', start_time, feed_file_size)
+  create_solr_TSV(name+'1', start_time, feed_file_size)
 
 
 def test_loaders():
@@ -550,6 +545,11 @@ def loaders():
   if not FILENAMES or "diy" in FILENAMES:
     run_pipeline("diy", "diy.tsv")
 
+  if FILENAMES:
+    for file in FILENAMES:
+      if re.search('updateHON', file):
+        run_pipeline("updateHON", file)
+
   # requires special crawling
   if not FILENAMES or "gspreadsheets" in FILENAMES:
     run_pipeline("gspreadsheets",
@@ -613,72 +613,7 @@ def ftp_to_base(filename, ftpinfo, instr):
 
   
 # row dictionary reference
-"""
-rows
-{'c:self_directed:boolean': 'False', 
- 'event_date_range': '2010-06-11T00:00:00/2011-06-30T00:00:00', 
- 'c:volunteersSlots:integer': '', 
- 'c:feed_createdDateTime:dateTime': '2011-06-20T17:17:25', 
- 'c:providerURL:URL': '', 
- 'c:commitmentHoursPerWeek:string': '', 
- 'c:duration:string': '', 
- 'c:lastUpdated:dateTime': '2011-04-13T00:00:00', 
- 'c:contactName:string': '', 
- 'c:contactEmail:string': '', 
- 'image_link': '', 
- 'c:location_string:string': 'Waterloo;; IA 50704', 
- 'c:skills:string': '', 
- 'c:sexRestrictedTo:string': '', 
- 'c:feed_description:string': 'HandsOn Network', 
- 'c:randomsalt:float': '0.395241629379', 
- 'c:eventrangeend:dateTime': '2011-06-30T00:00:00', 
- 'c:virtual:boolean': 'False', 
- 'c:org_fax:string': '', 
- 'id': '947073c82b818ec7e76408b49bc8b7d1', 
- 'c:categories:string': 'Vetted', 
- 'c:detailURL:URL': 'http://www.1-800-volunteer.org/1800Vol/LoadOpportunityReview.do?opportunityId=4477', 
- 'c:orgLocation:string': '', 
- 'c:opportunityID:string': '', 
- 'title': 'Patient/Family Volunteer', 
- 'c:org_guidestarID:string': '', 
- 'c:volunteersNeeded:integer': '15', 
- 'c:organizationID:string': '', 
- 'c:longitude:float': '907.6574', 
- 'c:org_email:string': '', 
- 'c:employer:string': 'Cedar Valley Hospice', 
- 'location': '', 
- 'c:micro:boolean': 'False', 
- 'c:org_name:string': 'Cedar Valley Hospice', 
- 'c:minimumAge:integer': '18', 
- 'c:provider_proper_name:string': 'HandsOn Network', 
- 'c:org_phone:string': '319-272-2002', 
- 'c:language:string': '', 
- 'c:org_nationalEIN:string': '', 
- 'c:feed_providerName:string': 'handsonnetwork', 
- 'description': 'Cedar Valley Hospice is looking for compassionate people to ... ', 
- 'c:feedID:string': 'handsonnetwork', 
- 'c:eventrangestart:dateTime': '2010-06-11T00:00:00', 
- 'c:openended:boolean': 'False', 
- 'c:endTime:integer': '0000', 
- 'c:ical_recurrence:string': '', 
- 'c:org_providerURL:URL': '', 
- 'c:latitude:float': '1042.4929', 
- 'c:org_logoURL:URL': '', 
- 'c:org_missionStatement:string': '', 
- 'c:abstract:string': 'Cedar Valley Hospice is looking for compassionate people to ... ', 
- 'c:expires:dateTime': '2011-06-27T17:19:13', 
- 'c:feed_providerURL:URL': 'http://handsonnetwork.org/', 
- 'c:venue_name:string': '', 
- 'c:paid:boolean': 'n', 
- 'c:audiences:string': '', 
- 'c:org_organizationURL:URL': 'http://www.cvhospice.org', 
- 'c:org_description:string': 'Cedar Valley Hospice is committed to ...', 
- 'c:volunteersFilled:integer': '', 
- 'c:feed_providerID:string': '102', 
- 'c:startTime:integer': '0000', 
- 'c:contactPhone:string': '', 
- 'quantity': '15'}
-"""
+# see rowdictionaryreference.txt
 
 def solr_retransform(fname, start_time, feed_file_size):
   """Create Solr-compatible versions of a datafile"""
@@ -691,6 +626,7 @@ def solr_retransform(fname, start_time, feed_file_size):
     csv_reader = DictReader(data_file, dialect='our-dialect')
     csv_reader.next()
   except:
+    print data_file.read()
     print_progress("error processing %s" % str(fname))
     return
 
@@ -732,14 +668,15 @@ def solr_retransform(fname, start_time, feed_file_size):
     if rows["event_date_range"]:
       split_date_range = rows["event_date_range"].split('/')
 
-    rows["c:eventrangestart:dateTime"] = split_date_range[0]
-    if len(split_date_range) > 1:
-      rows["c:eventrangeend:dateTime"] = split_date_range[1]
-    else:
-      if rows["c:openended:boolean"] == "Yes":
-        rows["c:eventrangeend:dateTime"] = rows["c:expires:dateTime"]
+    if split_date_range:
+      rows["c:eventrangestart:dateTime"] = split_date_range[0]
+      if len(split_date_range) > 1:
+        rows["c:eventrangeend:dateTime"] = split_date_range[1]
       else:
-        rows["c:eventrangeend:dateTime"] = rows["c:eventrangestart:dateTime"]
+        if rows["c:openended:boolean"] == "Yes":
+          rows["c:eventrangeend:dateTime"] = rows["c:expires:dateTime"]
+        else:
+          rows["c:eventrangeend:dateTime"] = rows["c:eventrangestart:dateTime"]
 
     # in case we somehow got here without already doing this
     rows["title"] = footprint_lib.cleanse_snippet(rows["title"])
@@ -768,14 +705,14 @@ def solr_retransform(fname, start_time, feed_file_size):
                                                rows["title"],
                                                rows["description"],
                                                rows["c:provider_proper_name:string"],
-                                               rows["c:skills:string"],
+                                               rows.get("c:skills:string", rows.get("c:skill:string", '')),
                                                rows["c:org_name:string"],
                                                rows["c:categories:string"],
                                                ]))
 
     for key in rows.keys():
       # Fix to the "double semicolons instead of commas" Base hack.
-      rows[key] = rows[key].replace(';;', ',')
+      #rows[key] = rows[key].replace(';;', ',')
 
       if key.find(':dateTime') != -1:
         if rows[key].find(':') > 0:
@@ -921,6 +858,10 @@ def create_solr_TSV(filename, start_time, feed_file_size):
 
 def main():
   """ program starts here """
+  #solr_filename = create_solr_TSV('handsonnetworkconnect1', datetime.now(), 6563535)
+  #sys.exit(0)
+  
+                                                                                                  
   get_options()
 
   if OPTIONS.test_mode:
