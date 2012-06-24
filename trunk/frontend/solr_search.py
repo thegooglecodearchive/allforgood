@@ -199,8 +199,10 @@ def form_solr_query(args):
     max_dist = float(args[api.PARAM_VOL_DIST])
   
   
-  geo_params = ('{!spatial lat=' + str(lat) + ' long=' + str(lng) 
-                + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,150,10)^1}')
+  #geo_params = ('{!spatial lat=' + str(lat) + ' long=' + str(lng) 
+  #              + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,150,10)^1}')
+
+  geo_params = '{!geofilt}&pt=%s,%s&sfield=latlong&d=%s' % (str(lat), str(lng), str(max_dist * 1.609))
 
   global GEO_GLOBAL
   GEO_GLOBAL = urllib.quote_plus(geo_params)
@@ -253,7 +255,7 @@ def form_solr_query(args):
   global KEYWORD_GLOBAL, STATEWIDE_GLOBAL, NATIONWIDE_GLOBAL
   KEYWORD_GLOBAL = urllib.quote_plus(solr_query)
   STATEWIDE_GLOBAL, NATIONWIDE_GLOBAL = geocode.get_statewide(lat, lng)
-  solr_query = geo_params + solr_query
+  #solr_query = geo_params + solr_query
   solr_query = urllib.quote_plus(solr_query)
   
   if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
@@ -275,6 +277,8 @@ def form_solr_query(args):
     #if not args['is_report']:
     #fq += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
     solr_query += fq
+
+  solr_query += '&fq=' + geo_params
     
   global FULL_QUERY_GLOBAL
   FULL_QUERY_GLOBAL = solr_query
