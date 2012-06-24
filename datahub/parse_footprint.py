@@ -28,25 +28,53 @@ DEFAULT_EXPIRATION = (90 * 86400)
 # 10 years
 DEFAULT_DURATION = (10 * 365 * 86400)
 
-KNOWN_ELNAMES = [
+KNOWN_ELEMENTS = [
   'FeedInfo', 'FootprintFeed', 'Organization', 'Organizations',
-  'VolunteerOpportunities', 'VolunteerOpportunity', 'abstract', 'audienceTag',
-  'audienceTags', 'categoryTag', 'categoryTags', 'city',
-  'commitmentHoursPerWeek', 'contactEmail', 'contactName', 'contactPhone',
-  'country', 'createdDateTime', 'dateTimeDuration', 'dateTimeDurationType',
-  'dateTimeDurations', 'description', 'detailURL', 'directions', 'donateURL',
-  'duration', 'email', 'endDate', 'endTime', 'expires', 'fax', 'feedID',
-  'guidestarID', 'iCalRecurrence', 'language', 'latitude', 'lastUpdated',
-  'location', 'locationType', 'locations', 'logoURL', 'longitude', 'minimumAge',
-  'missionStatement', 'name', 'nationalEIN', 'openEnded', 'organizationID',
-  'organizationURL', 'paid', 'phone', 'postalCode', 'providerID', 'self_directed',
-  'providerName', 'providerURL', 'region', 'schemaVersion', 'sexRestrictedEnum',
-  'sexRestrictedTo', 'skills', 'sponsoringOrganizationID', 'startDate',
-  'startTime', 'streetAddress1', 'streetAddress2', 'streetAddress3', 'title',
-  'tzOlsonPath', 'virtual', 'volunteerHubOrganizationID',
-  'volunteerOpportunityID', 'volunteersFilled', 'volunteersSlots',
-  'volunteersNeeded', 'yesNoEnum'
-  ]
+  'VolunteerOpportunities', 'VolunteerOpportunity', 'abstract',
+  'city', 'commitmentHoursPerWeek', 'contactEmail', 'contactName',
+  'contactPhone', 'country', 'createdDateTime', 'dateTimeDuration',
+  'dateTimeDurationType', 'dateTimeDurations', 'description',
+  'detailURL', 'directions', 'donateURL', 'duration', 'email',
+  'endDate', 'endTime', 'expires', 'fax', 'feedID', 'guidestarID',
+  'iCalRecurrence', 'language', 'latitude', 'lastUpdated', 'location',
+  'locationType', 'locations', 'logoURL', 'longitude', 'minimumAge',
+  'missionStatement', 'name', 'nationalEIN', 'openEnded',
+  'organizationID', 'organizationURL', 'paid', 'phone', 'postalCode',
+  'providerID', 'providerName', 'providerURL', 'region',
+  'schemaVersion', 'self_directed', 'sexRestrictedEnum', 'sexRestrictedTo', 
+  'sponsoringOrganizationID', 'startDate', 'startTime', 'streetAddress1',
+  'streetAddress2', 'streetAddress3', 'title', 'tzOlsonPath', 'virtual',
+  'volunteerHubOrganizationID', 'volunteerOpportunityID',
+  'volunteersFilled', 'volunteersSlots', 'volunteersNeeded', 'yesNoEnum',
+
+  # HON 2012/05/24
+  # http://www.avviato.net/afg/spec0.1.r1254_Sugested05242012.html
+  'scheduleType', 
+  'activityType', 
+  'populations', 'population', 
+  'invitationCode', 
+  'managedBy', 
+  'opportunityType', 
+  'registerType', 
+  'affiliateId', 
+  'isDisaster', 
+  'frecuencyLink', 
+  'frequencyLink', 
+
+  'appropriateFors', 'appropriateFor', 
+  'audienceTags', 'audienceTag', 
+  'availabilityDays', 'dayWeek', 
+  'skills', 'skill',
+  'categoryTag', 'categoryTags',
+
+  'eventId', 
+  'eventName', 
+  'occurrenceId', 
+  'occurrenceDuration', 
+  'hubOrganizationUrl', 
+  'hubOrganizationName', 
+
+]
 
 def set_default_time_elem(parent, entity, tagname, timest=xmlh.current_ts()):
   """footprint macro."""
@@ -63,7 +91,7 @@ def parse_fast(instr, maxrecs, progress):
   # note: processes Organizations first, so ID lookups work
   for match in re.finditer(re.compile('<FeedInfo>.+?</FeedInfo>',
                                       re.DOTALL), instr):
-    node = xmlh.simple_parser(match.group(0), KNOWN_ELNAMES, False)
+    node = xmlh.simple_parser(match.group(0), KNOWN_ELEMENTS, False)
     xmlh.set_default_value(node, node.firstChild, "feedID", "0")
     set_default_time_elem(node, node.firstChild, "createdDateTime")
     outstr_list.append(xmlh.prettyxml(node, True))
@@ -71,7 +99,7 @@ def parse_fast(instr, maxrecs, progress):
   outstr_list.append('<Organizations>')
   for match in re.finditer(re.compile('<Organization>.+?</Organization>',
                                       re.DOTALL), instr):
-    node = xmlh.simple_parser(match.group(0), KNOWN_ELNAMES, False)
+    node = xmlh.simple_parser(match.group(0), KNOWN_ELEMENTS, False)
     numorgs += 1
     outstr_list.append(xmlh.prettyxml(node, True))
   outstr_list.append('</Organizations>')
@@ -79,7 +107,7 @@ def parse_fast(instr, maxrecs, progress):
   outstr_list.append('<VolunteerOpportunities>')
   for match in re.finditer(re.compile(
       '<VolunteerOpportunity>.+?</VolunteerOpportunity>', re.DOTALL), instr):
-    opp = xmlh.simple_parser(match.group(0), KNOWN_ELNAMES, False)
+    opp = xmlh.simple_parser(match.group(0), KNOWN_ELEMENTS, False)
 
     numopps += 1
     if (maxrecs > 0 and numopps > maxrecs):
@@ -144,7 +172,7 @@ def parse(instr, maxrecs, progress):
   # parsing footprint format is the identity operation
   if progress:
     print datetime.now(), "parse_footprint: parsing ", len(instr), " bytes."
-  xmldoc = xmlh.simple_parser(instr, KNOWN_ELNAMES, progress)
+  xmldoc = xmlh.simple_parser(instr, KNOWN_ELEMENTS, progress)
   if progress:
     print datetime.now(), "parse_footprint: done parsing."
   return xmldoc

@@ -22,6 +22,7 @@ import gzip
 import hashlib
 import urllib2
 import re
+import random
 import htmlentitydefs
 import xml.sax.saxutils as saxutils
 import json
@@ -54,6 +55,8 @@ import check_links
 import utf8
 
 from taggers import get_taggers, XMLRecord
+from spreadsheets.process import sheet_list
+from directfields import DIRECT_FIELDS
 
 FIELDSEP = "\t"
 RECORDSEP = "\n"
@@ -78,6 +81,8 @@ FEED = ''
 FEEDSDIR = 'feeds'
 DUPDIR = 'dups' 
 
+IGNORE_DUPLICATES = False
+
 
 # set a nice long timeout
 import socket
@@ -92,35 +97,6 @@ LOCATIONLESS_LAT = LOCATIONLESS_LNG = "0"
 LOCATIONLESS_LATLNG = LOCATIONLESS_LAT + "," + LOCATIONLESS_LNG
 
 HEADER_ALREADY_OUTPUT = False
-
-#BASE_PUB_URL = "http://change.gov/"
-#BASE_PUB_URL = "http://adamsah.net/"
-
-SEARCHFIELDS = {
-  # required
-  "description":"builtin",
-  "event_date_range":"builtin",
-  "link":"builtin",
-  "location":"builtin",
-  "title":"builtin",
-  # needed for search restricts
-  "latitude":"float",
-  "longitude":"float",
-  "virtual":"boolean",
-  "self_directed":"boolean",
-  "micro":"boolean",
-  "is_501c3":"boolean",
-  # needed for query by time-of-day
-  "startTime":"integer",
-  "endTime":"integer",
-  # needed for basic search results
-  "id":"builtin",
-  "detailURL":"URL",
-  "abstract":"string",
-  "location_string":"string",
-  "feed_providerName":"string",
-  "provider_proper_name":"string",
-}  
 
 FIELDTYPES = {
   "title":"builtin",
@@ -146,6 +122,9 @@ FIELDTYPES = {
 
   "latitude":"float",
   "longitude":"float",
+  "latlong":"string",
+  #"location_0_coordinate":"float",
+  #"location_1_coordinate":"float",
   "virtual":"boolean",
   "self_directed":"boolean",
   "micro":"boolean",
@@ -162,12 +141,9 @@ FIELDTYPES = {
   "expires":"dateTime",
   "feed_createdDateTime":"dateTime",
 
-  # note: type "location" isn"t safe because the Base geocoder can fail,
-  # causing the record to be rejected
   "duration":"string",
   "abstract":"string",
   "sexRestrictedTo":"string",
-  "skills":"string",
   "contactName":"string",
   "contactPhone":"string",
   "contactEmail":"string",
@@ -178,7 +154,6 @@ FIELDTYPES = {
   "org_phone":"string",
   "org_fax":"string",
   "org_email":"string",
-  "categories":"string",
   "audiences":"string",
   "commitmentHoursPerWeek":"string",
   "employer":"string",
@@ -188,10 +163,12 @@ FIELDTYPES = {
   "feed_providerID":"string",
   "feedID":"string",
   "volunteerOpportunityID":"string",
-  "opportunityID":"string",
+  "OpportunityID":"string",
+  "occurrenceId":"string",
   "organizationID":"string",
   "sponsoringOrganizationID":"strng",
   "volunteerHubOrganizationID":"string",
+  "volunteerAffiliateOrganizationID":"string",
   "org_nationalEIN":"string",
   "org_guidestarID":"string",
   "venue_name":"string",
@@ -205,10 +182,63 @@ FIELDTYPES = {
   "nationwide":"string",
 
   "location_string":"string",
+  "given_location":"string",
   "orgLocation":"string",
   "provider_proper_name":"string",
+
+  # HON 2012/05/24
+  # http://www.avviato.net/afg/spec0.1.r1254_Sugested05242012.html
+  "scheduleType":"string",
+  "activityType":"string",
+  "population":"string",
+  "invitationCode":"string",
+  "managedBy":"string",
+  "registerType":"string",
+
+  "volunteerHubOrganizationURL" : "string",
+  "volunteerHubOrganizationName" : "string",
+
+  "affiliateOrganizationURL" : "string",
+  "affiliateOrganizationName" : "string",
+  "affiliateOrganizationID" : "string",
+
+  "eventId":"string",
+  "eventName":"string",
+
+  "occurrenceDuration":"string",
+  "occurrenceId":"string",
+
+  "isDisaster":"string",
+  "opportunityType":"string",
+  "frecuencyLink":"string",
+  "frequencyLink":"string",
+  "frequencyURL":"string",
+  "frequency":"string",
+  "appropriateFors":"string", "appropriateFor":"string",
+  "audienceTags":"string", "audienceTag":"string",
+  "categories":"string",
+  "categoryTags":"string", "categoryTag":"string",
+  "populations":"string", "population":"string",
+  "availabilityDays":"string", "dayWeek":"string",
+  "skills":"string", "skill":"string",
 }
 
+ORGANIZATION_FIELDS = [                                                                                  
+  'nationalEIN', 'guidestarID', 'name', 'missionStatement', 'description',                               
+  'phone', 'fax', 'email', 'organizationURL', 'logoURL', 'providerURL',                                  
+]                                                                                                        
+                                                                                                         
+MAPPED_FIELDS = {
+  'rsvpCount' : 'volunteersFilled' , 
+  'volunteersNeeded' : 'volunteersSlots',
+  'appropriateFor' : 'appropriateFors',
+  'audienceTag' : 'audienceTags',
+  'categoryTag' : 'categoryTags',
+  'dayWeek' : 'availabilityDays',
+  'population' : 'populations',
+  'skill' : 'skills',
+}
+                                                                                                         
 def print_progress(msg, filename="", progress=None):
   """print progress indicator."""
   # not allowed to say progress=PROGRESS as a default arg
@@ -256,44 +286,26 @@ def convert_dt_to_gbase(datestr, timestr, timezone):
 
   return dflt
 
-CSV_REPEATED_FIELDS = ['categories', 'audiences']
-DIRECT_MAP_FIELDS = [
-  'opportunityID', 'organizationID', 'volunteersSlots', 'volunteersFilled',
-  'volunteersNeeded', 'minimumAge', 'sexRestrictedTo', 'skills', 'contactName',
-  'contactPhone', 'contactEmail', 'providerURL', 'language', 'lastUpdated',
-  'expires']
-ORGANIZATION_FIELDS = [
-  'nationalEIN', 'guidestarID', 'name', 'missionStatement', 'description',
-  'phone', 'fax', 'email', 'organizationURL', 'logoURL', 'providerURL']
-
-def flattener_value(node):
-  """return a DOM node's first child, sans commas"""
-  if (node.firstChild != None):
-    return node.firstChild.data.replace(",", "")
-  else:
-    return ""
-
-def flatten_to_csv(nodelist):
-  """prints a list of DOM nodes as CSV separated strings"""
-  # pylint: disable-msg=W0141
-  return ",".join(filter(lambda x: x != "",
-                         map(flattener_value, nodelist)))
 
 def output_field(name, given_value):
   """print a field value, handling long strings, header lines and
   custom datatypes."""
+  global FIELDTYPES
 
   if name not in FIELDTYPES:
-    print datetime.now(), "no type for field? " + name 
-    return name
+    print datetime.now(), "no type for field? " + name + " (assuming string)"
+    #return name
+    FIELDTYPES[name] = 'string'
+    if PRINTHEAD:
+      return name + ":string"
     
   if PRINTHEAD:
-    if FIELDTYPES[name] == "builtin":
+    if FIELDTYPES.get(name, 'string') == "builtin":
       return name
     elif OUTPUTFMT == "basetsv":
-      return "c:"+name+":"+FIELDTYPES[name]
+      return "c:"+name+":"+FIELDTYPES.get(name, 'string')
     else:
-      return name+":"+FIELDTYPES[name]
+      return name+":"+FIELDTYPES.get(name, 'string')
 
   value = given_value
 
@@ -325,12 +337,13 @@ def output_field(name, given_value):
     value = re.sub(r'(?i)nationalservice\.org', 'nationalservice.gov', value)
     print_progress("replaced nationalservice")
     
-  if OUTPUTFMT == "basetsv":
-    value = re.sub(r',', ';;', value)
+  #if OUTPUTFMT == "basetsv":
+  #  value = re.sub(r',', ';;', value)
 
-  if (FIELDTYPES[name] == "dateTime"):
+  if (FIELDTYPES.get(name, 'string') == "dateTime"):
     return convert_dt_to_gbase(value, "", "UTC")
 
+  value = value.replace('\n', ' ')
   return value
 
 
@@ -341,15 +354,17 @@ def get_addr_field(node, field):
     addr += " "
   return addr
 
+
 def get_city_addr_str(node):
   """synthesize a city-region-postal-country string."""
-  # note: avoid commas, so it works with CSV
+  # note: avoid commas, so it works with csv
   loc = ""
   loc += get_addr_field(node, "city")
   loc += get_addr_field(node, "region")
   loc += get_addr_field(node, "postalCode")
   loc += get_addr_field(node, "country")
   return loc
+
 
 def get_street_addr_str(node):
   """concatenate street address fields"""
@@ -508,6 +523,8 @@ def feed_report(id, detail, feed = None, link = None):
 
 def duplicate_opp(opp, loc_str, startend):
   rtn = False
+  if IGNORE_DUPLICATES:
+    return rtn
   title = get_title(opp).lower()
   abstract = get_abstract(opp).lower()
   #dedup_str = "".join([title, desc, detailURL, loc_str, startend])
@@ -583,7 +600,7 @@ def get_501c3_status(ein):
   return rtn
 
 
-def get_direct_mapped_fields(opp, org, feed_providerName):
+def get_direct_mapped_fields(opp, orgs, feed_providerName):
   """map a field directly from FPXML to Google Base."""
   outstr = output_field("abstract", get_abstract(opp))
 
@@ -611,15 +628,15 @@ def get_direct_mapped_fields(opp, org, feed_providerName):
   detailURL = xmlh.get_tag_val(opp, "detailURL")
   outstr += FIELDSEP + output_field("detailURL", detailURL)
 
-  for field in DIRECT_MAP_FIELDS:
-    if field == 'opportunityID':
+  for field in DIRECT_FIELDS:
+    if field == 'OpportunityID':
       if PRINTHEAD:
         outstr += FIELDSEP + output_tag_value(opp, field)
       else:
         opp_id = xmlh.get_tag_val(opp, "volunteerOpportunityID")
         if not opp_id:
           opp_id = 'volunteerOpportunityID'
-        outstr += FIELDSEP + output_field('opportunityID', opp_id)
+        outstr += FIELDSEP + output_field('OpportunityID', opp_id)
     elif field == "expires":
       # we need to have a expires value
       expires = xmlh.get_tag_val(opp, "expires")
@@ -627,25 +644,26 @@ def get_direct_mapped_fields(opp, org, feed_providerName):
         outstr += FIELDSEP + output_tag_value(opp, field)
       else:
         outstr += FIELDSEP + xmlh.current_ts(DEFAULT_EXPIRES)
+    elif field in MAPPED_FIELDS:
+      if PRINTHEAD:
+        outstr += FIELDSEP + output_tag_value(opp, MAPPED_FIELDS[field])
+      else:
+        value = output_tag_value(opp, field)
+        if field == 'categoryTag':
+          #print field + '=' + '"' + value + '"'
+          value = value.replace('; ', '|')
+        outstr += FIELDSEP + value
     else:
       outstr += FIELDSEP + output_tag_value(opp, field)
 
   for field in ORGANIZATION_FIELDS:
     outstr += FIELDSEP + output_field("org_"+field,
-                                       xmlh.get_tag_val(org, field))
+                                       xmlh.get_tag_val(orgs[0], field))
     if field == 'nationalEIN':
-      ein = xmlh.get_tag_val(org, field)
+      ein = xmlh.get_tag_val(orgs[0], field)
       is_501c3 = get_501c3_status(ein)
       outstr += FIELDSEP + output_field("is_501c3", is_501c3)
-
-  for field in CSV_REPEATED_FIELDS:
-    outstr += FIELDSEP
-    fieldval = opp.getElementsByTagName(field)
-    val = ""
-    if (fieldval.length > 0):
-      val = flatten_to_csv(fieldval)
-    outstr += output_field(field, val)
-
+   
   # orgLocation
   outstr += FIELDSEP
   fieldval = opp.getElementsByTagName("orgLocation")
@@ -660,7 +678,23 @@ def get_direct_mapped_fields(opp, org, feed_providerName):
   if providers.ProviderNames.has_key(feed_providerName):
     ppn = providers.ProviderNames[feed_providerName]["name"]
   outstr += output_field("provider_proper_name", str(ppn))
-     
+
+  # hubOrg
+  for fd in [{'s' : 'Name' , 'f' : 'name'}, {'s': 'URL', 'f' : 'organizationURL'}]:
+    outstr += FIELDSEP
+    if orgs[1]:
+      outstr += output_field("volunteerHubOrganization" + fd['s'], xmlh.get_tag_val(orgs[1], fd['f']))
+    elif PRINTHEAD:
+      outstr += "volunteerHubOrganization" + fd['s']
+
+  # affiliateOrg
+  for fd in [{'s' : 'Name' , 'f' : 'name'}, {'s': 'URL', 'f' : 'organizationURL'}]:
+    outstr += FIELDSEP
+    if orgs[2]:
+      outstr += output_field("affiliateOrganization" + fd['s'], xmlh.get_tag_val(orgs[2], fd['f']))
+    elif PRINTHEAD:
+      outstr += "affiliateOrganization" + fd['s']
+
   return outstr
 
 
@@ -753,21 +787,30 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
     print_progress("no opportunityID")
     return totrecs, ""
 
-  org_id = xmlh.get_tag_val(opp, "sponsoringOrganizationID")
-  if org_id not in known_orgs:
-    """
-<volunteerHubOrganizationIDs><volunteerHubOrganizationID>653</volunteerHubOrganizationID></volunteerHubOrganizationIDs>
-    """
-    maybe_org_id = xmlh.get_tag_val(opp, "volunteerHubOrganizationID")
-    if maybe_org_id not in known_orgs:
-      print_progress('unknown sponsoringOrganizationID: "' + org_id + '"  skipping opportunity ' + opp_id)
-      return totrecs, ""
-    org_id = maybe_org_id
+  sponsoring_org_id = xmlh.get_tag_val(opp, "sponsoringOrganizationID")
+  hub_org_id = xmlh.get_tag_val(opp, "volunteerHubOrganizationID")
+  if not hub_org_id:
+    hub_org_id = xmlh.get_tag_val(opp, "hubOrganizationID")
 
-  org = known_orgs[org_id]
+  if sponsoring_org_id not in known_orgs:
+    sponsoring_org_id = hub_org_id
+
+  if sponsoring_org_id not in known_orgs:
+    print_progress('unknown sponsoringOrganizationID: "' + sponsoring_org_id + '"  skipping opportunity ' + opp_id)
+    return totrecs, ""
+
+  affiliate_org_id = xmlh.get_tag_val(opp, "affiliateId")
+  if not affiliate_org_id:
+    affiliate_org_id = xmlh.get_tag_val(opp, "affiliateOrganizationID")
+
+  orgs = [known_orgs[sponsoring_org_id],
+          known_orgs.get(hub_org_id, None),
+          known_orgs.get(affiliate_org_id, None),
+         ]
+
   opp_locations = opp.getElementsByTagName("location")
   opp_times = opp.getElementsByTagName("dateTimeDuration")
-  repeated_fields = get_repeated_fields(feedinfo, opp, org)
+  repeated_fields = get_repeated_fields(feedinfo, opp, orgs)
 
   number_of_opptimes = len(opp_times)
   if number_of_opptimes == 0:
@@ -775,7 +818,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
   elif number_of_opptimes > 1:
     xmlh.processing_trace("footprint_lib.output_opportunity",
                           "unwound %g dates from %s:%s" 
-                          % (number_of_opptimes, org_id, opp_id))
+                          % (number_of_opptimes, sponsoring_org_id, opp_id))
 
   link = xmlh.get_tag_val(opp, 'detailURL')
 
@@ -816,7 +859,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
       xmlh.processing_trace("footprint_lib.output_opportunity",
                             "unwound %g locations, %g date(s) from %s:%s" 
                             % (number_of_locations, number_of_opptimes, 
-                               org_id, opp_id))
+                               sponsoring_org_id, opp_id))
 
     for opploc in opp_locations:
       # unwind multiple locations
@@ -861,6 +904,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
                                     latitude=str(float(lat)),
                                     longitude=str(float(lng)),
                                     location_string=addr,
+                                    given_location=loc_str,
                                     venue_name=xmlh.get_tag_val(opploc, "name"),
                                     city = city, county = county, state = state, 
                                     zip = zip, country = country, 
@@ -868,7 +912,7 @@ def output_opportunity(opp, feedinfo, known_orgs, totrecs):
                                     nationwide = nationwide)
 
 
-      opp_id = compute_stable_id(opp, org, loc_str, openended, 
+      opp_id = compute_stable_id(opp, orgs[0], loc_str, openended, 
                                  duration, hrs_per_week, startend)
       if duplicate_opp(opp, loc_str, startend):
         #print_progress("dedup: skipping duplicate " + opp_id)
@@ -925,12 +969,11 @@ def get_time_fields(openended, duration, hrs_per_week, event_date_range, ical_re
   time_fields += FIELDSEP + output_field("commitmentHoursPerWeek", hrs_per_week)
   return time_fields
 
-def get_loc_fields(virtual, location="", latitude="", longitude="", location_string="", venue_name="",
+def get_loc_fields(virtual, location="", latitude="", longitude="", 
+  given_location="", location_string="", venue_name="",
   city = "", county = "", state = "", zip = "", country = "US", statewide = "", nationwide = ""):
   """output location-related fields, e.g. for multiple locations per event."""
-  # note: we don't use Google Base's "location" field because it tries to
-  # geocode it (even if we pre-geocode it) then for bogus reasons, rejects
-  # around 40% of our listings-- again, even if we pre-geocode them.
+
   loc_fields = ""
   if virtual.lower() == 'yes':
     virtual_bool = "True"
@@ -942,6 +985,10 @@ def get_loc_fields(virtual, location="", latitude="", longitude="", location_str
   loc_fields += FIELDSEP + output_field("latitude", latitude)
   loc_fields += FIELDSEP + output_field("longitude", longitude)
   loc_fields += FIELDSEP + output_field("location_string", location_string)
+  loc_fields += FIELDSEP + output_field('latlong', str(latitude) + ',' + str(longitude))
+  #loc_fields += FIELDSEP + output_field("location_0_coordinate", str(latitude))
+  #loc_fields += FIELDSEP + output_field("location_1_coordinate", str(longitude))
+  loc_fields += FIELDSEP + output_field("given_location", given_location)
   loc_fields += FIELDSEP + output_field("venue_name", venue_name)
 
   L = [ {'field' : 'city', 'value': city.lower()},
@@ -970,16 +1017,17 @@ def get_loc_fields(virtual, location="", latitude="", longitude="", location_str
   return loc_fields
 
 
-def get_repeated_fields(feedinfo, opp, org):
+def get_repeated_fields(feedinfo, opp, orgs):
   """output all fields that are repeated for each time and location."""
   rsp, feed_providerName = get_feed_fields(feedinfo)
   repeated_fields = FIELDSEP + rsp
   repeated_fields += FIELDSEP + get_event_reqd_fields(opp)
-  repeated_fields += FIELDSEP + get_base_other_fields(opp, org)
-  repeated_fields += FIELDSEP + get_direct_mapped_fields(opp, org, feed_providerName)
+  repeated_fields += FIELDSEP + get_base_other_fields(opp, orgs[0])
+  repeated_fields += FIELDSEP + get_direct_mapped_fields(opp, orgs, feed_providerName)
   return repeated_fields
 
-def output_header(feedinfo, opp, org):
+
+def output_header(feedinfo, opp, orgs):
   """fake opportunity printer, which prints the header line instead."""
   global PRINTHEAD, HEADER_ALREADY_OUTPUT
   # no matter what, only print the header once!
@@ -988,11 +1036,12 @@ def output_header(feedinfo, opp, org):
   HEADER_ALREADY_OUTPUT = True
   PRINTHEAD = True
   outstr = output_field("id", "")
-  repeated_fields = get_repeated_fields(feedinfo, opp, org)
+  repeated_fields = get_repeated_fields(feedinfo, opp, orgs)
   time_fields = get_time_fields("", "", "", "", "")
   loc_fields = get_loc_fields(virtual="Yes")
   PRINTHEAD = False
   return outstr + repeated_fields + time_fields + loc_fields + RECORDSEP
+
 
 def convert_to_footprint_xml(instr, do_fastparse, maxrecs, progress):
   """macro for parsing an FPXML string to XML then format it."""
@@ -1018,34 +1067,14 @@ def convert_to_gbase_events_type(instr, shortname, fastparse, maxrecs, progress)
 
   example_org = None
   known_orgs = {}
-  if fastparse:
-    known_elnames = [
-      'FeedInfo', 'FootprintFeed', 'Organization', 'Organizations',
-      'VolunteerOpportunities', 'VolunteerOpportunity', 'abstract',
-      'audienceTag', 'audienceTags', 'categoryTag', 'categoryTags',
-      'city', 'commitmentHoursPerWeek', 'contactEmail', 'contactName',
-      'contactPhone', 'country', 'createdDateTime', 'dateTimeDuration',
-      'dateTimeDurationType', 'dateTimeDurations', 'description',
-      'detailURL', 'directions', 'donateURL', 'duration', 'email',
-      'endDate', 'endTime', 'expires', 'fax', 'feedID', 'guidestarID',
-      'iCalRecurrence', 'language', 'latitude', 'lastUpdated', 'location',
-      'locationType', 'locations', 'logoURL', 'longitude', 'minimumAge',
-      'missionStatement', 'name', 'nationalEIN', 'openEnded',
-      'organizationID', 'organizationURL', 'paid', 'phone', 'postalCode',
-      'providerID', 'providerName', 'providerURL', 'region',
-      'schemaVersion', 'self_directed', 'sexRestrictedEnum', 'sexRestrictedTo', 'skills',
-      'sponsoringOrganizationID', 'startDate', 'startTime', 'streetAddress1',
-      'streetAddress2', 'streetAddress3', 'title', 'tzOlsonPath', 'virtual',
-      'volunteerHubOrganizationID', 'volunteerOpportunityID',
-      'volunteersFilled', 'volunteersSlots', 'volunteersNeeded', 'yesNoEnum'
-      ]
+  if True: #fastparse
 
     numopps = 0
     feedinfo = None
     for match in re.finditer(re.compile('<FeedInfo>.+?</FeedInfo>',
                                         re.DOTALL), instr):
       #print_progress("found FeedInfo.", progress=progress)
-      feedinfo = xmlh.simple_parser(match.group(0), known_elnames, False)
+      feedinfo = xmlh.simple_parser(match.group(0), parse_footprint.KNOWN_ELEMENTS, False)
 
     if not feedinfo:
       print_progress("no FeedInfo.", progress=progress)
@@ -1053,10 +1082,11 @@ def convert_to_gbase_events_type(instr, shortname, fastparse, maxrecs, progress)
 
     for match in re.finditer(re.compile('<Organization>.+?</Organization>',
                                         re.DOTALL), instr):
-      org = xmlh.simple_parser(match.group(0), known_elnames, False)
-      org_id = xmlh.get_tag_val(org, "organizationID")
-      if (org_id != ""):
-        known_orgs[org_id] = org
+      org = xmlh.simple_parser(match.group(0), parse_footprint.KNOWN_ELEMENTS, False)
+      sponsoring_org_id = xmlh.get_tag_val(org, "organizationID")
+      if sponsoring_org_id:
+        known_orgs[sponsoring_org_id] = org
+
       if example_org is None:
         example_org = org
       #if progress and len(known_orgs) % 250 == 0:
@@ -1109,22 +1139,14 @@ def convert_to_gbase_events_type(instr, shortname, fastparse, maxrecs, progress)
       else:
         pass
 
-      #add tags
-      given_tags = []
-      opp_categories = opp.getElementsByTagName("categoryTags")
-      for opp_category in opp_categories:
-        tag = xmlh.get_tag_val(opp_category, 'categoryTag').strip().lower()
-        if tag:
-          given_tags.append(tag)
-
       rec = XMLRecord(opp)
       for tagger in taggers:
         rec = XMLRecord(opp)
-        rec, tag_count_dict = tagger.do_tagging(rec, feedinfo, tag_count_dict, given_tags)
+        rec, tag_count_dict = tagger.do_tagging(rec, feedinfo, tag_count_dict, [])
 
       opp = rec.opp
       if not HEADER_ALREADY_OUTPUT:
-        outstr = output_header(feedinfo, opp, example_org)
+        outstr = output_header(feedinfo, opp, [example_org, example_org, example_org])
 
       numopps, spiece = output_opportunity(opp, feedinfo, known_orgs, numopps)
       oppslist_output.append(spiece)
@@ -1136,28 +1158,6 @@ def convert_to_gbase_events_type(instr, shortname, fastparse, maxrecs, progress)
       print_progress("tagged %s: %d" % (tag, tag_count))
 
     outstr += "".join(oppslist_output)
-  else:
-    # not fastparse
-    footprint_xml = parse_footprint.parse(instr, maxrecs, progress)    
-    feedinfos = footprint_xml.getElementsByTagName("FeedInfo")
-    if (feedinfos.length != 1):
-      print datetime.now(), "bad FeedInfo: should only be one section"
-      sys.exit(1)
-
-    feedinfo = feedinfos[0]
-    organizations = footprint_xml.getElementsByTagName("Organization")
-    for org in organizations:
-      org_id = xmlh.get_tag_val(org, "organizationID")
-      if (org_id != ""):
-        known_orgs[org_id] = org
-
-    opportunities = footprint_xml.getElementsByTagName("VolunteerOpportunity")
-    numopps = 0
-    for opp in opportunities:
-      if numopps == 0:
-        outstr += output_header(feedinfo, opp, organizations[0])
-      numopps, spiece = output_opportunity(opp, feedinfo, known_orgs, numopps)
-      outstr += spiece
 
   NUMORGS = len(known_orgs)
   print_progress("no location: " + str(NOLOC))
@@ -1186,6 +1186,11 @@ def guess_shortname(filename):
     return "handsonnetworktechnologies"
 
   if re.search("handsonnetworkconnect", filename):
+    return "handsonnetworkconnect"
+
+  if re.search("updateHON", filename):
+    global IGNORE_DUPLICATES
+    IGNORE_DUPLICATES = True
     return "handsonnetworkconnect"
 
   # could comment out legacy HON feed 10/12/2011
@@ -1304,7 +1309,7 @@ def guess_parse_func(inputfmt, filename, feed_providername):
     return "fpxml", parse_footprint.parse_fast
 
   shortname = guess_shortname(filename)
-  #TODO: make these a dictionary object with shortname as the key
+  #print 'guessed ' + shortname
 
   # FPXML providers
   fp = parse_footprint
@@ -1591,6 +1596,7 @@ def parse_options():
   if (len(args) == 0):
     parser.print_help()
     sys.exit(0)
+
   if options.fs != None:
     FIELDSEP = options.fs
   if options.rs != None:
@@ -1733,7 +1739,7 @@ def process_file(filename, options, providerName="", providerID="", feedID="", p
       footprint_xmlstr.find('<providerURL></providerURL>')):
     footprint_xmlstr = re.sub(
       '<providerURL></providerURL>',
-      '<providerURL>%s</providerURL>' % providerURL, footprint_xmlstr)
+      '<providerURL><![CDATA[%s]]></providerURL>' % providerURL, footprint_xmlstr)
 
   if options.test:
     # free some RAM
@@ -1755,22 +1761,27 @@ def process_file(filename, options, providerName="", providerID="", feedID="", p
         "--outputfmt not implemented: try 'basetsv','fpbasetsv' or 'fpxml'"
     sys.exit(1)
 
-  outstr, numorgs, numopps = convert_to_gbase_events_type(
-    footprint_xmlstr, shortname, fastparse, int(options.maxrecs), PROGRESS)
+  maxrecs = int(options.maxrecs)
+  maxrecs = 0
 
+  outstr, numorgs, numopps = convert_to_gbase_events_type(
+    footprint_xmlstr, shortname, fastparse, maxrecs, PROGRESS)
+   
   ln = 0
   if footprint_xmlstr:
     ln = len(footprint_xmlstr)
 
   return ln, numorgs, numopps, outstr
 
-
 def main():
   """main function for cmdline execution."""
   start_time = datetime.now()
   options, args = parse_options()
   filename = args[0]
-  if re.search("spreadsheets[.]google[.]com", filename):
+  if not re.search("spreadsheets[.]google[.]com", filename):
+    bytes, numorgs, numopps, outstr = process_file(filename, options)
+  else:
+     # spreadsheets only
     if OUTPUTFMT == "fpxml":
       gsp.parser_error("FPXML format not supported for "+
                        "spreadsheet-of-spreadsheets")
@@ -1838,9 +1849,10 @@ def main():
 
     # added week of April 16th, 2012 
     print "================================================== PRIVATE SPREADSHEETS"
-    from spreadsheets.process import sheet_list
     for sheet in sheet_list:
       providerURL = 'http://staging.servicefootprint.appspot.com/oppsfeed?id=' + sheet['id']
+      providerURL += '&r=' + str(random.random())
+
       providerBytes, providerNumorgs, providerNumopps, tmpstr = process_file(
         providerURL, options, sheet['pid'], sheet['pid'], sheet['pid'], providerURL)
 
@@ -1848,9 +1860,6 @@ def main():
       numorgs += providerNumorgs
       numopps += providerNumopps
       outstr += tmpstr
-
-  else:
-    bytes, numorgs, numopps, outstr = process_file(filename, options)
 
   #only need this if Base quoted fields it enabled
   #outstr = re.sub(r'"', r'&quot;', outstr)
@@ -1867,19 +1876,6 @@ def main():
     outfh.write(outstr)
     outfh.close()
 
-  """
-  This is now in pipeline.py
-  elapsed = datetime.now() - start_time
-  # NOTE: if you change this, you also need to update datahub/load_gbase.py
-  # and frontend/views.py to avoid breaking the dashboard-- other status
-  # messages don't matter.
-  shortname = guess_shortname(filename)
-  xmlh.print_status("done parsing: output " + str(numorgs) + " organizations" +
-                    " and " + str(numopps) + " opportunities" +
-                    " (" + str(bytes) + " bytes): " +
-                    str(int(elapsed.seconds/60)) + " minutes.",
-                    shortname, PROGRESS)
-  """
 
 if __name__ == "__main__":
   main()

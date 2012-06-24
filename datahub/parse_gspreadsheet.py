@@ -32,12 +32,15 @@ expects the caller to pass in the providerID and providerName)
 #google.com/feeds/cells/pMY64RHUNSVfKYZKPoVXPBg/1/public/basic/R14C13'/>
 #</entry>
 
+import sys
 import xml_helpers as xmlh
 import re
 import urllib2
 from datetime import datetime
+import random
 
 from BeautifulSoup import BeautifulStoneSoup
+from spreadsheets.process import sheet_list
 
 MAX_BLANKROWS = 2
 CURRENT_ROW = None
@@ -279,7 +282,8 @@ def find_header_row(data, regexp_str):
     parser_error("no header start column found")
   return header_row, header_startcol
 
-def parse(instr, maxrecs, progress):
+
+def parse(instr, maxrecs = 0, progress = False):
   """parser main."""
   data = {}
   updated = {}
@@ -383,6 +387,7 @@ def parse(instr, maxrecs, progress):
     if header_desc.find("up to") >= 0:
       data_startrow += 1
 
+
   # find the data
   global CURRENT_ROW
   CURRENT_ROW = row = data_startrow
@@ -407,6 +412,7 @@ def parse(instr, maxrecs, progress):
       if (key in updated and
           updated[key] > record['LastUpdated']):
         record['LastUpdated'] = updated[key]
+
     if blankrow:
       blankrows += 1
       if blankrows > MAX_BLANKROWS:
@@ -451,3 +457,28 @@ def parse(instr, maxrecs, progress):
   #print outstr
 
   return outstr, numorgs, numopps
+
+
+def main():
+
+  for sheet in sheet_list:
+    if sheet['id'] == '0Apv-JoDtQ9x7dGE5MHdwdTg3NUxobDY4SjhCdW1yaGc':
+      url = 'http://staging.servicefootprint.appspot.com/oppsfeed?id=' + sheet['id']
+      url += '&r=' + str(random.random())
+      infh = urllib2.urlopen(url)
+      instr = infh.read()
+      infh.close()
+      #print parse(instr)
+
+      from footprint_lib import process_file, parse_options
+      options, args = parse_options()
+      providerBytes, providerNumorgs, providerNumopps, tmpstr = process_file(                   
+        url, options, sheet['pid'], sheet['pid'], sheet['pid'], url)            
+                                                                                                
+      print providerBytes, providerNumorgs, providerNumopps
+      print tmpstr
+
+
+if __name__ == "__main__":
+  main()
+
