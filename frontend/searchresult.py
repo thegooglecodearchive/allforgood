@@ -94,8 +94,17 @@ class SearchResult(object):
     self.micro = micro
     self.volunteers_needed = volunteers_needed
     self.openEnded = False
-    self.all_categories = categories if categories else []
+    #self.all_categories = categories if categories else []
+    #self.all_categories = categories[0].split(',') if categories else []
+    self.all_categories = []
+    if categories:
+      for cat in categories[0].split(','):
+        cat = cat.strip()
+        if not cat in self.all_categories:
+          self.all_categories.append(cat)
+
     self.categories = categories if categories else []
+    # this eliminates any undefined categories
     self.categories = [cat for cat in self.categories if cat in UI_CATEGORIES]
     self.categories_str = self.categories_to_str(self.categories)
     self.categories_api_str = self.categories_to_api_str(self.categories)

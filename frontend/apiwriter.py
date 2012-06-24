@@ -42,22 +42,23 @@ FIELD_TUPLES = [
   ('interest_count',),
   ('impressions',),
   ('quality_score',),
-  ('categories','categories_api_str'),
+  ('categories',),
+  ('all_categories',),
   ('skills',),
   ('distance',),
-  ('duration',),
+  #('duration',),
   ('virtual',),
   ('self_directed'),
   ('micro'),
   ('volunteers_needed'),
   ('addr1',),
-  ('addrname1',),
+  #('addrname1',),
   ('org_name',),
   ('org_organizationurl',),
   ('openEnded',),
   ('startTime',),
   ('endTime',),
-  ('contactNoneNeeded',),
+  #('contactNoneNeeded',),
   ('contactEmail',),
   ('contactPhone',),
   ('contactName',),
@@ -70,10 +71,8 @@ FIELD_TUPLES = [
   ('street2',),
   ('city',),
   ('region',),
-  ('postalCode',),
+  ('zip',),
   ('country',),
-  ('huborganizationurl',),
-  ('huborganizationname',),
   ('affiliateorganizationname',),
   ('affiliateorganizationurl',),
   ('opportunityid',), 
@@ -85,17 +84,31 @@ FIELD_TUPLES = [
   ('eventname',),
   ('frequencyurl',), 
   ('frequency',), 
-  ('availabilitydays', 'dayWeek',), 
-  ('appropriatefors', 'appropriateFor'), 
+  ('availabilitydays',), 
+  ('appropriatefors',), 
+  ('audiencetags',), 
+
+  ('volunteerhuborganizationurl',),
+  ('volunteerhuborganizationname',),
+  ('volunteersslots',),
+  ('volunteersfilled',),
+  ('sexrestrictedto',),
+  ('eventname',),
+  ('eventid',),
 ]
 
 HON_FIELDS = [
   'org_name',
   'org_organizationurl',
-  'huborganizationurl',
-  'huborganizationname',
+  'volunteerhuborganizationurl',
+  'volunteerhuborganizationname',
+  'volunteersslots',
+  'volunteersfilled',
   'affiliateorganizationurl',
   'affiliaterganizationname',
+
+  'eventid',
+  'eventname',
 
   'managedby',
   'minimumage',
@@ -105,26 +118,26 @@ HON_FIELDS = [
   'registertype',
   'occurrenceid',
   'occurrenceduration',
-  'eventid',
-  'eventname',
   'frequencyurl',
   'frequency',
   'availabilitydays',
   'appropriatefors',
+  'audiencetags',
 
   'contactemail',
   'contactphone',
-  'audienceall',
+  #'audienceall',
   'audienceage',
-  'audiencesexrestricted',
+  'sexrestrictedto',
   'street1',
   'street2',
   'region',
-  'postalcode',
+  'zip',
 ]
 
 API_FIELD_NAMES_MAP = {
   # solr/result : json/rss output
+  'item_id' : 'id',
   'org_name' : 'sponsoringOrganizationName',
   'org_organizationurl' : 'sponsoringOrganizationURL',
   'enddate' : 'endDate',
@@ -136,7 +149,7 @@ API_FIELD_NAMES_MAP = {
   'registertype' : 'registerType',
   'affiliateid' : 'affiliateId',
   'occurrenceduration' : 'occurrenceDuration',
-  'occurrenceid' : 'occurrrenceId',
+  'occurrenceid' : 'occurrenceId',
   'isdisaster' : 'isDisaster',
   'opportunitytype' : 'opportunityType',
   'registertype' : 'registerType',
@@ -145,26 +158,43 @@ API_FIELD_NAMES_MAP = {
   'snippet' : 'description',
   'url' : 'detailUrl',
 
+  'all_categories' : 'categoryTags',
+
   'availabilitydays' : 'availabilityDays', 
-  'appropriatefors' : 'appropiateFors', 
+  'appropriatefors' : 'appropriateFors', 
+  'audiencetags' : 'audienceTags', 
 
   'dayweek' : 'dayWeek',
-  'frequencylink' : 'frequencyLink',
   'distance' : 'Distance', 
 
   'managedby' : 'managedBy',
   'minimumage' : 'minAge',
 
   'org_organizationurl' : 'sponsoringOrganizationUrl',
-  'huborganizationurl' : 'hubOrganizationUrl',
-  'huborganizationname' : 'hubOrganizationName',
+  'volunteerhuborganizationurl' : 'volunteerHubOrganizationUrl',
+  'volunteerhuborganizationname' : 'volunteerHubOrganizationName',
   'affiliateorganizationurl' : 'affiliateOrganizationUrl',
   'affiliateorganizationname' : 'affiliateOrganizationName',
 
   'occurrenceid' : 'occurrenceId',
-  'occurrenceduration' : 'occurrenceduration',
   'eventname' : 'eventName',
   'eventid' : 'eventId',
+
+  'zip' : 'postalCode',
+  'audiencesexrestricted' : 'audienceSexRestricted',
+
+  'contactemail' : 'contactEmail',
+  'contactphone' : 'contactPhone',
+  'contactname' : 'contactName',
+
+  'frequencyurl' : 'frequencyURL',
+  'frequencylink' : 'frequencyLink',
+
+  'eventname' : 'eventName',
+  'eventid' : 'eventId',
+
+  'volunteersslots' : 'volunteersNeeded',
+  'volunteersfilled' : 'rsvpCount',
 }
 
 def get_writer(output):
@@ -252,6 +282,7 @@ class JsonApiWriter(ApiWriter):
       'description' : 'All for Good search results',
       'language' : 'en-us',
       'lastBuildDate' : result_set.last_build_date,
+      'TotalMatch' : result_set.estimated_results,
       'items' : []
     }
     self.items = self.json['items']
@@ -357,6 +388,9 @@ class RssApiWriter(ApiWriter):
     create_text_element(channel,
                         'lastBuildDate',
                         content=result_set.last_build_date)
+    create_text_element(channel,
+                        'TotalMatch',
+                        content=result_set.estimated_results)
     self.channel = channel
     
   def add_result(self, result, result_set = {}):
