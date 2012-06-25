@@ -536,7 +536,7 @@
  <copyField source="eventname" dest="eventname_str"/>
  <copyField source="affiliateorganizationname" dest="affiliateorganizationname_str"/>
  <copyField source="huborganizationname" dest="huborganizationname_str"/>
-
+ <copyField source="event_date_range" dest="startdate" maxChars="10" />
 
  <!-- Similarity is the scoring routine for each document vs. a query.
       A custom similarity may be specified here, but the default is fine
