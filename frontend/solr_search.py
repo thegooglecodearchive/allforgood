@@ -414,6 +414,10 @@ def search(args, dumping = False):
     sortVal = "desc"
     if args[api.PARAM_SORT] == "eventrangeend":
        sortVal = "asc"
+    if args[api.PARAM_SORT] == "geodist()":
+       sortVal = "asc"
+    if args[api.PARAM_SORT] == "eventrangestart":
+       sortVal = "asc"
     query_url += "&sort=" + args[api.PARAM_SORT] + "%20" + sortVal
     
   # date range
@@ -469,8 +473,11 @@ def search(args, dumping = False):
     DATE_QUERY_GLOBAL = "&fq=(eventrangeend:[NOW-1DAYS%20TO%20*]+OR+expires:[NOW-1DAYS%20TO%20*])"
     query_url += DATE_QUERY_GLOBAL
 
-  #num_to_fetch = int(args[api.PARAM_NUM]) + 1
-  num_to_fetch = 100
+  if api.PARAM_NUM in args:
+    num_to_fetch = int(args[api.PARAM_NUM]) + 1
+  else:
+    num_to_fetch = 100
+
   query_url += "&rows=" + str(num_to_fetch)
   query_url += "&start=" + str(int(args[api.PARAM_START]) - 1)
 
