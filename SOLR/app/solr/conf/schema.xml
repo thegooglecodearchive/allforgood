@@ -53,9 +53,21 @@
     -->
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
 
-    <fieldType name="stringSplitBy" class="solr.StrField" sortMissingLast="true" omitNorms="true" splitBy=","/>
+    <!-- A specialized field for geospatial search. If indexed, this fieldType must not be multivalued. -->
+    <fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
 
-
+    <!-- With this field type case is preserved for stored values, but a case insensitive field will
+        be provided to search on. Caveat: case insensitive wildcard search cannot be done since
+        wild card phrases bypass the query analyzer and will not be lowercased before matching
+        against the index. This means that the characters in wildcard phrases must be lowercase in
+        order to match.
+    -->
+    <fieldType name="string_ci" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+        <analyzer type="query">
+            <tokenizer class="solr.KeywordTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>
 
     <!-- boolean type: "true" or "false" -->
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
@@ -188,7 +200,7 @@
                 />
         <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
         <filter class="solr.LowerCaseFilterFactory"/>
-        <filter class="solr.EnglishPorterFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.PorterStemFilterFactory" protected="protwords.txt"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
       <analyzer type="query">
@@ -197,14 +209,18 @@
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
         <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1"/>
         <filter class="solr.LowerCaseFilterFactory"/>
-        <filter class="solr.EnglishPorterFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.PorterStemFilterFactory" protected="protwords.txt"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
 
     <fieldType name="text_html" class="solr.TextField" positionIncrementGap="100">
         <analyzer type="index">
+            <!--
             <tokenizer class="solr.HTMLStripStandardTokenizerFactory"/>
+            -->
+            <tokenizer class="solr.StandardTokenizerFactory"/>
+            <charFilter class="solr.HTMLStripCharFilterFactory"/>
             <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
             <!-- Case insensitive stop word removal.
               add enablePositionIncrements=true in both the index and query
@@ -274,7 +290,7 @@
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
         <filter class="solr.WordDelimiterFilterFactory" generateWordParts="0" generateNumberParts="0" catenateWords="1" catenateNumbers="1" catenateAll="0"/>
         <filter class="solr.LowerCaseFilterFactory"/>
-        <filter class="solr.EnglishPorterFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.PorterStemFilterFactory" protected="protwords.txt"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
@@ -359,7 +375,6 @@
 <field name="title" type="text_html" indexed="true" stored="true"/>
 <field name="description" type="text_html" indexed="true" stored="true"/>
 <field name="abstract" type="text_html" indexed="true" stored="true"/>
-<field name="categories" type="text_keyword" indexed="true" stored="true" multiValued="true"/>
 <field name="aggregatefield" type="text_html" indexed="true" stored="true"/>
 <field name="link" type="string" indexed="true" stored="true"/>
 <field name="detailurl" type="string" indexed="true" stored="true"/>
@@ -390,17 +405,64 @@
 <field name="signature" type="string" stored="true" indexed="true" multiValued="false" />
 <field name="provider_proper_name" type="text" indexed="true" stored="true" />
 <field name="provider_proper_name_str" type="string" indexed="true" stored="true" />
+<field name="given_location" type="text" indexed="true" stored="true"/>
+<field name="given_location_str" type="string" indexed="true" stored="true"/>
 <field name="city" type="string" indexed="true" stored="true"/>
 <field name="county" type="string" indexed="true" stored="true"/>
 <field name="state" type="string" indexed="true" stored="true"/>
 <field name="zip" type="string" indexed="true" stored="true"/>
 <field name="statewide" type="string" indexed="true" stored="true"/>
 <field name="nationwide" type="string" indexed="true" stored="true"/>
-<field name="country" type="string" indexed="true" stored="true"/>
-<field name="skills" type="stringSplitBy" indexed="true" stored="true" multiValued="true"/>
+<field name="country" type="string_ci" indexed="true" stored="true"/>
+
+<field name="occurrenceid" type="string_ci" indexed="true" stored="true" multiValued="false" />
+<field name="occurrenceid_str" type="string" indexed="true" stored="true" multiValued="false" />
+<field name="opportunityid" type="string_ci" indexed="true" stored="true" multiValued="false" />
+<field name="opportunityid_str" type="string" indexed="true" stored="true" multiValued="false" />
+<field name="categories" type="string_ci" indexed="true" stored="true" multiValued="true"/>
+<field name="categories_str" type="string" indexed="true" stored="true" multiValued="true"/>
+<field name="appropriatefors" type="string_ci" indexed="true" stored="true" multiValued="true" />
+<field name="appropriatefors_str" type="string" indexed="true" stored="true" multiValued="true" />
+<field name="availabilitydays" type="string_ci" indexed="true" stored="true" multiValued="true" />
+<field name="availabilitydays_str" type="string" indexed="true" stored="true" multiValued="true" />
+<field name="categorytags" type="string_ci" indexed="true" stored="true" multiValued="true" />
+<field name="categorytags_str" type="string_ci" indexed="true" stored="true" multiValued="true" />
+<field name="skills" type="string_ci" indexed="true" stored="true" multiValued="true"/>
+<field name="skills_str" type="string" indexed="true" stored="true" multiValued="true"/>
+<field name="populations" type="string_ci" indexed="true" stored="true" multiValued="true" />
+<field name="populations_str" type="string" indexed="true" stored="true" multiValued="true" />
+<field name="audiencetags" type="string_ci" indexed="true" stored="true" multiValued="true" />
+<field name="audiencetags_str" type="string" indexed="true" stored="true" multiValued="true" />
+<field name="activitytype" type="string_ci" indexed="true" stored="true" multiValued="true" />
+<field name="activitytype_str" type="string" indexed="true" stored="true" multiValued="true" />
+<field name="eventname" type="string_ci" indexed="true" stored="true" multiValued="true" />
+<field name="eventname_str" type="string" indexed="true" stored="true" multiValued="true" />
+
+<field name="affiliateorganizationname" type="text" indexed="true" stored="true" />
+<field name="affiliateorganizationname_str" type="string_ci" indexed="true" stored="true" />
+<field name="affiliateorganizationurl" type="string" indexed="true" stored="true"/>
+<field name="affiliateorganizationid" type="string_ci" indexed="true" stored="true"/>
+<field name="huborganizationname" type="text" indexed="true" stored="true" />
+<field name="huborganizationname_str" type="string_ci" indexed="true" stored="true" />
+<field name="huborganizationurl" type="string" indexed="true" stored="true"/>
+<field name="huborganizationid" type="string_ci" indexed="true" stored="true"/>
+<field name="eventid" type="string_ci" indexed="true" stored="true"/>
+<field name="eventid_str" type="string" indexed="true" stored="true"/>
+<field name="frequencyurl" type="string" indexed="true" stored="true"/>
+<field name="managedby" type="string_ci" indexed="true" stored="true" />
+<field name="registertype" type="string_ci" indexed="true" stored="true" />
+<field name="sexrestrictedto" type="string_ci" indexed="true" stored="true" />
+<field name="invitationcode" type="string_ci" indexed="true" stored="true" />
+<field name="scheduletype" type="string_ci" indexed="true" stored="true" />
+<field name="opportunitytype" type="string_ci" indexed="true" stored="true" />
+<field name="isdisaster" type="string_ci" indexed="true" stored="true" />
+
+<field name="startdate" type="string" indexed="true" stored="true"/>
+<field name="dateopportunityidgroup" type="string" indexed="true" stored="true"/>
+
+<field name="latlong" type="location" indexed="true" stored="true" multiValued="false"/>
 
 
-<!--    employer       quantity        image_link      abstract       paid  opportunityID  organizationID volunteersSlots       volunteersFilled      volunteersNeeded      minimumAge    sexRestrictedTo        skills contactName    contactPhone   contactEmail   providerURL       language       lastUpdated  expires      detailURL org_nationalein        org_guidestarID        org_name       org_missionStatement   org_description        org_phone      org_fax        org_email      org_organizationURL       org_logoURL       org_providerURL   categories     audiences      orgLocation    event_date_range        startTime     endTime       openended     duration       commitmentHoursPerWeek location        latitude        longitude       location_string        venue_name -->
    <!-- Some sample docs exists solely to demonstrate the spellchecker
         functionality, this   is the only field they container.
         Typically you might build the spellchecker of "catchall" type field
@@ -434,13 +496,13 @@
    <dynamicField name="*_d"  type="double" indexed="true"  stored="true"/>
    <dynamicField name="random*" type="random" />
 
+   <dynamicField name="*_coordinate"  type="tdouble" indexed="true"  stored="false"/>
+
    <!-- uncomment the following to ignore any fields that don't already match an existing 
         field name or dynamic field, rather than reporting them as an error. 
         alternately, change the type="ignored" to some other type e.g. "text" if you want 
         unknown fields indexed and/or stored by default --> 
    <dynamicField name="*" type="text" indexed="true" stored="true"/>
-   
-   
  </fields>
 
  <!-- Field to use to determine and enforce document uniqueness. 
@@ -460,6 +522,21 @@
 
  <copyField source="org_name" dest="org_name_str"/>
  <copyField source="provider_proper_name" dest="provider_proper_name_str"/>
+ <copyField source="given_location" dest="given_location_str"/>
+ <copyField source="categories" dest="categories_str"/>
+ <copyField source="appropriatefors" dest="appropriatefors_str"/>
+ <copyField source="availabilitydays" dest="availabilitydays_str"/>
+ <copyField source="categorytags" dest="categorytags_str"/>
+ <copyField source="skills" dest="skills_str"/>
+ <copyField source="populations" dest="populations_str"/>
+ <copyField source="audiencetags" dest="audiencetags_str"/>
+ <copyField source="activitytype" dest="activitytype_str"/>
+ <copyField source="occurrenceid" dest="occurrenceid_str"/>
+ <copyField source="opportunityid" dest="opportunityid_str"/>
+ <copyField source="eventname" dest="eventname_str"/>
+ <copyField source="affiliateorganizationname" dest="affiliateorganizationname_str"/>
+ <copyField source="huborganizationname" dest="huborganizationname_str"/>
+
 
  <!-- Similarity is the scoring routine for each document vs. a query.
       A custom similarity may be specified here, but the default is fine
