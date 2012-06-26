@@ -108,6 +108,7 @@ class SearchResult(object):
     self.categories = [cat for cat in self.categories if cat in UI_CATEGORIES]
     self.categories_str = self.categories_to_str(self.categories)
     self.categories_api_str = self.categories_to_api_str(self.categories)
+
     self.orgName = org_name
     # app engine does not currently support the escapejs filter in templates
     # so we have to do it our selves for now
