@@ -324,12 +324,16 @@ def form_solr_query(args):
     global BACKEND_GLOBAL
     BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
   
+  print '<pre>'
+  print solr_query
   solr_query += apply_boosts(args, original_query);
+
+  print solr_query
   solr_query += apply_filter_query(api_key)
 
-  if args.get(api.PARAM_MERGE, None) == 3:
+  if args.get(api.PARAM_MERGE, None) == '3':
     solr_query += urllib.quote_plus("&group=true&group.field=opportunityid&group.main=true")
-  elif args.get(api.PARAM_MERGE, None) == 4:
+  elif args.get(api.PARAM_MERGE, None) == '4':
     solr_query += urllib.quote_plus("&group=true&group.field=dateopportunityidgroup&group.main=true&group.limit=7")
 
   # field list
