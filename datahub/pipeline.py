@@ -639,6 +639,7 @@ def solr_retransform(fname, start_time, feed_file_size):
   fnames.append("c:eventrangeend:dateTime")
   fnames.append("c:eventduration:integer")
   fnames.append("c:aggregatefield:string")
+  fnames.append("c:dateopportunityidgroup:string")
   fnames.append("c:randomsalt:float")
   fnamesdict = dict([(x, x) for x in fnames])
 
@@ -710,10 +711,13 @@ def solr_retransform(fname, start_time, feed_file_size):
                                                rows["c:categories:string"],
                                                ]))
 
-    for key in rows.keys():
-      # Fix to the "double semicolons instead of commas" Base hack.
-      #rows[key] = rows[key].replace(';;', ',')
+    rows["c:dateopportunityidgroup:string"] = ''.join([
+                          rows.get('c:opportunityID:string', 
+                                    rows.get('c:OpportunityID:string', 'opportunityID')),
+                          str(rows.get("c:eventrangestart:dateTime", '2001')),
+                                              ])
 
+    for key in rows.keys():
       if key.find(':dateTime') != -1:
         if rows[key].find(':') > 0:
           rows[key] += 'Z'
