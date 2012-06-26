@@ -324,11 +324,7 @@ def form_solr_query(args):
     global BACKEND_GLOBAL
     BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
   
-  print '<pre>'
-  print solr_query
   solr_query += apply_boosts(args, original_query);
-
-  print solr_query
   solr_query += apply_filter_query(api_key)
 
   if args.get(api.PARAM_MERGE, None) == '3':
