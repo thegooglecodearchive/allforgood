@@ -316,6 +316,8 @@ class JsonApiWriter(ApiWriter):
       elif name == "description":
         if result_set.args.get('fulldesc', '') != '1':
           content = content[:300]
+      elif name in ["eventrangestart", "eventrangeend"]:
+        content = content.replace('T', ' ').strip('Z')
 
       # handle lists
       if isinstance(content, basestring) and content.find('\t') > 0:
@@ -418,9 +420,11 @@ class RssApiWriter(ApiWriter):
       if name == "enddate": 
         if custom_date_format(content) == 'Present':
           content = ''
-        elif name == "description":
-          if result_set.args.get('fulldesc', '') != '1':
-            content = content[:300]
+      elif name == "description":
+        if result_set.args.get('fulldesc', '') != '1':
+          content = content[:300]
+      elif name in ["eventrangestart", "eventrangeend"]:
+        content = content.replace('T', ' ').strip('Z')
 
       return (name, content, None)
     
