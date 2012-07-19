@@ -212,6 +212,13 @@ class SearchResultSet(object):
     self.pubdate = get_rfc2822_datetime()
     self.last_build_date = self.pubdate
 
+    # HOC
+    self.is_hoc = False
+    self.is_cal = False
+    self.total_match = 0
+    self.total_opportunities = 0
+    self.hoc_facets = {}
+
   def append_results(self, results, merge_by_date_and_location = False):
     """append a results array to this results set and rerun dedup()"""
     self.num_results = len(self.results) + len(results.results)

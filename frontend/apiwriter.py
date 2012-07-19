@@ -141,6 +141,7 @@ HON_FIELDS = [
 
 API_FIELD_NAMES_MAP = {
   # solr/result : json/rss output
+  'xml_url' : 'link',
   'item_id' : 'id',
   'org_name' : 'sponsoringOrganizationName',
   'org_organizationurl' : 'sponsoringOrganizationURL',
@@ -201,11 +202,124 @@ API_FIELD_NAMES_MAP = {
   'volunteersfilled' : 'rsvpCount',
 }
 
+STANDARD_FIELDS = [
+  'id', 
+  'item_id',
+  'title',
+  'description', 
+  'snippet',
+  'pubdate',
+  'groupid', 
+  'merge_key',
+  'provider',
+  'startdate', 
+  'startdate',
+  'enddate', 
+  'enddate',
+  'base_url',
+  'xml_url',
+  'url_short',
+  'latlong',
+  'location_name', 
+  'location',
+  'interest_count',
+  'impressions',
+  'quality_score',
+  'categories',
+  'skills',
+  'virtual',
+  'self_directed',
+  'micro',
+  'volunteers_needed',
+  'addr1',
+  'addrname1', 
+  'sponsoringorganizationname', 
+  'orgname',
+  'openended',
+  'starttime',
+  'endtime',
+  'contactnoneneeded',
+  'contactemail',
+  'contactphone',
+  'contactname',
+  'detailurl',
+  'audienceall',
+  'audienceage',
+  'minage',
+  'audiencesexrestricted',
+  'street1',
+  'street2',
+  'city',
+  'region',
+  'postalcode',
+  'country',
+]
+
+CALENDAR_FIELDS = [
+  'startdate',
+  'minage',
+  'enddate',
+  'contactphone',
+  'quality_score',
+  'detailurl',
+  'sponsoringorganizationname',
+  'sponsoringorganizationurl',
+  'volunteerhuborganizationname',
+  'volunteerhuborganizationurl',
+  'latlong',
+  'contactname',
+  'addr1',
+  'impressions',
+  'id',
+  'city',
+  'occurrenceduration',
+  'distance',
+  'opportunityid',
+  'occurrenceid',
+  'location_name',
+  'openended',
+  'pubdate',
+  'title',
+  'base_url',
+  'virtual',
+  'provider',
+  'postalcode',
+  'groupid',
+  'audienceage',
+  'audienceall',
+  'eventid',
+  'description',
+  'street1',
+  'street2',
+  'interest_count',
+  'xml_url',
+  'audiencesexrestricted',
+  'starttime',
+  'contactnoneneeded',
+  'categories',
+  'contactemail',
+  'skills',
+  'country',
+  'region',
+  'url_short',
+  'addrname1',
+  'endtime',
+  'volunteersneeded',
+  'rsvpcount',  
+]
+
+ARRAY_FIELDS = [
+  'audienceTags', 
+  'availabilityDays', 
+  'categoryTags', 
+  'skills'
+]
+
 def get_writer(output):
   """Returns the appropriate ApiWriter class for the requested output type."""
-  if output == 'rss':
+  if output.find('rss') >= 0:
     return RssApiWriter('application/rss+xml')
-  elif output == 'json':
+  elif output.find('json') >= 0:
     return JsonApiWriter('application/javascript')
   else:
     #default to Debug HTML
@@ -250,6 +364,18 @@ class DjangoTemplateApiWriter(ApiWriter):
         'location': result_set.args[api.PARAM_VOL_LOC],
         'max_distance': result_set.args[api.PARAM_VOL_DIST],
       })
+
+    if result_set.is_hoc:
+      self.template_values.update({
+        'facets' : {}
+      })
+      
+      if not result_set.is_cal:
+        self.template_values.update({
+          'TotalOpportunities': 0, 
+          'TotalMatch': 0, 
+        })
+      
   
   def finalize(self):
     """return the rendered template"""
@@ -286,9 +412,28 @@ class JsonApiWriter(ApiWriter):
       'description' : 'All for Good search results',
       'language' : 'en-us',
       'lastBuildDate' : result_set.last_build_date,
-      'TotalMatch' : result_set.estimated_results,
       'items' : []
     }
+
+    if result_set.is_hoc:
+      self.json['facets'] = {}
+      for facet, facet_list in result_set.hoc_facets.items():
+        if facet_list:
+          self.json['facets'][facet] = {}
+          facet_name = facet_value = ''
+          for fv in facet_list:
+            if not facet_name:
+              facet_name = fv
+              facet_value = ''
+            elif not facet_value:
+              facet_value = fv
+              self.json['facets'][facet][facet_name] = facet_value
+              facet_name = facet_value = ''
+
+      if not result_set.is_cal:
+        self.json['TotalOpportunities'] = result_set.total_match
+        self.json['TotalMatch'] =  result_set.total_opportunities
+
     self.items = self.json['items']
         
   def add_result(self, result, result_set = {}):
@@ -299,6 +444,12 @@ class JsonApiWriter(ApiWriter):
     for field_info in self.item_fields:
       name = field_info[0]
       if len(name) < 2:
+        continue
+
+      if not result_set.is_hoc and name.lower() not in STANDARD_FIELDS:
+        continue
+
+      if result_set.is_cal and API_FIELD_NAMES_MAP.get(name, name).lower() not in CALENDAR_FIELDS:
         continue
 
       if not hasattr(result, name):
@@ -322,6 +473,11 @@ class JsonApiWriter(ApiWriter):
       # handle lists
       if isinstance(content, basestring) and content.find('\t') > 0:
         item[API_FIELD_NAMES_MAP.get(name, name)] = content.split('\t')
+      elif API_FIELD_NAMES_MAP.get(name, name) in ARRAY_FIELDS and not isinstance(content, list):
+        if content:
+          item[API_FIELD_NAMES_MAP.get(name, name)] = [content]
+        else:
+          item[API_FIELD_NAMES_MAP.get(name, name)] = []
       else:
         item[API_FIELD_NAMES_MAP.get(name, name)] = content
 
@@ -370,11 +526,15 @@ class RssApiWriter(ApiWriter):
     channel = self.doc.createElement('channel')
     self.rss.appendChild(channel)
     
-    def create_text_element(parent, name, content=None):
+    def create_text_element(parent, name, content=None, attrs = None):
       elem = self.doc.createElement(name)
+      if attrs:
+        for k, v in attrs.items():
+          elem.setAttribute(k, v)
+
       parent.appendChild(elem)
       if content != None:
-        elem.appendChild(self.doc.createTextNode(content))
+        elem.appendChild(self.doc.createTextNode(str(content)))
       return elem
     
     create_text_element(channel, 'title', 'All for Good search results')
@@ -394,9 +554,30 @@ class RssApiWriter(ApiWriter):
     create_text_element(channel,
                         'lastBuildDate',
                         content=result_set.last_build_date)
-    create_text_element(channel,
-                        'TotalMatch',
-                        content=result_set.estimated_results)
+
+    if result_set.is_hoc:
+      facets_node = create_text_element(channel, 'facets')
+      for facet, facet_list in result_set.hoc_facets.items():
+        if facet_list:
+          facet_node = create_text_element(facets_node, 'facet', None, {'name' : facet})
+          facet_name = facet_value = ''
+          for fv in facet_list:
+            if not facet_name:
+              facet_name = fv
+              facet_value = ''
+            elif not facet_value:
+              facet_value = fv
+              facet_value_node = create_text_element(facet_node, 'count', facet_value, {'name' : facet_name})
+              facet_name = facet_value = ''
+          
+      if not result_set.is_cal:
+        create_text_element(channel,
+                            'TotalMatch',
+                            content=str(result_set.total_match))
+        create_text_element(channel,
+                            'TotalOpportunities',
+                            content=str(result_set.total_opportunities))
+
     self.channel = channel
     
   def add_result(self, result, result_set = {}):
@@ -439,8 +620,17 @@ class RssApiWriter(ApiWriter):
       ('pubDate',), 
       ('guid', 'xml_url')
     ]
+    added_list = []
     for field in standard_fields:
       (name, content, comment) = build_result_element(field, result)
+      if len(name) < 2:
+        continue
+      name = API_FIELD_NAMES_MAP.get(name, name)
+
+      if name in added_list:
+        continue
+      added_list.append(name)
+
       if comment:
         item.appendChild(self.doc.createComment(comment))
       subitem = self.doc.createElement(name)
@@ -452,16 +642,34 @@ class RssApiWriter(ApiWriter):
     #and now our namespaced fields
     namespaced_fields = FIELD_TUPLES
 
+    added_list = []
     for field_info in namespaced_fields:
       (name, content, comment) = build_result_element(field_info, result)
+      if len(name) < 2:
+        continue
+
       name = self.OurNamespace + ':' + API_FIELD_NAMES_MAP.get(name, name)
+
+      if not result_set.is_hoc and name.lower() not in STANDARD_FIELDS:
+        continue
+
+      if result_set.is_cal and name.lower() not in CALENDAR_FIELDS:
+        continue
+
+      if name in added_list:
+        continue
+      added_list.append(name)
+
       if comment:
         item.appendChild(self.doc.createComment(comment))
 
       subitem = self.doc.createElement(name)
       if content:
         if len(field_info) > 1 and isinstance(content, basestring) and content.find('\t') > 0:
-          for value in content.split('\t'):
+          content = content.split('\t')
+
+        if isinstance(content, list):
+          for value in content:
             subsubitem = self.doc.createElement(self.OurNamespace + ':' + field_info[1])
             text = self.doc.createTextNode(value)
             subsubitem.appendChild(text)
@@ -474,5 +682,5 @@ class RssApiWriter(ApiWriter):
       
   def finalize(self):
     """Return a string from the XML document."""
-    return self.doc.toxml(encoding='utf-8')
-    # or use toprettyxml(indent='  ', newl='\n', encoding='utf-8')
+    #return self.doc.toxml(encoding='utf-8')
+    return self.doc.toprettyxml(indent='  ', newl='\n', encoding='utf-8')

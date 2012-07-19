@@ -43,24 +43,33 @@ PARAM_FACET_LIMIT = 'facet.limit'
 PARAM_FACET_FIELD = 'facet.field'
 PARAM_FACET_MINCNT = 'facet.mincount'
 
-########### deprecating from here down ###############
 # If PARAM_OUTPUT matches one of these entries, only certain fields will be
 # returned. Otherwise, all fields are returned.
-FIELDS_BY_OUTPUT_TYPE = {'html' :
-                           'abstract,' + \
-                           'categories,org_name,' + \
-                           'detailurl,' + \
-                           'event_date_range,' + \
-                           'feed_providername,' + \
-                           'ical_recurrence,' + \
-                           'id,' + \
-                           'latitude,' + \
-                           'location_string,' + \
-                           'longitude,' + \
-                           'openended,' + \
-                           'title,' + \
-                           'description'
-                           }
+
+import apiwriter
+FIELDS_BY_OUTPUT_TYPE = {
+  'html' : ['abstract', 
+            'categories',
+            'org_name',
+            'detailurl', 
+            'event_date_range', 
+            'feed_providername', 
+            'ical_recurrence', 
+            'id', 
+            'latitude', 
+            'location_string', 
+            'longitude', 
+            'openended,', 
+            'title', 
+            'description', 
+           ],
+   'json' : apiwriter.STANDARD_FIELDS,
+   'xml' : apiwriter.STANDARD_FIELDS,
+   'json-hoc' : (apiwriter.STANDARD_FIELDS + apiwriter.HON_FIELDS),
+   'xml-hoc' : (apiwriter.STANDARD_FIELDS + apiwriter.HON_FIELDS),
+   'json-hoc-cal' : (apiwriter.STANDARD_FIELDS + apiwriter.CALENDAR_FIELDS),
+   'xml-hoc-cal' : (apiwriter.STANDARD_FIELDS + apiwriter.CALENDAR_FIELDS),
+}
 # Fields to be returned when PARAM_OUTPUT is not set.
 # TODO: remove this once all output types have been specified.
 DEFAULT_OUTPUT_FIELDS = FIELDS_BY_OUTPUT_TYPE['html']
@@ -108,3 +117,5 @@ PARAM_TYPE = "type"
 PARAM_CATEGORY = "category"
 PARAM_SOURCE = "source"
 PARAM_DISTANCE = "distance"
+
+PARAM_TOCQT = 'TotalOpportunitiesCountQueryTerm'
