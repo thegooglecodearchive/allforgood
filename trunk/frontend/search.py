@@ -21,6 +21,7 @@ import datetime
 import hashlib
 import logging
 import copy
+import pickle
 
 #from versioned_memcache import memcache
 from google.appengine.api import memcache
@@ -36,6 +37,7 @@ from google.appengine.ext import db
 from query_rewriter import get_rewriters
 
 CACHE_TIME = 24*60*60  # seconds
+MAX_CACHE_SZ = (1000000) - 1
 
 class CacheUpdate(db.Model):
   updated = db.DateTimeProperty(auto_now = True)
@@ -50,7 +52,7 @@ def update_cache_key():
     logging.warning("update_cache_key failed")
 
 
-def get_cache_key(normalized_query_string):
+def get_cache_key(normalized_query_string, chunk = 0):
   """ """
 
   rtn = 'search:' + normalized_query_string
@@ -58,7 +60,7 @@ def get_cache_key(normalized_query_string):
   if rec:
     rtn += str(rec.updated)
 
-  return hashlib.md5(rtn).hexdigest()
+  return 'chu' + str(chunk) + ':' + hashlib.md5(rtn).hexdigest()
 
 
 def run_query_rewriters(query):
@@ -102,14 +104,31 @@ def search(args, dumping = False):
     use_cache = False
     logging.debug('Not using search cache')
 
-  # note: key cannot exceed 250 bytes
-  memcache_key = get_cache_key(normalized_query_string)
   start = safe_int(args[api.PARAM_START], api.CONST_MIN_START)
   num = safe_int(args[api.PARAM_NUM], api.CONST_DFLT_NUM)
 
   result_set = None
+  # note: key cannot exceed 250 bytes
+  #memcache_key = get_cache_key(normalized_query_string)
+
   if use_cache:
-    result_set = memcache.get(memcache_key)
+    result_set_str = ''
+    chunk = 0
+    while True:
+      logging.info(get_cache_key(normalized_query_string, chunk))
+      buff = memcache.get(get_cache_key(normalized_query_string, chunk))
+      if not buff:
+        break
+      result_set_str += buff
+      chunk += 1
+
+    if result_set_str:
+      try:
+        result_set = pickle.loads(result_set_str)
+      except:
+        logging.warning('result_set not completely in cache')
+        pass
+
     if result_set:
       logging.debug('in cache: "' + normalized_query_string + '"')
       if len(result_set.merged_results) < start + num:
@@ -120,8 +139,17 @@ def search(args, dumping = False):
 
   if not result_set:
     result_set = fetch_result_set(args, dumping)
-    memcache.set(memcache_key, result_set, time=CACHE_TIME)
-    
+    if result_set:
+      result_set_str = pickle.dumps(result_set)
+      sz = len(result_set_str)
+      chunk = idx = 0
+      while sz > 0:
+        buff = result_set_str[idx:idx + MAX_CACHE_SZ]
+        memcache.set(get_cache_key(normalized_query_string, chunk), buff, time=CACHE_TIME)
+        sz -= MAX_CACHE_SZ
+        idx += MAX_CACHE_SZ
+        chunk += 1
+
   logging.info('result_set size after dedup: ' + str(result_set.num_merged_results))
 
   result_set.clip_merged_results(start, num)

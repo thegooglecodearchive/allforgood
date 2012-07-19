@@ -35,6 +35,8 @@ import codecs
 import utf8
 codecs.register_error('asciify', utf8.asciify)
 
+from django.utils import simplejson
+
 import private_keys
 class CAMPAIGN_SPREADSHEET:
   KEY = '0Ak1XDmmFyJT2dC04N1JmYVJ0ME9nbjZYSWwwWTh5Umc'
@@ -361,7 +363,7 @@ class consumer_ui_search_view(webapp.RequestHandler):
 
 class search_view(webapp.RequestHandler):
   """run a search from the API.  note various output formats."""
-  @expires(1800)  # Search results change slowly; cache for half an hour.
+  #@expires(1800)  # Search results change slowly; cache for half an hour.
 
   def post(self):
     """HTTP post method."""
@@ -390,7 +392,6 @@ class search_view(webapp.RequestHandler):
         logging.info("dumping request");
 
       result_set = search.search(unique_args, dumping)
-
   
       # insert the interest data-- API searches are anonymous, so set the user
       # interests to 'None'.  Note: left here to avoid polluting searchresults.py
@@ -430,6 +431,12 @@ class search_view(webapp.RequestHandler):
       logging.debug("geocode("+result_set.args[api.PARAM_VOL_LOC]+") = "+
                   result_set.args[api.PARAM_LAT]+","+result_set.args[api.PARAM_LNG])
 
+      result_set.is_hoc = True if output.find('hoc') >= 0 else False
+      result_set.is_cal = True if output.find('cal') >= 0 else False
+
+      if result_set.is_hoc:
+        result_set = solr_search.apply_HON_facet_counts(result_set, unique_args)
+
       writer = apiwriter.get_writer(output)
       writer.setup(self.request, result_set)
       logging.info('views.search_view clipped %d, beginning apiwriter' % 
@@ -437,6 +444,8 @@ class search_view(webapp.RequestHandler):
 
       for result in result_set.clipped_results:
         writer.add_result(result, result_set)
+        #if result_set.is_cal and len(writer.items) >= 8:
+        #  break
 
       logging.info('views.search_view completed apiwriter')
 

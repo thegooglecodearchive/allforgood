@@ -15,6 +15,8 @@ low-level routines for querying SOLR and processing the results.
 Please don't call this directly-- instead call search.py
 """
 
+KELVIN=False
+
 import sys
 import datetime
 import logging
@@ -41,6 +43,7 @@ import posting
 import private_keys
 import categories
 import searchresult
+import utils
 import ga
 
 from boosts import *
@@ -166,6 +169,29 @@ def rewrite_query(query_str, api_key = None):
   return rewritten_query
 
 
+def get_solr_backend(args):
+
+  # set the solr instance we need to use if not given as an arg
+  if api.PARAM_BACKEND_URL not in args:
+    hr = datetime.datetime.now().hour
+    if hr < 6 or (hr >= 12 and hr < 18):
+      # node 1 process at 6, 18
+      # node 1 serves at 0, 12
+      args[api.PARAM_BACKEND_URL] = private_keys.NODE1_DEFAULT_BACKEND_URL
+    else:
+      # node 2 process at 0, 12
+      # node 2 serves at 6, 18
+      args[api.PARAM_BACKEND_URL] = private_keys.NODE2_DEFAULT_BACKEND_URL
+
+    # TODO
+    args[api.PARAM_BACKEND_URL] = private_keys.NODE3_DEFAULT_BACKEND_URL
+
+  global BACKEND_GLOBAL
+  BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
+
+  return args[api.PARAM_BACKEND_URL], args
+
+
 def form_solr_query(args):
   solr_query = ''
 
@@ -199,13 +225,16 @@ def form_solr_query(args):
     max_dist = float(args[api.PARAM_VOL_DIST])
   
   
-  #geo_params = ('{!spatial lat=' + str(lat) + ' long=' + str(lng) 
-  #              + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,150,10)^1}')
-
-  geo_params = '{!geofilt}&pt=%s,%s&sfield=latlong&d=%s' % (str(lat), str(lng), str(max_dist * 1.609))
-
   global GEO_GLOBAL
-  GEO_GLOBAL = urllib.quote_plus(geo_params)
+  if KELVIN:
+    geo_params = ('{!spatial lat=' + str(lat) + ' long=' + str(lng) 
+                  + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,150,10)^1}')
+    GEO_GLOBAL = urllib.quote_plus(geo_params)
+  else:
+    geo_params = '{!geofilt}&pt=%s,%s&sfield=latlong&d=%s' % (str(lat), str(lng), str(max_dist * 1.609))
+    GEO_GLOBAL = geo_params
+
+
   if args['is_report'] or (api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all"):
     geo_params = ""       
     if args['is_report']:
@@ -255,7 +284,10 @@ def form_solr_query(args):
   global KEYWORD_GLOBAL, STATEWIDE_GLOBAL, NATIONWIDE_GLOBAL
   KEYWORD_GLOBAL = urllib.quote_plus(solr_query)
   STATEWIDE_GLOBAL, NATIONWIDE_GLOBAL = geocode.get_statewide(lat, lng)
-  #solr_query = geo_params + solr_query
+
+  if KELVIN:
+    solr_query = geo_params + solr_query
+
   solr_query = urllib.quote_plus(solr_query)
   
   if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
@@ -278,7 +310,9 @@ def form_solr_query(args):
     #fq += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
     solr_query += fq
 
-  solr_query += '&fq=' + geo_params
+  # uncomment following line for geofilt
+  if not KELVIN:
+    solr_query += '&fq=' + geo_params
     
   global FULL_QUERY_GLOBAL
   FULL_QUERY_GLOBAL = solr_query
@@ -307,45 +341,28 @@ def form_solr_query(args):
     solr_query += exclusion
 
   # set the solr instance we need to use if not given as an arg
-  if api.PARAM_BACKEND_URL not in args:
-    hr = datetime.datetime.now().hour
-    if hr < 6 or (hr >= 12 and hr < 18):
-      # node 1 process at 6, 18
-      # node 1 serves at 0, 12
-      args[api.PARAM_BACKEND_URL] = private_keys.NODE1_DEFAULT_BACKEND_URL
-    else:
-      # node 2 process at 0, 12
-      # node 2 serves at 6, 18
-      args[api.PARAM_BACKEND_URL] = private_keys.NODE2_DEFAULT_BACKEND_URL
 
-    # TODO
-    args[api.PARAM_BACKEND_URL] = private_keys.NODE3_DEFAULT_BACKEND_URL
-
-    global BACKEND_GLOBAL
-    BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
+  global BACKEND_GLOBAL
+  BACKEND_GLOBAL, args = get_solr_backend(args)
   
   solr_query += apply_boosts(args, original_query);
   solr_query += apply_filter_query(api_key)
 
   if args.get(api.PARAM_MERGE, None) == '3':
-    solr_query += urllib.quote_plus("&group=true&group.field=opportunityid&group.main=true")
+    solr_query += ("&group=true&group.field=opportunityid&group.main=true")
   elif args.get(api.PARAM_MERGE, None) == '4':
-    solr_query += urllib.quote_plus("&group=true&group.field=dateopportunityidgroup&group.main=true&group.limit=7")
+    solr_query += ("&group=true&group.field=dateopportunityidgroup&group.main=true&group.limit=7")
 
   # field list
-  solr_query += '&fl=*'
-  
-  # TODO: this needs some serious rethinking....
-  # the idea might have been to save cycles by not fetching
-  # any field from solr that we dont actually need but right
-  # now as we are adding fields it is more of hinderance
-  #if api.PARAM_OUTPUT not in args:
-  #  solr_query += api.DEFAULT_OUTPUT_FIELDS
-  #else:
-  #  if args[api.PARAM_OUTPUT] in api.FIELDS_BY_OUTPUT_TYPE:
-  #    solr_query += api.FIELDS_BY_OUTPUT_TYPE[args[api.PARAM_OUTPUT]]
-  #  else:
-  #    solr_query += '*' 
+  solr_query += '&fl='
+  if api.PARAM_OUTPUT not in args:
+    solr_query += api.DEFAULT_OUTPUT_FIELDS
+  else:
+    if args[api.PARAM_OUTPUT] in api.FIELDS_BY_OUTPUT_TYPE:
+      solr_query += ','.join(utils.unique_list(api.DEFAULT_OUTPUT_FIELDS + 
+                                               api.FIELDS_BY_OUTPUT_TYPE[args[api.PARAM_OUTPUT]]))
+    else:
+      solr_query += '*' 
 
   return solr_query
 
@@ -406,23 +423,26 @@ def search(args, dumping = False):
 
   query_url = args[api.PARAM_BACKEND_URL]
   if query_url.find("?") < 0:
-    # yeah yeah, should really parse the URL
     query_url += "?"
 
   # Return results in JSON format
   # TODO: return in TSV format for fastest possible parsing, i.e. split("\t") 
   query_url += "&wt=json"
   
-  # Sort
+  # handle &sort= parameter
   if api.PARAM_SORT in args:
-    sortVal = "desc"
-    if args[api.PARAM_SORT] == "eventrangeend":
-       sortVal = "asc"
-    if args[api.PARAM_SORT] == "geodist()":
-       sortVal = "asc"
-    if args[api.PARAM_SORT] == "eventrangestart":
-       sortVal = "asc"
-    query_url += "&sort=" + args[api.PARAM_SORT] + "%20" + sortVal
+    if not args[api.PARAM_SORT] in ['score', 'eventrangend', 'geodist()', 'eventrangestart']:
+      query_url += '&sort=' + urllib.quote_plus(args[api.PARAM_SORT])
+    else:
+      if args[api.PARAM_SORT] == "eventrangeend":
+        sortVal = "asc"
+      elif args[api.PARAM_SORT] == "geodist()":
+        sortVal = "asc"
+      elif args[api.PARAM_SORT] == "eventrangestart":
+        sortVal = "asc"
+      else:
+        sortVal = "desc"
+      query_url += "&sort=" + args[api.PARAM_SORT] + "%20" + sortVal
     
   # date range
   date_string = ""
@@ -516,6 +536,47 @@ def search(args, dumping = False):
 
   return results
 
+HOC_FACET_FIELDS = [
+  'populations_str',
+  'skills_str',
+  'activitytype_str',
+  'country',
+  'categorytags_str',
+  'eventname_str',
+]
+
+def apply_HON_facet_counts(result_set, args):
+
+  node, args = get_solr_backend(args)
+
+  url = node + '?wt=json&q=*:*&rows=0'
+  url += '&fq=' + args.get(api.PARAM_TOCQT, 'feed_providername:handsonnetworkconnect')
+  fetch_result = urlfetch.fetch(url)
+  if fetch_result.status_code == 200:
+    try:
+      json_object = simplejson.loads(fetch_result.content)
+      result_set.total_opportunities = int(json_object['response']['numFound'])
+    except:
+      logging.warning('solr_search.apply_HON_facet_counts could not get numFound from ' + url)
+
+  url = node + '?wt=json&facet=on&facet.mincount=1&rows=0&indent=on'
+  url += DATE_QUERY_GLOBAL 
+  url += '&q=' 
+  url += FULL_QUERY_GLOBAL 
+  url += PROVIDER_GLOBAL 
+  url += apply_filter_query(args.get(api.PARAM_KEY, ''))
+  url += '&facet.field='.join(HOC_FACET_FIELDS)
+
+  fetch_result = urlfetch.fetch(url)
+  if fetch_result.status_code == 200:
+    json_object = simplejson.loads(fetch_result.content)
+    rsp = json_object['facet_counts']['facet_fields']
+
+    for facet_field in HOC_FACET_FIELDS:
+      result_set.hoc_facets[facet_field.replace('_str', '')] = rsp.get(facet_field, [])
+
+  return result_set
+
 
 def calculate_distance(x1, y1, x2, y2):
   """ distance formula applied to lat, long converted to miles """
@@ -592,7 +653,6 @@ def query(query_url, args, cache, dumping = False):
         count = facet_counts["all"]
 
     facet_counts["count"] = count
-    
     result_set.facet_counts = facet_counts
     facets = get_facet_counts(api_key)
     result_set.categories = facets['category_fields']
@@ -731,7 +791,7 @@ def query(query_url, args, cache, dumping = False):
 
   result_set.num_results = len(result_set.results)
 
-  result_set.estimated_results = int(result["response"]["numFound"])
+  result_set.estimated_results = result_set.total_match = int(result["response"]["numFound"])
   parse_end = time.time()
   result_set.parse_time = parse_end - parse_start
 
@@ -785,12 +845,20 @@ def get_facet_counts(api_key):
 def get_geo_counts(args, api_key):
   """ get counts to be displayed in the tabs across top """
 
-  query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
+  if KELVIN:
+    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
                + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
                + '&facet=on&facet.mincount=1&rows=0'
                + '&facet.query=self_directed:false+AND+virtual:false+AND+micro:false'
               )
 
+  else:
+    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
+               + '&fq=' + GEO_GLOBAL + '&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
+               + '&facet=on&facet.mincount=1&rows=0'
+               + '&facet.query=self_directed:false+AND+virtual:false+AND+micro:false'
+              )
+    
   if not args['is_report']:
     query_url += '+AND+-statewide:[*+TO+*]+AND+-nationwide:[*+TO+*]'
 
