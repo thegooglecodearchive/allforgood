@@ -1,5 +1,6 @@
 #!/bin/sh
 :
+exit
 PATH=/home/footprint/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 #OTHER='footprint@li169-139.members.linode.com'
 OTHER='footprint@li67-22.members.linode.com'

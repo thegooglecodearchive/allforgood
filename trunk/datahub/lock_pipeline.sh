@@ -34,7 +34,7 @@ then
 		./download.sh
 		./asciify.sh
 		./spreadsheets/run.php
-		scp -qr spreadsheets/sent footprint@$OTHER.members.linode.com:`pwd`/spreadsheets
+		#scp -qr spreadsheets/sent footprint@$OTHER.members.linode.com:`pwd`/spreadsheets
 		./notify_michael.sh download complete 
 		# clear previous processing
 		rm -f *.transformed

@@ -663,6 +663,9 @@ def solr_retransform(fname, start_time, feed_file_size):
       #bogus event
       continue
 
+    if not 'c:OpportunityID:string' in rows:
+      continue
+
     # Split the date range into separate fields
     # event_date_range can be either start_date or start_date/end_date
     split_date_range = []
@@ -689,7 +692,7 @@ def solr_retransform(fname, start_time, feed_file_size):
     link = str(rows["c:detailURL:URL"])
     if link in BAD_LINKS or check_links.is_bad_link(link, RECHECK_BAD_LINKS):
       num_bad_links += 1
-      footprint_lib.feed_report(rows['c:opportunityID:string'], 'badlinks', shortname, link)
+      footprint_lib.feed_report(rows['c:OpportunityID:string'], 'badlinks', shortname, link)
       dlink = "'" + str(link) + "'"
       if dlink not in BAD_LINKS:
         BAD_LINKS[dlink] = 0
@@ -711,11 +714,11 @@ def solr_retransform(fname, start_time, feed_file_size):
                                                rows["c:categories:string"],
                                                ]))
 
-    rows["c:dateopportunityidgroup:string"] = ''.join([
-                          rows.get('c:opportunityID:string', 
-                                    rows.get('c:OpportunityID:string', 'opportunityID')),
-                          str(rows.get("c:eventrangestart:dateTime", '2001')),
-                                              ])
+    ids = rows.get('c:OpportunityID:string', rows.get('c:opportunityID:string', 'OpportunityID'))
+    ds = str(rows.get("c:eventrangestart:dateTime", '2001'))
+    if ds.find('T') > 0:
+      ds = ds.split('T')[0]
+    rows["c:dateopportunityidgroup:string"] = ''.join([ds, ids])
 
     for key in rows.keys():
       if key.find(':dateTime') != -1:
@@ -748,7 +751,7 @@ def solr_retransform(fname, start_time, feed_file_size):
       if delta_days < -2 and delta_days > -3000:
         # more than 3000? it's the 1971 thing
         # else it expired at least two days ago
-        footprint_lib.feed_report(rows['c:opportunityID:string'], 'expired', shortname, link)
+        footprint_lib.feed_report(rows['c:OpportunityID:string'], 'expired', shortname, link)
         expired_by_end_date += 1
         continue
 
