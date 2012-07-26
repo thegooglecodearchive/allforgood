@@ -74,6 +74,8 @@ KNOWN_ELEMENTS = [
   'hubOrganizationUrl', 
   'hubOrganizationName', 
 
+  'impactArea',
+  'organizationsServed',
 ]
 
 def set_default_time_elem(parent, entity, tagname, timest=xmlh.current_ts()):

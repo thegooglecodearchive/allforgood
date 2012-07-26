@@ -221,6 +221,9 @@ FIELDTYPES = {
   "populations":"string", "population":"string",
   "availabilityDays":"string", "dayWeek":"string",
   "skills":"string", "skill":"string",
+
+  "impactArea":"string", "impactAreas":"string",
+  "organizationsServed":"string",
 }
 
 ORGANIZATION_FIELDS = [                                                                                  
