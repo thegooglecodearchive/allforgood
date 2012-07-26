@@ -459,6 +459,8 @@
 
 <field name="startdate" type="string" indexed="true" stored="true"/>
 <field name="dateopportunityidgroup" type="string" indexed="true" stored="true"/>
+<field name="sponsoringorganizationid" type="string" indexed="true" stored="true"/>
+<field name="sponsoringorganizationid_str" type="string" indexed="true" stored="true"/>
 
 <field name="latlong" type="location" indexed="true" stored="true" multiValued="false"/>
 
@@ -520,6 +522,7 @@
         is added to the index.  It's used either to index the same field differently,
         or to add multiple fields to the same field for easier/faster searching.  -->
 
+ <copyField source="sponsoringorganizationid" dest="sponsoringorganizationid_str"/>
  <copyField source="org_name" dest="org_name_str"/>
  <copyField source="provider_proper_name" dest="provider_proper_name_str"/>
  <copyField source="given_location" dest="given_location_str"/>
@@ -537,6 +540,7 @@
  <copyField source="affiliateorganizationname" dest="affiliateorganizationname_str"/>
  <copyField source="huborganizationname" dest="huborganizationname_str"/>
  <copyField source="event_date_range" dest="startdate" maxChars="10" />
+
 
  <!-- Similarity is the scoring routine for each document vs. a query.
       A custom similarity may be specified here, but the default is fine
