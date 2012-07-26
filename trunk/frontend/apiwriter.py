@@ -21,6 +21,7 @@ from xml.dom.minidom import Document
 
 import template_helpers
 import api
+import utils
 from templatetags.dateutils_tags import custom_date_format
 
 SEARCH_RESULTS_DEBUG_TEMPLATE = 'search_results_debug.html'
@@ -32,8 +33,8 @@ FIELD_TUPLES = [
   ('pubDate','pubdate'),
   ('groupid', 'merge_key'),
   ('provider',),
-  ('eventrangestart', ),
-  ('eventrangeend',),
+  ('startdate', ),
+  ('enddate', ),
   ('base_url',),
   ('xml_url',),
   ('url_short',),
@@ -70,7 +71,7 @@ FIELD_TUPLES = [
   ('street1',),
   ('street2',),
   ('city',),
-  ('region',),
+  ('state',),
   ('zip',),
   ('country',),
   ('affiliateorganizationname',),
@@ -95,9 +96,12 @@ FIELD_TUPLES = [
   ('sexrestrictedto',),
   ('eventname',),
   ('eventid',),
+
+  ('scheduletype',), 
+  ('zip',), 
 ]
 
-HON_FIELDS = [
+HOC_FIELDS = [
   'org_name',
   'org_organizationurl',
   'volunteerhuborganizationurl',
@@ -130,23 +134,21 @@ HON_FIELDS = [
 
   'contactemail',
   'contactphone',
-  #'audienceall',
+  'scheduletype',
   'audienceage',
   'sexrestrictedto',
   'street1',
   'street2',
-  'region',
-  'zip',
+  'state', 'zip', 'postalcode',
 ]
 
 API_FIELD_NAMES_MAP = {
   # solr/result : json/rss output
-  'xml_url' : 'link',
   'item_id' : 'id',
   'org_name' : 'sponsoringOrganizationName',
   'org_organizationurl' : 'sponsoringOrganizationURL',
-  'eventrangestart' : 'startDate',
-  'eventrangeend' : 'endDate',
+  'startdate' : 'startDate',
+  'enddate' : 'endDate',
   'scheduletype' : 'scheduleType',
   'activitytype' : 'activityType',
   'invitationcode' : 'invitationCode',
@@ -159,6 +161,7 @@ API_FIELD_NAMES_MAP = {
   'opportunitytype' : 'opportunityType',
   'registertype' : 'registerType',
   'opportunityid' : 'opportunityId',
+  'location' : 'location_name',
 
   'snippet' : 'description',
   'url' : 'detailUrl',
@@ -185,7 +188,8 @@ API_FIELD_NAMES_MAP = {
   'eventname' : 'eventName',
   'eventid' : 'eventId',
 
-  'zip' : 'postalCode',
+  'state' : 'region',
+  'zip' : 'postalCode', 'postalcode' : 'postalCode',
   'audiencesexrestricted' : 'audienceSexRestricted',
 
   'contactemail' : 'contactEmail',
@@ -213,8 +217,6 @@ STANDARD_FIELDS = [
   'merge_key',
   'provider',
   'startdate', 
-  'startdate',
-  'enddate', 
   'enddate',
   'base_url',
   'xml_url',
@@ -233,7 +235,7 @@ STANDARD_FIELDS = [
   'volunteers_needed',
   'addr1',
   'addrname1', 
-  'sponsoringorganizationname', 
+  'sponsoringorganizationname',
   'orgname',
   'openended',
   'starttime',
@@ -250,15 +252,18 @@ STANDARD_FIELDS = [
   'street1',
   'street2',
   'city',
-  'region',
-  'postalcode',
+  'state',
+  'zip', 'postalcode',
   'country',
+  'minimumage',
+  'contactnoneneeded',
 ]
 
 CALENDAR_FIELDS = [
-  'startdate',
-  'minage',
+  'org_name',
+  'startdate', 
   'enddate',
+  'minage',
   'contactphone',
   'quality_score',
   'detailurl',
@@ -266,6 +271,8 @@ CALENDAR_FIELDS = [
   'sponsoringorganizationurl',
   'volunteerhuborganizationname',
   'volunteerhuborganizationurl',
+  'volunteersfilled',
+  'volunteersslots',
   'latlong',
   'contactname',
   'addr1',
@@ -283,7 +290,7 @@ CALENDAR_FIELDS = [
   'base_url',
   'virtual',
   'provider',
-  'postalcode',
+  'zip', 'postalcode',
   'groupid',
   'audienceage',
   'audienceall',
@@ -300,19 +307,23 @@ CALENDAR_FIELDS = [
   'contactemail',
   'skills',
   'country',
-  'region',
+  'state',
   'url_short',
   'addrname1',
   'endtime',
   'volunteersneeded',
   'rsvpcount',  
+  'scheduletype',
+  'opportunitytype',
 ]
 
 ARRAY_FIELDS = [
   'audienceTags', 
   'availabilityDays', 
+  'appropriateFors', 
   'categoryTags', 
-  'skills'
+  'skills',
+  'categories',
 ]
 
 def get_writer(output):
@@ -431,8 +442,8 @@ class JsonApiWriter(ApiWriter):
               facet_name = facet_value = ''
 
       if not result_set.is_cal:
-        self.json['TotalOpportunities'] = result_set.total_match
-        self.json['TotalMatch'] =  result_set.total_opportunities
+        self.json['TotalOpportunities'] = result_set.total_opportunities
+        self.json['TotalMatch'] =  result_set.total_match
 
     self.items = self.json['items']
         
@@ -443,13 +454,10 @@ class JsonApiWriter(ApiWriter):
     item = {}
     for field_info in self.item_fields:
       name = field_info[0]
-      if len(name) < 2:
+      if result_set.is_hoc and name.lower() not in utils.unique_list(STANDARD_FIELDS + HOC_FIELDS):
         continue
 
-      if not result_set.is_hoc and name.lower() not in STANDARD_FIELDS:
-        continue
-
-      if result_set.is_cal and API_FIELD_NAMES_MAP.get(name, name).lower() not in CALENDAR_FIELDS:
+      if result_set.is_cal and name.lower() not in CALENDAR_FIELDS:
         continue
 
       if not hasattr(result, name):
@@ -623,9 +631,13 @@ class RssApiWriter(ApiWriter):
     added_list = []
     for field in standard_fields:
       (name, content, comment) = build_result_element(field, result)
-      if len(name) < 2:
+      if len(name) < 3:
         continue
-      name = API_FIELD_NAMES_MAP.get(name, name)
+
+      if name == 'xml_url':
+        name = 'link'
+      else:
+        name = API_FIELD_NAMES_MAP.get(name, name)
 
       if name in added_list:
         continue
@@ -645,8 +657,6 @@ class RssApiWriter(ApiWriter):
     added_list = []
     for field_info in namespaced_fields:
       (name, content, comment) = build_result_element(field_info, result)
-      if len(name) < 2:
-        continue
 
       name = self.OurNamespace + ':' + API_FIELD_NAMES_MAP.get(name, name)
 
