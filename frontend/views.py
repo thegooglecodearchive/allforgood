@@ -435,7 +435,7 @@ class search_view(webapp.RequestHandler):
       result_set.is_cal = True if output.find('cal') >= 0 else False
 
       if result_set.is_hoc:
-        result_set = solr_search.apply_HON_facet_counts(result_set, unique_args)
+        result_set = solr_search.apply_HOC_facet_counts(result_set, unique_args)
 
       writer = apiwriter.get_writer(output)
       writer.setup(self.request, result_set)
@@ -444,8 +444,6 @@ class search_view(webapp.RequestHandler):
 
       for result in result_set.clipped_results:
         writer.add_result(result, result_set)
-        #if result_set.is_cal and len(writer.items) >= 8:
-        #  break
 
       logging.info('views.search_view completed apiwriter')
 

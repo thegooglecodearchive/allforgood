@@ -543,21 +543,27 @@ HOC_FACET_FIELDS = [
   'country',
   'categorytags_str',
   'eventname_str',
+  'impactarea_str',
+  'org_name_str',
 ]
 
-def apply_HON_facet_counts(result_set, args):
+HOC_FACET_FIELD_MAP = {
+  'org_name' : 'organizationsServed' 
+}
+
+def apply_HOC_facet_counts(result_set, args):
 
   node, args = get_solr_backend(args)
 
   url = node + '?wt=json&q=*:*&rows=0'
-  url += '&fq=' + args.get(api.PARAM_TOCQT, 'feed_providername:handsonnetworkconnect')
+  url += '&fq=' + urllib.quote_plus(args.get(api.PARAM_TOCQT, 'feed_providername:handsonnetworkconnect'))
   fetch_result = urlfetch.fetch(url)
   if fetch_result.status_code == 200:
     try:
       json_object = simplejson.loads(fetch_result.content)
       result_set.total_opportunities = int(json_object['response']['numFound'])
     except:
-      logging.warning('solr_search.apply_HON_facet_counts could not get numFound from ' + url)
+      logging.warning('solr_search.apply_HOC_facet_counts could not get numFound from ' + url)
 
   url = node + '?wt=json&facet=on&facet.mincount=1&rows=0&indent=on'
   url += DATE_QUERY_GLOBAL 
@@ -565,7 +571,7 @@ def apply_HON_facet_counts(result_set, args):
   url += FULL_QUERY_GLOBAL 
   url += PROVIDER_GLOBAL 
   url += apply_filter_query(args.get(api.PARAM_KEY, ''))
-  url += '&facet.field='.join(HOC_FACET_FIELDS)
+  url += '&facet.field=' + '&facet.field='.join(HOC_FACET_FIELDS)
 
   fetch_result = urlfetch.fetch(url)
   if fetch_result.status_code == 200:
@@ -573,8 +579,10 @@ def apply_HON_facet_counts(result_set, args):
     rsp = json_object['facet_counts']['facet_fields']
 
     for facet_field in HOC_FACET_FIELDS:
-      result_set.hoc_facets[facet_field.replace('_str', '')] = rsp.get(facet_field, [])
-
+      hoc_name = facet_field.replace('_str', '')
+      hoc_name = HOC_FACET_FIELD_MAP.get(hoc_name, hoc_name)
+      result_set.hoc_facets[hoc_name] = rsp.get(facet_field, [])
+    
   return result_set
 
 
@@ -764,9 +772,9 @@ def query(query_url, args, cache, dumping = False):
           delta = res.enddate - res.startdate
           res.duration = str(delta.days)
 
-    for name in apiwriter.HON_FIELDS:
+    for name in utils.unique_list(apiwriter.STANDARD_FIELDS + apiwriter.HOC_FIELDS + apiwriter.CALENDAR_FIELDS):
       name = name.lower()
-      if name in entry:
+      if len(name) >= 2 and not hasattr(res, name) or not getattr(res, name, None):
         value = entry.get(name, '')
         if not isinstance(value, list):
           setattr(res, name, str(value))
