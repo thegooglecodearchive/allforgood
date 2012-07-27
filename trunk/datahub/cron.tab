@@ -13,7 +13,7 @@ MAILTO=danstryker1@gmail.com
 # uncomment for node 1
 #0 0,12 * * * /home/footprint/bin/newmotd.sh "NOW THIS NODE IS SERVING"
 #0 6,18 * * * /home/footprint/bin/newmotd.sh "NOW THIS NODE IS PROCESSING"
-#15 6,18 * * * /home/footprint/allforgood-read-only/datahub/lock_pipeline.sh
+#15 6,18 * * * $DATAHUB/lock_pipeline.sh
 # uncomment for node 2
 #0 6,18 * * * /home/footprint/bin/newmotd.sh "NOW THIS NODE IS SERVING"
 #0 0,12 * * * /home/footprint/bin/newmotd.sh "NOW THIS NODE IS PROCESSING"
