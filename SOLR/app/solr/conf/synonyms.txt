@@ -11,21 +11,35 @@
 # limitations under the License.
 
 #-----------------------------------------------------------------------
-#some test synonym mappings unlikely to appear in real input text
-aaafoo => aaabar
-bbbfoo => bbbfoo bbbbar
-cccfoo => cccbar cccbaz
-fooaaa,baraaa,bazaaa
-
-# Some synonym groups specific to this example
-GB,gib,gigabyte,gigabytes
-MB,mib,megabyte,megabytes
-Television, Televisions, TV, TVs
-#notice we use "gib" instead of "GiB" so any WordDelimiterFilter coming
-#after us won't split it into two words.
-
-# Synonym mappings can be used for spelling correction too
-pixima => pixma
-
-a\,a => b\,b
-
+# AFG Synonyms
+September11,9/11,september 11,september 11th,september eleventh,day of service and remembrance,911org,911day,911
+Disaster,Preparedness,CERT
+MLK,mlk,martin luther,mlktech,king day,day on not a day off,ml king,MLKDay
+OilSpill,oil spill,bp,gulf cleanup,oil cleanup,spill cleanup
+EarthDay,environment,nature,environmental,outdoors,gardening,garden,wetlands,forest,forests,tree,trees,sierra club
+Moms,mom,mother,mothers
+Dad,dads,father,fathers
+Kids,kid,children 
+Hunger,anti-hunger,childhood hunger,feeding america,food bank,food pantry,food programs,free lunch,healthy meals,hungry,hungry children,meal programs,meals on wheels,nutritious,reduced lunch,school lunches,share our strength,starvation,starving,underfed,soup kitchen,poor nutrition,malnourished,foodbank
+Nature,environment,environmental,outdoors,gardening,wetlands,forest,forests
+Education,read,reading,book drive,literacy,academic,math,homework
+Teacher
+Teach,teaching
+Student, students
+Animals,animal,animals,dog,dogs,cat,cats,zoo,bird,birds,zoos,puppies,puppy,kitten,kitty,critter,critters,frog,frogs,turtle,turtles,kittens
+Health,hospital,hospitals,medical,healthcare,mental,hospice,nursing,cancer,nurse,nurses,doctor,doctors
+Seniors,senior,seniors,elderly
+Technology,website,computer,computers,technology,web,internet
+Poverty,homeless,poverty,poor
+Tutoring,tutor,mentoring,mentor
+Gardening,garden,gardens,gardener,gardeners,gardening
+Lawyer,lawyer.lawyers,attorney,attorneys,legal counsel,family law,court system,court facilities,court forms,legal information,legal help
+Doctor,doctor,doctors,medical professional,medical professionals,nurse,nurses
+Programmer,programmer,programmers,software developer,software developers,software engineer,software engineer,software
+Repairman,plumber,plumbers,electrician,electricians,carpenter,carpenters,bricklayer,bricklayers,woodworker,woodworkers
+Artist,artist,artists,drawing,painter,painters,painting,sculpting,sculptor,sculptors
+GraphicDesigner,graphic designer,graphic designers,graphic design,graphic skills,graphics skills,graphic artist,graphic artists
+Videographer,videographer,videographers
+VeteransDay,veteran,veterans
+handson,hands on
+united way,unitedway
