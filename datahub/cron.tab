@@ -3,11 +3,9 @@ DATAHUB=/home/footprint/allforgood-read-only/datahub
 MAILTO=danstryker1@gmail.com
 @reboot /home/footprint/allforgood-read-only/SOLR/app/restart.sh
 0 14 * * * /home/footprint/bin/backup.sh > /dev/null
-# link scan once once a week 
-#0 3 * * 6 $DATAHUB/all_scan.sh > $DATAHUB/scan.log
 # get twitter feeds every 15 minutes
 */15 * * * * $DATAHUB/twitter.sh
-# check for updates
+# check for HOC updates
 * * * * * cd /home/footprint/allforgood-read-only/datahub ; ./hon_update.sh >> log 2>&1
 # alternate serve, process
 # uncomment for node 1
