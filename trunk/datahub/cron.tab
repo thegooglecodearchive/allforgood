@@ -1,8 +1,20 @@
-@reboot /home/footprint/bin/rebooted.sh
 # m h  dom mon dow   command
-
-MAILTO=""
-1 22 * * * /home/footprint/bin/backup.sh > /home/fooprint/log/log.backup 2>&1
-
-MAILTO=mt1955@gmail.com,asah@midgard.net,danstryker1@gmail.com
-1 0 * * * /home/footprint/allforgood/datahub/lock_pipeline.sh
+DATAHUB=/home/footprint/allforgood-read-only/datahub
+MAILTO=danstryker1@gmail.com
+@reboot /home/footprint/allforgood-read-only/SOLR/app/restart.sh
+0 14 * * * /home/footprint/bin/backup.sh > /dev/null
+# link scan once once a week 
+#0 3 * * 6 $DATAHUB/all_scan.sh > $DATAHUB/scan.log
+# get twitter feeds every 15 minutes
+*/15 * * * * $DATAHUB/twitter.sh
+# check for updates
+* * * * * cd /home/footprint/allforgood-read-only/datahub ; ./hon_update.sh >> log 2>&1
+# alternate serve, process
+# uncomment for node 1
+#0 0,12 * * * /home/footprint/bin/newmotd.sh "NOW THIS NODE IS SERVING"
+#0 6,18 * * * /home/footprint/bin/newmotd.sh "NOW THIS NODE IS PROCESSING"
+#15 6,18 * * * /home/footprint/allforgood-read-only/datahub/lock_pipeline.sh
+# uncomment for node 2
+#0 6,18 * * * /home/footprint/bin/newmotd.sh "NOW THIS NODE IS SERVING"
+#0 0,12 * * * /home/footprint/bin/newmotd.sh "NOW THIS NODE IS PROCESSING"
+#15 0,12 * * * $DATAHUB/lock_pipeline.sh
