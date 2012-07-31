@@ -356,7 +356,7 @@ def form_solr_query(args):
   # field list
   solr_query += '&fl='
   if api.PARAM_OUTPUT not in args:
-    solr_query += api.DEFAULT_OUTPUT_FIELDS
+    solr_query += ','.join(api.DEFAULT_OUTPUT_FIELDS)
   else:
     if args[api.PARAM_OUTPUT] in api.FIELDS_BY_OUTPUT_TYPE:
       solr_query += ','.join(utils.unique_list(api.DEFAULT_OUTPUT_FIELDS + 
