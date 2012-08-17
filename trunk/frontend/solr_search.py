@@ -235,7 +235,9 @@ def form_solr_query(args):
                   + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,150,10)^1}')
     GEO_GLOBAL = urllib.quote_plus(geo_params)
   else:
-    geo_params = '{!geofilt}&pt=%s,%s&sfield=latlong&d=%s' % (str(lat), str(lng), str(max_dist * 1.609))
+    geo_params = ('{!geofilt}&pt=%s,%s&sfield=latlong&bf=recip(geodist(),1,150,10)&d=%s' 
+                   % (str(lat), str(lng), str(max_dist * 1.609))
+                 )
     GEO_GLOBAL = geo_params
 
 
