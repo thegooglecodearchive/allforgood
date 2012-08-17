@@ -132,6 +132,8 @@ HOC_FIELDS = [
   'eventrangestart',
   'eventrangeend',
 
+  'distance',
+
   'contactemail',
   'contactphone',
   'scheduletype',
@@ -291,6 +293,7 @@ CALENDAR_FIELDS = [
   'virtual',
   'provider',
   'zip', 'postalcode',
+  'distance',
   'groupid',
   'audienceage',
   'audienceall',
