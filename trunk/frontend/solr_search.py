@@ -114,7 +114,7 @@ def apply_category_query(q):
   return rtn.replace('category:', '')
 
 
-def apply_filter_query(api_key):
+def apply_filter_query(api_key, args):
   """ """
 
   rtn = ''
@@ -128,6 +128,10 @@ def apply_filter_query(api_key):
   for k,fq in API_KEY_NEGATED_FILTER_QUERIES.items():
     if k != api_key:
       rtn += '&fq=' + urllib.quote_plus(fq)
+
+  given_query = args.get(api.PARAM_Q, '')
+  if given_query and given_query.lower().find('invitationcode:') < 0:
+    rtn += '&fq=' + urllib.quote_plus('-invitationcode:[* TO *]')
 
   return rtn
 
@@ -292,12 +296,23 @@ def form_solr_query(args):
   
   if api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all":
     # Type: these map to the tabs on the search results page
+    # quote plus
     if args[api.PARAM_TYPE] == "self_directed":
       solr_query += urllib.quote_plus(" AND self_directed:true")
+    elif args[api.PARAM_TYPE] == "nationwide":
+      nationwide_param = args.get('nationwide', '')
+      if nationwide_param:
+        solr_query += urllib.quote_plus(" AND country:" + nationwide_param)
+      solr_query += urllib.quote_plus(" AND micro:false AND self_directed:false")
+      
     elif args[api.PARAM_TYPE] == "statewide":
-      solr_query += urllib.quote_plus(" AND (statewide:" + STATEWIDE_GLOBAL 
-                                             + " OR nationwide:" + NATIONWIDE_GLOBAL + ")"
-                                             + " AND micro:false AND self_directed:false")
+      statewide_param = args.get('statewide', '')
+      if statewide_param:
+        solr_query += urllib.quote_plus(" AND state:" + statewide_param)
+      else:
+        solr_query += urllib.quote_plus(" AND (statewide:" + STATEWIDE_GLOBAL + " OR nationwide:" + NATIONWIDE_GLOBAL + ")")
+      solr_query += urllib.quote_plus(" AND micro:false AND self_directed:false")
+
     elif args[api.PARAM_TYPE] == "virtual":
       solr_query += urllib.quote_plus(" AND virtual:true AND micro:false AND self_directed:false")
     elif args[api.PARAM_TYPE] == "micro":
@@ -306,13 +321,7 @@ def form_solr_query(args):
     # this keeps the non-geo counts out of the refine by counts
     fq = '&fq='
     fq += urllib.quote('self_directed:false AND virtual:false AND micro:false')
-    #if not args['is_report']:
-    #fq += urllib.quote(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
     solr_query += fq
-
-  # uncomment following line for geofilt
-  if not KELVIN:
-    solr_query += '&fq=' + geo_params
     
   global FULL_QUERY_GLOBAL
   FULL_QUERY_GLOBAL = solr_query
@@ -346,12 +355,15 @@ def form_solr_query(args):
   BACKEND_GLOBAL, args = get_solr_backend(args)
   
   solr_query += apply_boosts(args, original_query);
-  solr_query += apply_filter_query(api_key)
+  solr_query += apply_filter_query(api_key, args)
 
   if args.get(api.PARAM_MERGE, None) == '3':
     solr_query += ("&group=true&group.field=opportunityid&group.main=true")
   elif args.get(api.PARAM_MERGE, None) == '4':
     solr_query += ("&group=true&group.field=dateopportunityidgroup&group.main=true&group.limit=7")
+
+  if not KELVIN:
+    solr_query += '&fq=' + geo_params
 
   # field list
   solr_query += '&fl='
@@ -363,6 +375,10 @@ def form_solr_query(args):
                                                api.FIELDS_BY_OUTPUT_TYPE[args[api.PARAM_OUTPUT]]))
     else:
       solr_query += '*' 
+
+  #print 
+  #print urllib.unquote_plus(solr_query)
+  #sys.exit(0)
 
   return solr_query
 
@@ -557,6 +573,7 @@ def apply_HOC_facet_counts(result_set, args):
 
   url = node + '?wt=json&q=*:*&rows=0'
   url += '&fq=' + urllib.quote_plus(args.get(api.PARAM_TOCQT, 'feed_providername:handsonnetworkconnect'))
+
   fetch_result = urlfetch.fetch(url)
   if fetch_result.status_code == 200:
     try:
@@ -570,7 +587,7 @@ def apply_HOC_facet_counts(result_set, args):
   url += '&q=' 
   url += FULL_QUERY_GLOBAL 
   url += PROVIDER_GLOBAL 
-  url += apply_filter_query(args.get(api.PARAM_KEY, ''))
+  url += apply_filter_query(args.get(api.PARAM_KEY, ''), args)
   url += '&facet.field=' + '&facet.field='.join(HOC_FACET_FIELDS)
 
   fetch_result = urlfetch.fetch(url)
@@ -662,7 +679,7 @@ def query(query_url, args, cache, dumping = False):
 
     facet_counts["count"] = count
     result_set.facet_counts = facet_counts
-    facets = get_facet_counts(api_key)
+    facets = get_facet_counts(api_key, args)
     result_set.categories = facets['category_fields']
     result_set.providers = facets['provider_fields']
     
@@ -806,7 +823,7 @@ def query(query_url, args, cache, dumping = False):
   return result_set
 
 
-def get_facet_counts(api_key):
+def get_facet_counts(api_key, args):
   """ get the category/provider counts to be displayed in refine by section """
 
   category_fields = dict()
@@ -820,7 +837,7 @@ def get_facet_counts(api_key):
             + '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL 
             + '&facet.mincount=1&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query))
 
-  query_url += apply_filter_query(api_key)
+  query_url += apply_filter_query(api_key, args)
   logging.info("get_facet_counts: " + query_url)
 
   try:
@@ -868,9 +885,9 @@ def get_geo_counts(args, api_key):
               )
     
   if not args['is_report']:
-    query_url += '+AND+-statewide:[*+TO+*]+AND+-nationwide:[*+TO+*]'
+    query_url += urllib.quote_plus(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
 
-  query_url += apply_filter_query(api_key)
+  query_url += apply_filter_query(api_key, args)
   logging.info("get_geo_counts: " + query_url)
 
   try:
@@ -899,7 +916,7 @@ def get_type_counts(args, api_key):
                + '&facet.field=statewide&facet.field=nationwide'
               )
 
-  query_url += apply_filter_query(api_key)
+  query_url += apply_filter_query(api_key, args)
   logging.info("get_type_counts: " + query_url)
 
   try:

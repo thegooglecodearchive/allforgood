@@ -108,6 +108,8 @@ PARAM_VIRTUAL = 'virtual'
 PARAM_MERGE = 'merge'
 PARAM_DUMP = 'dump'
 PARAM_REFERRER = 'referrer'
+PARAM_STATEWIDE = 'statewide'
+PARAM_NATIONWIDE = 'nationwide'
 
 PARAM_LAT = 'lat'
 PARAM_LNG = 'long'
