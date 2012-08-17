@@ -36,7 +36,7 @@ DEFAULT_BOOSTS = [
 CATEGORY_QUERIES = {
   'category:mlkday' : '(mlkday OR -2009 OR -2010 OR -2011 OR -feed_providername:girlscouts OR (-feed_providername:idealist AND eventrangestart:[0001-01-01T00:00:00Z TO 2012-01-22T23:59:59Z] AND eventrangeend:[2012-01-07T00:00:00Z TO *]))',
 
-  'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-13T23:59:59Z]) AND (eventrangeend:[2011-09-09T00:00:00Z TO *]))',
+  'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2012-09-13T23:59:59Z]) AND (eventrangeend:[2012-09-09T00:00:00Z TO *]))',
 
   'category:IAMS' : '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))',
 
@@ -52,9 +52,9 @@ CATEGORY_BOOSTS = {
 }
 
 API_KEY_QUERIES = {
-  'americanexpress' : '(911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-09-25T00:00:00Z] AND eventrangeend:[2011-08-30T00:00:00Z TO *]))',
+  'americanexpress' : '(911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2012-09-25T00:00:00Z] AND eventrangeend:[2012-08-30T00:00:00Z TO *]))',
 	
-  '911Day' : '(911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2011-10-15T00:00:00Z] AND eventrangeend:[2011-08-11T00:00:00Z TO *]))',
+  '911Day' : '(911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2012-10-15T00:00:00Z] AND eventrangeend:[2012-08-11T00:00:00Z TO *]))',
 		
   'joiningforces' : '(military OR veteran)',
 		
@@ -72,10 +72,12 @@ API_KEY_BOOSTS = {
   
   '911Day' : ' title:911day^1000 description:911day^100 feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000 feed_providername:handsonnetworktechnologies^2000',
   
-  'daytabank' : ' feed_providername:handsonnetwork1800^1000 feed_providername:handsonnetworkconnect^1000 feed_providername:handsonnetworktechnologies^1000 feed_providername:daytabank^2000 (eventrangestart:[2011-10-22T00:00:00Z TO 2011-10-22T23:59:59Z])^1000',
+  'daytabank' : ' feed_providername:handsonnetwork1800^1000 feed_providername:handsonnetworkconnect^1000 feed_providername:handsonnetworktechnologies^1000 feed_providername:daytabank^2000 (eventrangestart:[2012-10-22T00:00:00Z TO 2012-10-22T23:59:59Z])^1000',
     
   'joiningforces' : ' title:military^1 description:military^5 (*:* -description:veteran)^5 (*:* -org_name:spouse)^10 (*:* -title:invasive)^2000',
   
+  'exelis' : ' feed_providername:handsonnetworkconnect^10',
+
 }
 
 API_KEY_FILTER_QUERIES = {
