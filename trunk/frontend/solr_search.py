@@ -130,8 +130,10 @@ def apply_filter_query(api_key, args):
       rtn += '&fq=' + urllib.quote_plus(fq)
 
   given_query = args.get(api.PARAM_Q, '')
-  if given_query and given_query.lower().find('invitationcode:') < 0:
+  if not args.get(api.PARAM_INVITATIONCODE, ''):
     rtn += '&fq=' + urllib.quote_plus('-invitationcode:[* TO *]')
+  else:
+    rtn += '&fq=' + urllib.quote_plus('invitationcode:' + args.get(api.PARAM_INVITATIONCODE, ''))
 
   return rtn
 
@@ -217,8 +219,7 @@ def form_solr_query(args):
   lat = '37'
   lng = '-95'
   max_dist = 12400
-  if api.PARAM_LAT in args and api.PARAM_LNG in args and \
-     (args[api.PARAM_LAT] != "" and args[api.PARAM_LNG] != ""):
+  if args.get(api.PARAM_LAT, None) and args.get(api.PARAM_LNG, None):
     lat = args[api.PARAM_LAT]
     lng = args[api.PARAM_LNG]
     if api.PARAM_VOL_DIST not in args or args[api.PARAM_VOL_DIST] == "":
@@ -227,23 +228,21 @@ def form_solr_query(args):
     if args[api.PARAM_VOL_DIST] < 1:
       args[api.PARAM_VOL_DIST] = DEFAULT_VOL_DIST
     max_dist = float(args[api.PARAM_VOL_DIST])
-  
+
   
   global GEO_GLOBAL
-  if KELVIN:
-    geo_params = ('{!spatial lat=' + str(lat) + ' long=' + str(lng) 
-                  + ' radius=' + str(max_dist) + ' boost=recip(dist(geo_distance),1,150,10)^1}')
-    GEO_GLOBAL = urllib.quote_plus(geo_params)
-  else:
-    geo_params = ('{!geofilt}&pt=%s,%s&sfield=latlong&bf=recip(geodist(),1,150,10)&d=%s' 
+  geo_params = ('{!geofilt}&pt=%s,%s&sfield=latlong&d=%s&d1=0' 
                    % (str(lat), str(lng), str(max_dist * 1.609))
-                 )
-    GEO_GLOBAL = geo_params
+               )
+  geo_params += "&bf=recip(geodist(),1,150,10)"
+  GEO_GLOBAL = geo_params
 
-
-  if args['is_report'] or (api.PARAM_TYPE in args and args[api.PARAM_TYPE] != "all"):
+  if (args['is_report'] 
+      or (args.get(api.PARAM_TYPE) and args.get(api.PARAM_TYPE, None) != "all")
+      or args.get(api.PARAM_INVITATIONCODE, None)
+  ):
     geo_params = ""       
-    if args['is_report']:
+    if args['is_report'] or args.get(api.PARAM_INVITATIONCODE, None):
       GEO_GLOBAL = ''
 
   # Running our keyword through our categories dictionary to see if we need to adjust our keyword param   
@@ -290,9 +289,6 @@ def form_solr_query(args):
   global KEYWORD_GLOBAL, STATEWIDE_GLOBAL, NATIONWIDE_GLOBAL
   KEYWORD_GLOBAL = urllib.quote_plus(solr_query)
   STATEWIDE_GLOBAL, NATIONWIDE_GLOBAL = geocode.get_statewide(lat, lng)
-
-  if KELVIN:
-    solr_query = geo_params + solr_query
 
   solr_query = urllib.quote_plus(solr_query)
   
@@ -364,8 +360,7 @@ def form_solr_query(args):
   elif args.get(api.PARAM_MERGE, None) == '4':
     solr_query += ("&group=true&group.field=dateopportunityidgroup&group.main=true&group.limit=7")
 
-  if not KELVIN:
-    solr_query += '&fq=' + geo_params
+  solr_query += '&fq=' + geo_params
 
   # field list
   solr_query += '&fl='
@@ -661,7 +656,7 @@ def query(query_url, args, cache, dumping = False):
   else:
     facet_counts = dict()    
     ks = "self_directed:false AND virtual:false AND micro:false"
-    if not args['is_report']:
+    if not args['is_report'] and not args.get(api.PARAM_INVITATIONCODE, None):
       ks += " AND -statewide:[* TO *] AND -nationwide:[* TO *]"
     facet_counts["all"] = int(all_facets["facet_counts"]["facet_queries"][ks])
 
@@ -836,10 +831,11 @@ def get_facet_counts(api_key, args):
     query.append("facet.query=" + urllib.quote_plus(key))  
 
   query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
-            + '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL 
+            + '&q=' + FULL_QUERY_GLOBAL + PROVIDER_GLOBAL + '&fq=' + GEO_GLOBAL
             + '&facet.mincount=1&facet.field=provider_proper_name_str&facet=on&rows=0&' + "&".join(query))
 
   query_url += apply_filter_query(api_key, args)
+
   logging.info("get_facet_counts: " + query_url)
 
   try:
@@ -872,21 +868,13 @@ def get_facet_counts(api_key, args):
 def get_geo_counts(args, api_key):
   """ get counts to be displayed in the tabs across top """
 
-  if KELVIN:
-    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
-               + '&q=' + GEO_GLOBAL + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
-               + '&facet=on&facet.mincount=1&rows=0'
-               + '&facet.query=self_directed:false+AND+virtual:false+AND+micro:false'
-              )
-
-  else:
-    query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
+  query_url = (BACKEND_GLOBAL + '?wt=json' + DATE_QUERY_GLOBAL 
                + '&fq=' + GEO_GLOBAL + '&q=' + KEYWORD_GLOBAL + PROVIDER_GLOBAL 
                + '&facet=on&facet.mincount=1&rows=0'
                + '&facet.query=self_directed:false+AND+virtual:false+AND+micro:false'
               )
     
-  if not args['is_report']:
+  if not args['is_report'] and not args.get(api.PARAM_INVITATIONCODE, None):
     query_url += urllib.quote_plus(' AND -statewide:[* TO *] AND -nationwide:[* TO *]')
 
   query_url += apply_filter_query(api_key, args)
