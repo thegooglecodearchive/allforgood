@@ -40,7 +40,7 @@ CATEGORY_QUERIES = {
 
   'category:IAMS' : '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))',
 
-  'category:education' : '((education OR tutoring) -feed_providername:girlscouts -prison -prisoner -inmate -disaster -emergency)',
+  'category:education' : '((education OR tutoring) AND -feed_providername:girlscouts AND -prison AND -prisoner AND -inmate AND -disaster AND -emergency)',
 }
 
 CATEGORY_BOOSTS = {
@@ -76,7 +76,7 @@ API_KEY_BOOSTS = {
     
   'joiningforces' : ' title:military^1 description:military^5 (*:* -description:veteran)^5 (*:* -org_name:spouse)^10 (*:* -title:invasive)^2000',
   
-  'exelis' : ' feed_providername:handsonnetworkconnect^10',
+  'exelis' : ' feed_providername:handsonnetworkconnect^100 affiliateorganizationid:2002^1000 aggregatefield:(military OR veteran)^3',
 
 }
 
@@ -84,6 +84,8 @@ API_KEY_FILTER_QUERIES = {
   'starbucks' : '-provider_proper_name_str:[* TO F*] AND  -provider_proper_name_str:[Gir* TO H*] AND  -provider_proper_name_str:[I* TO *]',
 
   '243234' : '-feed_providername:aarp AND -feed_providername:meetup AND -feed_providername:mybarackobama',
+
+  'hilton' : '-provider_proper_name_str:[* TO G*] AND -provider_proper_name_str:[I* TO *]',
 }
 
 API_KEY_NEGATED_FILTER_QUERIES = {
