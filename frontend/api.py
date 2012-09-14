@@ -121,3 +121,4 @@ PARAM_SOURCE = "source"
 PARAM_DISTANCE = "distance"
 
 PARAM_TOCQT = 'TotalOpportunitiesCountQueryTerm'
+PARAM_INVITATIONCODE = 'invitationCode'
