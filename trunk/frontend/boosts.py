@@ -76,7 +76,7 @@ API_KEY_BOOSTS = {
     
   'joiningforces' : ' title:military^1 description:military^5 (*:* -description:veteran)^5 (*:* -org_name:spouse)^10 (*:* -title:invasive)^2000',
   
-  'exelis' : ' feed_providername:handsonnetworkconnect^100 affiliateorganizationid:2002^1000 aggregatefield:(military OR veteran)^3',
+  'exelis' : ' feed_providername:handsonnetworkconnect^100 affiliateorganizationid:2002^1000 detailurl:http*signupandserve*^1000 aggregatefield:(military OR veteran)^3',
 
 }
 
@@ -91,6 +91,9 @@ API_KEY_FILTER_QUERIES = {
 API_KEY_NEGATED_FILTER_QUERIES = {
   # eg, "if not starbucks..."
   'starbucks' : '-feed_providername:getinvolved',
+
+  # commented out filtering to prevent Blueprint opps from showing up in any queries other than on Exelis.	
+  #'exelis' : '-detailurl:http*signupandserve*',
 }
 
 FILTER_QUERIES = [
