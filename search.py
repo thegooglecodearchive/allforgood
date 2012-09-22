@@ -21,10 +21,8 @@ import datetime
 import hashlib
 import logging
 import copy
-import pickle
 
-#from versioned_memcache import memcache
-from google.appengine.api import memcache
+from versioned_memcache import memcache
 from utils import safe_str, safe_int
 
 import api
@@ -32,36 +30,9 @@ import geocode
 import solr_search
 import re
 
-from google.appengine.ext import db
-
 from query_rewriter import get_rewriters
 
 CACHE_TIME = 24*60*60  # seconds
-MAX_CACHE_SZ = (1000000) - 1
-
-class CacheUpdate(db.Model):
-  updated = db.DateTimeProperty(auto_now = True)
-
-
-def update_cache_key():
-  """ """
-  try:
-    rec = CacheUpdate.get_or_insert('search')
-    rec.put()
-  except:
-    logging.warning("update_cache_key failed")
-
-
-def get_cache_key(normalized_query_string, chunk = 0):
-  """ """
-
-  rtn = 'search:' + normalized_query_string
-  rec = CacheUpdate.get_by_key_name('search')
-  if rec:
-    rtn += str(rec.updated)
-
-  return 'chu' + str(chunk) + ':' + hashlib.md5(rtn).hexdigest()
-
 
 def run_query_rewriters(query):
   rewriters = get_rewriters()
@@ -104,31 +75,14 @@ def search(args, dumping = False):
     use_cache = False
     logging.debug('Not using search cache')
 
+  # note: key cannot exceed 250 bytes
+  memcache_key = hashlib.md5('search:' + normalized_query_string).hexdigest()
   start = safe_int(args[api.PARAM_START], api.CONST_MIN_START)
   num = safe_int(args[api.PARAM_NUM], api.CONST_DFLT_NUM)
 
   result_set = None
-  # note: key cannot exceed 250 bytes
-  #memcache_key = get_cache_key(normalized_query_string)
-
   if use_cache:
-    result_set_str = ''
-    chunk = 0
-    while True:
-      logging.info(get_cache_key(normalized_query_string, chunk))
-      buff = memcache.get(get_cache_key(normalized_query_string, chunk))
-      if not buff:
-        break
-      result_set_str += buff
-      chunk += 1
-
-    if result_set_str:
-      try:
-        result_set = pickle.loads(result_set_str)
-      except:
-        logging.warning('result_set not completely in cache')
-        pass
-
+    result_set = memcache.get(memcache_key)
     if result_set:
       logging.debug('in cache: "' + normalized_query_string + '"')
       if len(result_set.merged_results) < start + num:
@@ -139,17 +93,8 @@ def search(args, dumping = False):
 
   if not result_set:
     result_set = fetch_result_set(args, dumping)
-    if result_set:
-      result_set_str = pickle.dumps(result_set)
-      sz = len(result_set_str)
-      chunk = idx = 0
-      while sz > 0:
-        buff = result_set_str[idx:idx + MAX_CACHE_SZ]
-        memcache.set(get_cache_key(normalized_query_string, chunk), buff, time=CACHE_TIME)
-        sz -= MAX_CACHE_SZ
-        idx += MAX_CACHE_SZ
-        chunk += 1
-
+    memcache.set(memcache_key, result_set, time=CACHE_TIME)
+    
   logging.info('result_set size after dedup: ' + str(result_set.num_merged_results))
 
   result_set.clip_merged_results(start, num)
@@ -224,7 +169,7 @@ def normalize_query_values(args, dumping = False):
     use_cache = False
     logging.debug('Not using search cache')
 
-  # PARAM_TIMEPERIOD overrides VOL_STARTDATE/VOL_ENDDATE
+#  # PARAM_TIMEPERIOD overrides VOL_STARTDATE/VOL_ENDDATE
   if api.PARAM_TIMEPERIOD in args:    
     period = args[api.PARAM_TIMEPERIOD]
     # No need to pass thru, just convert period to discrete date args.
@@ -290,6 +235,9 @@ def normalize_query_values(args, dumping = False):
     # args[api.PARAM_VOL_LOC] = args[api.PARAM_Q] + " USA"
     # MT: 8/26/2010 - in practice that causes a lot of 602 results in geocode, eg "Laywers, USA"
     args[api.PARAM_VOL_LOC] = "USA"
+
+  # Commenting this out now that we Solr synonyms
+  #args[api.PARAM_Q] = run_query_rewriters(args[api.PARAM_Q])
 
   args[api.PARAM_LAT] = args[api.PARAM_LNG] = ""
   if api.PARAM_VIRTUAL in args:
