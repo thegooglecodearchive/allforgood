@@ -45,35 +45,24 @@ PARAM_FACET_MINCNT = 'facet.mincount'
 
 # If PARAM_OUTPUT matches one of these entries, only certain fields will be
 # returned. Otherwise, all fields are returned.
-
-import apiwriter
-FIELDS_BY_OUTPUT_TYPE = {
-  'html' : ['abstract', 
-            'categories',
-            'org_name',
-            'detailurl', 
-            'event_date_range', 
-            'feed_providername', 
-            'ical_recurrence', 
-            'id', 
-            'latitude', 
-            'location_string', 
-            'longitude', 
-            'openended,', 
-            'title', 
-            'description', 
-           ],
-   'json' : apiwriter.STANDARD_FIELDS,
-   'xml' : apiwriter.STANDARD_FIELDS,
-   'json-hoc' : (apiwriter.STANDARD_FIELDS + apiwriter.HOC_FIELDS),
-   'xml-hoc' : (apiwriter.STANDARD_FIELDS + apiwriter.HOC_FIELDS),
-   'json-hoc-cal' : (apiwriter.STANDARD_FIELDS + apiwriter.CALENDAR_FIELDS),
-   'xml-hoc-cal' : (apiwriter.STANDARD_FIELDS + apiwriter.CALENDAR_FIELDS),
-}
+FIELDS_BY_OUTPUT_TYPE = {'html' :
+                           'abstract,' + \
+                           'categories,org_name,' + \
+                           'detailurl,' + \
+                           'event_date_range,' + \
+                           'feed_providername,' + \
+                           'ical_recurrence,' + \
+                           'id,' + \
+                           'latitude,' + \
+                           'location_string,' + \
+                           'longitude,' + \
+                           'openended,' + \
+                           'title,' + \
+                           'description'
+                           }
 # Fields to be returned when PARAM_OUTPUT is not set.
 # TODO: remove this once all output types have been specified.
 DEFAULT_OUTPUT_FIELDS = FIELDS_BY_OUTPUT_TYPE['html']
-########### deprecating from here up ###############
 
 # E.g., 'today'. The presence of this param implies that 'vol_startdate'
 # and 'vol_enddate' will be automatically calculated, overriding
@@ -108,8 +97,6 @@ PARAM_VIRTUAL = 'virtual'
 PARAM_MERGE = 'merge'
 PARAM_DUMP = 'dump'
 PARAM_REFERRER = 'referrer'
-PARAM_STATEWIDE = 'statewide'
-PARAM_NATIONWIDE = 'nationwide'
 
 PARAM_LAT = 'lat'
 PARAM_LNG = 'long'
@@ -121,4 +108,3 @@ PARAM_SOURCE = "source"
 PARAM_DISTANCE = "distance"
 
 PARAM_TOCQT = 'TotalOpportunitiesCountQueryTerm'
-PARAM_INVITATIONCODE = 'invitationCode'

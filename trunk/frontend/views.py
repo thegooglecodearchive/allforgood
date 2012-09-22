@@ -35,8 +35,6 @@ import codecs
 import utf8
 codecs.register_error('asciify', utf8.asciify)
 
-from django.utils import simplejson
-
 import private_keys
 class CAMPAIGN_SPREADSHEET:
   KEY = '0Ak1XDmmFyJT2dC04N1JmYVJ0ME9nbjZYSWwwWTh5Umc'
@@ -46,8 +44,7 @@ class SHORT_NAME_SPREADSHEET:
   KEY = '0Ak1XDmmFyJT2dHRsMFVTd044Nkp5aVZJdVZzT2hrbkE'
   NAME = 'AFG.org Short to Long Names'
 
-#from versioned_memcache import memcache
-from google.appengine.api import memcache
+from versioned_memcache import memcache
 from google.appengine.api import urlfetch
 from google.appengine.api import users
 from google.appengine.ext import db
@@ -363,7 +360,7 @@ class consumer_ui_search_view(webapp.RequestHandler):
 
 class search_view(webapp.RequestHandler):
   """run a search from the API.  note various output formats."""
-  #@expires(1800)  # Search results change slowly; cache for half an hour.
+  @expires(1800)  # Search results change slowly; cache for half an hour.
 
   def post(self):
     """HTTP post method."""
@@ -431,11 +428,7 @@ class search_view(webapp.RequestHandler):
       logging.debug("geocode("+result_set.args[api.PARAM_VOL_LOC]+") = "+
                   result_set.args[api.PARAM_LAT]+","+result_set.args[api.PARAM_LNG])
 
-      result_set.is_hoc = True if output.find('hoc') >= 0 else False
-      result_set.is_cal = True if output.find('cal') >= 0 else False
-
-      if result_set.is_hoc:
-        result_set = solr_search.apply_HOC_facet_counts(result_set, unique_args)
+      result_set = solr_search.apply_HOC_facet_counts(result_set, unique_args)
 
       writer = apiwriter.get_writer(output)
       writer.setup(self.request, result_set)
@@ -443,8 +436,7 @@ class search_view(webapp.RequestHandler):
                   len(result_set.clipped_results))
 
       for result in result_set.clipped_results:
-        writer.add_result(result, result_set)
-
+        writer.add_result(result)
       logging.info('views.search_view completed apiwriter')
 
       self.response.headers["Content-Type"] = writer.content_type

@@ -93,8 +93,9 @@ API_KEY_NEGATED_FILTER_QUERIES = {
   'starbucks' : '-feed_providername:getinvolved',
 
   # commented out filtering to prevent Blueprint opps from showing up in any queries other than on Exelis.	
-  #'exelis' : '-detailurl:http*signupandserve*',
+  'exelis' : '-detailurl:http*signupandserve*',
 }
 
 FILTER_QUERIES = [
 ]
+
