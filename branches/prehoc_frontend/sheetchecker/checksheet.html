@@ -1,0 +1,197 @@
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="/css/style.css" />
+<style>
+IFRAME {margin:0;padding:0;display:inline;height:18px;width:48px;}
+BODY {margin:24px;}
+P {margin:0;padding:0;margin-top:10px;}
+.title {margin-left:20px;
+  color:#F6F6F6;
+  font-family: Rockwell,'RockwellStdRegular',Georgia,Times,"Times New Roman",serif;
+  font-size: 24px;
+  font-weight: normal;
+  position:relative;top:6px;
+}
+LABEL {color:#F6F6F6;font-size:18px;font-weight: normal;}
+#checking {font-size:13px;text-align:left;color:#000000;background-color:#ffffff;padding:6px;}
+#results {font-size:13px;text-align:left;color:#000000;background-color:#ffffff;padding:6px;}
+#fail {font-size:16px;color:#993333;}
+#success {font-size:16px;color:#339933;}
+#footer {text-align:right;}
+#notes {background-color:#ffffff;font-size:12px;color:#666666;}
+.hint {font-size:15px;color:#111111;}
+.err-msg {font-weight:bold;margin:5px;font-size:14px;}
+</style>
+<script>
+function _gel(id) {
+  return document.getElementById(id);
+}
+</script>
+</head>
+<body>
+<div id="wrapper">
+  <div id="header" style="height:60px;">
+  <a href="/"><img border="0" align="left" src="/css/images/all-for-good.png" /></a>
+  <span class="title">&mdash;&nbsp;&nbsp;Spreadsheet Checker</span>
+  </div>
+
+  <form>
+<label>Spreadsheet Link:<label/>
+<input name='url' onfocus="this.select();" size='90' value='{{ sheeturl|escape }}'>
+<input type='submit' value='check spreadsheet'>
+  </form>
+
+<p/>
+<div id="results">
+<b>Instructions</b><br />
+Please enter the URL of your Google Docs Spreadsheet of volunteer opportunities if it is 
+not already filled in above.
+<p/>
+If you need to make any edits, additions or deletions to your opportunities, you can make them directly in your original spreadsheet.  Any changes you make to your spreadsheet will automatically go live within 12 hours.  If you encounter technical difficulties, please send an email to <a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a> and someone will respond as soon as possible.
+<hr/>
+<p/>
+
+{% if not sheeturl %}
+</div>
+{% else %}
+<div id="checking">
+
+{% if msgs %}
+<div id="fail">This Google Docs spreadsheet has errors!<p/>
+Please correct the errors listed below in <a target="_blank"
+  href="https://docs.google.com/spreadsheet/ccc?key={{ doc_key }}">your spreadsheet</a> 
+to ensure all of your volunteer opportunities will be added to our system successfully.
+</div>
+<hr noshade />
+  {% for msg in msgs %}
+    <li class="hint">{{ msg|safe }}</li>
+  {% endfor %}
+{% else %}
+<div id="success">
+This Google Docs spreadsheet passed field checking and will now have its locations and URLs checked.
+</div>
+<div id="passed" style="display:none;">
+<p/>
+Any changes you make to your spreadsheet will automatically go live within 12 hours. 
+<p/>
+If you need to make any edits, additions or deletions to your opportunities, 
+you can make them directly in <a target="_blank" 
+  href="https://docs.google.com/spreadsheet/ccc?key={{ doc_key }}">your original spreadsheet</a>; 
+there is no need to submit a new one. 
+<p/>
+If you wish to remove any of your opportunities from our system, 
+all you need to do is delete them from your spreadsheet.
+<!--
+<p/>
+You may submit your spreadsheet <a 
+ href="https://spreadsheets.google.com/viewform?formkey=ck9ZQ2lodDhxMUdRZ0RfVHVFSjJfX0E6MA..&ndplr=1">here</a>
+ <span id="has_errs" style="display:none;"> after correcting these errors;</span>
+-->
+<div id="url_err_msg" class="err-msg"></div>
+<div id="addr_err_msg" class="err-msg"></div>
+</div>
+{% endif %}
+</div>
+
+  {% if addresses %}
+<hr noshade />
+<div id="checking_addr"><b>Checking unique addresses...</b></div>
+<p/>
+<table>
+    {% for addr in addresses %}
+<tr><td><iframe id="address{{forloop.counter}}" frameborder="no" scrolling="no" align="absmiddle"
+ onload="checked_address(this)"
+ src="/sheetchecker/validate_address?address={{ addr|urlencode|escape }}&r={{ time }}"></iframe>
+</td><td>&nbsp; {{ addr|escape }}</td></tr>
+    {% endfor %}
+</table>
+  {% endif %}
+  {% if urls %}
+<hr noshade />
+<div id="checking_urls"><b>Checking unique links...</b></div>
+<p/>
+  <table>
+    {% for url in urls %}
+<tr><td><iframe id="url{{forloop.counter}}" frameborder="no" scrolling="no" align="absmiddle"
+ onload="checked_url(this)"
+ src="/sheetchecker/validate_url?url={{ url|urlencode|escape }}&r={{ time }}"></iframe>
+</td><td>&nbsp; {{ url|escape }}</td></tr>
+    {% endfor %}
+</table>
+  {% endif %}
+</div>
+<ul id="notes" style="display:none;">
+original sheet: <a href='{{ sheeturl|escape }}'>{{ sheeturl|escape }}</a><br/>
+  {% if sheetfeedurl %}
+sheet feed: <a href='{{ sheetfeedurl|escape }}'>{{ sheetfeedurl|escape }}</a><br/>
+  {% endif %}
+</ul>
+{% endif %}
+<div id="footer">
+<a href="http://www.pointsoflight.org"><img border="0" src="/images/poli-logo-rc.gif" /></a>
+</div>
+<script>
+var addr_errs = 0;
+var total_addr = addr_to_check = {% if number_of_addresses %}{{ number_of_addresses }}{% else %}0{% endif %};
+function checked_address(ifr) {
+  if (ifr) {
+    addr_to_check--;
+    var idoc = (ifr.contentDocument ? ifr.contentDocument : ifr.contentWindow.document);
+    var it = idoc.getElementById('result');
+    if (it) {
+      if (it.innerHTML.indexOf('BAD') >= 0) {
+        addr_errs++;
+      }
+    }
+  }
+  if (total_addr > 0 && addr_to_check <= 0) {
+    _gel('checking_addr').innerHTML = 'Unique Addresses';
+    finished();
+  }
+}
+
+var url_errs = 0;
+var total_urls = urls_to_check = {% if number_of_urls %}{{ number_of_urls }}{% else %}0{% endif %};
+function checked_url(ifr) {
+  if (ifr) {
+    urls_to_check--;
+    var idoc = (ifr.contentDocument ? ifr.contentDocument : ifr.contentWindow.document);
+    var it = idoc.getElementById('result');
+    if (it) {
+      if (it.innerHTML.indexOf('BAD') >= 0) {
+         url_errs++;
+      }
+    }
+  }
+  if (total_urls > 0 && urls_to_check <= 0) {
+    _gel('checking_urls').innerHTML = 'Unique URLs';
+    finished();
+  }
+}
+
+function finished() {
+  if (urls_to_check <= 0 && addr_to_check <= 0) {
+    if (total_urls > 0 && url_errs > 0) {
+      var html = new Array();
+      html.push(url_errs, ' out of ', total_urls, ' URL', (total_urls != 1 ? 's': ''), ' invalid');
+      _gel('url_err_msg').innerHTML = html.join('');
+      _gel('has_errs').style.display = 'inline';
+    }
+    if (total_addr > 0 && addr_errs > 0) {
+      var html = new Array();
+      html.push(addr_errs, ' out of ', total_addr, ' address', (total_addr != 1 ? 'es': ''), ' invalid');
+      _gel('addr_err_msg').innerHTML = html.join('');
+      _gel('has_errs').style.display = 'inline';
+    }
+    _gel('passed').style.display = 'block';
+  }
+}
+
+function checked() {
+  checked_url();
+  checked_address();
+}
+checked();
+</script>
+</body>
+</html>

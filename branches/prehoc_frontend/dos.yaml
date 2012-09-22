@@ -1,0 +1,7 @@
+blacklist:
+
+- subnet: 63.86.88.10
+  description: 40+ junk reqs/second 11-Jan-2012
+
+- subnet: 75.146.32.189
+  description: 18K junk reqs 12-Jan-2012

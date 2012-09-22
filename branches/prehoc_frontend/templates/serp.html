@@ -1,0 +1,381 @@
+<!--.content-->
+<div id="content" class="clearfix">
+	<!--.single-page-->
+	<div class="search-page">
+{% if is_report %}
+<div id="report-header">NOTE: This is a report view displaying opportunity counts from the entire index.</div>
+{% endif %}
+		<!--#search-top-->
+		<div id="search-top">
+			<div class="search-box">
+				<h1>Search:</h1>
+				<form action="/search_form" id="overlabel" onsubmit="submitForm('reset');return false;">
+					<input type="hidden" value="" id="category_input" name="category_input" />
+					<input type="hidden" value="" id="provider_input" name="provider_input" />
+					<div class="form-row">
+						<label for="keywords" class="overlabel">enter search term</label>
+						<input id="keywords" class="text-field" type="text" name="search" title="enter search term" value="" />
+						<input type="submit" name="submit" id="submit" value="Search" />
+					</div>
+				</form>
+				<div class="pop-search">
+					<p><strong>popular searches:</strong> <a href="javascript:submitKeyword('military families')">Military Families</a>, <a href="javascript:submitKeyword('veterans')">Veterans</a>, <a href="javascript:submitKeyword('education')">Education</a>, 
+						<a href="javascript:submitKeyword('hunger')">Hunger</a>, <a href="javascript:submitKeyword('animals')">Animals</a>, <a href="javascript:submitKeyword('health')">Health</a>, 
+						<a href="javascript:submitKeyword('seniors')">Seniors</a>, <a href="javascript:submitKeyword('disaster')">Disaster Preparation</a>, <a href="javascript:submitKeyword('poverty')">Poverty</a></p>
+				</div>
+			</div>
+			<div class="search-info">
+				<ul>
+{% if is_report %}
+<script>
+function _gel(id) {
+  return document.getElementById(id);
+}
+
+var ar_search_by = new Array('zip', 'state');
+function search_by(what) {
+
+  var kw = '';
+  for (var i in ar_search_by) {
+    var it = _gel('search_by_' + ar_search_by[i]);
+    if (it) {
+      it.style.display = (what == ar_search_by[i] ? 'inline-block' : 'none');
+    }
+  }
+
+  if (what) {
+    var it = _gel('search_by_' + what + '_inp');
+    if (it && it.value) {
+      kw = what + ':' + it.value;
+      it.value = '';
+    }
+  }
+
+  if (kw || !what) {
+    submitKeyword(kw);
+  }
+}
+
+function sel_search_by_state(it) {
+  var st = it.options[it.selectedIndex].value;
+  if (st) {
+    it = _gel('search_by_state_inp');
+    if (it) {
+      it.value = st;
+      search_by('state');
+    }
+  }
+}
+</script>
+<div style="font-size:11pt;">
+<li style="list-style: square;line-height:26px;">
+<a class="pop-search" href="javascript:search_by('zip')">Search by Zip Code</a>
+<span id="search_by_zip" class="search_by" style="display:none;">
+<label class="hint">5 digit zip code:</label>
+<input size="6" id="search_by_zip_inp" value=""/><input class="btn-small" 
+  onclick="search_by('zip');" type="button" value="GO" />
+</span>
+</li>
+<li style="list-style: square;line-height:26px;">
+<a class="pop-search" href="javascript:search_by('state')">Search by State</a>
+<span id="search_by_state" style="display:none;">
+<label style="display:none;" class="hint">2 char. state:</label>
+<input style="display:none;" size="3" id="search_by_state_inp" value=""/>
+<select onchange="sel_search_by_state(this)">
+<option value="" selected="selected">Select State</option> 
+<option value="AL">Alabama</option> 
+<option value="AK">Alaska</option> 
+<option value="AZ">Arizona</option> 
+<option value="AR">Arkansas</option> 
+<option value="CA">California</option> 
+<option value="CO">Colorado</option> 
+<option value="CT">Connecticut</option> 
+<option value="DE">Delaware</option> 
+<option value="DC">District Of Columbia</option> 
+<option value="FL">Florida</option> 
+<option value="GA">Georgia</option> 
+<option value="HI">Hawaii</option> 
+<option value="ID">Idaho</option> 
+<option value="IL">Illinois</option> 
+<option value="IN">Indiana</option> 
+<option value="IA">Iowa</option> 
+<option value="KS">Kansas</option> 
+<option value="KY">Kentucky</option> 
+<option value="LA">Louisiana</option> 
+<option value="ME">Maine</option> 
+<option value="MD">Maryland</option> 
+<option value="MA">Massachusetts</option> 
+<option value="MI">Michigan</option> 
+<option value="MN">Minnesota</option> 
+<option value="MS">Mississippi</option> 
+<option value="MO">Missouri</option> 
+<option value="MT">Montana</option> 
+<option value="NE">Nebraska</option> 
+<option value="NV">Nevada</option> 
+<option value="NH">New Hampshire</option> 
+<option value="NJ">New Jersey</option> 
+<option value="NM">New Mexico</option> 
+<option value="NY">New York</option> 
+<option value="NC">North Carolina</option> 
+<option value="ND">North Dakota</option> 
+<option value="OH">Ohio</option> 
+<option value="OK">Oklahoma</option> 
+<option value="OR">Oregon</option> 
+<option value="PA">Pennsylvania</option> 
+<option value="RI">Rhode Island</option> 
+<option value="SC">South Carolina</option> 
+<option value="SD">South Dakota</option> 
+<option value="TN">Tennessee</option> 
+<option value="TX">Texas</option> 
+<option value="UT">Utah</option> 
+<option value="VT">Vermont</option> 
+<option value="VA">Virginia</option> 
+<option value="WA">Washington</option> 
+<option value="WV">West Virginia</option> 
+<option value="WI">Wisconsin</option> 
+<option value="WY">Wyoming</option>
+</select>
+<input class="btn-small" 
+  style="display:none;" onclick="search_by('state');" type="button" value="GO" />
+</span>
+</li>
+<li style="list-style: square;line-height:26px;">
+<a class="pop-search" href="javascript:search_by('')">Show All</a>
+</li>
+</div>
+{% else %}
+<li><strong>IN YOUR AREA</strong>
+<a href="javascript:submitForm('oppType', 0);">Opportunities near you to make a difference</a>.</li>
+
+<li><strong>STATEWIDE</strong>
+<a href="javascript:submitForm('oppType', 1);">Volunteer activities for everyone in your state</a>.</li>
+
+<li><strong>VIRTUAL</strong>
+<a href="javascript:submitForm('oppType', 2);">Ways to help out no matter where you're located</a>.</li>
+
+<li><strong>MICRO</strong>
+<a href="javascript:submitForm('oppType', 3);">You're online, but only have a few moments to spare</a>.</li>
+
+<li><strong>SELF-DIRECTED</strong>
+<a href="javascript:submitForm('oppType', 4);">How-To guides for starting your own projects</a>.</li>
+{% endif %}
+				</ul>
+<br/>
+			</div>
+		</div>
+		<!--#search-top-->
+		<!--.col-main-->
+		<div class="col-main">
+			<!--#tabs-->
+			<div id="tabs">
+				<ul>
+{% if is_report %}
+					<li><a href="#tabs-1">LOCATION BASED <span id="in_your_area"></span></a></li>
+{% else %}
+					<li><a href="#tabs-1">IN YOUR AREA <span id="in_your_area"></span></a></li>
+{% endif %}
+					<li {% if is_report %} style="display:none;">{% endif %}><a href="#tabs-1">STATEWIDE <span id="in_your_state"></span></a></li>
+					<li><a href="#tabs-1">VIRTUAL <span id="virtual"></span></a></li>
+					<li><a href="#tabs-1">MICRO <span id="micro"></span></a></li>
+					<li><a href="#tabs-1">SELF-DIRECTED <span id="self_directed"></span></a></li>
+				</ul>
+				<!--#tabs-1-->
+				<div id="tabs-1">
+					<div class="search-aside">
+						<div class="box no_background"> 
+							<div class="box search-current facets" id="facets_container">
+								<div id="active_facet_query_wrapper">
+									<ul class="data_list" id="active_facet_item">
+									</ul>
+								</div>
+								<input type="hidden" name="category_input" id="category_input" value="" />
+								<input type="hidden" name="provider_input" id="provider_input" value="" />
+							</div>
+							<div id="category_facet" class="box search-refine search-refine-category facets">
+								<div class="header collapsed">
+									<h4>Refine by Category</h4>
+								</div>
+								<ul id="category_list">
+								</ul>
+							</div>
+							<div id="provider_facet" class="box search-refine search-refine-provider facets">
+								<div class="header collapsed">
+									<h4>Refine by Provider</h4>
+								</div>
+								<ul id="provider_list">
+								</ul>
+							</div>
+							<div id="map"
+{% if is_report %}
+ style="height:0;overflow:hidden;"
+{% endif %}
+></div>
+							<div class="box" id="location_distance_date"> 
+								<form action="/search_form" id="overlabel">
+									<div id="location_box"
+{% if is_report %}
+ style="height:0;overflow:hidden;"
+{% endif %}
+>
+										<strong>Enter your location</strong>
+										<div class="form-row form-row-search-first"> 
+											<input id="location" class="text-field" type="text" name="location" value="" />
+										</div>
+										<div class="form-row form-search-range">
+											<strong><label for="location_slider">Within a <span id="location_distance"></span> mile range</label></strong>
+											<div id="location_slider"></div>
+										</div>
+									</div>
+									<div class="form-row form-row-search-last">
+										<strong>Filter by date range</strong>
+										<input type="text" id="startdate" value="start date" /> 
+										<div class="date-sep">to</div>
+										<input type="text" id="enddate" value="end date" />
+									</div>
+									<input type="submit" value="Update Search" id="submit-btn" />
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="search-main">
+<div style="position:relative;">
+<!-- ad code -->
+<script type="text/javascript">
+function recordAdClick(category, action) {
+  try {
+    if (typeof(pageTracker) != 'object') {
+      pageTracker = _gat._getTracker('UA-8689219-2');
+      pageTracker._trackPageview();
+    }
+    pageTracker._trackEvent(category, action);
+  }catch(err){}
+}
+try {
+  if (typeof(pageTracker) != 'object') {
+    pageTracker = _gat._getTracker('UA-8689219-2');
+    pageTracker._trackPageview();
+  }
+  pageTracker._trackEvent('/SearchResultAd', '/Impression');
+}catch(err){}
+</script>
+<!--
+<div id="search_results_adspace"><a 
+  target="_blank" alt="Bill and Warren" title="Bill and Warren Day"
+  onclick="recordAdClick('/SearchResultAd', '/Click')"
+  href="http://www.facebook.com/BillandWarrenDay"><div id="ad_wrapper"><img 
+  src="images/bwDayButton.png" 
+  alt="Bill and Warren Day" title="Bill and Warren Day" /></div></a>
+</div>
+<div id="search_results_adspace"><a 
+  target="_blank" alt="Champions of Service" title="Champions of Service"
+  onclick="recordAdClick('/SearchResultAd', '/Click')"
+  href="http://www.volunteeringandservice.org/"><div id="ad_wrapper"><img 
+  src="images/120x60-champions-of-service.jpg" 
+  alt="Champions of Service" title="Champions of Service" /></div></a>
+</div>
+-->
+						<div id="loading"></div>
+						<div class="top_search">
+							<div class="sort">Sort by 
+		<select id="sort" onchange="sortResults(this.options[this.selectedIndex].value)">
+                      <option value="score">Relevance</option>
+                      <option value="eventrangeend">Date</option>
+		</select>
+							</div>
+						</div>
+<div style="height:15px;width:1px;"> </div>
+						<ul id="tabs-1-results" class="results">
+							<div id="snippets_pane"></div>
+						</ul>
+</div>
+					</div>
+				</div>
+				<!--#tabs-1--> 
+			</div>
+			<!--#tabs-->
+		</div>
+		<!--.col-main-->
+	</div>
+	<!--.single-page-->
+</div>
+<!--.content--> 
+<script type="text/javascript">	
+	function populateActiveFacets() {
+		  var query = getInputFieldValue(el('keywords'));		  
+		  var category = $("#category_input").val();		  
+		  var source = $("#provider_input").val();
+          var facets = "";
+		  if (query) { 
+			  facets += "<div class=\"header\"><h4>Your Search:</h4></div><ul><li>\"" + query + "\" (<a href=\"javascript:removeKeyword()\">undo</a>)</li></ul>";
+		  }
+		  if (category || source) {
+			  facets += "<div class=\"header\"><h4>Refine by</h4></div><ul>";
+              if (category) { 
+                  facets += "<li>" + category + " (<a href=\"javascript:hideShowCategories()\">undo</a>)</li>";
+              }
+              if (source) { 
+                  facets += "<li>" + source + " (<a href=\"javascript:hideShowProviders()\">undo</a>)</li>";
+              }
+              facets += "</ul>";
+		  }
+		  if (facets == "") {
+			  $("#facets_container").hide();
+		  }
+		  else	{	  
+			 $("#facets_container").show();
+			 $("#active_facet_query_wrapper").html(facets);
+		  }
+	}
+	$(".top_search").show();
+    var ts = getHashParam('type', '');
+    if (!ts || ts == "all" || ts == "statewide") {
+        $("#location_box").show();
+        $("#map").show();
+        $("#location_distance_date").show();
+    } else {
+        $("#location_box").hide();
+        $("#map").hide();
+        $("#location_distance_date").show();
+        if (ts == "self_directed") {
+            $(".top_search").hide();
+            $("#location_distance_date").hide();
+        }
+    }
+{% if is_report %}
+    $("#location_box").hide();
+    $("#map").hide();
+{% endif %}
+    $("#tabs").tabs("option", "collapsible", true);
+    $("#tabs").tabs("option", "selected", getSelectedTab());
+    var sort = getHashParam('sort', '');
+    if (sort == "eventrangeend") {
+        $("#sort").attr('selectedIndex', 1);
+    } else {
+        $("#sort").attr('selectedIndex', 0);
+    }
+    if (getSelectedTab() == 4) {
+        $(".top_search").hide();
+    }
+    function capitalize(str) {
+        if (str) {
+            var words = str.split(" ");
+            for (var i = 0; i < words.length; i++) {
+                var testwd = words[i];
+                var firLet = testwd.substr(0, 1);
+                var rest = testwd.substr(1, testwd.length - 1)
+                words[i] = firLet.toUpperCase() + rest
+            }
+            return words.join(" ");
+        }
+    }
+    var category = getHashParam('category', '');
+    if (category) {
+        $("#category_input").val(category);
+        hideShowCategories(capitalize(category));
+    }
+    var source = getHashParam('source', '');
+    if (source) {
+        $("#provider_input").val(source);
+        hideShowProviders(source);
+    }
+</script> 

@@ -1,0 +1,15 @@
+    <!--#header-->
+    <div id="header">
+        <p class="logo" onclick="window.top.location='/';" style="cursor:pointer;">All For Good</p>
+{% if is_report %}
+<div class="tagline" style="text-align:left;"><span 
+  style="font-size:24pt;padding-top:12px;padding-left:20px;">&mdash;&nbsp;&nbsp;Analytics</span></div>
+{% else %}
+        <div class="tagline">All for Good helps you find and share ways to do good. <a href="/faq">Learn more.</a></div>
+        <div class="like">
+            <iframe src="http://www.facebook.com/plugins/like.php?href=http://www.facebook.com/EchoDitto&layout=button_count&show_faces=false&width=100&action=like&font=arial&colorscheme=light&height=30" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:30px;" allowTransparency="true"></iframe>
+        </div>
+{% endif %}
+    </div>
+    <!--#header-->
+

@@ -1,0 +1,89 @@
+{% if path in '/search' or path in '/report' %}
+        <!--.nav-->
+        <div id="nav">
+            <!--.primary-->
+            <div class="primary">
+                <ul>
+                    <li class="first active"><a href="/search">Search Opportunities</a></li>
+                    <li><a href="/partners"> Partners</a></li>
+                    <li><a href="/posting">Add Opportunities</a></li>
+                    <li><a href="/gettingstarted">Use Our Data</a></li>
+                    <li><a href="http://blog.allforgood.org/">Blog</a></li>
+                    <li class="last" style="margin-right:32px;"><a href="/about">About</a></li>
+                </ul>
+            </div>
+            <!--.primary-->
+         </div>
+{% else %}
+  {% if path in '/posting/privacypolicy/cla/partners/getinvolved/gettingstarted/apps/spec/api.html/api_tos/about/faq/team/tos/help/contactus/apps/gmail/apps/blogger/apps/typepad/apps/wordpress/apps/googlesites' %}
+        <!--.nav-->
+        <div id="nav" class="withsecondary">
+  {% else %}
+        <!--.nav-->
+        <div id="nav">
+  {% endif %}
+            <!--.primary-->
+            <div class="primary">
+                <ul>
+                    <li class="first"><a href="/search">Search Opportunities</a></li>
+                    <li {% if path in '/partners/getinvolved' %}class="active"{%endif%}><a href="/partners"> Partners</a></li>
+                    <li {% if path in '/posting/privacypolicy/cla' %}class="active"{%endif%}><a href="/posting">Add Opportunities</a></li>
+
+                    <li {% if path in '/gettingstarted/apps/spec/api.html/api_tos/apps/gmail/apps/blogger/apps/typepad/apps/wordpress/apps/googlesites' %}class="active"{%endif%}><a href="/gettingstarted">Use Our Data</a></li>
+                    <li><a href="http://blog.allforgood.org/">Blog</a></li>
+                    <li class="last{% if path in '/about/faq/team/tos/help/contactus' %} active{% endif %}"
+ style="margin-right:32px;"><a href="/about">About</a></li>
+                </ul>
+            </div>
+            <!--.primary-->
+  {% if path in '/posting/privacypolicy/cla' %}
+            <!--.secondary-->
+            <div class="secondary">
+                <ul>
+                    <li class="first{% if path in '/posting' %} active{% endif %}"><a href="/posting">Posting Instructions</a></li>
+                    <li {% if path in '/privacypolicy' %}class="active"{%endif%}><a href="/privacypolicy">Privacy Policy</a></li>
+                    <li class="last{% if path in '/cla' %} active{% endif %}"><a href="/cla">Content Licensing Agreement</a></li>
+                </ul>
+            </div>
+            <!--.secondary-->
+  {% endif %}
+  {% if path in '/partners/getinvolved' %}
+            <!--.secondary-->
+            <div class="secondary">
+                <ul>
+                    <li class="first{% if path in '/partners' %} active{% endif %}"><a href="/partners">Partners Gallery</a></li>
+                    <li class="last{% if path in '/getinvolved' %} active{% endif %}"><a href="/getinvolved">Get Involved</a></li>
+                </ul>
+            </div>
+            <!--.secondary-->
+  {% endif %}
+  {% if path in '/gettingstarted/apps/spec/api.html/api_tos/apps/gmail/apps/blogger/apps/typepad/apps/wordpress/apps/googlesites' %}
+            <!--.secondary-->
+            <div class="secondary">
+                <ul>
+                    <li class="first{% if path in '/gettingstarted' %} active{% endif %}"><a href="/gettingstarted">Getting Started</a></li>
+                    <li {% if path in '/apps/apps/gmail/apps/blogger/apps/typepad/apps/wordpress/apps/googlesites' %}class="active"{%endif%}><a href="/apps">Apps</a></li>
+                    <li {% if path in '/api.html' %}class="active"{%endif%}><a href="/api.html">API</a></li>
+                    <li {% if path in '/spec' %}class="active"{%endif%}><a href="/spec">Spec</a></li>
+                    <li class="last{% if path in '/api_tos' %} active{% endif %}"><a href="/api_tos">API Terms of Service</a></li>
+                </ul>
+            </div>
+            <!--.secondary-->
+  {%endif%}
+  {% if path in '/about/faq/team/tos/help/contactus' %}
+            <!--.secondary-->
+            <div class="secondary">
+                <ul>
+                    <li class="first{% if path in '/about' %} active{% endif %}"><a href="/about">Our Story</a></li>
+                    <li {% if path in '/faq' %}class="active"{%endif%}><a href="/faq">FAQ</a></li>
+                    <li {% if path in '/team' %}class="active"{%endif%}><a href="/team">Team</a></li>
+                    <li {% if path in '/tos' %}class="active"{%endif%}><a href="/tos">Terms of Service</a></li>
+                    <li {% if path in '/help' %}class="active"{%endif%}><a href="/help">Help</a></li>
+                    <li class="last{% if path in '/contactus' %} active{% endif %}"><a href="/contactus">Contact Us</a></li>
+                </ul>
+            </div>
+            <!--.secondary-->
+  {%endif%}
+        </div>
+        <!--.nav-->
+{%endif%}

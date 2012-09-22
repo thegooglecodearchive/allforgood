@@ -1,0 +1,27 @@
+{% for result in six_results %}
+      <div class='snippet_mini_title'>
+        {# note: id comes after sig to reduce risk of truncation dropping sig #}
+        <a target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.purged_title|escape }}</a>
+      </div>
+      {% if result.location or result.startdate or result.interest_count %}
+        <div class='snippet_sub_text'>
+          {{ result.location|escape }}
+          {% if result.location %}-{% endif %}
+          {{ result.startdate|custom_date_format }}
+          {% ifnotequal result.startdate.date result.enddate.date %}
+          - {{ result.enddate|custom_date_format }}
+          {% endifnotequal %}
+
+<!--          {% if result.interest_count|gt:"1" %}
+            {% if result.location or result.startdate %}-{% endif %}
+            <img src="/zx{{version}}/images/Event-StarredByOthers.png" alt="Starred"/> by {{result.interest_count|add:"-1"}} other
+            {{ result.interest_count|pluralize:"person,people" }}
+          {% endif %}
+-->
+        </div>
+	      <div class='snippet_text'>
+	        {{ result.purged_snippet|truncate_chars:285|escape|bold_query:query_param_q }}
+	      </div>
+        <a class='snippet_url' target='_fp_target' href='/url?q={{ result.url|urlencode }}&sig={{ result.url_sig|urlencode }}&id={{ result.merge_key|urlencode }}'>{{ result.url_short|escape }}</a>
+      {% endif %}
+{% endfor %}

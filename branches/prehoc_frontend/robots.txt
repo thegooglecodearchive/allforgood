@@ -1,0 +1,16 @@
+User-agent: *
+# Developer instances should block everything; remove the Disallow: / line in the main serving instance.
+
+# TODO: Make the site more crawlable and then allow robots to crawl it.
+Disallow: /action
+Disallow: /admin
+Disallow: /api
+Disallow: /dash
+Disallow: /friends
+Disallow: /mode
+Disallow: /myevents
+Disallow: /post
+Disallow: /search
+Disallow: /ui
+Disallow: /url
+Disallow: /feeds

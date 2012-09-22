@@ -1,0 +1,91 @@
+{% extends "base_content_min.html" %}
+{% block head %}
+<script type='text/javascript'>
+  var vol = {};  // Namespace for calendar
+</script>
+{# can't combine with other JS, because that would go through a proxy, breaking IP-base location sniffing #}
+<script src='http://www.google.com/jsapi?key={{ maps_api_key }}' type='text/javascript'></script>
+<script type='text/javascript' src='/zx{{version}}/js/third_party/jquery-1.3.2.min.js'></script>
+<script type='text/javascript' src='/zx{{version}}/js/third_party/jquery.json-1.3.min.js'></script>
+<script type='text/javascript' src="/zx{{version}}/js/jqueryui/jquery-ui-1.8.10.min.js"></script>
+<script type='text/javascript' src='/zx{{version}}/js/third_party/rsh.js'></script>
+<script type='text/javascript' src='/zx{{version}}/js/third_party/jquery.autocomplete.js'></script>
+<script type='text/javascript' src='/zx{{version}}/js/third_party/jquery.simplemodal.js'></script>
+<script type='text/javascript' src='http://s7.addthis.com/js/250/addthis_widget.js'></script>
+<script type='text/javascript' src='/zx{{version}}/js/utils.js'></script>
+<script type='text/javascript' src='/zx{{version}}/js/search_query.js'></script>
+{# not required for all pages, but harmless and simpler (for development only) #}
+<script type='text/javascript' src='/zx{{version}}/js/homepage.js'></script>
+<script type='text/javascript' src='http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php'></script>
+<script type='text/javascript'>
+  // Set pubId for AddThis
+  addthis_pub = 'footprint2009dev';
+
+  // These components load asynchronously.  We use AsyncLoadManager to
+  // queue up function callbacks until each component is loaded.
+  var asyncLoadManager = new AsyncLoadManager(
+      [ 'map', 'bodyload', 'friendconnect' ]
+  );
+
+  // ...and one to queue JS callbacks on body unload event.
+  var onUnloadWorkQueue = new WorkQueue();
+  var currentPageName = '{{ current_page|escape }}';
+</script>
+{% block js_files %}{% endblock %}
+<link rel="stylesheet" type="text/css" href="/zx{{version}}/css/jquery.autocomplete.css" />
+{% block css_files %}{% endblock %}
+ 
+{# functions for loading google analytics #}
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', '{{ ga_key }}']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/u/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+{% endblock %}{# head #}
+
+{% block body %}
+<body onload='asyncLoadManager.doneLoading("bodyload");'>  
+<!--#wrapper-->
+<div id="wrapper">
+{% include 'content_header.html' %}
+{% block subheader %}{% endblock %}
+{% include 'nav.html' %}
+
+{% if template %}
+  <!-- templates/{{ template }} -->
+  {% include template %}
+{% else %}
+  {{ static_content }}
+{% endif %}
+
+{% block prefooter %}{% endblock %}
+{% block footer %}
+   {% include 'footer_static.html' %}
+{% endblock %}
+</div>
+<!--#wrapper-->
+
+<div id='debug_snippets' style='display:none;'></div>
+<script type='text/javascript'>
+  ensureSubmitForm();
+  if (currentPageName != 'HOMEPAGE') {
+    createExampleSearchText();
+  }
+  setInputFieldValue(el('keywords'), '');
+</script>
+{# setup autocomplete last #}
+<script>
+  $("#keywords").autocomplete("/autocomplete/query");
+</script>
+
+</body>
+
+{% endblock %}

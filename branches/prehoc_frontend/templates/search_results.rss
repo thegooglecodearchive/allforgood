@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"
+   xmlns:georss="http://www.georss.org/georss"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:atom="http://www.w3.org/2005/Atom"
+   xmlns:fp="http://www.allforgood.org/">
+   {# TODO: rename namespace to "afg" #}
+<channel>
+<title>All for Good search results</title>
+<link>http://www.allforgood.org/</link>
+<atom:link href="{{ result_set.request_url|escape }}"
+            rel="self" type="application/rss+xml" />
+{# TODO: include search query args in the feed somewhere #}
+<description>All for Good search results</description>
+<language>en-us</language>
+<pubDate>{{ result_set.pubDate }}</pubDate>
+<lastBuildDate>{{ result_set.last_build_date }}</lastBuildDate>
+{% include 'snippets_list.rss' %}
+</channel>
+</rss>

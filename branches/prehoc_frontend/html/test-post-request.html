@@ -1,0 +1,123 @@
+<html>
+<head>
+<title>POST request</title>
+<style>
+BODY {font-family:Arial,sans-serif;margin-left:64px;margin-top:16px;
+  background:url("/images/body-bg.png") repeat-x scroll 0 0 #0281D1;}
+FORM {margin-top:10px;background-color:#ffffff;}
+LEGEND {font-weight:bold;background-color:#ffffff;padding:4px;border:solid 1px #666666;}
+FIELDSET {background-color:#ffffff;}
+LABEL {display:inline-block;width:150px;text-align:right;margin-right:6px;font-weight:bold;}
+TEXTAREA {width:800px;height:20px;}
+
+.note {font-size:12px;}
+</style>
+</head>
+<body>
+<fieldset style="width:1000px;">
+<legend>Make POST Request</legend>
+<form id="theForm" target="_blank" action="/api/volopps" method="POST">
+This form is for testing POST requests against the allforgood.org API.
+Please see the <a target="_blank" href="/api.html">API documentation</a> for more details
+<p/>
+<input type="reset" onclick="_gel('customparams').innerHTML = ''" value="reset test form" />
+<br/>
+<!--<label>key:</label>-->
+<input type="hidden" name="key" value="post-req-test" />
+<!--<p/>-->
+<label>type:</label>
+<select name="type">
+<option selected>all</option>
+<option>statewide</option>
+<option>virtual</option>
+<option>self_directed</option>
+</option>
+</select>
+<p/>
+<label>output:</label>
+<select name="output">
+<option selected>html</option>
+<option>json</option>
+<option>rss</option>
+</select>
+<p/>
+<label>merge:</label>
+<input name="merge" type="radio" value="0" checked />No
+<input name="merge" type="radio" value="1" />Yes
+<p/>
+<label>num:</label><input name="num" value="5" />
+<span class="note">the number of results to return, default 10, i.e. page</span>
+<p/>
+<label>start:</label><input name="start" value="1" />
+<span class="note">start results on on page number, 1..99</span>
+<p/>
+<label>q:</label><textarea name="q">-feed_providername:aarp AND -feed_providername:meetup AND -feed_providername:mybarackobama</textarea>
+<p/>
+<label>vol_loc:</label><input name="vol_loc" value="94043" />
+<p/>
+<label>vol_dist:</label><input name="vol_dist" value="25" />
+<span class="note">restrict results to those within 1 to 99 mile radius of vol_loc</span>
+<p/>
+<label>vol_startdate:</label><input name="vol_startdate" value="" />
+<span class="note">yyyy-mm-dd</span>
+<p/>
+<label>vol_enddate:</label><input name="vol_enddate" value="" />
+<span class="note">yyyy-mm-dd</span>
+<p/>
+<label>timeperiod:</label>
+<select name="timeperiod">
+<option value="" selected></option>
+<option>today</option>
+<option>this_week</option>
+<option>this_weekend</option>
+<option>this_month</option>
+</select>
+<span class="note">Note: selecting a value for this parameter overrides vol_startdate and vol_enddate</span>
+<p/>
+<hr/>
+Add any custom parameters you wish to test by entering the parameter name and clicking the 'add parameter' button;
+<p/>
+<input type="text" id="param" />
+<input type="button" value="add parameter" onclick="addParam()" />
+<div id="customparams"></div>
+<script>
+
+function _gel(id) {
+  return document.getElementById(id);
+}
+function addParam() {
+  var param_name = '';
+  var div = _gel('customparams');
+  if (div) {
+    var par = _gel('param');
+    if (par && par.value) {
+      for (var i = 0; i < par.value.length; i++) {
+        if ('abcdefghijklmnopqrstuvwxyz0123456789_'.indexOf(par.value.charAt(i).toLowerCase()) >= 0) {
+          param_name += par.value.charAt(i);
+        }
+      }
+    }
+  }
+
+  if (param_name) {
+    var ar = document.getElementsByName(param_name);
+    if (ar.length > 0) {
+      param_name = null;
+    }
+  }
+
+  if (param_name) {
+    var html = new Array();
+    html.push('<label>', param_name, '</label>');
+    html.push('<textarea name="', param_name, '"></textarea>');
+    div.innerHTML += html.join('');
+    par.value = '';
+  }
+}
+</script>
+<hr/>
+<input type="submit" value="submit POST request" />
+</form>
+</fieldset>
+</body>
+</html>

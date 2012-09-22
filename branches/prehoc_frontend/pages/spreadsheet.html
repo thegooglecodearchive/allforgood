@@ -1,0 +1,82 @@
+<script>
+function _gel(id) {  
+  return document.getElementById(id);
+}
+function more(div_id) {
+  _gel(div_id).style.display = 'block';  
+  _gel(div_id.replace('details', 'more')).style.display = 'none';
+}
+function less(div_id) {  
+  _gel(div_id).style.display = 'none';
+  _gel(div_id.replace('details', 'more')).style.display = 'inline';}
+</script>
+
+    <!--#main-->
+    <div id="main" class="clearfix">
+        <!--.content-->
+        <div id="content" class="clearfix">
+            <!--.single-page-->
+            <div class="single-page-full-width">
+                <!--.col-main-->
+                <div class="col-main">
+<h2>Add Opportunities</h2>
+<p>
+There are three different ways to add your volunteer listings to the All for Good search engine - using our spreadsheet template, via an XML data feed of your opportunities created by your IT team, or if you have a small number of opportunities we encourage you to use one of our partner sites.  The best process to use depends on the number of volunteer opportunities you plan to submit and if you will be updating them with any frequency.  Please note that we reserve the right to stop displaying any content that does not comply with <a href="http://www.allforgood.org/tos">All for Good's terms of service</a>.  If you have any questions regarding what is the best approach for your organization or encounter technical difficulties, please send an email to <a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a> and someone will respond as soon as possible.
+</p>
+
+<h3>Posting Directly to All for Good Using Our Spreadsheet Template System</h3>
+<p>
+The easiest way for organizations that want to list opportunities with All for Good is to use our online spreadsheet template.  You can control who in your organization has access to your spreadsheet and can update your opportunities as needed.  Please fill out this <a href="https://docs.google.com/spreadsheet/viewform?hl=en_US&formkey=dDVWSkZNMGczbGZIN3VBNmpaaDJvV2c6MA">form to begin the process</a>.  Once your registration request has been received, we will within two business days send you a link to your very own volunteer opportunity posting spreadsheet which is linked directly to our volunteer opportunity processing system.  You may then enter your opportunities directly into it and they will show up live in our system within 12 hours.  Click here <a href="https://docs.google.com/spreadsheet/ccc?key=0Av2uzfMXJ8MvdFVKajNicWg3cmJ1Um54blR2Z0xDV1E">to see an example of the spreadsheet template</a> we will set up for you to use.
+<a id="more1" href="javascript:more('details1');" style="display:inline;">More details ...</a>
+</p>
+<div id="details1" style="display:none;">
+<p></p>
+<p>Please note that:</p>
+
+<p>
+<ul style="margin-left:48px;">
+   <li>All of the columns highlighted in yellow are required.</li>
+   <li>Once you submit your spreadsheet for processing, we will review it for errors and then if no errors are found will link it directly to our spreadsheet processing system.  After it is linked, any changes you make to it will automatically go live within 12 hours.  If you need to make any edits, additions or deletions to your opportunities, you can make them directly in your original spreadsheet; there is no need to submit a new one.  If you wish to remove any of your opportunities from our system, all you need to do is delete them from your spreadsheet.</li>
+   <li>If your organization does not have a URL to link back to for volunteer opportunities please link to your website's home page or contact page so potential volunteers can contact you if necessary.</li>
+   <li>Google Spreadsheets makes it easy to import from Excel documents, but we do not recommend doing so.  The template format that the Google Spreadsheet scripts read is fairly exact, and Excel often has a hard time matching to it. Instead of importing, use cut and paste (from Excel to your browser) to move data into the spreadsheet.</li>
+   <li>For more information, contact us by email at <a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a></li>
+</ul>
+<p/>
+<a href="javascript:less('details1');" style="display:inline-block;margin-left:50px;">Less detail ...</a>
+</div>
+
+<h3>Posting Directly to All for Good by Creating Your Own XML Data Feed To Us</h3>
+<p>The best way to submit a large number of opportunities and keep them automatically updated in our system is to have your IT staff create an XML data feed file of your volunteer opportunities for processing by us.  Our system can process data feeds with any mix of the following opportunity types: those that occur in specific geographic locations, are state wide or nationwide or are virtual.  If you have microvirtual or  self-directed/how-to guides these should be setup in separate feed files from the other types of opportunities however.  If you have any questions or your IT department requires any technical support to get your initial feed file to us set up, feel free to contact us at <a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a> with any questions. Here are the steps to get started:
+<a id="more2" href="javascript:more('details2');" style="display:inline;">More details ...</a>
+</p>
+<div id="details2" style="display:none;">
+<ul style="margin-left:48px;">
+   <li>You can find the specification here, <a href="http://www.allforgood.org/spec">http://www.allforgood.org/spec</a> for how to set up your XML feed file and how to appropriately tag the various types of opportunities via their "location" element.</li>
+   <li>Once you have setup your feed file creation process, then please provide us with a production URL we can crawl a few times per day to download your updated data.  Contact us to submit your feed by emailing <nowrap><a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a></nowrap>.  Note that:</li>
+         <ul style="margin-left:48px;">
+          <li> The URL can be hosted anywhere. We strongly prefer plain HTTP -- no redirects, passwords, HTTPS or FTP.</li>
+          <li> Please keep the file  size to less than 500,000 records and less than 200MB.</li>
+          <li> The contents of your feed file should be updated "atomically" (all at once) by your system, otherwise our system may attempt to download a partial or corrupted version of your file for processing.</li>
+          <li> Please include an operational contact in case we have technical or quality problems with the feed.</li>
+          <li> We download and process all data feeds and rebuild our index from scratch four times per day.  Any updates made to your feed file should appear live in our system within 12 hours.  If your feed file is unavailable or incomplete when we attempt to process it, our system will index the most recent successfully processed version of it.</li>
+          <li> Our data feed validation system checks each opportunity to ensure it has a valid location, has not expired or ended and is not a duplicate.</li>
+          <li> We also validate the volunteer opportunity URL in a separate step after the data feed has been processed.  When we receive new volunteer opportunity URLs, we check them within four hours.  If we have previously checked the URL and it was good, it will be rechecked again in one week.  If a URL is determined to be bad at any point, the opportunity will be removed from our index.  All bad URLs are rechecked on a daily basis in case the problem with them was transient.</li>  
+          <li> After your data feed has been loaded into our system you will be provided with a feed status monitoring page which shows the number of opportunities from your feed live in our index and that has detailed information on the opportunities that were discarded during processing for one of the reasons mentioned above. </li>
+	 </ul>
+   <li>Please note that all data feed submissions to All for Good are subject to our <a href="/cla">Content License Agreement</a>. Before we can process your feed, you must indicate your acceptance of the agreement by <a href="http://spreadsheets.google.com/viewform?hl=en&amp;formkey=dHVnbll2RzdESGRRU2NqMDM4V0F0YXc6MA..">completing this form</a> and by providing us with an operational contact in case there are technical or quality problems with the feed.</li>
+ </ul>
+<p/>
+<a href="javascript:less('details2');" style="display:inline-block;margin-left:50px;">Less detail ...</a>
+</div>
+
+<h3>Posting Your Opportunities via Our Partner Sites</h3>
+<p>The best method for organizations to list a small number of  opportunities with All for Good is to submit them via one of our partner sites such as <a href="http://www.idealist.org/create-content">Idealist.org</a> or <a href="http://createthegood.org/sso/required/post-opportunity">Createthegood.org</a>.  Once you post your opportunities to one of our partner sites, they will automatically be added to the All for Good database within 48 hours.  There is no need to cross-post listings to All for Good that have already been listed at one of these sites.</p>
+
+
+                </div>
+                <!--.col-main-->
+            </div>
+            <!--.single-page-->
+        </div>
+        <!--.content-->
+

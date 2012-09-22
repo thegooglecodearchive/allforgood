@@ -1,0 +1,903 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>All for Good Volunteer Opportunity Submission Form</title>
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.2r1/build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.2r1/build/calendar/assets/skins/sam/calendar.css" />
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.2r1/build/datatable/assets/skins/sam/datatable.css" />
+<style type="text/css">
+BODY {margin:20px;padding:0;
+  background-color:#1755a0;
+  background-repeat:repeat-x;
+  background-image:url(assets/images/background.png);
+}
+TH {text-align:center;}
+LABEL.ci {display:block;}
+TD.instructions {font-size:12px;vertical-align:top;}
+.rq {color:red;font-weight:bold;}
+.more {white-space:nowrap;font-weight:bold;cursor:pointer;color:#000099;}
+.footnote {padding:4px;display:inline-block;background-color:#ccccff;}
+.friendly {font-weight:bold;font-size:14px;color:#116633;white-space:nowrap;margin-bottom:20px;}
+.shield {display:block;position:absolute;width:100%;height:165px;left:0;top:0;z-index:1;background-color:#333333;opacity:0.4;filter:alpha(opacity=40)}
+#beta {color:#000099;font-size:12px;}
+#commit {}
+#bookmark {position:absolute;right:6px;top:6px;display:none;}
+#logo {}
+#wrapper {position:relative;width:1200px;padding:10px;padding-left:40px;padding-right:30px;background-color:#ffffff;text-align:left;}
+#savers {text-align:right;}
+#cellediting {}
+.yui-skin-sam .yui-dt-col-Description pre {font-family:arial;font-size:100%; }
+.yui-skin-sam .yui-dt-liner { } 
+/* Class for marked cols */
+.yui-skin-sam .yui-dt td.mark,
+.yui-skin-sam .yui-dt td.mark td.yui-dt-asc,
+.yui-skin-sam .yui-dt td.mark td.yui-dt-desc,
+.yui-skin-sam .yui-dt td.mark td.yui-dt-asc,
+.yui-skin-sam .yui-dt td.mark td.yui-dt-desc {background-color: #a33;color: #fff;}
+</style>
+<script>
+var CHANGED = false;
+function exit() {
+  if (CHANGED) {
+    var ar = new Array();
+    ar.push('You have unsaved changes.');
+    ar.push('');
+    ar.push('Press Ok to save them before exiting');
+    if (confirm(ar.join('\n'))) {
+      save();
+    }
+  }
+}
+</script>
+</head>
+<body class="yui-skin-sam" onunload="exit()">
+<!--
+<div id="logo">
+<a href="http://www.allforgood.org/"><img border="none" src="assets/images/logo.gif" /></a>
+</div>
+-->
+<center>
+<div id="wrapper">
+<h1>All for Good Volunteer Opportunity Submission Form <sup id="beta">BETA</sup></h1>
+<div class="exampleIntro" style="position:relative;">
+<p/>
+Please use this form to submit your volunteer opportunities for inclusion in the All for Good search engine.  If you need technical assistance with the posting process or guidance on the best solution to your needs, please contact us at <a href="mailto:provider-support@allforgood.org">provider-support@allforgood.org</a> and we will be happy to assist you.  If you do have many listings and are comfortable using Google Doc Spreadsheets, you may wish to try using our <a href="http://tinyurl.com/allforgood-submit">large spreadsheet submission template</a> so that you can determine which approach works best for your organization to enter and update its opportunities. 
+</p>
+<form>
+<table>
+<tr>
+<td class="instructions" style="border-right:solid 1px #cccccc;">
+<div class="friendly">Step 1. Enter your email address</div>
+Enter your email address to begin using the form as new user or if you are a returning user enter your email address to edit, delete or add to your previously saved opportunities. 
+<span class="more" id="more1" onclick="goMore(1, true)">... more &raquo;</span>
+<p/>
+<div id="more1text" style="display:none;">
+Do not enter your opportunities in the form until after you have entered your email address or your entries will not be saved.
+<div class="more" id="less1" onclick="goMore(1, false)">&laquo; less</div>
+</div>
+</td>
+<td class="instructions" style="border-right:solid 1px #cccccc;">
+<div class="friendly">Step 2. Enter organization info</div>
+If you are a new user, enter your organization name, your name, and your phone number in case we need to contact you regarding your volunteer opportunities.
+<span class="more" id="more2" onclick="goMore(2, true)">... more &raquo;</span>
+<p/>  
+<div id="more2text" style="display:none;">
+If you are returning user your previously entered information and opportunities will be automatically retrieved using your email address. 
+<div class="more" id="less2" onclick="goMore(2, false)">&laquo; less</div>
+</div>
+</td>
+<td class="instructions" style="border-right:solid 1px #cccccc;">
+<div class="friendly">Step 3.  Enter volunteer opportunities</div> 
+Enter your volunteer opportunities in the fields below by clicking your mouse in each cell and typing your information or selecting the appropriate values from the cell dropdowns.  
+<span class="more" id="more3" onclick="goMore(3, true)">... more &raquo;</span>
+<p/>  
+<div id="more3text" style="display:none;">
+The following fields which are marked with a red * are required for each opportunity: Opportunity Title, Description, Website/URL for the opportunity, and Location Name.  Enter the word, “Virtual” in the Location Name field for virtual opportunities that can be performed remotely.  For physically based, in-person volunteer opportunities the following fields which are marked with a red * are required: City and State.  If the opportunity has a Street address or a Postal Code/Zip Code please enter those as well.  If the address information you enter cannot be validated by our Google Maps based system the location fields will be highlighted in red.  Only locations that can be mapped in Google Maps properly can be processed.  Note that the State and the optional date related fields require you to click "Save" or "Cancel" in the cell's pop-up window when you make your entry.
+<p/>
+The following fields are required for each opportunity: Opportunity Title, Description, Website/URL for the opportunity, Location Name, and a valid City/State and/or Zip Code.  Note that the State and date related cells require you to click "Save" or "Cancel" in the cell's pop-up window when you make your entry.  If the address information you enter cannot be validated by our Google Maps based system those fields will be highlighted in red.  Only locations that can be mapped in Google Maps properly can be processed.
+<p/>
+The following date related fields are optional: Start Date, End Date, How Often Does Event Happen, and Days of Week Event Repeats On.  If your opportunity is ongoing you may leave the start and end dates blank.  
+<p/>
+Once an opportunity has all of its required fields filled with valid entries, a green checkmark will be displayed by its Row Number to indicate it is ready for processing.  Note that only valid rows will be processed.  Any rows with invalid or missing required data will be ignored during processing.
+<div class="more" id="less3" onclick="goMore(3, false)">&laquo; less</div>
+</td>
+<td class="instructions">
+<div class="friendly">Step 4. Agree to terms of service and submit</div>
+Once you have entered all of your opportunities, check the "I agree" checkbox to indicate that you have read and agree to All for Good's Terms of Service and Content License Agreement.
+<span class="more" id="more4" onclick="goMore(4, true)">... more &raquo;</span>
+<p/>  
+<div id="more4text" style="display:none;">
+<p/>
+Then click the "Submit for Processing" button to have your green highlighted opportunities submitted for addition to the All for Good search engine.  Once your form is submitted, you can update it as needed with new opportunities and make changes to previously submitted ones as desired. 
+<p/>
+After your spreadsheet has been submitted for processing, your opportunities normally will be included in the All for Good search results within 24 hours.
+<div class="more" id="less4" onclick="goMore(4, false)">&laquo; less</div>
+</td>
+</tr>
+<tr>
+<td valign="top" style="border-right:solid 1px #cccccc;">
+<div style="position:relative;">
+<label class="ci" for="contact_email">Contact email:</label><input tabindex="1" onblur="goEmail(this);" id="contact_email" type="text" class="yui-ac-input"> 
+<p/>
+<label class="ci" for="confirm_email">Confirm email:</label><input tabindex="2" onblur="confirmEmail(this);" id="confirm_email" type="text" class="yui-ac-input"> 
+</div>
+</td>
+<td valign="top" style="border-right:solid 1px #cccccc;">
+<div style="position:relative;">
+<!-- sponsor = Sponsoring Organization -->
+<label class="ci" for="sponsor"><span class='rq'>*</span>Organization:</label><input tabindex="3" id="sponsor" type="text" class="yui-ac-input"> 
+<p/>
+<label class="ci" for="contact_name"><span class='rq'>*</span>Contact name:</label><input tabindex="4" id="contact_name" type="text" class="yui-ac-input"> 
+<p/>
+<label class="ci" for="contact_phone"><span class='rq'>*</span>Contact phone:</label><input tabindex="5" id="contact_phone" type="text" class="yui-ac-input"> 
+<a href="javascript:begEmail();" title="enter your email address" alt="enter your email address" class="shield"> </a></div>
+</td>
+<td valign="top" style="border-right:solid 1px #cccccc;">
+<div style="position:relative;">
+<input style="margin-top:100px;"
+  id="save" type="button" onclick="goSave();" value="Save Spreadsheet" disabled />
+<a href="javascript:begEmail();" title="enter your email address" alt="enter your email address" class="shield"> </a></div>
+</td>
+<td valign="top">
+<div style="position:relative;">
+<input type="hidden" id="committed" value="0" />
+<input id="tos" type="checkbox" class="yui-ac-input" onclick="goTOS(this)">By submitting your listings, you agree to All for Good's <a target="_blank" href="http://www.allforgood.org/tos">Terms of Service</a> and 
+<a target="_blank" href="http://www.allforgood.org/cla">Content License Agreement</a>.
+<div id="commit_advice" style="display:none;"><br />Any changes to this spreadsheet will be processed every 24 hours.
+<p/>
+<div style="display:none;">When your opps have been processed you will be able to find them 
+  <a target="_blank" id="my_opps" href="javascript:void(0)">here</a></div>
+</div>
+<div id="submit_advice" style="display:none;">
+<p/>
+<div style="width:200px;text-align:left;">
+<input id="commit" type="button" value="Submit for Processing" onclick="goCommit();" disabled />
+Click the "Submit for Processing" button to indicate these listings are ready to be processed.
+</div>
+</div>
+<a href="javascript:begEmail();" title="enter your email address" alt="enter your email address" class="shield"> </a></div>
+</td></tr></table>
+</form>
+</div>
+<div id="bookmark"><a href="javascript:void(0)" onclick="goBookmark(this)">Bookmark your spreadsheet</a></div>
+</div> <!-- wrapper -->
+</center>
+<table><tr><td><div style="position:relative;">
+<p/>
+<p/>
+<input type="button" id="clear" disabled style="visibility:visible;" value="Delete selected rows" onclick="clearRows()" />
+<span style="display:inline-block;margin-left:12px;">
+<span class="footnote"><span style="color:red;">*</span> = Required</span>
+</span>
+<p/>
+<div id="cellediting"></div>
+<p/>
+<input type="button" value="Add 20 more rows" onclick="addRows(20)" />
+<a href="javascript:begEmail();" title="enter your email address" alt="enter your email address" class="shield" style="height:1000px;"> </a></div>
+</td></tr></table>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/calendar/calendar-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/element/element-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/datatable/datatable-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/json/json-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/connection/connection-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/history/history-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/yahoo/yahoo-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.2r1/build/cookie/cookie-min.js"></script>
+
+
+<script type="text/javascript" src="assets/js/data.js"></script>
+<script type="text/javascript">
+var DEBUG = false;
+var CHANGED = false;
+
+var email_verified = null;
+var feed_providername = null;
+
+var neut_opp_html = '<img align="absmiddle" width="16" height="16" src="assets/images/blank.gif" />';
+var good_opp_html = '<img align="absmiddle" width="32" height="32" src="assets/images/good.png?v=2" />';
+//var bad_opp_html = '<img align="absmiddle" width="16" height="16" src="assets/images/bad.png" />';
+var bad_opp_html = '<img align="absmiddle" width="16" height="16" src="assets/images/blank.gif" />';
+
+var myDataTable = null;
+function json_safe(s) {
+  var rtn = (s ? '' + s : '');
+  return rtn.replace(/"/g, '\\"');
+}
+
+function _gel(id) {
+  return document.getElementById(id);
+}
+
+function begEmail() {
+  alert('Please enter your email address');
+}
+
+function raiseShields(up) {
+  var ar = document.getElementsByTagName('a');
+  for (var i in ar) {
+    if (ar[i] && ar[i].className == 'shield') {
+      ar[i].style.display = (up ? 'block' : 'none');
+    }
+  }
+  var ar = new Array('sponsor', 'contact_name', 'contact_phone');
+  for (var i in ar) {
+    var it = _gel(ar[i]);
+    if (it) {
+      it.enabled = !up;
+      it.disabled = up;
+    }
+  }
+}
+
+function goMore(n, on) {
+  var it = _gel('more' + n);
+  if (it) {
+    it.style.display = (on ? 'none' : 'inline');
+  }
+  var it = _gel('more' + n + 'text');
+  if (it) {
+    it.style.display = (on ? 'block' : 'none');
+  }
+}
+
+function getValue(id) {
+  var rtn = '';
+  var it = _gel(id);
+  if (it) {
+    if (it.type == 'checkbox') {
+      rtn = (it.checked ? 1 : 0);
+    } else {
+      rtn = (it.value || '');
+    }
+  }
+  return rtn;
+}
+
+function setValue(id, val) {
+  var it = _gel(id);
+  if (it) {
+    if (it.type == 'checkbox') {
+      it.checked = (val == '1' ? true : false);
+    } else {
+      it.value = val;
+    }
+  }
+}
+
+function outputJSON() {
+  var rtn = null;
+  var ar = new Array();
+  ar.push('{"Response":{');
+  ar.push('"sponsor":"', json_safe(getValue('sponsor')), '",');
+  ar.push('"tos":"', json_safe(getValue('tos')), '",');
+  ar.push('"committed":"', json_safe(getValue('committed')), '",');
+  ar.push('"contact_email":"', json_safe(getValue('contact_email')), '",');
+  ar.push('"contact_name":"', json_safe(getValue('contact_name')), '",');
+  ar.push('"contact_phone":"', json_safe(getValue('contact_phone')), '",');
+  if (myDataTable) {
+    ar.push('"Results":[');
+    var rows = myDataTable.getRecordSet().getRecords();
+    var data_rows = new Array();
+    for (var row_idx in rows) {
+      var cols = myDataTable.getColumnSet().keys;
+      var num_cols = cols.length;
+      var row = new Array();
+      for (var col_idx in cols) {
+        var key = cols[col_idx].getKey();
+        var value = rows[row_idx].getData(key);
+        num_cols--;
+        if (key.indexOf('Date') >= 0 && value == 'Invalid Date') {
+          value = '';
+        }
+        row.push('"', key, '":"', json_safe(value), '"');
+        if (num_cols > 0) {
+          row.push(',');
+        }
+      }
+      data_rows.push('{' + row.join('') + '}');
+    }
+    if (data_rows.length > 0) {
+      ar.push(data_rows.join(','));
+    }
+    ar.push(']');
+  }
+  ar.push('}}');
+  rtn = ar.join('');
+  return rtn;
+}
+
+function lz(s) {
+  var rtn = s.toString();
+  if (rtn && rtn.length < 2) {
+    rtn = '0' + rtn;
+  }
+  return rtn;
+}
+
+YAHOO.widget.DataTable.formatDate = function(el, oRecord, oColumn, oData) {
+  var oDate = oData;
+  if(oDate && oDate instanceof Date) {
+    var html = (lz(oDate.getMonth() + 1) + '/' + lz(oDate.getDate()) + '/' + oDate.getFullYear()).toString();
+    if (html.indexOf('NaN') >= 0) {
+      html = '';
+    }
+    el.innerHTML = html;
+  }
+};
+
+function makeTable(data_url, data_object) {
+  if (email_verified) {
+    raiseShields(false);
+
+    var now = new Date();
+    _gel('bookmark').style.display = 'block';
+    YAHOO.util.Cookie.set('email', email_verified);
+      //{expires: new Date(now.getTime() + (1000 * 3600 * 24 * 90))});
+    if (feed_providername) {
+      YAHOO.util.Cookie.set('feed_providername', feed_providername);
+        //{expires: new Date(now.getTime() + (1000 * 3600 * 24 * 90))});
+    }
+    var it = _gel('confirm_email');
+    if (it) {
+      it.value = email_verified;
+    }
+  }
+
+  // Custom formatter for "description" column to preserve line breaks
+  var formatDescription = function(elCell, oRecord, oColumn, oData) {
+      //elCell.innerHTML = "<pre class=\"Description\">" + (oData ? oData : '') + "</pre>";
+      elCell.innerHTML = (oData ? oData : '');
+  };
+
+  var formatRowNumber = function(el, oRecord, oColumn, oData) {
+    if (oData) {
+      var html = new Array();
+      html.push('<div style="text-align:right;">');
+      html.push('<nowrap>');
+      html.push('<span id="status', oData, '">', neut_opp_html, '</span>');
+      html.push('<input onclick="goCheckRow(this)" type="checkbox" id="rchk', oData, '" />');
+      html.push(oData);
+      html.push('</nowrap>');
+      html.push('</div>');
+      el.innerHTML = html.join('');
+    }
+  };
+
+  var myColumnDefs = [
+    {label:"Row Number", key:"row",
+      formatter:formatRowNumber, width:100
+    },
+    {label:"<span class='rq'>*</span>Opportunity<br/>Title", 
+       key:"Opportunity_Title", width:200, 
+       editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
+    {label:"<span class='rq'>*</span>Description", 
+       formatter:formatDescription, width:400,
+       key:"Description", editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})
+       },
+    {label:"<span class='rq'>*</span>Website", key:"Website", 
+       editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
+    {label:"<span class='rq'>*</span>Location<br/>Name",key:"Location_Name", 
+       minWidth:100,
+       editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
+    {label:"Address",key:"Location_number___street", 
+       minWidth:100,
+       editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
+    {label:"<span class='rq'>*</span>City",key:"Location_city", 
+       editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
+    {label:"<span class='rq'>*</span>State",key:"Location_state___province", 
+        editor: new YAHOO.widget.DropdownCellEditor({dropdownOptions:YAHOO.example.Data.stateAbbrs,
+        multiple:false, disableBtns:false})},
+    {label:"<span class='rq'>*</span>Postal<br/>Code",key:"Location_ZIP___postal_code", 
+        editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
+    {label:"Country", key:"Location_Country", editor: new YAHOO.widget.TextboxCellEditor({disableBtns:true})},
+    {label:"Start<br/>Date",key:"Start_Date", formatter:YAHOO.widget.DataTable.formatDate, 
+        editor: new YAHOO.widget.DateCellEditor({disableBtns:false, LABEL_CANCEL:'Clear'})},
+    {label:"End<br/>Date",key:"End_Date", formatter:YAHOO.widget.DataTable.formatDate, 
+        editor: new YAHOO.widget.DateCellEditor({disableBtns:false, LABEL_CANCEL:'Clear'})},
+    {label:"How Often<br/>Event Repeats", key:"How_often_does_event_happen", 
+        editor: new YAHOO.widget.DropdownCellEditor({multiple:false, disableBtns:false,
+        dropdownOptions:["once","Daily","Weekly","Monthly"]})},
+    {label:"Day of Week<br/>Event Repeats On", key:"Days_of_Week_Event_Repeats_On",
+        editor: new YAHOO.widget.DropdownCellEditor({multiple:false, disableBtns:false,
+        dropdownOptions:["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]})}
+    /* {label:"Special<br/>Skills Needed",key:"Special_Skills_Needed", 
+        editor: new YAHOO.widget.RadioCellEditor({radioOptions:["Yes","no"],disableBtns:true})}*/
+  ];
+
+  var myDataSource = null;
+  if (!data_url) {
+    if (!data_object) {
+      for (var i = 0; i < 20; i++) {
+        YAHOO.example.Data.blank.push(blank_row());
+        YAHOO.example.Data.blank[i].row = (i + 1);
+      }
+      data_object = YAHOO.example.Data.blank;
+    }
+    myDataSource = new YAHOO.util.DataSource(data_object);
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+    myDataSource.responseSchema = {
+      fields: ["row",
+               "Opportunity_Title","Description",
+               "Location_Name", "Location_number___street","Location_city",
+               "Location state___province","Location_ZIP___postal_code","Location_Country",
+               "Website",
+               {key:"Start_Date",parser:"date"},
+               {key:"End_Date",parser:"date"},
+               "How_often_does_event_happen", "Days_of_Week_Event_Repeats_On"
+               //"Special_Skills_Needed"
+              ]
+    };
+  } else {
+    //  set the content-type to JSON
+    myDataSource = new YAHOO.util.DataSource(data_url, {connMethodPost: true});
+    myDataSource.connMgr = YAHOO.util.Connect;
+    myDataSource.connMgr.initHeader('Content-Type', 'application/json; charset=utf-8', true);
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;            
+    myDataSource.responseSchema = { 
+       metaFields: {
+        // oParsedResponse.meta.sponsor
+        sponsor: "Response.sponsor",
+        tos: "Reponse.tos",
+        contact_email: "Response.contact_email",
+        contact_name: "Response.contact_name",
+        contact_phone: "Response.contact_phone"
+      },
+      resultsList: "Response.Results", 
+           fields: ["row", 
+                    "Opportunity_Title","Description",
+                    "Location_Name", "Location_number___street","Location_city",
+                    "Location_state___province","Location_ZIP___postal_code","Location_Country",
+                    "Website",
+                    {key:"Start_Date",parser:"date"},
+                    {key:"End_Date",parser:"date"},
+                    "How_often_does_event_happen", "Days_of_Week_Event_Repeats_On"
+                    //"Special_Skills_Needed"
+                   ]
+    }; 
+  }
+
+  myDataSource.doBeforeCallback = function(oRequest, oFullResponse, oParsedResponse, oCallback) {
+    // globals
+    setValue('sponsor', oFullResponse.Response.sponsor);
+    setValue('contact_email', oFullResponse.Response.contact_email);
+    setValue('contact_name', oFullResponse.Response.contact_name);
+    setValue('contact_phone', oFullResponse.Response.contact_phone);
+    setValue('tos', oFullResponse.Response.tos);
+    setValue('committed', oFullResponse.Response.committed);
+    showTOS();
+    return oParsedResponse;
+  };
+
+  try {
+    myDataTable = new YAHOO.widget.DataTable("cellediting", myColumnDefs, myDataSource, {});
+  } catch(err) {
+    alert(err.name.toString() + ':' + err.description);
+  }
+
+  var validInput = function(field, value) {
+    var rtn = true;
+    if (value.length > 0) {
+      if (field == 'Opportunity_Title') {
+        if (value.length < 10) {
+          alert('Opportunity Title must be at least 10 characters');
+          rtn = false;
+        }
+      } else if (field == 'Description') {
+        if (value.length < 10) {
+          alert('Description must be at least 10 characters');
+          rtn = false;
+        }
+      } else if (field == 'Website') {
+        if (value.length < 3) {
+          rtn = false;
+        }
+      }
+    }
+    return rtn;
+  };
+
+  var goodLocation = function(oRecord, good) {
+    var id = oRecord.getId();
+    var it = _gel(id);
+    if (it) {
+      var ar = it.getElementsByTagName('td');
+      for (var i in ar) {
+        if (ar[i] && ar[i].className 
+            && ar[i].className.indexOf('Location_') >= 0 
+            && ar[i].className.indexOf('Location_Name') < 0) {
+          if (good) {
+            YAHOO.util.Dom.removeClass(ar[i], 'mark'); 
+          } else {
+            YAHOO.util.Dom.addClass(ar[i], 'mark'); 
+          }
+        }
+      }
+    }
+    if (!good) {
+      goodOpp(oRecord, -1);
+    }
+  };
+
+  var is_complete_opp = function(oRecord) {
+    var oRecData = oRecord.getData();
+    var title = (oRecData['Opportunity_Title'] || '');
+    var desc = (oRecData['Description'] || '');
+    var url = (oRecData['Website'] || '');
+    return (title && desc && url ? true : false);
+  };
+
+  var goodOpp = function(oRecord, maybe) {
+     var s = _gel(oRecord.getId()).id; 
+     var idx = 1 + parseInt(s.replace(/yui-rec/, ''));
+     var it = _gel('status' + idx);
+     if (it) {
+       it.innerHTML = (maybe > 0 ? good_opp_html : (maybe < 0 ? bad_opp_html : neut_opp_html));
+     }
+  };
+
+  var verifyAddress = function(address, oRecord) {
+    var url = "geo";
+    var callback = {
+      success:function(){goodLocation(oRecord, true);},
+      failure:function(){goodLocation(oRecord, false);},
+      argument: [url]
+    };
+    var json = outputJSON();
+    var request = YAHOO.util.Connect.asyncRequest('POST', url, callback,
+      'address=' + encodeURIComponent(address));
+  };
+
+  var onCellMouseover = function(oArgs) {
+    highlightEditableCell(oArgs);
+  };
+
+  var onCellClick = function(oArgs) {
+    myDataTable.onEventShowCellEditor(oArgs);
+  };
+
+  var highlightEditableCell = function(oArgs) {
+    var elCell = oArgs.target;
+    if(YAHOO.util.Dom.hasClass(elCell, "yui-dt-editable")) {
+      myDataTable.highlightCell(elCell);
+    }
+  };
+
+  var onCellMouseout = function(oArgs) {
+    myDataTable.onEventUnhighlightCell(oArgs);
+  };
+
+  var onCellEdit = function(oArgs) {
+    var oOldData = oArgs.oldData;
+    var oNewData = oArgs.newData;
+    if (oOldData == oNewData) {
+      return true;
+    }
+    var oRecord = oArgs.editor.getRecord();
+
+    var key = oArgs.editor.getColumn().getField();
+    if (key.indexOf('Location_') == 0 && key != 'Location_Name') {
+      var oRecData = oRecord.getData();
+      //alert(YAHOO.lang.dump(oRecData));
+      var state = (oRecData['Location_state___province'] || '');
+      var city = (oRecData['Location_city'] || '');
+      var street = (oRecData['Location_number___street'] || '');
+      var zip = (oRecData['Location_ZIP___postal_code'] || '');
+      var country = (oRecData['Location_Country'] || '');
+      var address = street;
+      address += (city ? (address.length > 0 ? ' ' : '') + city : '');
+      address += (state ? (address.length > 0 ? ' ' : '') + state : '');
+      address += (zip ? (address.length > 0 ? ' ' : '') + zip : '');
+      address += (country ? (address.length > 0 ? ' ' : '') + country : '');
+      if (zip || (city && state)) {
+        verifyAddress(address, oRecord);
+      }
+    }
+     
+    if (!validInput(key, (oNewData || ''))) {
+      myDataTable.updateCell(oRecord, key, oOldData);
+    } else if (oOldData != oNewData) {
+      CHANGED = true;
+      toggleSave();
+    }
+    goodOpp(oRecord, (is_complete_opp(oRecord) ? 1 : 0));
+  }; 
+
+  var onDataTableInit = function() {
+    var records = myDataTable.getRecordSet().getRecords();
+    for (var i = 0, len = records.length; i < len; ++i) {
+      var oRecord = records[i];
+      goodOpp(oRecord, (is_complete_opp(oRecord) ? 1 : 0));
+    }
+  };
+
+  if (myDataTable) {
+    /* http://developer.yahoo.com/yui/docs/YAHOO.widget.DataTable.html */
+    myDataTable.subscribe("editorSaveEvent", onCellEdit);
+    myDataTable.subscribe("cellMouseoverEvent", onCellMouseover);
+    myDataTable.subscribe("cellMouseoutEvent", onCellMouseout);
+    myDataTable.subscribe("cellClickEvent", onCellClick);
+    myDataTable.subscribe("initEvent", onDataTableInit);
+
+    myDataTable.doBeforeShowCellEditor = function(oEditor) {
+      if(!oEditor.disableBtns) {
+        var oRecord = oEditor.getRecord();
+        var oColumn = oEditor.getColumn();
+        var it = this.getTdLinerEl({record:oRecord, column:oColumn});
+        if (it) {
+          it.innerHTML = '';
+        }
+        myDataTable.updateCell(oRecord, oColumn.getField());
+        CHANGED = true;
+        toggleSave();
+      }
+      return true;
+    }
+  }
+
+  toggleSave();
+
+  return {
+      oDS: myDataSource,
+      oDT: myDataTable
+  };
+}
+
+var blank_row = function(){
+    return {"row":"",
+          "Opportunity_Title":"", "Description":"", "Website":"",
+          "Location_Name":"", 
+          "Location_number___street":"", 
+          "Location_city":"", 
+          "Location_state___province":"", 
+          "Location_ZIP___postal code":"", 
+          "Location_Country":"",
+          "How_often_does_event_happen?":"", 
+          "Days_of_Week_Event_Repeats_On":""
+          //"Special_Skills_Needed":""
+         };
+}
+
+function addRows(n) {
+  if (myDataTable) {
+    n = (n > 0 ? n : 20);
+    var ar = new Array(); 
+    var rows = myDataTable.getRecordSet().getLength(); 
+    for (var i = 0; i < n; i++) {
+      ar.push(blank_row());
+      ar[i].row = (rows + i + 1);
+    }
+    myDataTable.addRows(ar);  
+  }
+}
+
+function goCheckRow(inp) {
+  var rtn = false;
+  var ar = document.getElementsByTagName('input');
+  for (var i in ar) {
+    if (ar[i] && ar[i].id && ar[i].id.indexOf('rchk') == 0 && ar[i].checked) {
+      rtn = true;
+      break;
+    }
+  }
+  showClearButton(rtn);
+}
+
+function clearRows() {
+  if (email_verified) {
+    if (confirm("Delete selected rows -- are you sure?\nThere is no undo")) {
+      CHANGED = true;
+      var list = new Array();
+      var ar = document.getElementsByTagName('input');
+      for (var i in ar) {
+        if (ar[i] && ar[i].id && ar[i].id.indexOf('rchk') == 0 && ar[i].checked) {
+          list.push(ar[i].id.substr(4));
+          ar[i].checked = false;
+        }
+      }
+      if (list.length > 0) {
+        makeTable("clear?email=" + encodeURIComponent(email_verified) + '&rows=' + list.join(','));
+      }
+    }
+  }
+}
+
+function showClearButton(yes) {
+  var btn = _gel('clear');
+  if (btn) {
+    btn.disabled = (!CHANGED && yes ? false : true);
+  }
+}
+
+function toggleSave() {
+  var btn = _gel('save');
+  if (btn) {
+    if (CHANGED && email_verified) {
+      showClearButton(false);
+      btn.disabled = false;
+    } else {
+      btn.disabled = true;
+    }
+    btn.enabled = !btn.disabled;
+  }
+}
+
+
+function set_feed_providername(fid) {
+  if (fid) {
+    feed_providername = fid;
+    var it = _gel('my_opps');
+    if (it) {
+      it.href = 'http://www.allforgood.org/search#vol_dist=12399&q=feed_providername%3A' + fid;
+      it.parentNode.style.display = 'block';
+    }
+  }
+}
+
+function saveOk(rsp) {
+  CHANGED = false;
+  toggleSave();
+  if(rsp.responseText !== undefined){ 
+    set_feed_providername(rsp.responseText);
+    if (DEBUG) {
+      var ar = new Array();
+      ar.push("Transaction id: " + rsp.tId); 
+      ar.push("HTTP status: " + rsp.status); 
+      ar.push("Status code message: " + rsp.statusText); 
+      ar.push("HTTP headers:",  rsp.getAllResponseHeaders);
+      ar.push("Response: " + rsp.responseText); 
+      ar.push("Argument object: " + rsp.argument); 
+      alert(ar.join('\n'));
+    }
+  } 
+}
+
+function saveFail() {
+  alert("Save failed\nPlease wait a moment and try again.");
+}
+
+function goSave(notify) {
+  var email = getValue('contact_email');
+  if (email) {
+    var url = "put";
+    var callback = { 
+      success:saveOk, 
+      failure:(notify ? saveFail : null),
+      argument: [url]
+    }; 
+    var json = outputJSON();
+    var request = YAHOO.util.Connect.asyncRequest('POST', url, callback, 
+      'email=' + encodeURIComponent(email) +  '&json=' + encodeURIComponent(json)); 
+  }
+}
+
+function showCommit() {
+  var it = _gel('committed');
+  if (it) {
+    var btn = _gel('commit');
+    if (btn) {
+      btn.style.display = (it.value == "1" ? 'none' : 'block');
+      var tos = _gel('tos');
+      if (tos) {
+        btn.disabled = (email_verified && tos.checked ? false : true);
+        btn.enabled = !btn.disabled;
+      }
+    }
+    var adv = _gel('commit_advice');
+    if (adv) {
+      adv.style.display = (it.value == "1" ? 'block' : 'none');
+    }
+    var adv = _gel('submit_advice');
+    if (adv) {
+      adv.style.display = (it.value == "1" ? 'none' : 'block');
+    }
+  }
+}
+
+function goCommit() {
+  var it = _gel('committed');
+  if (it) {
+    it.value = "1";
+  }
+  goSave();
+  showCommit();
+}
+
+function showTOS() {
+  var it = _gel('tos');
+  if (it) {
+    var inp = _gel('committed');
+    if (inp) {
+      inp.value = (it.checked ? inp.value : "0");
+    }
+  }
+  showCommit();
+}
+
+function goTOS(it) {
+  showTOS();
+  goSave();
+}
+
+function goEmail(it) {
+  if (it) {
+    if (!it.value) {
+      raiseShields(true);
+      it.focus();
+    } else {
+      email_verified = it.value;
+      var cfemail_inp = _gel('confirm_email');
+      if (cfemail_inp) {
+        cfemail_inp.focus();
+      }
+    }
+  }
+}
+
+function confirmEmail(it) {
+  if (it && it.value) {
+    var email = it.value;
+    if (email != email_verified) {
+      alert('Email addresses don\'t match');
+      chkEmail();
+    } else {
+      makeTable("get?email=" + encodeURIComponent(email_verified));
+      CHANGED = true;
+      toggleSave();
+    }
+  }
+}
+
+function chkEmail(inp) {
+  var it = _gel('contact_email');
+  if (it) {
+    it.focus();
+    it.select();
+  }
+  raiseShields(true);
+}
+
+function goBookmark(it) {
+  var title = 'AllforGood Volunteer Opportunities';
+  var url = location.href;
+  if (email_verified) {
+    if (url.indexOf('?') < 0) {
+      url += '?';
+    }
+    if (url.indexOf('email=') < 0) {
+      url += '&email=' + email_verified;
+    }
+  }
+  if (window.chrome) {
+    alert('Press ctrl+D to bookmark (Command+D for macs) after you click Ok');
+  } else if (window.sidebar) { // Mozilla Firefox Bookmark
+    window.sidebar.addPanel(title, url, '');
+  } else if (window.external) { // IE Favorite
+    window.external.AddFavorite(url, title); 
+  } else if (window.opera && window.print) { // Opera Hotlist
+    alert('Press CTRL-T (Opera) to bookmark');
+  }
+}
+
+function init() {
+  var email_arg = (YAHOO.util.History.getQueryStringParameter('email') || '');
+  if (!email_arg) {
+    email_arg = (YAHOO.util.Cookie.get("email") || '');
+  }
+  email_verified = email_arg;
+  var feed_providername_arg = (YAHOO.util.History.getQueryStringParameter('feed_providername') || '');
+  if (!feed_providername_arg) {
+    feed_providername = (YAHOO.util.Cookie.get("feed_providername") || '');
+  }
+  if (feed_providername) {
+    set_feed_providername(feed_providername);
+  }
+  makeTable("get?email=" + encodeURIComponent(email_arg));
+  goSave();
+  setTimeout(function(){goSave(false);}, 60 * 1000);
+}
+YAHOO.util.Event.addListener(window, "load", function(){init();});
+</script>
+</body>

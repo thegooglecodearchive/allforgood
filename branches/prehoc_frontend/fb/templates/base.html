@@ -1,0 +1,57 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:fb="http://www.facebook.com/2008/fbml"
+      xmlns:fb="http://ogp.me/ns/fb#"
+>
+<head>
+<meta charset="utf-8">
+<script language="JavaScript" src="http://www.geoplugin.net/javascript.gp" type="text/javascript"></script>
+<script language="JavaScript" src="/fb/json.js" type="text/javascript"></script>
+<script language="JavaScript" src="/fb/ajax.js" type="text/javascript"></script>
+<title>{% block title %}Welcome{% endblock %} &mdash; All for Good</title>
+<link type="text/css" rel="stylesheet" href="/fb/style.css?v={{version}}">
+</head>
+  <body>
+    <div id="doc">
+<center>
+
+      {% if message %}
+        <div class="message {{ message.type }}">{{ message.content|safe }}</div>
+      {% endif %}
+
+<table cellpadding="0" cellspacing="0" border="0"><tr><td>
+        {% block body %}{% endblock %}
+</td></tr></table>
+</center>
+   </div>
+
+    <script src="/fb/main.js"></script>
+    <div id="fb-root"></div>
+    <script>
+      if (window == window.top) {
+        location.href = 'https://apps.facebook.com/316930785030161/';
+      } else {
+        {# we are in an iframe #}
+        {# async loading of facebook js sdk #}
+        window.fbAsyncInit = function() { facebookInit({{ js_conf|safe }}) };
+        (function() {
+          var e = document.createElement('script');
+          e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+          document.getElementById('fb-root').appendChild(e);
+        }());
+      } 
+
+      {# async loading of google analytics #}
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-8689219-7']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script');
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>
