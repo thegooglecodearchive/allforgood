@@ -82,33 +82,21 @@ class SearchResult(object):
     self.url_sig = None
     self.title = title
     self.snippet = snippet
-    self.duration = ''
     self.location = location
-    self.distance = ''
-    self.virtual = virtual
     self.vetted = vetted
     self.is_501c3 = is_501c3
     self.item_id = item_id
     self.base_url = base_url
+    self.virtual = virtual
     self.self_directed = self_directed
     self.micro = micro
     self.volunteers_needed = volunteers_needed
     self.openEnded = False
-    #self.all_categories = categories if categories else []
-    #self.all_categories = categories[0].split(',') if categories else []
-    self.all_categories = []
-    if categories:
-      for cat in categories[0].split(','):
-        cat = cat.strip()
-        if not cat in self.all_categories:
-          self.all_categories.append(cat)
-
+    self.all_categories = categories if categories else []
     self.categories = categories if categories else []
-    # this eliminates any undefined categories
     self.categories = [cat for cat in self.categories if cat in UI_CATEGORIES]
     self.categories_str = self.categories_to_str(self.categories)
     self.categories_api_str = self.categories_to_api_str(self.categories)
-
     self.orgName = org_name
     # app engine does not currently support the escapejs filter in templates
     # so we have to do it our selves for now
@@ -212,12 +200,9 @@ class SearchResultSet(object):
     self.pubdate = get_rfc2822_datetime()
     self.last_build_date = self.pubdate
 
-    # HOC
-    self.is_hoc = False
-    self.is_cal = False
     self.total_match = 0
     self.total_opportunities = 0
-    self.hoc_facets = {}
+
 
   def append_results(self, results, merge_by_date_and_location = False):
     """append a results array to this results set and rerun dedup()"""

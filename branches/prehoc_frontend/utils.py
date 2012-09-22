@@ -143,9 +143,3 @@ def safe_int(given, default_value = 0):
     pass
 
   return return_val
-
-
-def unique_list(seq):
-  seen = set()
-  seen_add = seen.add
-  return [ x for x in seq if x not in seen and not seen_add(x)]
