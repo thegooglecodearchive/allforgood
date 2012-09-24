@@ -187,8 +187,8 @@ def get_solr_backend(args):
       # node 2 serves at 6, 18
       args[api.PARAM_BACKEND_URL] = private_keys.NODE2_DEFAULT_BACKEND_URL
 
-    # TODO
-    args[api.PARAM_BACKEND_URL] = private_keys.NODE3_DEFAULT_BACKEND_URL
+    if private_keys.DEFAULT_TO_DEVELOPMENT_NODE:
+      args[api.PARAM_BACKEND_URL] = private_keys.NODE3_DEFAULT_BACKEND_URL
 
   global BACKEND_GLOBAL
   BACKEND_GLOBAL = args[api.PARAM_BACKEND_URL]
