@@ -353,7 +353,9 @@ def form_solr_query(args):
   solr_query += apply_boosts(args, original_query);
   solr_query += apply_filter_query(api_key, args)
 
-  if args.get(api.PARAM_MERGE, None) == '3':
+  if args.get(api.PARAM_MERGE, None) == '2':
+    solr_query += ("&group=true&group.field=aggregatefield&group.main=true")
+  elif args.get(api.PARAM_MERGE, None) == '3':
     solr_query += ("&group=true&group.field=opportunityid&group.main=true")
   elif args.get(api.PARAM_MERGE, None) == '4':
     solr_query += ("&group=true&group.field=dateopportunityidgroup&group.main=true&group.limit=7")
