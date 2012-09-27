@@ -219,6 +219,14 @@ class SearchResultSet(object):
     self.total_match = 0
     self.total_opportunities = 0
     self.hoc_facets = {}
+ 
+    self.group_query = ''
+
+    # 
+    self.is_json2 = False
+    self.is_exelis = False
+    self.backend_count = self.merged_count = 0
+
 
   def append_results(self, results, merge_by_date_and_location = False):
     """append a results array to this results set and rerun dedup()"""

@@ -353,31 +353,33 @@ def form_solr_query(args):
   solr_query += apply_boosts(args, original_query);
   solr_query += apply_filter_query(api_key, args)
 
+  group_query = ''
   if args.get(api.PARAM_MERGE, None) == '2':
-    solr_query += ("&group=true&group.field=aggregatefield&group.main=true")
+    group_query = ("&group=true&group.field=aggregatefield&group.main=true")
   elif args.get(api.PARAM_MERGE, None) == '3':
-    solr_query += ("&group=true&group.field=opportunityid&group.main=true")
+    group_query = ("&group=true&group.field=opportunityid&group.main=true")
   elif args.get(api.PARAM_MERGE, None) == '4':
-    solr_query += ("&group=true&group.field=dateopportunityidgroup&group.main=true&group.limit=7")
+    group_query = ("&group=true&group.field=dateopportunityidgroup&group.main=true&group.limit=7")
 
+  solr_query += group_query
+
+  # add the geo params
   solr_query += '&fq=' + geo_params
 
-  # field list
-  solr_query += '&fl='
+  # add the field list
+  fields_query = '&fl='
   if api.PARAM_OUTPUT not in args:
-    solr_query += ','.join(api.DEFAULT_OUTPUT_FIELDS)
+    fields_query += ','.join(api.DEFAULT_OUTPUT_FIELDS)
   else:
     if args[api.PARAM_OUTPUT] in api.FIELDS_BY_OUTPUT_TYPE:
-      solr_query += ','.join(utils.unique_list(api.DEFAULT_OUTPUT_FIELDS + 
+      fields_query += ','.join(utils.unique_list(api.DEFAULT_OUTPUT_FIELDS + 
                                                api.FIELDS_BY_OUTPUT_TYPE[args[api.PARAM_OUTPUT]]))
     else:
-      solr_query += '*' 
+      fields_query += '*' 
 
-  #print 
-  #print urllib.unquote_plus(solr_query)
-  #sys.exit(0)
+  solr_query += fields_query
 
-  return solr_query
+  return solr_query, group_query, fields_query
 
 
 def parseLatLng(val):
@@ -432,7 +434,7 @@ def search(args, dumping = False):
   if not 'is_report' in args:
     args['is_report'] = False
 
-  solr_query = form_solr_query(args)
+  solr_query, group_query, fields_query = form_solr_query(args)
 
   query_url = args[api.PARAM_BACKEND_URL]
   if query_url.find("?") < 0:
@@ -533,7 +535,7 @@ def search(args, dumping = False):
     result_set.parse_time = 0
     return result_set
 
-  results = query(query_url, args, False, dumping)
+  results = query(query_url, group_query, fields_query, args, False, dumping)
   logging.info("SOLR call done: "+str(len(results.results))+
                 " results, fetched in "+str(results.fetch_time)+" secs,"+
                 " parsed in "+str(results.parse_time)+" secs.")
@@ -548,6 +550,7 @@ def search(args, dumping = False):
         del results[i]
 
   return results
+
 
 HOC_FACET_FIELDS = [
   'populations_str',
@@ -600,12 +603,57 @@ def apply_HOC_facet_counts(result_set, args):
   return result_set
 
 
+def get_solr_count(given_query, args):
+
+  rtn = 0
+
+  json_object = None
+  node, args = get_solr_backend(args)
+
+  query = given_query.replace(node, '').replace('?&wt=json', '')
+
+  url = node + '?wt=json&rows=0'
+  if query.find('group=true') < 0:
+    url += query
+  else:
+    url += '&group.ngroups=true&' + query.replace('&group.main=true', '')
+
+  #print
+  #print '<pre>'
+  #print url
+  #sys.exit(0)
+
+  fetch_result = urlfetch.fetch(url)
+  logging.info('solr_search.get_solr_count: ' + url)
+  if fetch_result.status_code == 200:
+    try:
+      json_object = simplejson.loads(fetch_result.content)
+    except:
+      logging.warning('solr_search.get_solr_count could not get json from ' + url)
+
+  if json_object:
+    if not json_object.get('grouped', None):
+      try:
+        rtn = int(json_object['response']['numFound'])
+      except:
+        logging.warning('solr_search.get_solr_count could not get numFound from ' + url)
+    else:
+      group_obj_list = json_object['grouped']
+      for gpo in group_obj_list:
+        try:
+          rtn += int(json_object['grouped'][gpo]['ngroups'])
+        except:
+          logging.warning('solr_search.get_solr_count could not get group match(es) from ' + url)
+
+  return rtn
+
+
 def calculate_distance(x1, y1, x2, y2):
   """ distance formula applied to lat, long converted to miles """
   return ((((x1 - x2) ** 2) + ((y1 - y2) ** 2)) ** 0.5) * MILES_PER_DEG
 
 
-def query(query_url, args, cache, dumping = False):
+def query(query_url, group_query, fields_query, args, cache, dumping = False):
   """run the actual SOLR query (no filtering or sorting)."""
   logging.debug("Query URL: " + query_url + '&debugQuery=on')
   result_set = searchresult.SearchResultSet(urllib.unquote(query_url),
@@ -812,8 +860,15 @@ def query(query_url, args, cache, dumping = False):
       memcache.set(key, res, time=RESULT_CACHE_TIME)
 
   result_set.num_results = len(result_set.results)
+  result_set.total_match = int(result["response"]["numFound"])
+  result_set.merged_count = result_set.backend_count = result_set.estimated_results = result_set.total_match
 
-  result_set.estimated_results = result_set.total_match = int(result["response"]["numFound"])
+  if group_query:
+    cq = query_url.replace(fields_query, '').replace(group_query, '')
+    result_set.backend_count = get_solr_count(cq, args)
+    cq = query_url.replace(fields_query, '')
+    result_set.merged_count = get_solr_count(cq, args)
+
   parse_end = time.time()
   result_set.parse_time = parse_end - parse_start
 
