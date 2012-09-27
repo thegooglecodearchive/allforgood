@@ -450,6 +450,12 @@ class JsonApiWriter(ApiWriter):
         self.json['TotalMatch'] =  result_set.total_match
 
     self.items = self.json['items']
+    
+    if result_set.is_hoc or result_set.is_json2 or result_set.is_exelis:
+      self.json['num'] = len(result_set.clipped_results)
+      self.json['MergedCount'] = result_set.merged_count
+      self.json['BackendCount'] = result_set.backend_count
+ 
         
   def add_result(self, result, result_set = {}):
     """Add an item dict to the items array."""

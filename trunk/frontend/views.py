@@ -434,6 +434,8 @@ class search_view(webapp.RequestHandler):
 
       result_set.is_hoc = True if output.find('hoc') >= 0 else False
       result_set.is_cal = True if output.find('cal') >= 0 else False
+      result_set.is_json2 = True if output.find('json-2') >= 0 else False
+      result_set.is_exelis = True if output.find('exelis') >= 0 else False
 
       if result_set.is_hoc:
         result_set = solr_search.apply_HOC_facet_counts(result_set, unique_args)
