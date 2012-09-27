@@ -396,6 +396,7 @@
 <field name="starttime"  type="tint"    indexed="true"  stored="true"/>
 <field name="endtime"  type="tint"    indexed="true"  stored="true"/>
 <field name="eventduration"  type="tint"    indexed="true"  stored="true"/>
+<field name="occurrenceduration"  type="float"    indexed="true"  stored="true"/>
 <field name="lastupdated" type="tdate"    indexed="true"  stored="true"/>
 <field name="expires" type="tdate"    indexed="true"  stored="true"/>
 <field name="eventrangestart" type="tdate"    indexed="true"  stored="true"/>
@@ -435,8 +436,12 @@
 <field name="audiencetags_str" type="string" indexed="true" stored="true" multiValued="true" />
 <field name="activitytype" type="string_ci" indexed="true" stored="true" multiValued="true" />
 <field name="activitytype_str" type="string" indexed="true" stored="true" multiValued="true" />
+
 <field name="eventname" type="string_ci" indexed="true" stored="true" multiValued="true" />
 <field name="eventname_str" type="string" indexed="true" stored="true" multiValued="true" />
+
+<field name="invitationcode" type="text" indexed="true" stored="true" />
+<field name="invitationcode_str" type="string_ci" indexed="true" stored="true" />
 
 <field name="affiliateorganizationname" type="text" indexed="true" stored="true" />
 <field name="affiliateorganizationname_str" type="string_ci" indexed="true" stored="true" />
@@ -452,7 +457,6 @@
 <field name="managedby" type="string_ci" indexed="true" stored="true" />
 <field name="registertype" type="string_ci" indexed="true" stored="true" />
 <field name="sexrestrictedto" type="string_ci" indexed="true" stored="true" />
-<field name="invitationcode" type="string_ci" indexed="true" stored="true" />
 <field name="scheduletype" type="string_ci" indexed="true" stored="true" />
 <field name="opportunitytype" type="string_ci" indexed="true" stored="true" />
 <field name="isdisaster" type="string_ci" indexed="true" stored="true" />
@@ -539,6 +543,7 @@
  <copyField source="eventname" dest="eventname_str"/>
  <copyField source="affiliateorganizationname" dest="affiliateorganizationname_str"/>
  <copyField source="huborganizationname" dest="huborganizationname_str"/>
+ <copyField source="invitationcode" dest="invitationcode_str"/>
  <copyField source="event_date_range" dest="startdate" maxChars="10" />
 
 
