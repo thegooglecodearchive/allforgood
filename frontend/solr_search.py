@@ -71,19 +71,29 @@ def apply_boosts(args, original_query = None):
   def bqesc(s):
     # replace "+ signs" with %2B and spaces with "+ signs", leave else alone
     # maybe like urllib.quote_plus(s.replace('+', '%2B'), '^()[]:*-')
+    s = s.strip()
+    if s[0] != '(':
+      s = '(' + s + ')'
     return s.replace('+', '%2B').replace(' ', '+')
 
   boost = '&bq='
-  for bq in DEFAULT_BOOSTS:
+
+  for idx, bq in enumerate(DEFAULT_BOOSTS):
+    if idx > 0:
+      boost += '%20OR%20'
     boost += bqesc(bq)
 
   if api.PARAM_KEY in args:
     if args[api.PARAM_KEY] in API_KEY_BOOSTS:
+      if boost != '&bq=':
+        boost += '%20OR%20'
       boost += bqesc(API_KEY_BOOSTS[args[api.PARAM_KEY]])
 
   if original_query:
     for k, b in CATEGORY_BOOSTS.items():
       if original_query.find(k) >= 0:
+        if boost != '&bq=':
+          boost += '%20OR%20'
         boost += bqesc(b)
   
   return boost
@@ -377,6 +387,8 @@ def form_solr_query(args):
     else:
       fields_query += '*' 
 
+  # TODO: we were getting "URL too long errors"
+  fields_query = '&fl=*' 
   solr_query += fields_query
 
   return solr_query, group_query, fields_query
