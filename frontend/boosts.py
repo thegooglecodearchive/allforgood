@@ -44,11 +44,11 @@ CATEGORY_QUERIES = {
 }
 
 CATEGORY_BOOSTS = {
-  'category:mlkday' : ' aggregatefield:(mlkday)^100 eventrangestart:[2012-01-16T00:00:00Z TO 2012-01-16T23:59:59Z]^20 eventrangeend:[2012-01-16T00:00:00Z TO 2012-01-16T23:59:59Z]^10' ,
+  'category:mlkday' : ' aggregatefield:(mlkday)^100 OR eventrangestart:[2012-01-16T00:00:00Z TO 2012-01-16T23:59:59Z]^20 OR eventrangeend:[2012-01-16T00:00:00Z TO 2012-01-16T23:59:59Z]^10' ,
 
   'category:education' : ' title:(tutor OR school OR children OR student OR classroom)^100',
   
-  'category:september11' : ' title:(september11)^100 description:911day^10',
+  'category:september11' : ' title:(september11)^100 OR description:911day^10',
 }
 
 API_KEY_QUERIES = {
@@ -66,17 +66,17 @@ API_KEY_QUERIES = {
 
 
 API_KEY_BOOSTS = {
-  'liveunited' : ' feed_providername:unitedway^2000 feed_providername:handsonnetwork1800^10 feed_providername:handsonnetworkconnect^10',
+  'liveunited' : ' feed_providername:unitedway^2000 OR feed_providername:handsonnetwork1800^10 OR feed_providername:handsonnetworkconnect^10',
 
-  'americanexpress' : ' title:911day^1000 description:911day^100 feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000',
+  'americanexpress' : ' title:911day^1000 OR description:911day^100 OR feed_providername:handsonnetwork1800^2000 OR feed_providername:handsonnetworkconnect^2000',
   
-  '911Day' : ' title:911day^1000 description:911day^100 feed_providername:handsonnetwork1800^2000 feed_providername:handsonnetworkconnect^2000 feed_providername:handsonnetworktechnologies^2000',
+  '911Day' : ' title:911day^1000 OR description:911day^100 OR feed_providername:handsonnetwork1800^2000 OR feed_providername:handsonnetworkconnect^2000 OR feed_providername:handsonnetworktechnologies^2000',
   
-  'daytabank' : ' feed_providername:handsonnetwork1800^1000 feed_providername:handsonnetworkconnect^1000 feed_providername:handsonnetworktechnologies^1000 feed_providername:daytabank^2000 (eventrangestart:[2012-10-22T00:00:00Z TO 2012-10-22T23:59:59Z])^1000',
+  'daytabank' : ' feed_providername:handsonnetwork1800^1000 OR feed_providername:handsonnetworkconnect^1000 OR feed_providername:handsonnetworktechnologies^1000 OR feed_providername:daytabank^2000 OR (eventrangestart:[2012-10-22T00:00:00Z TO 2012-10-22T23:59:59Z])^1000',
     
-  'joiningforces' : ' title:military^1 description:military^5 (*:* -description:veteran)^5 (*:* -org_name:spouse)^10 (*:* -title:invasive)^2000',
+  'joiningforces' : ' title:military^1 OR description:military^5 OR (*:* -description:veteran)^5 OR (*:* -org_name:spouse)^10 OR (*:* -title:invasive)^2000',
   
-  'exelis' : ' feed_providername:handsonnetworkconnect^100 affiliateorganizationid:2002^1000 detailurl:http*signupandserve*^1000 aggregatefield:(military OR veteran)^25',
+  'exelis' : ' feed_providername:handsonnetworkconnect^100 OR affiliateorganizationid:2002^1000 OR aggregatefield:(military OR veteran)^25',
 
 }
 
