@@ -76,8 +76,7 @@ def apply_boosts(args, original_query = None):
       s = '(' + s + ')'
     return s.replace('+', '%2B').replace(' ', '+')
 
-  boost = '&bq='
-
+  boost = ''
   for idx, bq in enumerate(DEFAULT_BOOSTS):
     if idx > 0:
       boost += '%20OR%20'
@@ -96,6 +95,9 @@ def apply_boosts(args, original_query = None):
           boost += '%20OR%20'
         boost += bqesc(b)
   
+  if boost:
+    boost = '&bq=(' + boost + ')'
+   
   return boost
 
 
