@@ -40,7 +40,7 @@ FIELD_TUPLES = [
   ('xml_url',),
   ('url_short',),
   ('latlong',),
-  ('location_name', 'location'),
+  ('given_location_str',),
   ('interest_count',),
   ('impressions',),
   ('quality_score',),
@@ -164,7 +164,7 @@ API_FIELD_NAMES_MAP = {
   'opportunitytype' : 'opportunityType',
   'registertype' : 'registerType',
   'opportunityid' : 'opportunityId',
-  'location' : 'location_name',
+  'given_location_str' : 'location_name',
 
   'snippet' : 'description',
   'url' : 'detailUrl',
@@ -225,8 +225,8 @@ STANDARD_FIELDS = [
   'xml_url',
   'url_short',
   'latlong',
-  'location_name', 
   'location',
+  'given_location_str',
   'interest_count',
   'impressions',
   'quality_score',
@@ -470,6 +470,9 @@ class JsonApiWriter(ApiWriter):
       if result_set.is_cal and name.lower() not in CALENDAR_FIELDS:
         continue
 
+      if len(name) < 2:
+        continue
+
       if not hasattr(result, name):
         name = name.lower()
         if not hasattr(result, name) and len(field_info) > 1:
@@ -478,6 +481,7 @@ class JsonApiWriter(ApiWriter):
             name = name.lower()
 
       content = getattr(result, name, '')
+      #print name, '=', content, '<br>'
         
       if name.lower() == "enddate":
         if custom_date_format(content) == 'Present':
@@ -487,6 +491,9 @@ class JsonApiWriter(ApiWriter):
           content = content[:300]
       elif name in ["eventrangestart", "eventrangeend"]:
         content = content.replace('T', ' ').strip('Z')
+   
+      if isinstance(content, basestring):
+         content = content.strip()
 
       # handle lists
       if isinstance(content, basestring) and content.find('\t') > 0:
