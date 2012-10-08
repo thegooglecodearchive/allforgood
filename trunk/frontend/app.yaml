@@ -3,8 +3,8 @@ application: servicefootprint
 
 #version: trunk
 #version: testing
-version: staging
-#version: api2
+#version: staging
+version: api2
 #version: backup
 runtime: python
 api_version: 1
