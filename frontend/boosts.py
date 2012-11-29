@@ -34,9 +34,9 @@ DEFAULT_BOOSTS = [
 ]
 
 CATEGORY_QUERIES = {
-  'category:mlkday' : '(mlkday OR -2009 OR -2010 OR -2011 OR -feed_providername:girlscouts OR (-feed_providername:idealist AND eventrangestart:[0001-01-01T00:00:00Z TO 2012-01-22T23:59:59Z] AND eventrangeend:[2012-01-07T00:00:00Z TO *]))',
+  'category:mlkday' : '(mlkday OR -2009 OR -2010 OR -2011 OR -2012 OR -feed_providername:girlscouts OR (-feed_providername:idealist AND eventrangestart:[0001-01-01T00:00:00Z TO 2013-01-27T23:59:59Z] AND eventrangeend:[2013-01-12T00:00:00Z TO *]))',
 
-  'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2012-09-13T23:59:59Z]) AND (eventrangeend:[2012-09-09T00:00:00Z TO *]))',
+  'category:september11' : '(september11 OR (eventrangestart:[0001-01-01T00:00:00Z TO 2013-09-13T23:59:59Z]) AND (eventrangeend:[2013-09-09T00:00:00Z TO *]))',
 
   'category:IAMS' : '(-PETA AND (dog OR cat OR pet) AND (shelter OR adoption OR foster))',
 
@@ -44,7 +44,7 @@ CATEGORY_QUERIES = {
 }
 
 CATEGORY_BOOSTS = {
-  'category:mlkday' : ' aggregatefield:(mlkday)^100 OR eventrangestart:[2012-01-16T00:00:00Z TO 2012-01-16T23:59:59Z]^20 OR eventrangeend:[2012-01-16T00:00:00Z TO 2012-01-16T23:59:59Z]^10' ,
+  'category:mlkday' : ' aggregatefield:(mlkday)^100 OR eventrangestart:[2013-01-21T00:00:00Z TO 2013-01-21T23:59:59Z]^20 OR eventrangeend:[2013-01-21T00:00:00Z TO 2013-01-21T23:59:59Z]^10',
 
   'category:education' : ' title:(tutor OR school OR children OR student OR classroom)^100',
   
@@ -54,7 +54,7 @@ CATEGORY_BOOSTS = {
 API_KEY_QUERIES = {
   'americanexpress' : '(911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2012-09-25T00:00:00Z] AND eventrangeend:[2012-08-30T00:00:00Z TO *]))',
 	
-  '911Day' : '(911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2012-10-15T00:00:00Z] AND eventrangeend:[2012-08-11T00:00:00Z TO *]))',
+  '911Day' : '(911day OR (eventrangestart:[0001-01-01T00:00:00Z TO 2013-10-15T00:00:00Z] AND eventrangeend:[2013-08-11T00:00:00Z TO *]))',
 		
   'joiningforces' : '(military OR veteran)',
 		
