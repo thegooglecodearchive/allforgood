@@ -44,7 +44,7 @@ CATEGORY_QUERIES = {
 }
 
 CATEGORY_BOOSTS = {
-  'category:mlkday' : ' aggregatefield:(mlkday)^100 OR eventrangestart:[2013-01-21T00:00:00Z TO 2013-01-21T23:59:59Z]^20 OR eventrangeend:[2013-01-21T00:00:00Z TO 2013-01-21T23:59:59Z]^10',
+  'category:mlkday' : ' feed_providername:2486^100 OR title:(mlkday)^50 OR aggregatefield:(mlkday)^100 OR eventrangestart:[2013-01-19T00:00:00Z TO 2013-01-21T23:59:59Z]^20 OR eventrangeend:[2013-01-19T00:00:00Z TO 2013-01-21T23:59:59Z]^10',
 
   'category:education' : ' title:(tutor OR school OR children OR student OR classroom)^100',
   
