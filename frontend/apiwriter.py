@@ -33,6 +33,7 @@ FIELD_TUPLES = [
   ('description', 'snippet'),
   ('pubDate','pubdate'),
   ('groupid', 'merge_key'),
+  ('affiliateorganizationid',),
   ('provider',),
   ('startdate', ),
   ('enddate', ),
@@ -54,13 +55,13 @@ FIELD_TUPLES = [
   ('micro'),
   ('volunteers_needed'),
   ('addr1',),
-  #('addrname1',),
+  ('addrname1',),
   ('org_name',),
   ('org_organizationurl',),
   ('openEnded',),
   ('startTime',),
   ('endTime',),
-  #('contactNoneNeeded',),
+  ('contactNoneNeeded',),
   ('contactEmail',),
   ('contactPhone',),
   ('contactName',),
@@ -89,7 +90,7 @@ FIELD_TUPLES = [
   ('availabilitydays',), 
   ('appropriatefors',), 
   ('audiencetags',), 
-
+  ('activitytypes',),
   ('volunteerhuborganizationurl',),
   ('volunteerhuborganizationname',),
   ('volunteersslots',),
@@ -102,6 +103,40 @@ FIELD_TUPLES = [
   ('zip',), 
 ]
 
+EXELIS_FIELDS = [
+  'org_name',
+  'org_organizationurl',
+  'volunteerhuborganizationurl',
+  'volunteerhuborganizationname',
+  'volunteersslots',
+  'volunteersfilled',
+  'affiliateorganizationurl',
+  'affiliateorganizationname',
+  'eventid',
+  'eventname',
+  'opportunityid',
+  'opportunitytype',
+  'registertype',
+  'occurrenceid',
+  'occurrenceduration',
+  'frequencyurl',
+  'frequency',
+  'availabilitydays',
+  'appropriatefors',
+  'audiencetags',
+  'categorytags',
+  
+  'distance',
+  
+  'contactemail',
+  'contactphone',
+  'scheduletype',
+  'audienceage',
+  'sexrestrictedto',
+  'street1',
+  'street2',
+]
+
 HOC_FIELDS = [
   'org_name',
   'org_organizationurl',
@@ -110,8 +145,8 @@ HOC_FIELDS = [
   'volunteersslots',
   'volunteersfilled',
   'affiliateorganizationurl',
-  'affiliaterganizationname',
-
+  'affiliateorganizationname',
+  'affiliateorganizationid',
   'eventid',
   'eventname',
 
@@ -127,6 +162,7 @@ HOC_FIELDS = [
   'frequency',
   'availabilitydays',
   'appropriatefors',
+  'activitytypes',
   'audiencetags',
   'categorytags',
 
@@ -142,7 +178,9 @@ HOC_FIELDS = [
   'sexrestrictedto',
   'street1',
   'street2',
-  'state', 'zip', 'postalcode',
+  'state',
+  'zip',
+  'postalcode',
 ]
 
 API_FIELD_NAMES_MAP = {
@@ -154,6 +192,7 @@ API_FIELD_NAMES_MAP = {
   'enddate' : 'endDate',
   'scheduletype' : 'scheduleType',
   'activitytype' : 'activityType',
+  'activitytypes' : 'activityTypes',
   'invitationcode' : 'invitationCode',
   'managedby' : 'managedBy',
   'registertype' : 'registerType',
@@ -167,7 +206,7 @@ API_FIELD_NAMES_MAP = {
   'given_location_str' : 'location_name',
 
   'snippet' : 'description',
-  'url' : 'detailUrl',
+  'detailurl' : 'detailUrl',
 
   'categorytags' : 'categoryTags',
 
@@ -186,6 +225,7 @@ API_FIELD_NAMES_MAP = {
   'volunteerhuborganizationname' : 'volunteerHubOrganizationName',
   'affiliateorganizationurl' : 'affiliateOrganizationUrl',
   'affiliateorganizationname' : 'affiliateOrganizationName',
+  'affiliateorganizationid' : 'affiliateOrganizationID',
 
   'occurrenceid' : 'occurrenceId',
   'eventname' : 'eventName',
@@ -198,7 +238,7 @@ API_FIELD_NAMES_MAP = {
   'contactemail' : 'contactEmail',
   'contactphone' : 'contactPhone',
   'contactname' : 'contactName',
-
+  'contactnoneneeded' : 'contactNoneNeeded',
   'frequencyurl' : 'frequencyURL',
   'frequencylink' : 'frequencyLink',
 
@@ -207,6 +247,9 @@ API_FIELD_NAMES_MAP = {
 
   'volunteersslots' : 'volunteersNeeded',
   'volunteersfilled' : 'rsvpCount',
+  'audienceage' : 'audienceAge',
+  'audienceall' : 'audienceAll',
+  'pubdate' : 'pubDate',
 }
 
 STANDARD_FIELDS = [
@@ -259,7 +302,6 @@ STANDARD_FIELDS = [
   'zip', 'postalcode',
   'country',
   'minimumage',
-  'contactnoneneeded',
 ]
 
 CALENDAR_FIELDS = [
@@ -316,9 +358,9 @@ CALENDAR_FIELDS = [
   'addrname1',
   'endtime',
   'volunteersneeded',
-  'rsvpcount',  
   'scheduletype',
   'opportunitytype',
+  'affiliateorganizationid',
 ]
 
 ARRAY_FIELDS = [
@@ -328,6 +370,7 @@ ARRAY_FIELDS = [
   'categoryTags', 
   'skills',
   'categories',
+  'activityTypes',
 ]
 
 def get_writer(output):
@@ -460,19 +503,33 @@ class JsonApiWriter(ApiWriter):
   def add_result(self, result, result_set = {}):
     """Add an item dict to the items array."""
     #result is instance of SearchResult
-
+    
+    f1 = 1
+    first_zip = 1 
     item = {}
     for field_info in self.item_fields:
       name = field_info[0]
+      
       if result_set.is_hoc and name.lower() not in utils.unique_list(STANDARD_FIELDS + HOC_FIELDS):
         continue
 
+      if result_set.is_exelis and name.lower() not in utils.unique_list(STANDARD_FIELDS + EXELIS_FIELDS):
+        continue
+    
       if result_set.is_cal and name.lower() not in CALENDAR_FIELDS:
         continue
 
-      if len(name) < 2:
+      if (len(name) < 2) and result_set.is_hoc and result_set.is_cal:
         continue
-
+      
+   
+      
+      if (not result_set.is_hoc) and (not result_set.is_cal) and (not result_set.is_exelis) and (API_FIELD_NAMES_MAP.get(name, name) == "appropriateFors" or API_FIELD_NAMES_MAP.get(name, name) == "activityTypes" or API_FIELD_NAMES_MAP.get(name, name) == "categoryTags" or API_FIELD_NAMES_MAP.get(name, name) == "Distance" or API_FIELD_NAMES_MAP.get(name, name) == "sponsoringOrganizationUrl" or API_FIELD_NAMES_MAP.get(name, name) == "affiliateOrganizationName" or API_FIELD_NAMES_MAP.get(name, name) == "affiliateOrganizationUrl" or API_FIELD_NAMES_MAP.get(name, name) == "opportunityId" or API_FIELD_NAMES_MAP.get(name, name) == "opportunityType" or API_FIELD_NAMES_MAP.get(name, name) == "registerType" or API_FIELD_NAMES_MAP.get(name, name) == "occurrenceId" or API_FIELD_NAMES_MAP.get(name, name) == "occurrenceDuration" or API_FIELD_NAMES_MAP.get(name, name) == "eventId" or API_FIELD_NAMES_MAP.get(name, name) == "eventName" or API_FIELD_NAMES_MAP.get(name, name) == "frequencyURL" or API_FIELD_NAMES_MAP.get(name, name) == "frequency" or API_FIELD_NAMES_MAP.get(name, name) == "availabilityDays" or API_FIELD_NAMES_MAP.get(name, name) == "audienceTags" or API_FIELD_NAMES_MAP.get(name, name) == "volunteerHubOrganizationUrl" or API_FIELD_NAMES_MAP.get(name, name) == "volunteerHubOrganizationName" or API_FIELD_NAMES_MAP.get(name, name) == "volunteersNeeded" or API_FIELD_NAMES_MAP.get(name, name) == "affiliateOrganizationID" or API_FIELD_NAMES_MAP.get(name, name) == "rsvpCount" or API_FIELD_NAMES_MAP.get(name, name) == "sexrestrictedto" or API_FIELD_NAMES_MAP.get(name, name) == "eventName" or API_FIELD_NAMES_MAP.get(name, name) == "eventId" or API_FIELD_NAMES_MAP.get(name, name) == "scheduleType"):
+          continue
+      
+      if (result_set.is_hoc or result_set.is_cal or result_set.is_exelis) and (API_FIELD_NAMES_MAP.get(name, name) == "addrname1" or API_FIELD_NAMES_MAP.get(name, name) == "contactNoneNeeded"):
+          continue
+      
       if not hasattr(result, name):
         name = name.lower()
         if not hasattr(result, name) and len(field_info) > 1:
@@ -494,17 +551,18 @@ class JsonApiWriter(ApiWriter):
    
       if isinstance(content, basestring):
          content = content.strip()
-
+    
+      
       # handle lists
-      if isinstance(content, basestring) and content.find('\t') > 0:
+      if isinstance(content, basestring) and content.find('\t') > 0: 
         item[API_FIELD_NAMES_MAP.get(name, name)] = content.split('\t')
       elif API_FIELD_NAMES_MAP.get(name, name) in ARRAY_FIELDS and not isinstance(content, list):
         if content:
           item[API_FIELD_NAMES_MAP.get(name, name)] = [content]
-        else:
+        else:   
           item[API_FIELD_NAMES_MAP.get(name, name)] = []
-      else:
-        item[API_FIELD_NAMES_MAP.get(name, name)] = content
+      else: 
+          item[API_FIELD_NAMES_MAP.get(name,name)] = content
 
     self.items.append(item)
     
@@ -632,6 +690,7 @@ class RssApiWriter(ApiWriter):
       elif name in ["eventrangestart", "eventrangeend"]:
         content = content.replace('T', ' ').strip('Z')
 
+    
       return (name, content, None)
     
     item = self.doc.createElement('item')
