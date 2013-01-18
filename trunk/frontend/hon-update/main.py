@@ -45,6 +45,10 @@ def hub(app, is_post):
   """ get results from datastore or API """
 
   for node in [private_keys.NODE1, private_keys.NODE2]:
+    
+    if private_keys.DEFAULT_TO_DEVELOPMENT_NODE:
+        node = private_keys.NODE3
+        
     url = node + '/~footprint/'
     path = app.request.path.rstrip('/')
     if path == '/hon-update':
@@ -58,6 +62,8 @@ def hub(app, is_post):
     else:
       logging.warning('redirect? ' + path)
 
+    if private_keys.DEFAULT_TO_DEVELOPMENT_NODE:
+        break
          
 APP = webapp.WSGIApplication(
     [ (".*", handleRequest)
