@@ -71,7 +71,7 @@ class Check(webapp.RequestHandler):
       #url = "http://spreadsheets.google.com/feeds/cells/" + doc_key + "/1/public/basic"
       url = "http://staging.servicefootprint.appspot.com/oppsfeed?id=" + doc_key
 
-      fetch_result = urlfetch.fetch(url)
+      fetch_result = urlfetch.fetch(url, deadline=60)
       if fetch_result.status_code != 200:
         msgs.append('We cannot read the spreadsheet. Did you grant us access to it?')
         template_values["msgs"] = msgs
