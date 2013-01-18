@@ -50,7 +50,7 @@ KNOWN_ELEMENTS = [
   # HON 2012/05/24
   # http://www.avviato.net/afg/spec0.1.r1254_Sugested05242012.html
   'scheduleType', 
-  'activityType', 
+  'activityTypes', 'activityType',
   'populations', 'population', 
   'invitationCode', 
   'managedBy', 
@@ -76,6 +76,7 @@ KNOWN_ELEMENTS = [
 
   'impactArea',
   'organizationsServed',
+  'additionalInfoRequired',
 ]
 
 def set_default_time_elem(parent, entity, tagname, timest=xmlh.current_ts()):

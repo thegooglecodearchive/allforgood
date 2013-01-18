@@ -16,7 +16,7 @@ DIRECT_FIELDS = [
   # HON 2012/05/24
   # http://www.avviato.net/afg/spec0.1.r1254_Sugested05242012.html
   'scheduleType',
-  'activityType',
+  'activityType', # activityTypes
   'invitationCode',
   'managedBy',
   'registerType',
@@ -43,6 +43,7 @@ DIRECT_FIELDS = [
 
   'sponsoringOrganizationID', 
   'rsvpCount',
+  #'additionalInfoRequired', #Custom questions required for the VO not declared because requires a additional processing so it is not a direct field
 ]                                                                                                        
 
 def main():
