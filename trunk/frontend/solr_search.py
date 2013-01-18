@@ -23,6 +23,7 @@ import time
 import traceback
 import urllib
 import random
+import math
 
 from django.utils import simplejson
 #from versioned_memcache import memcache
@@ -140,10 +141,13 @@ def apply_filter_query(api_key, args):
       rtn += '&fq=' + urllib.quote_plus(fq)
 
   given_query = args.get(api.PARAM_Q, '')
-  if not args.get(api.PARAM_INVITATIONCODE, ''):
+  
+  if not args.get(api.PARAM_INVITATIONCODE, '') and args.get(api.PARAM_KEY, '') == "exelis":
+    rtn += '&fq=' + urllib.quote_plus('(invitationcode:Exelis OR (*:* AND -invitationcode:[* TO *]))')
+  elif not args.get(api.PARAM_INVITATIONCODE, ''):
     rtn += '&fq=' + urllib.quote_plus('-invitationcode:[* TO *]')
   else:
-    rtn += '&fq=' + urllib.quote_plus('invitationcode:' + args.get(api.PARAM_INVITATIONCODE, ''))
+    rtn += '&fq=' + urllib.quote_plus('invitationcode_str:' + args.get(api.PARAM_INVITATIONCODE, ''))
 
   return rtn
 
@@ -189,8 +193,9 @@ def get_solr_backend(args):
 
   # set the solr instance we need to use if not given as an arg
   if api.PARAM_BACKEND_URL not in args:
-    hr = datetime.datetime.now().hour
-    if hr < 6 or (hr >= 12 and hr < 18):
+    # hr = datetime.datetime.now().hour
+    hr = float(datetime.datetime.now().hour) + (float(datetime.datetime.now().minute)/60)
+    if hr >= 23.5 or hr < 5.5 or (hr >= 11.5 and hr < 17.5):
       # node 1 process at 6, 18
       # node 1 serves at 0, 12
       args[api.PARAM_BACKEND_URL] = private_keys.NODE1_DEFAULT_BACKEND_URL
@@ -238,8 +243,10 @@ def form_solr_query(args):
     if args[api.PARAM_VOL_DIST] < 1:
       args[api.PARAM_VOL_DIST] = DEFAULT_VOL_DIST
     max_dist = float(args[api.PARAM_VOL_DIST])
-
   
+  if args.get(api.PARAM_INVITATIONCODE, ''):
+      max_dist = 20030
+      
   global GEO_GLOBAL
   geo_params = ('{!geofilt}&pt=%s,%s&sfield=latlong&d=%s&d1=0' 
                    % (str(lat), str(lng), str(max_dist * 1.609))
@@ -249,10 +256,9 @@ def form_solr_query(args):
 
   if (args['is_report'] 
       or (args.get(api.PARAM_TYPE) and args.get(api.PARAM_TYPE, None) != "all")
-      or args.get(api.PARAM_INVITATIONCODE, None)
   ):
     geo_params = ""       
-    if args['is_report'] or args.get(api.PARAM_INVITATIONCODE, None):
+    if args['is_report']:
       GEO_GLOBAL = ''
 
   # Running our keyword through our categories dictionary to see if we need to adjust our keyword param   
@@ -575,10 +581,12 @@ HOC_FACET_FIELDS = [
   'eventname_str',
   'impactarea_str',
   'org_name_str',
+  'activitytypes_str',
 ]
 
 HOC_FACET_FIELD_MAP = {
-  'org_name' : 'organizationsServed' 
+  'org_name' : 'organizationsServed',
+  'activitytypes' : 'activityTypes',
 }
 
 def apply_HOC_facet_counts(result_set, args):
@@ -661,11 +669,31 @@ def get_solr_count(given_query, args):
 
   return rtn
 
-
+# Equirectangular approximation
 def calculate_distance(x1, y1, x2, y2):
   """ distance formula applied to lat, long converted to miles """
   return ((((x1 - x2) ** 2) + ((y1 - y2) ** 2)) ** 0.5) * MILES_PER_DEG
 
+# Haversine formula
+#def calc_distance(origin, destination):
+#    lat1, lon1 = origin
+#    lat2, lon2 = destination
+def calc_distance(lat1, lon1, lat2, lon2 ):
+    #radius = 6371 # km
+    radius = 3959 #mi
+    dlat = math.radians(lat2-lat1)
+    dlon = math.radians(lon2-lon1)
+    #a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
+    #c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    a = math.sin(dlat/2)** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2)**2
+    c = 2 * math.asin(math.sqrt(a))
+    d = radius * c
+ #   logging.info("distance is :" + str(d) 
+ #                + " latLong1: " + str(lat1)
+ #                + "," + str(lon1) 
+ #                + " , latLong2: " + str(lat2) 
+ #                + "," + str(lon2) )
+    return d
 
 def query(query_url, group_query, fields_query, args, cache, dumping = False):
   """run the actual SOLR query (no filtering or sorting)."""
@@ -744,6 +772,7 @@ def query(query_url, group_query, fields_query, args, cache, dumping = False):
     
   doc_list = result["response"]["docs"]
 
+  #process json doc list
   for i, entry in enumerate(doc_list):
     if not "detailurl" in entry:
       # URL is required 
@@ -814,9 +843,10 @@ def query(query_url, group_query, fields_query, args, cache, dumping = False):
     if latstr and longstr:
       res.latlong = str(latstr) + "," + str(longstr)
       try:
-        res.distance = str(calculate_distance(float(args[api.PARAM_LAT]), 
-                                          float(args[api.PARAM_LNG]), 
-                                          float(latstr), float(longstr)))
+        res.distance = str(calc_distance(float(args[api.PARAM_LAT])
+                                              , float(args[api.PARAM_LNG])
+                                              , float(latstr)
+                                              , float(longstr)))
       except:
         pass
 
@@ -848,7 +878,7 @@ def query(query_url, group_query, fields_query, args, cache, dumping = False):
           delta = res.enddate - res.startdate
           res.duration = str(delta.days)
 
-    for name in utils.unique_list(apiwriter.STANDARD_FIELDS + apiwriter.HOC_FIELDS + apiwriter.CALENDAR_FIELDS):
+    for name in utils.unique_list(apiwriter.STANDARD_FIELDS + apiwriter.EXELIS_FIELDS + apiwriter.HOC_FIELDS + apiwriter.CALENDAR_FIELDS):
       name = name.lower()
       if len(name) >= 2 and not hasattr(res, name) or not getattr(res, name, None):
         value = entry.get(name, '')

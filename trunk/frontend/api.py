@@ -66,6 +66,7 @@ FIELDS_BY_OUTPUT_TYPE = {
    'json' : apiwriter.STANDARD_FIELDS,
    'xml' : apiwriter.STANDARD_FIELDS,
    'json-hoc' : (apiwriter.STANDARD_FIELDS + apiwriter.HOC_FIELDS),
+   'json-exelis' : (apiwriter.STANDARD_FIELDS + apiwriter.EXELIS_FIELDS),
    'xml-hoc' : (apiwriter.STANDARD_FIELDS + apiwriter.HOC_FIELDS),
    'json-hoc-cal' : (apiwriter.STANDARD_FIELDS + apiwriter.CALENDAR_FIELDS),
    'xml-hoc-cal' : (apiwriter.STANDARD_FIELDS + apiwriter.CALENDAR_FIELDS),
