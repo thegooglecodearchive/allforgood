@@ -11,16 +11,17 @@ fi
 
 date
 LOGDEL=""
-for DEL in `find ./HONupdates/updateHON*.xml.delete | sort`
+for DEL in `find ./HONupdates/updateHON*.xml.delete  2> /dev/null| sort`
 do
 	LOGDEL=`echo $DEL | sed s/xml/log/`
 	date > $LOGDEL
 
 	mv $DEL $DEL.processed >> $LOGDEL 2>&1
 	./xmeetup.sh $DEL.processed >> $LOGDEL 2>&1
+	#./notify_michael.sh HON deleted
 done
 
-for XML in `find ./HONupdates/updateHON*.xml | sort`
+for XML in `find ./HONupdates/updateHON*.xml  2> /dev/null| sort`
 do
 	rm -f updateHON1.transformed
 	LOG=`echo $XML | sed s/xml/log/`
@@ -44,4 +45,5 @@ do
 		echo "processing error" >> $LOG
 	fi
 	echo "\nEOF" >> $LOG
+	#./notify_michael.sh HON added
 done

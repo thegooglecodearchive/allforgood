@@ -115,6 +115,7 @@ FIELDTYPES = {
   "volunteersSlots":"integer",
   "volunteersFilled":"integer",
   "volunteersNeeded":"integer",
+  "rsvpCount":"integer",
   "minimumAge":"integer",
   "startTime":"integer",
   "endTime":"integer",
@@ -189,6 +190,7 @@ FIELDTYPES = {
   # HON 2012/05/24
   # http://www.avviato.net/afg/spec0.1.r1254_Sugested05242012.html
   "scheduleType":"string",
+  "activityTypes":"string",
   "activityType":"string",
   "population":"string",
   "invitationCode":"string",
@@ -214,15 +216,23 @@ FIELDTYPES = {
   "frequencyLink":"string",
   "frequencyURL":"string",
   "frequency":"string",
-  "appropriateFors":"string", "appropriateFor":"string",
-  "audienceTags":"string", "audienceTag":"string",
+  "appropriateFors":"string",
+  "appropriateFor":"string",
+  "audienceTags":"string",
+  "audienceTag":"string",
   "categories":"string",
-  "categoryTags":"string", "categoryTag":"string",
-  "populations":"string", "population":"string",
-  "availabilityDays":"string", "dayWeek":"string",
-  "skills":"string", "skill":"string",
+  "categoryTags":"string",
+  "categoryTag":"string",
+  "populations":"string",
+  "population":"string",
+  "availabilityDays":"string",
+  "dayWeek":"string",
+  "skills":"string",
+  "skill":"string",
+  "additionalInfoRequired":"boolean",
 
-  "impactArea":"string", "impactAreas":"string",
+  "impactArea":"string",
+  "impactAreas":"string",
   "organizationsServed":"string",
 }
 
@@ -238,6 +248,7 @@ MAPPED_FIELDS = {
   'audienceTag' : 'audienceTags',
   'categoryTag' : 'categoryTags',
   'dayWeek' : 'availabilityDays',
+  'activityType' : 'activityTypes',
   'population' : 'populations',
   'skill' : 'skills',
 }
@@ -523,7 +534,7 @@ def feed_report(id, detail, feed = None, link = None):
       fh.write('\n')
       fh.close()
   
-
+# Removes duplicates comparing title, abstract, loc_str, startend
 def duplicate_opp(opp, loc_str, startend):
   rtn = False
   if IGNORE_DUPLICATES:
@@ -614,6 +625,13 @@ def get_direct_mapped_fields(opp, orgs, feed_providerName):
     paid = "y"
   outstr += FIELDSEP + output_field("paid", paid)
 
+  additionalInfoRequired = xmlh.get_tag_val(opp, "additionalInfoRequired")
+  if (additionalInfoRequired == "" or additionalInfoRequired.lower()[0] != "y"):
+    additionalInfoRequired = "False"
+  else:
+    additionalInfoRequired = "True"
+  outstr += FIELDSEP + output_field("additionalInfoRequired", additionalInfoRequired)
+  
   self_directed = xmlh.get_tag_val(opp, "self_directed")
   if (self_directed == "" or self_directed.lower()[0] != "y"):
     self_directed = "False"

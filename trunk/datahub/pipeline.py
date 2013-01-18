@@ -487,12 +487,14 @@ def loaders():
   """put all loaders in one function for easier testing."""
 
   for name in [
-               "handsonnetworkconnect", 
-               "handsonnetwork1800", 
+               "handsonnetworkconnect",
+               #"handsonnetworkconnect_dev",
+               # handsonnetworkconnect_dev is only for DEV server 
+               # DEPRECATED "handsonnetwork1800", 
                # 12/1 moved to handsonconnect
-               #"handsonnetworktechnologies", 
+               # DEPRECATED "handsonnetworktechnologies", 
                # can stop processing legacy HON feed 10/12/2011
-               #"handsonnetwork", 
+               # DEPRECATED "handsonnetwork", 
                "unitedway", 
                "daytabank", 
                # need to contact feed provider 2011-11-16
