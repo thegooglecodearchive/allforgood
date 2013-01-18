@@ -141,7 +141,7 @@ class AppEngineHttpClient(atom.http_interface.GenericHttpClient):
     else:
       method = None
     return HttpResponse(urlfetch.Fetch(url=str(url), payload=data_str,
-        method=method, headers=all_headers, follow_redirects=False))
+        method=method, headers=all_headers, follow_redirects=False, deadline=60))
 
 
 def _convert_data_part(data):
