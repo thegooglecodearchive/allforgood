@@ -76,7 +76,11 @@ API_KEY_BOOSTS = {
     
   'joiningforces' : ' title:military^1 OR description:military^5 OR (*:* -description:veteran)^5 OR (*:* -org_name:spouse)^10 OR (*:* -title:invasive)^2000',
   
-  'exelis' : ' feed_providername:handsonnetworkconnect^100 OR affiliateorganizationid:2002^1000 OR aggregatefield:(military OR veteran)^25',
+  'exelis' : ' feed_providername:handsonnetworkconnect^100 OR affiliateorganizationid:2002^1000 OR aggregatefield:(military OR veteran)^25 OR feed_providername:2486^2000',
+  
+  # 'exelis' : ' feed_providername:handsonnetworkconnect^100 OR affiliateorganizationid:2002^1000 OR aggregatefield:(military OR veteran)^25',
+
+  'hoc2002' : ' feed_providername:handsonnetworkconnect^100 OR affiliateorganizationid:2002^1000 OR aggregatefield:(military OR veteran)^25',
 
 }
 
