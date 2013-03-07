@@ -510,7 +510,7 @@ class JsonApiWriter(ApiWriter):
     for field_info in self.item_fields:
       name = field_info[0]
       
-      if result_set.is_hoc and name.lower() not in utils.unique_list(STANDARD_FIELDS + HOC_FIELDS):
+      if (result_set.is_hoc or result_set.is_rss) and name.lower() not in utils.unique_list(STANDARD_FIELDS + HOC_FIELDS):
         continue
 
       if result_set.is_exelis and name.lower() not in utils.unique_list(STANDARD_FIELDS + EXELIS_FIELDS):
@@ -524,10 +524,10 @@ class JsonApiWriter(ApiWriter):
       
    
       
-      if (not result_set.is_hoc) and (not result_set.is_cal) and (not result_set.is_exelis) and (API_FIELD_NAMES_MAP.get(name, name) == "appropriateFors" or API_FIELD_NAMES_MAP.get(name, name) == "activityTypes" or API_FIELD_NAMES_MAP.get(name, name) == "categoryTags" or API_FIELD_NAMES_MAP.get(name, name) == "Distance" or API_FIELD_NAMES_MAP.get(name, name) == "sponsoringOrganizationUrl" or API_FIELD_NAMES_MAP.get(name, name) == "affiliateOrganizationName" or API_FIELD_NAMES_MAP.get(name, name) == "affiliateOrganizationUrl" or API_FIELD_NAMES_MAP.get(name, name) == "opportunityId" or API_FIELD_NAMES_MAP.get(name, name) == "opportunityType" or API_FIELD_NAMES_MAP.get(name, name) == "registerType" or API_FIELD_NAMES_MAP.get(name, name) == "occurrenceId" or API_FIELD_NAMES_MAP.get(name, name) == "occurrenceDuration" or API_FIELD_NAMES_MAP.get(name, name) == "eventId" or API_FIELD_NAMES_MAP.get(name, name) == "eventName" or API_FIELD_NAMES_MAP.get(name, name) == "frequencyURL" or API_FIELD_NAMES_MAP.get(name, name) == "frequency" or API_FIELD_NAMES_MAP.get(name, name) == "availabilityDays" or API_FIELD_NAMES_MAP.get(name, name) == "audienceTags" or API_FIELD_NAMES_MAP.get(name, name) == "volunteerHubOrganizationUrl" or API_FIELD_NAMES_MAP.get(name, name) == "volunteerHubOrganizationName" or API_FIELD_NAMES_MAP.get(name, name) == "volunteersNeeded" or API_FIELD_NAMES_MAP.get(name, name) == "affiliateOrganizationID" or API_FIELD_NAMES_MAP.get(name, name) == "rsvpCount" or API_FIELD_NAMES_MAP.get(name, name) == "sexrestrictedto" or API_FIELD_NAMES_MAP.get(name, name) == "eventName" or API_FIELD_NAMES_MAP.get(name, name) == "eventId" or API_FIELD_NAMES_MAP.get(name, name) == "scheduleType"):
+      if (not result_set.is_hoc) and (not result_set.is_rss) and (not result_set.is_cal) and (not result_set.is_exelis) and (API_FIELD_NAMES_MAP.get(name, name) == "appropriateFors" or API_FIELD_NAMES_MAP.get(name, name) == "activityTypes" or API_FIELD_NAMES_MAP.get(name, name) == "categoryTags" or API_FIELD_NAMES_MAP.get(name, name) == "Distance" or API_FIELD_NAMES_MAP.get(name, name) == "sponsoringOrganizationUrl" or API_FIELD_NAMES_MAP.get(name, name) == "affiliateOrganizationName" or API_FIELD_NAMES_MAP.get(name, name) == "affiliateOrganizationUrl" or API_FIELD_NAMES_MAP.get(name, name) == "opportunityId" or API_FIELD_NAMES_MAP.get(name, name) == "opportunityType" or API_FIELD_NAMES_MAP.get(name, name) == "registerType" or API_FIELD_NAMES_MAP.get(name, name) == "occurrenceId" or API_FIELD_NAMES_MAP.get(name, name) == "occurrenceDuration" or API_FIELD_NAMES_MAP.get(name, name) == "eventId" or API_FIELD_NAMES_MAP.get(name, name) == "eventName" or API_FIELD_NAMES_MAP.get(name, name) == "frequencyURL" or API_FIELD_NAMES_MAP.get(name, name) == "frequency" or API_FIELD_NAMES_MAP.get(name, name) == "availabilityDays" or API_FIELD_NAMES_MAP.get(name, name) == "audienceTags" or API_FIELD_NAMES_MAP.get(name, name) == "volunteerHubOrganizationUrl" or API_FIELD_NAMES_MAP.get(name, name) == "volunteerHubOrganizationName" or API_FIELD_NAMES_MAP.get(name, name) == "volunteersNeeded" or API_FIELD_NAMES_MAP.get(name, name) == "affiliateOrganizationID" or API_FIELD_NAMES_MAP.get(name, name) == "rsvpCount" or API_FIELD_NAMES_MAP.get(name, name) == "sexrestrictedto" or API_FIELD_NAMES_MAP.get(name, name) == "eventName" or API_FIELD_NAMES_MAP.get(name, name) == "eventId" or API_FIELD_NAMES_MAP.get(name, name) == "scheduleType"):
           continue
       
-      if (result_set.is_hoc or result_set.is_cal or result_set.is_exelis) and (API_FIELD_NAMES_MAP.get(name, name) == "addrname1" or API_FIELD_NAMES_MAP.get(name, name) == "contactNoneNeeded"):
+      if (result_set.is_hoc or result_set.is_cal or result_set.is_exelis or result_set.is_rss) and (API_FIELD_NAMES_MAP.get(name, name) == "addrname1" or API_FIELD_NAMES_MAP.get(name, name) == "contactNoneNeeded"):
           continue
       
       if not hasattr(result, name):
@@ -736,7 +736,7 @@ class RssApiWriter(ApiWriter):
 
       name = self.OurNamespace + ':' + API_FIELD_NAMES_MAP.get(name, name)
 
-      if not result_set.is_hoc and name.lower() not in STANDARD_FIELDS:
+      if (not result_set.is_hoc and not result_set.is_rss) and name.lower() not in STANDARD_FIELDS:
         continue
 
       if result_set.is_cal and name.lower() not in CALENDAR_FIELDS:
