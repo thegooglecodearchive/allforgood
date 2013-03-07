@@ -507,7 +507,7 @@ def loaders():
                "christianvolunteering", 
                # need to contact feed provider 2011-11-12
                #"1sky", 
-               "sparked", 
+               # commented on 1/29/2013 "sparked", 
                "citizencorps", 
                # need to contact feed provider 2011-11-12
                #"extraordinaries", 
@@ -533,7 +533,7 @@ def loaders():
                # need to contact feed provider 2011-11-12
                #"washoecounty", 
                "getinvolved",
-               "ymca", 
+               # commented on 1/29/2013 "ymca", 
                "uso",
                "seniorcorps",
                "usaintlexp",
@@ -541,6 +541,7 @@ def loaders():
                # moved idealist down in order of feeds 10/12/2011
                "idealist", 
                ]:
+
     if not FILENAMES or name in FILENAMES:
       run_pipeline(name, name + ".xml")
 
@@ -553,6 +554,9 @@ def loaders():
         run_pipeline("updateHON", file)
 
   # requires special crawling
+  # This next block triggers the processing of the google sheets.
+  # The sheet parameter is from a deprecated sheet and it won't be processed
+  # in reality it will only process the sheets that are listed in ./spreadsheets/process.py
   if not FILENAMES or "gspreadsheets" in FILENAMES:
     run_pipeline("gspreadsheets",
                  "https://spreadsheets.google.com/ccc?key=rOZvK6aIY7HgjO-hSFKrqMw")
@@ -712,8 +716,9 @@ def solr_retransform(fname, start_time, feed_file_size):
                                                rows["description"],
                                                rows["c:provider_proper_name:string"],
                                                rows.get("c:skills:string", rows.get("c:skill:string", '')),
+                                               rows.get("c:categoryTags:string", rows.get("c:categoryTag:string", '')),
                                                rows["c:org_name:string"],
-                                               rows["c:categories:string"],
+                                               rows["c:eventName:string"],
                                                ]))
 
     ids = rows.get('c:OpportunityID:string', rows.get('c:opportunityID:string', 'OpportunityID'))
@@ -867,9 +872,10 @@ def create_solr_TSV(filename, start_time, feed_file_size):
 
 def main():
   """ program starts here """
+#  solr_filename = solr_retransform('handsonnetworkconnect1', datetime.now(), 6563535)
   #solr_filename = create_solr_TSV('handsonnetworkconnect1', datetime.now(), 6563535)
+#  run_pipeline("unitedway", "unitedway.xml")
   #sys.exit(0)
-  
                                                                                                   
   get_options()
 

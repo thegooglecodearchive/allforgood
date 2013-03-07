@@ -43,7 +43,7 @@ ProviderNames = {
   "myproj_servegov":{"name":"Serve.gov MyProject", "idx":22}, 
   "newyorkcares":{"name":"New York Cares","idx":23}, 
   "rockthevote":{"name":"Rock the Vote","idx":24}, 
-  "sparked":{"name":"Sparked.com MicroVolunteering","idx":25}, 
+  # commented on 1/29/2013 "sparked":{"name":"Sparked.com MicroVolunteering","idx":25}, 
   "seniorcorps":{"name":"Senior Corps", "idx":26}, 
   "servenet":{"name":"Serve.net", "idx":27}, 
   "servicenation":{"name":"Service Nation","idx":28}, 
@@ -55,13 +55,15 @@ ProviderNames = {
   "volunteertwo":{"name":"Volunteer2", "idx":34}, 
   "volunteermatch":{"name":"Volunteer Match", "idx":35}, 
   "washoecounty":{"name":"Washoe County", "idx":36}, 
-  "ymca":{"name":"YMCA", "idx":37}, 
+  # commented on 1/29/2013 "ymca":{"name":"YMCA", "idx":37}, 
   "1sky":{"name":"1Sky", "idx":38},
   "usaintlexp":{"name":"International Experience USA", "idx":39},
   "samaritan":{"name":"Samaritan Technologies", "idx":40},
   "handsonnetworkconnect":{"name":"HandsOn Network", "idx":41}, 
-  "handsonnetworktechnologies":{"name":"HandsOn Network", "idx":42}, 
-  "handsonnetwork1800":{"name":"HandsOn Network", "idx":43}, 
+  # Commented 1/23/2013
+  # "handsonnetworktechnologies":{"name":"HandsOn Network", "idx":42}, 
+  # Commented 1/23/2013
+  # "handsonnetwork1800":{"name":"HandsOn Network", "idx":43}, 
   "uso":{"name":"USO", "idx":44}, 
   # added daytabank 10/12/2011
   "daytabank":{"name":"Make a Difference Day", "idx":45}, 
