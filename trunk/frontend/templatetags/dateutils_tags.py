@@ -30,7 +30,7 @@ def custom_date_format(value, opt_past_dates = False):
   if not value:
     return ''
 
-  if type(value) != datetime and type(value) != date:
+  if type(value) != datetime.datetime and type(value) != date:
     return str(value)
   
   if value.year < date.today().year and not opt_past_dates:
