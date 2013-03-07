@@ -28,7 +28,7 @@ from google.appengine.api import memcache
 from utils import safe_str, safe_int
 
 import api
-import geocode
+import geocode_mapsV3 as geocode
 import solr_search
 import re
 

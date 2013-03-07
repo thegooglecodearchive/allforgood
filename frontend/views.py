@@ -61,7 +61,7 @@ from third_party.recaptcha.client import captcha
 
 import api
 import solr_search
-import geocode
+import geocode_mapsV3 as geocode
 import models
 import modelutils
 import posting

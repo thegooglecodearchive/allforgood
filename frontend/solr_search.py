@@ -34,7 +34,7 @@ from operator import itemgetter
 
 import api
 import apiwriter
-import geocode
+import geocode_mapsV3 as geocode
 import ical_filter
 import models
 import modelutils
