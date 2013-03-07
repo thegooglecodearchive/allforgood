@@ -70,6 +70,7 @@ FIELDS_BY_OUTPUT_TYPE = {
    'xml-hoc' : (apiwriter.STANDARD_FIELDS + apiwriter.HOC_FIELDS),
    'json-hoc-cal' : (apiwriter.STANDARD_FIELDS + apiwriter.CALENDAR_FIELDS),
    'xml-hoc-cal' : (apiwriter.STANDARD_FIELDS + apiwriter.CALENDAR_FIELDS),
+   'rss': (apiwriter.STANDARD_FIELDS + apiwriter.HOC_FIELDS),
 }
 # Fields to be returned when PARAM_OUTPUT is not set.
 # TODO: remove this once all output types have been specified.

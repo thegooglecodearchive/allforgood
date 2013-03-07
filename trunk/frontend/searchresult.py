@@ -215,6 +215,7 @@ class SearchResultSet(object):
 
     # HOC
     self.is_hoc = False
+    self.is_rss = False
     self.is_cal = False
     self.total_match = 0
     self.total_opportunities = 0
