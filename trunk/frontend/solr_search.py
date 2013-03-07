@@ -721,13 +721,13 @@ def query(query_url, group_query, fields_query, args, cache, dumping = False):
   if api_key == 'UI': #For UI searches make two queries one gruoupped by opportunityid to retrieve the VOs IDs and the second to retrieve the dates.
       # The reason is that because of occurrences pagination can not be kept managed solely by rows.
     facetOppsQuery = re.sub('fl=([*,a-z])','fl=opportunityid,feed_providername,event_date_range,title,description,detailurl,latitude,longitude,categorytags&group=true&group.field=opportunityid&group.main=true&group.format=simple',ui_query_url)
-  try:
+    try:
         logging.info("calling SOLR for facetOppsQuery: " + facetOppsQuery)
         facetOppsQuery += '&r=' + str(random.random())
         #fetch_result = urlfetch.fetch(facetOppsQuery, deadline = api.CONST_MAX_FETCH_DEADLINE, headers={"accept-encoding":"gzip"},)
         fetch_result = urlfetch.fetch(facetOppsQuery, deadline = api.CONST_MAX_FETCH_DEADLINE,)
         logging.info("calling SOLR for facetOppsQuery headers: %s " % str(fetch_result.header_msg.getheaders('content-encoding')))
-    status_code = fetch_result.status_code
+        status_code = fetch_result.status_code
         
         #unzip response if it is compressed
         
@@ -797,7 +797,7 @@ def query(query_url, group_query, fields_query, args, cache, dumping = False):
   # undo comma encoding -- see datahub/footprint_lib.py
   # result_content = re.sub(r';;', ',', result_content)
   # result = simplejson.loads(result_content)
-
+  
   all_facets = None
   if need_facet_counts:
     all_facets = get_geo_counts(args, api_key)
@@ -832,7 +832,7 @@ def query(query_url, group_query, fields_query, args, cache, dumping = False):
     result_set.providers = facets['provider_fields']
     
   doc_list = result["response"]["docs"]
-
+  
   #process json doc list
   for i, entry in enumerate(doc_list):
     if not "detailurl" in entry:
