@@ -98,7 +98,7 @@ LOCATIONLESS_LATLNG = LOCATIONLESS_LAT + "," + LOCATIONLESS_LNG
 
 HEADER_ALREADY_OUTPUT = False
 
-FIELDTYPES = {
+FIELDTYPES = {  #Describes all the fields and their available in the footprint file
   "title":"builtin",
   "description":"builtin",
   "link":"builtin",
@@ -625,6 +625,7 @@ def get_direct_mapped_fields(opp, orgs, feed_providerName):
     paid = "y"
   outstr += FIELDSEP + output_field("paid", paid)
 
+  # additionalInfoRequired requires special handling to convert values to boolean
   additionalInfoRequired = xmlh.get_tag_val(opp, "additionalInfoRequired")
   if (additionalInfoRequired == "" or additionalInfoRequired.lower()[0] != "y"):
     additionalInfoRequired = "False"
@@ -632,6 +633,7 @@ def get_direct_mapped_fields(opp, orgs, feed_providerName):
     additionalInfoRequired = "True"
   outstr += FIELDSEP + output_field("additionalInfoRequired", additionalInfoRequired)
   
+  # self_directed requires special handling to convert values to boolean
   self_directed = xmlh.get_tag_val(opp, "self_directed")
   if (self_directed == "" or self_directed.lower()[0] != "y"):
     self_directed = "False"
@@ -639,6 +641,7 @@ def get_direct_mapped_fields(opp, orgs, feed_providerName):
     self_directed = "True"
   outstr += FIELDSEP + output_field("self_directed", self_directed)
 
+  # micro requires special handling to convert values to boolean
   micro = xmlh.get_tag_val(opp, "micro")
   if (micro == "" or micro.lower()[0] != "y"):
     micro = "False"
@@ -649,6 +652,7 @@ def get_direct_mapped_fields(opp, orgs, feed_providerName):
   detailURL = xmlh.get_tag_val(opp, "detailURL")
   outstr += FIELDSEP + output_field("detailURL", detailURL)
 
+  # Process all tags according to the fields declared in DIRECT_FIELDS
   for field in DIRECT_FIELDS:
     if field == 'OpportunityID':
       if PRINTHEAD:
@@ -676,6 +680,20 @@ def get_direct_mapped_fields(opp, orgs, feed_providerName):
         outstr += FIELDSEP + value
     else:
       outstr += FIELDSEP + output_tag_value(opp, field)
+
+  # skills/skill requires special handling because 2.12 introduced a design bug that allowed to declare it as an array of skill tags or not
+  skillTag = opp.getElementsByTagName("skill")
+
+  if (skillTag.length > 0):
+    value = output_tag_value_renamed(opp, "skill", "skills")
+    # Strip apostrophe or the upload to SOLR will fail
+    value = value.replace("'", "")
+    outstr += FIELDSEP + value
+  else:
+    value = output_tag_value(opp, "skills")
+    # Strip apostrophe or the upload to SOLR will fail
+    value = value.replace("'", "")
+    outstr += FIELDSEP + value
 
   for field in ORGANIZATION_FIELDS:
     outstr += FIELDSEP + output_field("org_"+field,
@@ -1200,6 +1218,8 @@ def convert_to_gbase_events_type(instr, shortname, fastparse, maxrecs, progress)
 
 def guess_shortname(filename):
   """from the input filename, guess which feed this is."""
+  global IGNORE_DUPLICATES
+  IGNORE_DUPLICATES = False
   if re.search("handsonnetwork1800", filename):
     return "handsonnetwork1800"
 
@@ -1207,16 +1227,17 @@ def guess_shortname(filename):
     return "handsonnetworktechnologies"
 
   if re.search("handsonnetworkconnect", filename):
+    IGNORE_DUPLICATES = True
     return "handsonnetworkconnect"
 
   if re.search("updateHON", filename):
-    global IGNORE_DUPLICATES
     IGNORE_DUPLICATES = True
     return "handsonnetworkconnect"
 
   # could comment out legacy HON feed 10/12/2011
-  if re.search("(handson|hot.footprint)", filename):
-    return "handsonnetwork"
+  # Commented 1/23/13
+  # if re.search("(handson|hot.footprint)", filename):
+  #  return "handsonnetwork"
 
   # added daytabank 10/12/2011
   if re.search("daytabank", filename):
@@ -1334,6 +1355,8 @@ def guess_parse_func(inputfmt, filename, feed_providername):
 
   # FPXML providers
   fp = parse_footprint
+  """"
+  LEGACY HON feeds Commented out on 1/23/2013
   if shortname == "handsonnetwork1800":
     return "fpxml", fp.parser(
       '500', 'handsonnetwork1800', 'handsonnetwork1800', 'http://handsonnetwork.org/',
@@ -1343,7 +1366,7 @@ def guess_parse_func(inputfmt, filename, feed_providername):
     return "fpxml", fp.parser(
       '501', 'handsonnetworktechnologies', 'handsonnetworktechnologies', 'http://handsonnetwork.org/',
       'HandsOn Network')
-
+  """
   if shortname == "handsonnetworkconnect":
     return "fpxml", fp.parser(
       '502', 'handsonnetworkconnect', 'handsonnetworkconnect', 'http://handsonnetwork.org/',
@@ -1355,11 +1378,13 @@ def guess_parse_func(inputfmt, filename, feed_providername):
       '503', 'daytabank', 'daytabank', 'http://daytabank.handsonnetwork.org/',
       'Make a Difference Day')
 
+  """Commented on 1/23/2013
   # can comment out legacy HON feed 10/12/2011
   if shortname == "handsonnetwork":
     return "fpxml", fp.parser(
       '102', 'handsonnetwork', 'handsonnetwork', 'http://handsonnetwork.org/',
       'HandsOn Network')
+      """
 
   if shortname == "volunteermatch" or shortname == "vm-20101027":
     return "fpxml", fp.parser(
@@ -1807,6 +1832,13 @@ def main():
       gsp.parser_error("FPXML format not supported for "+
                        "spreadsheet-of-spreadsheets")
       sys.exit(1)
+      
+    bytes = numorgs = numopps = 0
+    outstr = ""
+    """
+    # This was the old sheet 
+    # Commmented out on 1/25/2013
+    
     match = re.search(r'key=([^& ]+)', filename)
     url = "http://spreadsheets.google.com/feeds/cells/" + match.group(1)
     url += "/1/public/basic"
@@ -1867,8 +1899,11 @@ def main():
         numorgs += providerNumorgs
         numopps += providerNumopps
         outstr += tmpstr
-
+    """
     # added week of April 16th, 2012 
+    # Processes all sheets submitted via the google form.
+    # These sheets are preprocessed by /spredsheets/run.php
+    # run.php generates process.py which is an array of sheets 
     print "================================================== PRIVATE SPREADSHEETS"
     for sheet in sheet_list:
       providerURL = 'http://staging.servicefootprint.appspot.com/oppsfeed?id=' + sheet['id']
