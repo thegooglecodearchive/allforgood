@@ -31,7 +31,7 @@ import subprocess
 import sys
 import xml_helpers as xmlh
 from datetime import datetime
-import geocoder
+import geocoder_mapsV3 as geocoder
 from optparse import OptionParser
 from BeautifulSoup import BeautifulSoup
 
