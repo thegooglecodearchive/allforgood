@@ -44,7 +44,9 @@ import categories
 import searchresult
 import utils
 import ga
+import gzip
 
+from StringIO import StringIO
 from boosts import *
 
 RESULT_CACHE_TIME = 900 # seconds
@@ -708,11 +710,76 @@ def query(query_url, group_query, fields_query, args, cache, dumping = False):
   
   fetch_start = time.time()
   status_code = 999
+  ui_query_url = query_url
+  
+  api_key = args.get(api.PARAM_KEY, 'UI')
+  if api_key == 'UI':
+    need_facet_counts = True
+  else:
+    need_facet_counts = False
+
+  if api_key == 'UI': #For UI searches make two queries one gruoupped by opportunityid to retrieve the VOs IDs and the second to retrieve the dates.
+      # The reason is that because of occurrences pagination can not be kept managed solely by rows.
+    facetOppsQuery = re.sub('fl=([*,a-z])','fl=opportunityid,feed_providername,event_date_range,title,description,detailurl,latitude,longitude,categorytags&group=true&group.field=opportunityid&group.main=true&group.format=simple',ui_query_url)
   try:
-    logging.info("calling SOLR: " + query_url)
-    query_url += '&r=' + str(random.random())
-    fetch_result = urlfetch.fetch(query_url, deadline = api.CONST_MAX_FETCH_DEADLINE)
+        logging.info("calling SOLR for facetOppsQuery: " + facetOppsQuery)
+        facetOppsQuery += '&r=' + str(random.random())
+        #fetch_result = urlfetch.fetch(facetOppsQuery, deadline = api.CONST_MAX_FETCH_DEADLINE, headers={"accept-encoding":"gzip"},)
+        fetch_result = urlfetch.fetch(facetOppsQuery, deadline = api.CONST_MAX_FETCH_DEADLINE,)
+        logging.info("calling SOLR for facetOppsQuery headers: %s " % str(fetch_result.header_msg.getheaders('content-encoding')))
     status_code = fetch_result.status_code
+        
+        #unzip response if it is compressed
+        
+        if re.search('gzip', str(fetch_result.header_msg.getheaders('content-encoding'))) and status_code == 200 :
+            gzip_stream = StringIO(fetch_result.content)
+            gzip_file = gzip.GzipFile(fileobj=gzip_stream)
+            result_content = gzip_file.read()
+        else:
+            result_content = fetch_result.content
+        
+        result_content = re.sub(r';;', ',', result_content)
+        result = simplejson.loads(result_content)
+    except:
+        # can get a response too large error here
+        if status_code == 999:
+          logging.warning('solr_search.query error 999 %s' % str(status_code))
+        else:
+          logging.info('solr_search.query responded %s' % str(status_code))      
+
+    doc_list = result["response"]["docs"]
+
+    #logging.info('facetOppsQuery result' + str(doc_list))
+    opportunityList = list() # empty list
+    for i, entry in enumerate(doc_list):
+        opportunityList.append(entry["opportunityid"])
+        #logging.info('opportunityList i=' +  str(i) + ": v=" +str(entry)) 
+    opportunityResults = 'opportunityid:(' + '+OR+'.join(opportunityList) + ')'
+    logging.info('opportunityList =' +  opportunityResults)
+    ui_query_url = re.sub('rows=([0-9]+)','rows=1000',ui_query_url)
+    ui_query_url = re.sub('start=([0-9]+)','start=0',ui_query_url)
+    ui_query_url = re.sub('fl=([*,a-z])','fl=id,feed_providername,event_date_range,title,description,detailurl,latitude,longitude',ui_query_url)
+    ui_query_url = ui_query_url.replace('&q=','&q='+opportunityResults+'+AND+')
+     
+  try:
+    logging.info("calling SOLR: " + ui_query_url)
+    ui_query_url += '&r=' + str(random.random())
+    fetch_result = urlfetch.fetch(ui_query_url, deadline = api.CONST_MAX_FETCH_DEADLINE, headers={"accept-encoding":"gzip"},)
+    #fetch_result = urlfetch.fetch(ui_query_url, deadline = api.CONST_MAX_FETCH_DEADLINE,)
+    logging.info("calling SOLR headers: %s " % str(fetch_result.header_msg.getheaders('content-encoding')))
+    status_code = fetch_result.status_code
+    
+    #unzip response if it is compressed
+    
+    if re.search('gzip', str(fetch_result.header_msg.getheaders('content-encoding'))) and status_code == 200 :      
+        gzip_stream = StringIO(fetch_result.content)
+        gzip_file = gzip.GzipFile(fileobj=gzip_stream)
+        result_content = gzip_file.read()
+    else:
+        result_content = fetch_result.content
+    
+    result_content = re.sub(r';;', ',', result_content)
+    result = simplejson.loads(result_content)
   except:
     # can get a response too large error here
     if status_code == 999:
@@ -724,18 +791,12 @@ def query(query_url, group_query, fields_query, args, cache, dumping = False):
   result_set.fetch_time = fetch_end - fetch_start
   if status_code != 200:
     return result_set
-  result_content = fetch_result.content
+  #result_content = fetch_result.content
 
   parse_start = time.time()
   # undo comma encoding -- see datahub/footprint_lib.py
-  result_content = re.sub(r';;', ',', result_content)
-  result = simplejson.loads(result_content)
-  
-  api_key = args.get(api.PARAM_KEY, 'UI')
-  if api_key == 'UI':
-    need_facet_counts = True
-  else:
-    need_facet_counts = False
+  # result_content = re.sub(r';;', ',', result_content)
+  # result = simplejson.loads(result_content)
 
   all_facets = None
   if need_facet_counts:
