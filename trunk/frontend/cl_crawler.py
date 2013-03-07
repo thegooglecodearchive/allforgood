@@ -26,7 +26,7 @@ import time
 from datetime import datetime
 import socket
 import string
-import geocoder
+import geocode_mapsV3 as geocoder
 import xml_helpers as xmlh
 
 NUMOPPS = 0
