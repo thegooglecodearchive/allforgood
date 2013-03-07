@@ -39,7 +39,7 @@ DIRECT_FIELDS = [
   'population', # populations
   'dayWeek', # availabilityDays
   'categoryTag', #categoryTags
-  'skill', #skills
+#  'skill', #skills requires special handling in footprint_lib.get_direct_mapped_fields
 
   'sponsoringOrganizationID', 
   'rsvpCount',
