@@ -14,13 +14,15 @@ DASHBOARD_DIR=/home/footprint/public_html/dashboard
 
 YMD0=`date +%Y%m%d`
 FINGERPRINT="pipeline.py -s"
+
+# Counts how many instances of the pipeline are running.
 COUNT=`ps -ef | grep "$FINGERPRINT" | grep -v grep | wc -l`
 
-if [ $COUNT -lt 1 ]
+if [ $COUNT -lt 1 ] #If there are other instances running exit
 then
 	# change to our directory
 	cd $DIR
-	if [ $? -ne 0 ]
+	if [ $? -ne 0 ] # if the previous command failed exit
 	then
 		./notify_michael.sh cd failed
 		exit 1
@@ -28,13 +30,15 @@ then
 		./notify_michael.sh pipeline started
 	fi
 
-	if [ "$*" = "" ]
+	if [ "$*" = "" ] # checks that there are no other arguments
 	then
 		./notify_michael.sh download started 
-		./download.sh
-		./asciify.sh
-		./spreadsheets/run.php
-		#scp -qr spreadsheets/sent footprint@$OTHER.members.linode.com:`pwd`/spreadsheets
+		./download.sh				# Download feeds from all the providers
+		./asciify.sh				# Process them to convert them to UTF-8
+		./spreadsheets/run.php		# Create google docs sheets and send notify users so that they can submit their VOs
+		
+		#Copy all the processed sheets to the other servers this way people is not notified more than once.
+		scp -qr spreadsheets/sent footprint@$OTHER.members.linode.com:`pwd`/spreadsheets
 		./notify_michael.sh download complete 
 		# clear previous processing
 		rm -f *.transformed
@@ -46,7 +50,7 @@ then
 		mkdir feeds
 	fi
 
-	# clear list of duplicated opps
+	# clear list of duplicated opps by removing files and directory and then recreating it again
 	rm -fr dups; mkdir dups
 	if [ $? -ne 0 ]
 	then
@@ -54,14 +58,16 @@ then
 		exit 1
 	fi
 
-	if [ $# -lt 1 ]
+	if [ $# -lt 1 ] #scans the links and verifies them ¿¿¿???
 	then
 		#nohup ./all_scan.sh > $DIR/scan.log 2>&1 &
 		./all_scan.sh > $DIR/scan.log 2>&1
 	fi
 
 	./notify_michael.sh pipeline processing
-	# process the online spreadsheet opps
+	
+	# process the online spreadsheet submitted at : http://www.allforgood.org/online/spreadsheet.html
+	# I think it should be commented out
 	if [ "$*" = "" ]
 	then
 		./runos.sh
