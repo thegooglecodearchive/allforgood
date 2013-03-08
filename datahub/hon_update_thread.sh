@@ -2,20 +2,6 @@
 :
 cd /home/footprint/allforgood-read-only/datahub/
 
-rm -f updateHON1.transformed #legacy probably useless
-
-fingerprint="pipeline.py -s"
-
-# Counts how many instances of the pipeline are running.
-countPS=`ps -ef | grep "$fingerprint" | grep -v grep | wc -l`
-
-if [ $countPS -gt 0 ] #If there are other instances running exit
-then
-	echo "Exiting because the process is running ..."
-	exit
-fi
-
-date
 fileBase=""
 logDelete=""
 log=""
@@ -29,24 +15,19 @@ startTime=$(date +%s)
 startTimeP=$(date +%s)
 endTime=$(date +%s)
 diffTime=0
-counter=0
+timeStp=$1
 
-        # Process minifeeds that are in queue
-
-for timeStp in `find ./HONupdates/ -name "updateHON*.xml.delete" -o -name "updateHON*.xml" 2> /dev/null| sort | cut -c24-43 | uniq` #returns all unique minifeeds
-do
-	counter=$((counter+1))
-	if [ $counter -gt 20 ] #If 20  minifeeds have been processed exit
-	then
-		echo "Exiting because $counter minifeeds were processed  ..."
-		exit
-	fi
+if [ "$timeStp" = "" ]
+then
+	echo "usage: $0 timeStp from mthread_hon_update.sh"
+	exit 
+else
+        # Process the given minifeed
 
 	startTime=$(date +%s)
-	# timeStp=`echo $theFile | cut -c24-43` # get the file timestamp
 	fileBase="./HONupdates/updateHON-"$timeStp # set the path and default base filename
 
-	echo "$(date) Processing # $counter : updateHON-$timeStp"
+	echo "$timeStp $(date): Processing updateHON-$timeStp"
 
 	deleteXML=$fileBase".xml.delete" # set the path and filename of the delete file
 	feedXML=$fileBase".xml" # set the path and filename of the xml file
@@ -58,8 +39,8 @@ do
 
 	if [ -s "$log" -o -s "$logDelete" ] 
 	then
-		echo "updateHON-$timeStp it is already been handled."
-		continue
+		echo "$timeStp $(date): updateHON-$timeStp it is already been handled."
+		exit
 	fi
 
 	whenStamp=`date +%Y%m%d%H%M%S`
@@ -76,6 +57,12 @@ do
 		endTime=$(date +%s)
 		diffTime=$(( $endTime - $startTimeP ))
 		echo "It took $diffTime seconds to create TSV" >> $log
+		TSV_SZ=0
+		if [ -f $transTSV ]
+		then
+			TSV_SZ=`stat -c %s $transTSV`
+		fi
+		echo "$timeStp $(date): It took $diffTime seconds to create TSV $TSV_SZ bytes"
 	fi
 
 	#execute delete in SOLR
@@ -89,11 +76,10 @@ do
 
 		./xmeetup.sh $deleteXML.processed >> $logDelete 2>&1 #Apply file to SOLR index
 
-		#./notify_michael.sh HON deleted
-
 		endTime=$(date +%s)
 		diffTime=$(( $endTime - $startTimeP ))
 		echo "It took $diffTime seconds to delete" >> $logDelete
+		echo "$timeStp $(date): It took $diffTime seconds to delete"
 
 	fi
 
@@ -115,17 +101,17 @@ do
 		endTime=$(date +%s)
 		diffTime=$(( $endTime - $startTimeP ))
 		echo "It took $diffTime seconds to insert" >> $log
+		echo "$timeStp $(date): It took $diffTime seconds to insert"
 	else
 		echo "processing error" >> $log
+		echo "$timeStp $(date): processing error"
 	fi
 
-	echo "\nEOF" >> $log
-	#./notify_michael.sh HON added
 
 	endTime=$(date +%s)
 	diffTime=$(( $endTime - $startTime ))
 	echo "It took $diffTime seconds to process minifeed $timeStp " >> $log
-
-
-done
+	echo "\nEOF" >> $log
+	echo "$timeStp $(date): It took $diffTime seconds to process minifeed $timeStp "
+fi
 

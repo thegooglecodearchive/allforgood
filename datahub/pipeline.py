@@ -488,13 +488,13 @@ def loaders():
 
   for name in [
                "handsonnetworkconnect",
-               #"handsonnetworkconnect_dev",
+               #DEV "handsonnetworkconnect_dev",
                # handsonnetworkconnect_dev is only for DEV server 
-               # DEPRECATED "handsonnetwork1800", 
+               #DEPRECATED "handsonnetwork1800", 
                # 12/1 moved to handsonconnect
-               # DEPRECATED "handsonnetworktechnologies", 
+               #DEPRECATED "handsonnetworktechnologies", 
                # can stop processing legacy HON feed 10/12/2011
-               # DEPRECATED "handsonnetwork", 
+               #DEPRECATED "handsonnetwork", 
                "unitedway", 
                "daytabank", 
                # need to contact feed provider 2011-11-16
@@ -551,7 +551,10 @@ def loaders():
   if FILENAMES:
     for file in FILENAMES:
       if re.search('updateHON', file):
-        run_pipeline("updateHON", file)
+	theFileName = file.replace('./HONupdates/','')
+        theFileName = file.replace('.xml','')
+        run_pipeline(theFileName, file)
+        # run_pipeline("updateHON", file)
 
   # requires special crawling
   # This next block triggers the processing of the google sheets.

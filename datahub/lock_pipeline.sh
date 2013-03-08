@@ -38,7 +38,7 @@ then
 		./spreadsheets/run.php		# Create google docs sheets and send notify users so that they can submit their VOs
 		
 		#Copy all the processed sheets to the other servers this way people is not notified more than once.
-		scp -qr spreadsheets/sent footprint@$OTHER.members.linode.com:`pwd`/spreadsheets
+		#scp -qr spreadsheets/sent footprint@$OTHER.members.linode.com:`pwd`/spreadsheets
 		./notify_michael.sh download complete 
 		# clear previous processing
 		rm -f *.transformed
@@ -154,10 +154,13 @@ then
 	./make_feed_js.py
 
 	./notify_dan.sh pipeline stopped
-	./notify_michael.sh pipeline stopped
+	#./notify_michael.sh pipeline stopped
 else
 	echo -n "pipline lapped " ; date
 	cd $DIR
 	./notify_dan.sh pipeline lapped
 	./notify_michael.sh pipeline lapped
 fi
+
+rm -f pause.minifeeds
+
