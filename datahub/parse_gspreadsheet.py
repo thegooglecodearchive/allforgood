@@ -96,7 +96,7 @@ def record_to_fpxml(record):
   title = recordval(record, 'OpportunityTitle')
   if title == "":
     parser_error("missing OpportunityTitle-- this field is required.")
-  fpxml += xmlh.output_val("title", title)
+  fpxml += xmlh.output_val("title", title, cdata=True)
   fpxml += '<dateTimeDurations>'
   fpxml += '<dateTimeDuration>'
   if ('StartDate' in record and
@@ -142,15 +142,15 @@ def record_to_fpxml(record):
     fpxml += xmlh.output_val('virtual', 'Yes')
   else:
     fpxml += xmlh.output_val('virtual', 'No')
-    fpxml += xmlh.output_val('name', recordval(record, 'LocationName'))
+    fpxml += xmlh.output_val('name', recordval(record, 'LocationName'), cdata=True)
     fpxml += xmlh.output_val('streetAddress1',
                              recordval(record, 'LocationStreet'))
-    fpxml += xmlh.output_val('city', recordval(record, 'LocationCity'))
+    fpxml += xmlh.output_val('city', recordval(record, 'LocationCity'), cdata=True)
     fpxml += xmlh.output_val('region',
-                             recordval(record, 'LocationProvince'))
+                             recordval(record, 'LocationProvince'), cdata=True)
     fpxml += xmlh.output_val('postalCode',
-                             recordval(record, 'LocationPostalCode'))
-    fpxml += xmlh.output_val('country', recordval(record, 'LocationCountry'))
+                             recordval(record, 'LocationPostalCode'), cdata=True)
+    fpxml += xmlh.output_val('country', recordval(record, 'LocationCountry'), cdata=True)
   fpxml += '</location>'
   fpxml += '</locations>'
   fpxml += xmlh.output_val('paid', recordval(record, 'Paid'))
@@ -167,17 +167,17 @@ def record_to_fpxml(record):
   fpxml += xmlh.output_val('sexRestrictedTo',
                            recordval(record, 'SexRestrictedTo'))
   fpxml += xmlh.output_val('skills', recordval(record, 'Skills'))
-  fpxml += xmlh.output_val('contactName', recordval(record, 'ContactName'))
-  fpxml += xmlh.output_val('contactPhone', recordval(record, 'ContactPhone'))
-  fpxml += xmlh.output_val('contactEmail', recordval(record, 'ContactEmail'))
+  fpxml += xmlh.output_val('contactName', recordval(record, 'ContactName'), cdata=True)
+  fpxml += xmlh.output_val('contactPhone', recordval(record, 'ContactPhone'), cdata=True)
+  fpxml += xmlh.output_val('contactEmail', recordval(record, 'ContactEmail'), cdata=True)
 
   url = recordval(record, 'URL')
   if not url.lower().startswith('http'):
     url = 'http://' + url
-  fpxml += xmlh.output_val('detailURL', url)
+  fpxml += xmlh.output_val('detailURL', url, cdata=True)
 
   # note: preserve whitespace in description
-  fpxml += xmlh.output_val('description', raw_recordval(record, 'Description'))
+  fpxml += xmlh.output_val('description', raw_recordval(record, 'Description'), cdata=True)
   fpxml += '<lastUpdated olsonTZ="Etc/UTC">'
   fpxml += recordval(record, 'LastUpdated') + '</lastUpdated>'
   fpxml += '</VolunteerOpportunity>'
@@ -447,7 +447,7 @@ def parse(instr, maxrecs = 0, progress = False):
   for orgname in KNOWN_ORGS:
     outstr += "<Organization>"
     outstr += xmlh.output_val("organizationID", KNOWN_ORGS[orgname])
-    outstr += xmlh.output_val("name", orgname)
+    outstr += xmlh.output_val("name", orgname, cdata=True)
     outstr += "</Organization>"
   outstr += "</Organizations>"
   outstr += volopps
