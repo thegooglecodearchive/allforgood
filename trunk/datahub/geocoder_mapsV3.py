@@ -16,6 +16,7 @@
 """
 Geocoder and address functions for backend, using Google Maps API.
 """
+import sys
 import os
 import re
 import time
@@ -283,10 +284,65 @@ def rev_geocode_json(lat, lng, key = None, retries = 0, msgd = {}):
 
   return jo
 
-#def main():
-#  tpl = geocode_call('1060 W Addison, Chicago, IL', 0)
-#  print tpl
-#  print rev_geocode_json(tpl[1], tpl[2], None, 0)
-#
-#if __name__ == "__main__":
-#  main()
+
+def geocode_json(query):
+
+  params = urllib.urlencode({'address' : query,
+                             'region' : 'us',
+                             'sensor' : 'false',
+                             'client' : CLIENT_ID})
+  res = None
+  try:
+    request = "/maps/api/geocode/json?%s" % params
+    signature = sign_maps_api_request(request)
+    url = "http://maps.googleapis.com" + request + "&signature=" + signature
+    maps_fh = urllib2.urlopen(url)
+    res = maps_fh.read()
+    maps_fh.close()
+  except IOError, err:
+    print "geocode_call: Error calling Maps API" + str(err) + "\n" + url
+
+  return res
+
+
+def main(argv):
+
+  is_geo = True
+  is_rev = False
+  q = lat = lng = ''
+  for arg in argv:
+    if arg.find('--') < 0:
+      if is_geo:
+        if len(q) > 0:
+          q += ','
+        q += arg
+      elif is_rev:
+        if not lat:
+          lat = arg
+        elif not lng:
+          lng = arg
+    else:
+      if arg.find('rev') > 0:
+        is_rev = True
+        is_geo = False
+      elif arg.find('geo') > 0:
+        is_geo = True
+        is_rev = False
+
+  if q:
+    if is_geo:
+      print geocode_json(q)
+  elif lat:
+    if not lng:
+      ll = lat.split(',')
+      if len(ll) > 1:
+        lat = ll[0]
+        lng = ll[1]
+    if lat and lng:
+      jo = rev_geocode_json(lat, lng, None, 0)
+      if jo:
+        print json.dumps(jo, indent=2)
+
+
+if __name__ == "__main__":
+  main(sys.argv[1:])
