@@ -507,7 +507,7 @@ def loaders():
                "christianvolunteering", 
                # need to contact feed provider 2011-11-12
                #"1sky", 
-               # commented on 1/29/2013 "sparked", 
+               "sparked", 
                "citizencorps", 
                # need to contact feed provider 2011-11-12
                #"extraordinaries", 
@@ -533,7 +533,7 @@ def loaders():
                # need to contact feed provider 2011-11-12
                #"washoecounty", 
                "getinvolved",
-               # commented on 1/29/2013 "ymca", 
+               "ymca", 
                "uso",
                "seniorcorps",
                "usaintlexp",
@@ -875,10 +875,9 @@ def create_solr_TSV(filename, start_time, feed_file_size):
 
 def main():
   """ program starts here """
-#  solr_filename = solr_retransform('handsonnetworkconnect1', datetime.now(), 6563535)
   #solr_filename = create_solr_TSV('handsonnetworkconnect1', datetime.now(), 6563535)
-#  run_pipeline("unitedway", "unitedway.xml")
   #sys.exit(0)
+  
                                                                                                   
   get_options()
 
