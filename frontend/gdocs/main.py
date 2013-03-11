@@ -2,6 +2,7 @@ import private_keys
 
 import sys
 
+import re
 import logging
 import urllib
 import urllib2
@@ -242,7 +243,8 @@ class OppsForm(webapp.RequestHandler):
         return
 
       # there is no spreadsheet
-      sheetname = 'for AFG ' + org + ' ' + private_keys.SPREADSHEET_TEMPLATE.NAME
+      safe_org = re.sub(r'\W+', '', org)
+      sheetname = 'for AFG ' + safe_org + ' ' + private_keys.SPREADSHEET_TEMPLATE.NAME
       ok, rsp = copySpreadsheet(self, private_keys.SPREADSHEET_TEMPLATE.KEY, sheetname)
       if not ok:
         self.response.out.write('err: could not copy spreadsheet\n' + rsp + '\n')
