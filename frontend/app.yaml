@@ -3,8 +3,8 @@ application: servicefootprint
 
 #version: trunk
 #version: testing
-#version: staging
-version: api2
+version: staging
+#version: api2
 #version: backup
 runtime: python
 api_version: 1
@@ -43,12 +43,12 @@ handlers:
   upload: html/test-post-request.html
 
 # this is for the opp spreadsheet
-- url: /online/(get|put|clear|list|xml|geo)
-  script: online/main.py
+#- url: /online/(get|put|clear|list|xml|geo)
+#  script: online/main.py
 
-- url: /online
-  expiration: "1h"
-  static_dir: online/html
+#- url: /online
+#  expiration: "1h"
+#  static_dir: online/html
 
 # NOTE: these aren't mapped /js|css|images directly, but instead force the
 # use of version numbers to avoid accidental version problems.
