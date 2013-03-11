@@ -331,15 +331,22 @@ def prettyxml(doc, strip_header = False):
   # toprettyxml wasn't that pretty...
   return outstr
 
-def output_val(name, val):
+def output_val(name, val, cdata = False):
   """return <name>val</name>."""
-  return "<" + name + ">" + str(val) + "</" + name + ">"
+  if cdata:
+    str_val = '<![CDATA[' + str(val) + ']]>'
+  else:
+    str_val = str(val)
+  return "<" + name + ">" + str_val + "</" + name + ">"
+
 def output_node(name, node, nodename):
   """return <name>get_tag_val(node)</name>."""
   return output_val(name, xml.sax.saxutils.escape(get_tag_val(node, nodename)))
+
 def output_plural(name, val):
   """return <names><name>val</name></names>."""
   return "<" + name + "s>" + output_val(name, val) + "</" + name + "s>"
+
 def output_plural_node(name, node, nodename):
   """return <names><name>get_tag_val(node)</name></names>."""
   return "<" + name + "s>" + output_node(name, node, nodename) + \
