@@ -5,9 +5,10 @@ cd /home/footprint/allforgood-read-only/datahub/
 maxThreads=10
 
 isScriptRunning=`ps -ef | grep "mthread_hon_update.sh" | grep -v grep | wc -l`
-if [ $isScriptRunning -gt 2 ] 
+if [ $isScriptRunning -gt 3 ] 
 then
-	#echo "Exiting because $isScriptRunning instance of $0 is already running ..."
+	echo "Exiting because $isScriptRunning instance of $0 is already running ..."
+	ps -ef | grep "mthread_hon_update.sh" | grep -v grep 
 	exit
 fi
 
@@ -39,10 +40,10 @@ do
 		fi
 
 		# skip this feed if it has already been processed 
-        	fileBase="./HONupdates/updateHON-"$timeStp
-        	log=$fileBase".log"
-        	logDelete=$fileBase".log.delete"
-        	if [ -s "$log" -o -s "$logDelete" ]
+		fileBase="./HONupdates/updateHON-"$timeStp
+		log=$fileBase".log"
+		logDelete=$fileBase".log.delete"
+        if [ -s "$log" -o -s "$logDelete" ]
 		then
 			continue
 		fi
