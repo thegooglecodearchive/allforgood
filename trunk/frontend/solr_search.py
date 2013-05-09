@@ -45,6 +45,7 @@ import searchresult
 import utils
 import ga
 import gzip
+from iso8601 import parse_date
 
 from StringIO import StringIO
 from boosts import *
@@ -490,41 +491,53 @@ def search(args, dumping = False):
 
     start_date = datetime.datetime.today()
     try:
-      start_date = datetime.datetime.strptime(
-                     args[api.PARAM_VOL_STARTDATE].strip(), "%m/%d/%Y")      
-    except:
-      try:
-        start_date = datetime.datetime.strptime(
-                     args[api.PARAM_VOL_STARTDATE].strip(), "%Y-%m-%d")      
-      except:
-        logging.info('solr_search.form_solr_query malformed start date: %s' %
-                    args[api.PARAM_VOL_STARTDATE])
+      start_date = parse_date(args[api.PARAM_VOL_STARTDATE].strip())      
+    except:    
+        try:
+          start_date = datetime.datetime.strptime(
+                         args[api.PARAM_VOL_STARTDATE].strip(), "%m/%d/%Y")      
+        except:
+          try:
+            start_date = datetime.datetime.strptime(
+                         args[api.PARAM_VOL_STARTDATE].strip(), "%Y-%m-%d")      
+          except:
+            logging.info('solr_search.form_solr_query malformed start date: %s' %
+                        args[api.PARAM_VOL_STARTDATE])
 
     end_date = None
     if api.PARAM_VOL_ENDDATE in args and args[api.PARAM_VOL_ENDDATE] != "":
       try:
-        end_date = datetime.datetime.strptime(
-                       args[api.PARAM_VOL_ENDDATE].strip(), "%m/%d/%Y")
+        end_date = parse_date(args[api.PARAM_VOL_ENDDATE].strip())
       except:
-        try:
-          end_date = datetime.datetime.strptime(
-                       args[api.PARAM_VOL_ENDDATE].strip(), "%Y-%m-%d")
-        except:
-          logging.debug('solr_search.form_solr_query malformed end date: %s' %
-                       args[api.PARAM_VOL_ENDDATE])
+          try:
+            end_date = datetime.datetime.strptime(
+                           args[api.PARAM_VOL_ENDDATE].strip(), "%m/%d/%Y")
+          except:
+            try:
+              end_date = datetime.datetime.strptime(
+                           args[api.PARAM_VOL_ENDDATE].strip(), "%Y-%m-%d")
+            except:
+              logging.debug('solr_search.form_solr_query malformed end date: %s' %
+                           args[api.PARAM_VOL_ENDDATE])
     if not end_date:
       end_date = start_date
+    
+    try:
+      start_datetime_str = start_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+    except:  
+        try:
+          start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
+        except:
+          start_datetime_str = None
 
     try:
-      start_datetime_str = start_date.strftime("%Y-%m-%dT00:00:00.000Z")
+      end_datetime_str = end_date.strftime("%Y-%m-%dT%H:%M:%SZ")
     except:
-      start_datetime_str = None
-
-    try:
-      end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
-    except:
-      end_datetime_str = None
-  
+        try:
+          end_datetime_str = end_date.strftime("%Y-%m-%dT23:59:59.999Z")
+        except:
+          end_datetime_str = None
+      
   global DATE_QUERY_GLOBAL
   if start_datetime_str:
     DATE_QUERY_GLOBAL = ("&fq=(eventrangeend:[" + start_datetime_str + 
