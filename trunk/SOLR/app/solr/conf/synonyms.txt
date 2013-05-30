@@ -40,6 +40,6 @@ Repairman,plumber,plumbers,electrician,electricians,carpenter,carpenters,brickla
 Artist,artist,artists,drawing,painter,painters,painting,sculpting,sculptor,sculptors
 GraphicDesigner,graphic designer,graphic designers,graphic design,graphic skills,graphics skills,graphic artist,graphic artists
 Videographer,videographer,videographers
-VeteransDay,veteran,veterans
+VeteransDay,veteran,veterans,Military,Army,Navy,Marines,Coast Guard,PTSD,Service Member,Service Connect Disability,USMC,Air force,Warriors,Troops,Hero,Uniform Service,Military base,Veterans Affairs,Veteran Service Organization
 handson,hands on
 united way,unitedway
