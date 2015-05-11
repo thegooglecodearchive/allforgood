@@ -1,0 +1,1 @@
+For an overview of the All For Good architecture and systems see https://docs.google.com/Doc?docid=0Af2uzfMXJ8MvZGY2N21uMnhfMjBocWg4dzZmcw&hl=en&authkey=CLXp5aMC.

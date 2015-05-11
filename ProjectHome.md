@@ -1,0 +1,1 @@
+The All For Good project is intended to helping fulfill the promise presented by the United States renewed call to service. Live on http://allforgood.org/
